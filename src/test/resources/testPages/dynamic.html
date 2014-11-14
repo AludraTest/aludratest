@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+       "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>Dynamic Test Page</title>
+	</head>
+	<body>
+		<h3>1. Test DropDownBox</h3>
+		<select size="1" onfocus="setFocus(this.id);" onchange="setFocus('');" onblur="setFocus('');" name="before:DropDown:after" id="before:DropDown:after" class="fdd180">
+			<option value="Partner_Name_value" selected="selected">Partner Name</option>
+			<option value="City_value">City</option>
+		</select>
+		
+		<h3>2. Test Button</h3>
+		<input type="submit" value="Find" onfocus="setFocus(this.id);" onclick="javascript:alert('Find Button')" name="before:FindButton:after" id="before:FindButton:after" class="fb"/>
+		
+		<h3>3. Label Test</h3>
+		<label id="before:LabelTest:after">Ready</label>
+		
+		<script type="text/javascript">
+		function changeTexts() {
+			var dropDownBox = document.getElementById("before:DropDown:after");
+			dropDownBox.selectedIndex = 1;
+			var button = document.getElementById("before:FindButton:after");
+			button.setAttribute("value", "Found");
+			var label = document.getElementById("before:LabelTest:after");
+			label.innerHTML = "DONE";
+		}
+		setTimeout(function(){ changeTexts() }, 1000);
+		</script>
+	</body>
+</html>

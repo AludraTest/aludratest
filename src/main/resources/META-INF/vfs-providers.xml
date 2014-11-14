@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<providers>
+	<provider class-name="org.apache.commons.vfs2.provider.ftp.FtpFileProvider" />
+	<provider class-name="org.apache.commons.vfs2.provider.sftp.SftpFileProvider" />
+	<provider class-name="org.apache.commons.vfs2.provider.http.HttpFileProvider" />
+	<provider class-name="org.apache.commons.vfs2.provider.https.HttpsFileProvider" />
+</providers>

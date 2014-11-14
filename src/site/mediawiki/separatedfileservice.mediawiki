@@ -1,0 +1,103 @@
+= SeparatedFileService User Guide =
+
+The SeparatedFileService provides data import from and export to separated files, typically comma- or tab-separated. File data is mapped from and to data class properties. Version headers are supported, besides of them, all rows of a separated file are supposed to have the same data structure and map to the same data class.
+
+== Configuration ==
+
+There is no specific configuration required for the SeparatedFileService.
+
+A SeparatedFileService uses a FileService for the low-level file operations. If you e.g. retrieve a SeparatedFileService with
+
+ SeparatedFileService sfService = getService(ComponentId.create(SeparatedFileService.class, "myInterface"));
+ 
+Then, internally, a FileService will be allocated with exactly the same instance name - as if you would call
+
+ getService(ComponentId.create(FileService.class, "myInterface"));
+
+So all FileService configuration elements (encoding, linefeeds etc.) apply indirectly.
+
+== SeparatedFileBeans ==
+
+The SeparatedFileService supports the use of so-called 'SeparatedFileBeans' which carry plain data content as well as a column index (and a currently ignored format specification) for their associated separated file type.
+
+=== SeparatedFileBean Requirements ===
+
+SeparatedFileBeans must comply with the following conditions:
+
+* have a public no-arg constructor
+* provide any data by public attributes
+* annotate each attribute to be exported with a SeparatedColumn annotation
+* have a 'flat' structure; no navigation among bean property graphs is supported
+
+=== SeparatedColumn ===
+
+A SeparatedFileBean's attributes are configured with their (1-based) index using the @SeparatedColumn annotation.
+
+Example:
+
+ @SeparatedColumn(columnIndex = 1)
+ public String city;
+
+The '''columnIndex''' denotes the character offset from the beginning of the row. The first column has the index 1.
+
+The '''format''' defines an optional pattern for formatting/parsing the attribute. It may be specified in two different manners:
+
+# A date/time format, declared by a leading '''D''' and followed by a date/timepattern as understood by the Java SimpleDateFormat class. Example: DyyyyMMdd
+# A number format, declared by a leading '''N''' and followed by a number pattern as understood by the Java DecimalFormat class. Example: N000.00
+
+Examples are:
+
+* DyyyyMMdd
+* N0000.00
+
+Currently, the '''format''' setting is ignored, since all data class property types must be strings (or other data classes) and thus no parsing or formatting can be applied. But it is considered good practice to track format information for the sake of documentation.
+
+=== SeparatedFileBean Example ===
+
+All attributes of a SeparatedFileBean must be configured to be formatted without gaps or duplicate columns in the @SeparatedColumn annotations. The lowest columnIndex must be 1.
+
+An example with a simple Address class:
+
+ public class Address {
+ 
+    @SeparatedColumn(columnIndex = 1)
+    public String street;
+ 
+    @SeparatedColumn(columnIndex = 2)
+    public String city;
+ 
+    @SeparatedColumn(columnIndex = 3, format="N0000.00")
+    public double num;
+ 
+    public Address() {
+        this(null, null, 0);
+    }
+ 
+    public Address(String street, String city, double num) {
+        this.street = street;
+        this.city = city;
+        this.num = num;
+    }
+ }
+
+=== Writing SeparatedFileBeans ===
+
+SeparatedFileBeans like the Address above can be written using an appropriate SeparatedFileWriter, e.g. an AddressWriter:
+
+ SeparatedFileService service = getService(new ServiceId("septest", SeparatedFileService.class));
+ AddressWriter writer = new AddressWriter(service);
+ writer.writeAddress(new Address("MAIN STREET 321", "NEW YORK", 123.45));
+ writer.writeAddress(new Address("2ND STREET 4321", "JERSEY", 3.8));
+ writer.close();
+
+=== Reading Separated Files ===
+
+Separated files can be read using an related reader, e.g. an AddressReader:
+
+ SeparatedFileService service = getService(new ServiceId("septest", SeparatedFileService .class));
+ AddressReader reader = new AddressReader(service);
+ Address address;
+ while ((address = reader.readRow()&nbsp;!= null) {
+     System.out.println(address);
+ }
+ reader.close();

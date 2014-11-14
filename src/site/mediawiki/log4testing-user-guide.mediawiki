@@ -1,0 +1,194 @@
+= Log4Testing User Guide =
+
+Log4Testing is AludraTest's component which provides the technical infrastructure for functional logging of the test execution. It is used to generate structured and easy-to-read reports in HTML or XML.
+
+This document aims at the '''Test Developer''' using AludraTest. All logging ''invocations'' happen automatically, so you only need to know the configuration of Log4Testing. 
+
+Please note that the Log4Testing implementation will undergo some huge refactorings and modifications in the future. This will have little to no impact for ''using'' Log4Testing and its results, but will have some impact on ''configuring'' it. 
+
+== Colors in Log4Testing Protocol ==
+
+;<span style="background-color: rgb(255, 255, 255)">Pending</span>
+:A test is scheduled for execution but was not started yet
+
+;<span style="background-color: rgb(255, 165, 0);">Running</span>
+:A test is currently running
+
+;<span style="background-color: rgb(153, 255, 170);">Passed</span>
+:A test was executed and no errors occured
+
+;<span style="background-color: rgb(187, 187, 187);">Ignored</span>
+:A test was ignored. For different types of test objects, this is the result of different causes:
+:*For '''TestSuites''' and '''TestCases''' this signals that a test data set was marked to be ignored by the user, the test is executed, but the result code is not propagated to the suite.
+:*For a '''TestStep''' it signals that
+:**either a previous step was erroneous and therefore this TestStep was skipped.
+:**or a test step was erroneous but configured to be retried, ignoring an initial failure
+
+;<span style="background-color: rgb(255, 170, 170);">Failed</span>
+:A test failed due to an functional error e.g. incorrect value. This has to be examined by a '''Functional Tester'''.
+
+;<span style="background-color: rgb(221, 170, 255);">Failed Performance</span>
+:A test failed due an error which should be addressed a '''Functional Tester'''. Usually this indicates that the SUT is hanging or takes an intolerable timespan to respond to a user activity.
+
+;<span style="background-color: rgb(238, 136, 255);">Failed Access</span>
+:A test failed due a failed system access which should be addressed by a '''Test Developer'''. Most likely a required system is offline or access configuration is wrong.
+
+;<span style="background-color: rgb(255, 255, 170);">Failed Automation</span>
+:A test failed due an error which could be fixed a '''Test Developer'''. Mostly these are technical errors like a changed technical identifier.
+
+;<span style="background-color: rgb(46, 154, 254);">Inconclusive</span>
+:A test failed due to an error which has to be examined by an '''AludraTest Developer'''.
+
+[[Image:AludraTest-Exceptions.png]]
+
+
+== Configuration File Format ==
+
+Log4Testing is configured from the contents of a file named <code>log4testing.xml</code> on the ''Classpath''. It allows the user to configure the following settings:
+
+* Setting system variables
+* Plugging in report generators and other observer classes
+* Configuring Velocity-template-based report file exporters
+* Defining replace mechanism for Attachments. For example a website which calls of external scripts, which are not included in the saved html could be replaced with an regular expression.
+
+As the file is searched on the Classpath, the best place to store it would be your <code>src/main/resources</code> directory of your project.
+
+== Setting System Variables ==
+
+A &lt;sysprops&gt; element can be used to define system variable (a.k.a. VM system property). Each child element of a &lt;sysprop&gt; element is mapped to a system variable using the tag name as variable name and the content as value. So, in order to define a system variable 'user' with the value 'Alice', one would write
+
+ <sysprops>
+    <user>Alice</user>
+ </sysprops>
+
+In test code, these system properties could be queried using System.getProperty("user").
+
+== Plugin Mechanism ==
+
+Log4Testing allows the user to write and plug in custom extensions. Each extension point has a base name (in the following example 'xyz') that identifies which type of extension is to be plugged in. It must have a &lt;class&gt; element as child which specifies the fully qualified name of the class. An optional &lt;properties&gt; child element serves for setting JavaBean properties of the plugin object, similar to the &lt;sysprops&gt; structure described above.
+
+'''Note: Currently the mechanism is limited to String-type properties!'''
+
+The value of Java system and OS environment variables can be included using ${variable_name}.
+
+Example:
+
+ <xyz>
+    <class>org.aludratest.log4testing.core.output.writer.VelocityTestCaseWriter</class>
+    <properties>
+        <template>org/aludratest/impl/log4testing/core/output/html/testCase.vm</template>
+        <extension>html</extension>
+        <variable>testCase</variable>
+        <outputdir>${log4testing_outputdir}</outputdir>        
+    </properties>
+ </xyz>
+
+== Configuring TestObservers ==
+
+TestObservers are plugged in to get notified of test status changes and react according to their purpose. Log4Testing makes use of TestObservers for generating its HTML and XML reports and report the number of tests remaining. Each TestObserver is declared as a single &lt;observer&gt; element inside an &lt;observers&gt; under the XML root node:
+
+ <log4testing>
+ ...
+ <observers>
+     <observer>
+         <class>com.my.MyObserver1</class>
+         <properties>
+             ...
+         </properties>
+     </observer>
+     <observer>
+         <class>com.my.MyObserver2</class>
+         <properties>
+             ...
+         </properties>
+     </observer>
+ </observers>
+
+=== HTMLReportObserver ===
+
+The HTMLReportObserver employs Velocity templates for generating recursive HTML reports of all test suites and test cases. It is plugged in using the following example configuration:
+
+ <observer>
+    <class>org.aludratest.impl.log4testing.core.observer.HTMLReportObserver</class>
+    <properties>
+        <testCaseTemplate>org/aludratest/impl/log4testing/core/output/html/testCase.vm</testCaseTemplate>
+        <testSuiteTemplate>org/aludratest/impl/log4testing/core/output/html/testSuite.vm</testSuiteTemplate>
+        <outputdir>${log4testing_outputdir}/html</outputdir>        
+        <ignoreableRoot>my.company.testcases</ignoreableRoot>
+        <abbreviating>true</abbreviating>
+        <shortTimeFormat>true</shortTimeFormat>
+        <openBrowser>false</openBrowser>
+    </properties>
+ </observer>
+
+The possible settings are as follows:
+
+{| class="wikitable"
+|-
+! Setting
+! Description
+|-
+| testCaseTemplate
+| The path of the Velocity template file to use for rendering a test case
+|-
+| testSuiteTemplate
+| The path of the Velocity template file to use for rendering a test suite
+|-
+| outputdir
+| The folder in which to put the generated files
+|-
+| ignoreableRoot
+| Common root package name of the test cases to be ommotted from test file paths and names
+|-
+| abbreviating
+| boolean flag (true/false) to specify if file paths should be abbreviated. This affects only the file paths, not the test suite and test case names. Abbreviations are defined as key-value-pairs in a file named <code>abbreviations.properties</code>. The key parts define text parts to be abbreviated and the value parts the texts to be used as abbreviation.
+|-
+| shortTimeFormat
+| boolean flag (true/false) to specify if a short (hh:mm:ss'ms) or long (# days # hours # minutes # seconds # milliseconds) date format shall be used.
+|-
+| openBrowser
+| boolean flag (true/false) to specify if the system's default browser shall be opened with the root suite report. This is done when test execution has finished.
+|}
+
+=== XMLReportObserver ===
+
+The XMLReportObserver works similar to the HTMLReportObserver (has the same settings), but renders parseable XML instead of HTML. This can be used for post-processing of the test results. 
+
+=== PendingTestsObserver ===
+
+The PendingTestsObserver prints out the current number of tests pending after each test step that has been finished. 
+
+== Configuration File Example ==
+
+A typical <code>log4testing.xml</code> looks like this:
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <log4testing>
+    <sysprops>
+        <log4testing_outputdir>target/log4testing</log4testing_outputdir>
+    </sysprops>
+    <observers>
+        <observer>
+            <class>org.aludratest.impl.log4testing.core.observer.HTMLReportObserver</class>
+            <properties>
+                <testCaseTemplate>org/aludratest/impl/log4testing/core/output/html/testCase.vm</testCaseTemplate>
+                <testSuiteTemplate>org/aludratest/impl/log4testing/core/output/html/testSuite.vm</testSuiteTemplate>
+                <outputdir>${log4testing_outputdir}/html</outputdir>        
+                <ignoreableRoot>com.mycompany.testcases</ignoreableRoot>
+                <abbreviating>true</abbreviating>
+                <shortTimeFormat>true</shortTimeFormat>
+            </properties>
+        </observer>
+        <observer>
+            <class>org.aludratest.impl.log4testing.core.observer.PendingTestsObserver</class>
+        </observer>
+        <observer>
+            <class>org.aludratest.impl.log4testing.core.observer.XMLReportObserver</class>
+            <properties>
+                <testSuiteTemplate>org/aludratest/impl/log4testing/core/output/html/testSuiteXML.vm</testSuiteTemplate>
+                <outputdir>${log4testing_outputdir}/xml</outputdir>        
+            </properties>
+        </observer>
+    </observers>
+ </log4testing>
+

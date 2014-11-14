@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log4testing>
+	<sysprops>
+		<log4testing_outputdir>target/log4testing</log4testing_outputdir>
+	</sysprops>
+	<observers>
+		<observer>
+			<class>org.aludratest.impl.log4testing.observer.HTMLReportObserver</class>
+			<properties>
+				<testCaseTemplate>org/aludratest/log4testing/output/html/testCase.vm</testCaseTemplate>
+				<testSuiteTemplate>org/aludratest/log4testing/output/html/testSuite.vm</testSuiteTemplate>
+				<outputDir>${log4testing_outputdir}/html</outputDir>
+				<ignoreableRoot>org.aludratest</ignoreableRoot>
+				<abbreviating>true</abbreviating>
+				<shortTimeFormat>true</shortTimeFormat>
+			</properties>
+		</observer>
+		<observer>
+			<class>org.aludratest.impl.log4testing.observer.PendingTestsObserver</class>
+		</observer>
+		<observer>
+			<class>org.aludratest.impl.log4testing.observer.XMLReportObserver</class>
+			<properties>
+				<testSuiteTemplate>org/aludratest/log4testing/output/xml/testSuiteXML.vm</testSuiteTemplate>
+				<outputDir>${log4testing_outputdir}/xml</outputDir>
+			</properties>
+		</observer>
+	</observers>
+	<attachment>
+		<replace>
+			<regex>&lt;[Nn][Oo][Ss][Cc][Rr][Ii][Pp][Tt].*[Nn][Oo][Ss][Cc][Rr][Ii][Pp][Tt]&gt;</regex>
+			<replacement></replacement>
+		</replace>
+	</attachment>
+</log4testing>

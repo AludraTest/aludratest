@@ -1,0 +1,22 @@
+= ActionWordLibrary =
+
+For simplifying the implementation of tests, a special type of dictionary approach is used. Each component of a specific application interface (e.g. a page of a Web Application) is represented by a dedicated class which has the following requirements to meet the ActionWordLibrary approach:
+
+* Test code may only interact with ActionWordLibraries (calling their methods)
+* An ActionWordLibrary is a class that implements the interface '''org.aludratest.dict.ActionWordLibrary'''
+* An instance of an ActionWordLibrary represents the current state of the interface (e.g. the web page currently visible in the user's browser, including the current state of the page, e.g. field values)
+* The internal state of an ActionWordLibrary instance is verfied calling its '''verifyState()''' method
+* Each public method of an ActionWordLibrary is called '''Action''', represents a feature of the related interface element and can be looked up by the developer e.g. using a Java IDE's code completion feature.
+* Each parameter of an Action method (if any) must be a '''Data''' class (see below).
+* Each invocation of a public method is a potential state transition which has to reflect the target state by returning an ActionWordLibrary instance: Either itself (<code>this</code>) or a new instance reflecting the new state (e.g. web page opened by calling a <code>click()</code> method). Before the instance is passed, its state has to be checked calling <code>verifyState()</code>, for example by returning <code>this.verifyState()</code> or <code>new OtherPage().verifyState()</code>.
+* If a method has to return further information, it has to do so by using a mutable method parameter. As all '''Data''' classes have to implement Getters '''and''' Setters, all Data objects are mutable and can be used for this purpose.
+* An ActionWordLibrary can (and will, in most cases) receive a reference to the corresponding AludraService as constructor parameter.
+
+Most of these rules are enforced via the AludraTest [[Codechecks]], which use PMD rules to check for potential violations.
+
+== Data classes ==
+
+Data classes are extremely simple Java Beans, extending the abstract base class '''org.aludratest.dict.Data'''. 
+A Data Class is a pure data structure related to a service or interface element. A Data Class may only contain attributes of type String, Data Class, or Collection (type parameter must be a subclass of Data), but no arrays, simple types (Date, Double, Integer etc.) or Class objects.
+
+See [[Codechecks]] for the full list of rules applying to Data classes.

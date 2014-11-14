@@ -1,0 +1,145 @@
+== Configuration Pattern for AludraTest ==
+
+Several Components of AludraTest can be configured, especially the AludraTest ''Services''.
+
+Every component has its own set of configuration properties. There are several '''Scopes''' for configuration:
+
+# ''Default'' Scope: The default configuration for a component.
+# ''Global'' Scope: Global configuration for a component, overriding some or all ''Defaults''.
+# ''Service Instance'' Scope: The configuration for a ''Service'' component when instantiated for a named purpose, overriding some or all ''Global'' settings. This named purpose is passed to <code>getService()</code> when requesting a service instance.
+# ''Environment'' Scope: The configuration for a component when running inside a named Environment. This name can be set when starting AludraTest (when not set, it is <code>LOCAL</code>). Environment configuration overrides ''Global'' and ''Service Instance'' configuration elements.
+# ''Environment Service Instance'' Scope: The configuration for a ''Service'' component when instantiated for a named purpose and when running inside a named Environment, overriding some or all ''Environment'' configuration elements.
+
+=== Loading mechanism and order ===
+
+All of these scopes (with the exception of the Default scope) can be configured using <code>.properties</code> files on the ''Classpath''. Additionally, Java System Properties (e.g. specified on command line) can be used to further override configuration properties.
+
+# ''Global'' Scope: This scope's settings are read from a file <code>config/&lt;COMPONENT_ID>.properties</code> on the current ''Classpath''. The <code>COMPONENT_ID</code> depends on the component / service, and in most cases, it is the name of the service interface, with the first letter in lower case (e.g. <code>fileService.properties</code>). Components will provide their ID in their documentation.
+# ''Service Instance'' Scope: This scope's settings are read from a file <code>config/&lt;INSTANCE_NAME>/&lt;COMPONENT_ID>.properties</code> on the current ''Classpath''. The <code>INSTANCE_NAME</code> would be the name of a Service Instance (see Scope description for details). <br/>The settings in such a file would override all settings in the ''Global'' properties file for the same <code>COMPONENT_ID</code> (but only for the given <code>INSTANCE_NAME</code>), if such a file exists.  
+# ''Environment'' Scope: This scope's settings are read from a file <code>config/_<ENV_NAME>/&lt;COMPONENT_ID>.properties</code> on the current ''Classpath''. 
+The <code>ENV_NAME</code> would be the name of an environment. This name is a startup parameter of AludraTest, and by default, it is <code>LOCAL</code>. <br/>
+The settings in such a file would override all settings in the ''Global'' and in '''all''' ''Service Instance'' properties files for the same <code>COMPONENT_ID</code> (but only for the given <code>ENV_NAME</code>).
+# ''Environment Service Instance'' Scope: This scope's settings are read from a file <code>config/_<ENV_NAME>/&lt;INSTANCE_NAME>/&lt;COMPONENT_ID>.properties</code> on the current ''Classpath''. <br/>
+The settings in such a file would override all settings in the ''Global'', all ''Service Instance'' and all ''Environment'' settings for the same <code>COMPONENT_ID</code> (but only for the given <code>ENV_NAME</code> and <code>INSTANCE_NAME</code> combination).
+# ''Environment Properties'': If there is, for a given configuration property <code>myprop</code>, a System Property named <code>ALUDRATEST_CONFIG/&lt;COMPONENT_ID>/myprop</code>, it overrides this configuration property for '''all''' previous scopes.
+# ''Environment Service Instance Properties'': If there is, for a given configuration property <code>myprop</code>, a System Property named <code>ALUDRATEST_CONFIG/&lt;COMPONENT_ID>/_&lt;INSTANCE_NAME>/myprop</code>, it overrides this configuration property for '''all''' previous scopes, but only for the given <code>INSTANCE_ID</code>. 
+
+=== Example Usage Scenario ===
+
+To better understand this concept, let's first set up an example usage scenario which we will configure from the top-level to the most fine-grained scope:
+
+We want to run a set of test cases which test a file based interface. These test cases will use the <code>FileService</code> service, which has its defined set of configuration properties. The requirements for the
+test cases are as follows:
+
+* By default, all file operations are local and are using the user's home directory as base. Writing operations are not permitted. File encoding <code>UTF-8</code> is used.
+* For locally running test cases, we want to use the directory <code>C:\\DEV\\testdata</code> (on a Windows machine)
+and <code>ISO-8859-1</code> as encoding. Writing operations shall be permitted for these local executions.
+* For the test case purpose (''Service Instance'') <code>"VerySpecialInterface"</code>, we want to use the file 
+encoding <code>UTF-8</code>. Writing operations shall be permitted for this test case purpose on all environments.
+* For all test cases running on server environments, we want to use the FTP server <code>ftp.mycompany.int</code> and on this server, the directory <code>/var/tst/testdata</code>. Writing operations shall initially be disabled.
+* For test cases running on server environment <code>TESTSRV23</code>, the FTP server <code>ftp3.mycompany.int</code>
+shall be used instead.
+
+=== Default configuration ===
+
+The default configuration elements are specified by the component to configure, so this configuration is in effect when it is not overridden by other configuration scopes. Without any additional configuration, we can assume that all file operations are local, are using the user's home directory as base, and that writing operations are not permitted.
+
+=== Global configuration ===
+
+We now have to think a little bit about what of the example usage scenario has to be covered with "global" configuration. Notice that the "locally running test cases" requirement may seem to require the Global configuration scope, but it is not. You can clearly specify these test cases as the ones executed within the <code>LOCAL</code> environment (assumed by AludraTest by default).
+
+So, instead we should configure the "all test cases running on server environments" element as global. To set the global configuration for the <code>FileService</code>, there must be a file <code>config/fileService.properties</code> on the ''Classpath''. So, in your Java project, you would normally create a file <code>src/main/resources/fileService.properties</code>, with the following contents (for the example usage scenario):
+
+ protocol=ftp
+ user=myuser
+ password=topsecret
+ host=ftp.mycompany.int
+ base.url=/var/tst/testdata
+ writing.enabled=false
+
+Notice that the last line is not completely necessary, as writing is disabled by default, and there is no higher configuration scope which could have enabled it. Still, you can re-specify it to make the fact clear.
+
+=== Service Instance Configuration ===
+
+To specify the configuration for a named ''Service Instance'' (in our case, "VerySpecialInterface"), a file named <code>config/VerySpecialInterface/fileService.properties</code> is searched on the classpath. Again, you would create this structure in your <code>src/main/resources</code> directory, with the following file contents:
+
+ writing.enabled=true
+ encoding=UTF-8
+
+Notice that the encoding settings does not have that much effect, again because it is the default value and there is no higher configuration scope which changes it (the Global scope ''could'' have changed it). So we could have left it out as well, but now it gets interesting...
+
+=== Environment Configuration ===
+
+We have some elements needing enviroment specific configuration in our example usage scenario. First of all, the requirement for locally executed test cases. As AludraTest assumes an enviroment named <code>LOCAL</code> by default, we can use this and specify our configuration for this environment.
+
+To get the configuration for this environment, a file named <code>config/_LOCAL/fileService.properties</code> is
+searched on the ''Classpath''. Notice the underscore prefix, which indicates an environment name instead of
+a Service Instance name.
+
+The contents of this file (<code>src/main/resources/config/_LOCAL/fileService.properties</code>) would look as follows:
+
+ writing.enabled=true
+ encoding=ISO-8859-1
+ 
+ protocol=file
+ base.url=c:/DEV/testdata
+
+Notice that these settings do override even the ''Service Instance'' configuration provided for the 
+<code>VerySpecialInterface</code> instance! So, when stopping here with configuration, the <code>VerySpecialInterface</code> instance on the <code>LOCAL</code> environment would run with encoding <code>ISO-8859-1</code>, which is not what we want!
+
+See the next section on how to resolve this; there is one more environment specific thing to configure:
+
+<code>src/main/resources/config/_TESTSRV23/fileService.properties</code>:
+
+ host=ftp3.mycompany.int
+
+=== Environment Service Instance Configuration ===
+
+There is still one requirement left: We need the <code>VerySpecialInterface</code> to use <code>UTF-8</code>
+encoding instead of <code>ISO-8859-1</code> when running on the local environment. For this purpose, create a
+configuration file <code>src/main/resources/config/_LOCAL/VerySpecialInterface/fileService.properties</code>
+with the following contents:
+
+ encoding=UTF-8
+
+That's it! Now we have successfully covered all configuration requirements for the example usage scenario.
+But there is something more...
+
+=== System Property Configuration ===
+
+You can also specify all of these configuration elements via Java System Properties, e.g. on the command
+line. These System Properties will always override the according configuration property in the configuration files.
+
+There are two levels of System Properties overrides:
+
+* Properties overriding configuration for the whole environment
+* Properties overriding configuration for a given ''Service Instance'' on the current environment.
+
+There is no need (and no possibility) to specify the environment in the System Properties, as it is always 
+assumed to be the current enviroment (why would you specify the configuration for another environment on
+the command line?).
+
+==== Environment Configuration System Properties ====
+
+Let's say, we want to really make sure no test case can write on our current environment. Then we would
+specify a System Property with this name and value:
+
+ ALUDRATEST_CONFIG/fileService/writing.enabled=false
+
+This would also override a write enablement which has been specified for a given Service Instance on
+exactly this environment via configuration file!
+
+==== Environment Service Instance Configuration System Properties ====
+
+If we do not want to be that restrictive as in the last example and only want to prevent one Service Instance
+(<code>UnsafeInterface</code>) from being able to write, we can use a system property like this:
+ 
+ ALUDRATEST_CONFIG/fileService/_UnsafeInterface/writing.enabled=false
+
+Notice the underscore, now being used to prefix a Service Instance instead of an environment name. This
+is necessary to differentiate between Service Instance names and possibly complex configuration structures
+being used by the service.
+
+When you invoke a Java program, e.g. the AludraTest Runner, you can set the property via command line:
+
+ java org.aludratest.AludraTest com.acme.MySuite -DALUDRATEST_CONFIG/fileService/_UnsafeInterface/writing.enabled=false

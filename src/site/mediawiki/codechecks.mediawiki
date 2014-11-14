@@ -1,0 +1,312 @@
+AludraTest enforces some design patterns to be applied by a client project's code. A class has to meet certain requirements to be considered an implementor of a pattern and has to comply to the rules imposed by consequence.
+
+To activate these rules for your project, include the Maven PMD Plugin in your build, and set <code>/pmd-rules-aludra.xml</code> as the ruleset. For documentation of the PMD rules, see [[Aludra PMD Rules]].
+
+== Basic Requirements / Goals for Client code ==
+
+Client code using AludraTest should meet these requirements:
+
+*Easy maintenance
+*Easy refactoring
+*Easy writing of code
+*Uniform code
+*Easily readable code
+*High reusability of classes
+
+The following coding rules try to ensure that client code will meet these requirements as far as possible.
+
+== Components ==
+
+=== GUI Service ===
+
+For Web GUIs there exist four major types of dictionary components: Page, UIMap, GUIComponent
+
+==== Page ====
+
+A Page is an ActionWordLibrary that represents the page currently focused in the GUI. Each of these classes inherits from the common parent class '''org.aludratest.service.gui.web.Page''' and should have the suffix 'Page'.
+
+==== UIMap ====
+
+A UIMap provides access to sub components (e.g. HTML elements) of the current Page and allows the invocation of related business operations. UIMaps should be stateless and only contain factory methods to create GUIComponents for the current page, based on a Locator identifying how to find the Component on the current page. UIMaps are separated from Pages to make future auto-generation possible.
+
+==== GUIComponent ====
+
+A GUIComponent encapsules the interaction with a single GUI element (e.g. HTML element like a Button). GUIComponents must not be implemented outside AludraTest, and may only be instantiated by UIMaps. Every GUIComponent receives a Locator object on instantiation which is stored in the GUIComponent.
+
+=== Data Class ===
+
+A Data Class is a pure data structure related to a service or interface element. A Data Class may only contain attributes of type String, Data Class, or Collection (type parameter must be a subclass of Data), but no arrays, simple types (Date, Double, Integer etc.) or Class objects.
+
+== Code Rules ==
+
+=== Test Case ===
+
+A test case is a class extending (directly or indirectly) the class '''org.aludratest.AludraTest'''.
+
+A test case may '''only''' access classes of type
+
+*AludraService, ServiceId
+*ActionWordLibrary (Page)
+*DataClass
+
+as well as <code>java.lang.*</code> and <code>java.util.*</code>. Please notice that these two packages may be accessed by '''all''' class types and will not be listed in the next sections.
+
+These restrictions imply that a test case is not allowed to access UIMap, instances of (GUI) Components or any other internal classes of services like reader, writers etc.
+
+{| class="wikitable"
+|-
+! Code
+! Type
+! Severity
+! Description
+|-
+| TI1
+| import
+| critical
+| The TestCase class must only import allowed types (see above).
+|}
+
+=== ActionWordLibrary ===
+
+An ActionWordLibrary class is a class that implements the ActionWordLibrary interface.
+
+Each public method of an ActionWordLibrary is assumed to be an Action.
+
+{| class="wikitable"
+|-
+! Code
+! Type
+! Severity
+! Description
+|-
+| AC3
+| class
+| critical
+| The token 'Abstract' may only be name part of abstract classes
+|-
+| AA1
+| attribute
+| critical
+| ActionWordLibrary classes must not have static non-final attributes
+|-
+| AA2
+| attribute
+| critical
+| ActionWordLibrary classes must not have attributes of type AludraTest or a subtype
+|-
+| AM1
+| method
+| critical
+| static public methods are forbidden
+|-
+| AM2
+| method
+| critical
+| Action methods must return an ActionWordLibrary object
+|-
+| AM3
+| method
+| critical
+| Action methods must not have more than one parameter
+|-
+| AM4
+| method
+| critical
+| Action method parameters must be DataClasses
+|}
+
+=== Web GUI Service ===
+
+==== Page ====
+
+A Page Class is a class which extends (directly or indirectly) '''org.aludratest.service.gui.web.page.Page'''
+
+A Page Helper class is a class which extends (directly or indirectly) '''org.aludratest.service.gui.web.page.PageHelper'''
+
+A Page Utility class is a class which extends (directly or indirectly) '''org.aludratest.service.gui.web.page.PageUtility'''
+
+Please note that ActionWordLibrary rules also apply to Page classes, as Page implements ActionWordLibrary.
+
+{| class="wikitable"
+|-
+! Code
+! Type
+! Severity
+! Description
+|-
+| PC1
+| class
+| high
+| Page class name should end with "Page"<br/>Page Helper class should end with "Helper"<br/>Page Utility class should end with "Utility"
+|-
+| PC4 <!-- PC2 + PC3 removed -->
+| class
+| critical
+| The simple class names of all Pages must be unique
+|-
+| PA2
+| field
+| critical
+| Fields must not be public
+|-
+| PM1 <!-- PM2 + PM3 ensured by AWL rules -->
+| method
+| critical
+| Action methods must return Page objects
+|-
+| PM2
+| method
+| critical
+| All public methods in Page Utility classes must be static, Constructor must be private or package-private
+|-
+| PU1
+| usage
+| critical
+| Page classes must only be used by other Page classes, Page Helper or Utility classes, and Test Cases
+|-
+| PU2
+| usage
+| critical
+| Page Helper classes must only be used by Page and other Page Helper classes
+|-
+| PU3
+| usage
+| critical
+| Page Utility classes must only be used by Page, Page Helper, and other Page Utility classes
+|-
+| PI1
+| import
+| critical
+| Page classes must only import classes of type UIMap, Page, PageUtility, PageHelper, Data, GUIComponent, and AludraService
+|}
+
+==== UIMap ====
+
+A UIMap Class is a class which extends (directly or indirectly) '''org.aludratest.service.gui.web.uimap.UIMap'''
+
+A UIMap Helper class is a class which extends (directly or indirectly) '''org.aludratest.service.gui.web.uimap.UIMapHelper'''
+
+A UIMap Utility class is a class which extends (directly or indirectly) '''org.aludratest.service.gui.web.uimap.UIMapUtility'''
+
+{| class="wikitable"
+|-
+! Code
+! Type
+! Severity
+! Description
+|-
+| UC1
+| class
+| high
+| UIMap Class name should end with '''UIMap'''<br/>UIMap Helper Class name should end with '''Helper'''<br/>UIMap Utility Class name should end with '''Utility'''<br/>
+|-
+| UA1
+| field
+| critical
+| UIMap must not expose public fields
+|-
+| UA3
+| field
+| critical
+| UIMap must not have non-static fields
+|-
+| UM1
+| method
+| critical
+| Public UIMap methods must return a GUIComponent or UIMap object
+|-
+| UM2
+| method
+| critical
+| All public methods in UIMapUtility classes must be static. The constructor must not be visible.
+|-
+| UU1
+| usage
+| critical
+| UIMap classes must only be used by following types of classes: Page, PageHelper, PageUtility, UIMap, UIMapHelper, UIMapUtility
+|-
+| UI1
+| import
+| critical
+| UIMap classes must only import classes of these types: GUIComponent, Locator, UIMap, UIMapHelper, UIMapUtility, AludraService
+|-
+| UI2
+| import
+| critical
+| UIMapHelper and UIMapUtility classes must '''not''' import classes of these types: ActionWordLibrary, PageHelper, PageUtility, AludraTest
+|}
+
+==== GUIComponent ====
+
+GUIComponent classes shall not be implemented outside AludraTest. So there is only a rule for their usage:
+
+{| class="wikitable"
+|-
+! Code
+! Type
+! Severity
+! Description
+|-
+| GU1
+| usage
+| critical
+| Only UIMap classes (including Helper+Utility) are allowed to instantiate GUIComponent objects.
+|}
+
+=== Data Class ===
+
+A Data class is a class which extends (directly or indirectly) '''org.aludratest.dict.Data'''.
+
+{| class="wikitable"
+|-
+! Code
+! Type
+! Severity
+! Description
+|-
+| DC1
+| class
+| high
+| Class name should end with 'Data'
+|-
+| DC4
+| class
+| critical
+| Simple class name must be unique
+|-
+| DC5
+| class
+| critical
+| Data Class must have a public default (no-arg) constructor
+|-
+| DC6
+| class
+| critical
+| Data Class must override java.lang.Object.toString()
+|-
+| DA1
+| field
+| critical
+| Field type must be String, DataClass or collection (List, Set, Collection) of DataClass
+|-
+| DA2
+| field
+| critical
+| Field and property graphs must not be circular
+|-
+| DA3
+| field
+| critical
+| No static non-final fields allowed
+|-
+| DA4
+| field
+| critical
+| Fields must be public or have a property with public getter and setter
+|-
+| DM1
+| method
+| critical
+| No parameters allowed in get methods
+|}
+

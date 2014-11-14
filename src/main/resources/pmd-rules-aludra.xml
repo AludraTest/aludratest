@@ -1,0 +1,435 @@
+<?xml version="1.0"?>
+<ruleset name="Aludra Test Design Rules">
+	<!-- include this in the root element for editing. For XSLT site transformation, it must not be included. -->
+	<!-- 
+ xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">	
+	 -->
+
+	<description>
+	AludraTest defines a Set of Rules applying to child projects. PMD is used to define these rules. To use / enforce these
+	rules, just add the PMD plugin to your pom.xml, and refer to /pmd-rules-aludra.xml as the ruleset. See PMD documentation 
+	for details on how to include it in your project.
+  </description>
+
+	<!-- TI1 -->
+	<rule name="TestCaseImportRestriction"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.testcase.TestCaseImportRestriction"
+		typeResolution="true">
+		<description>AludraTest Test Case Classes must only use some types of classes.
+		This shall ensure good test case design - do not perform any low-level operations in the test
+		case classes, but bundle them in component classes. Good Test Case classes can completely
+		replace a textual description of the Test Case.
+		</description>
+		<priority>3</priority>
+		<properties>
+			<!-- for now, also accept Data Helper package -->
+			<property name="allowedImportPrefixes"
+				value="java.lang.,java.util.,org.aludratest.util.data.helper." />
+		</properties>
+	</rule>
+
+	<!-- ActionWordLibrary rules -->
+	<!-- AC3 -->
+	<rule name="AWLAbstractNameForAbstractClass"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.awl.AWLAbstractNameForAbstractClass"
+		typeResolution="true">
+		<description>Only abstract ActionWordLibrary classes shall be named "Abstract". 
+		This avoids developer and reviewer confusion.</description>
+		<priority>1</priority> <!-- 1 and 2 will fail, 3 to 5 are warnings -->
+	</rule>
+
+	<!-- AA1 -->
+	<rule name="AWLNoNonFinalStaticAttribute"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.awl.AWLNoNonFinalStaticAttribute"
+		typeResolution="true">
+		<description>Do not use non-final static attributes (class attributes) in ActionWordLibrary
+		functions. This would imply a class-wide state, and ActionWordLibraries should at most hold
+		an instance-local state to avoid strange side-effects which could depend on test timings etc.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- AA2 -->
+	<rule name="AWLNoTestCaseAttribute"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.awl.AWLNoTestCaseAttribute"
+		typeResolution="true">
+		<description>ActionWordLibrary classes should not have an attribute of a Test Case type.
+		This is almost always an error or really bad component design.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- AM1 -->
+	<rule name="AWLNoPublicStaticMethod"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.awl.AWLNoPublicStaticMethod"
+		typeResolution="true">
+		<description>There is no need for ActionWordLibrary classes to provide public static
+		methods. There is no class-wide information which should be made accessible this way.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- AM2 -->
+	<rule name="AWLActionMethodReturnAWL"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.awl.AWLActionMethodReturnAWL"
+		typeResolution="true">
+		<description>All public methods of an ActionWordLibrary class must return an ActionWordLibrary type
+		(but not necessarily the same type). This allows for fluent programming and reflects the possible state
+		change of the System under Test by the executed operation. Non-state changing methods should
+		still return a new object of the same type instead of returning "this".</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- AM4 -->
+	<rule name="AWLActionParameterDataClass"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.awl.AWLActionParameterDataClass"
+		typeResolution="true">
+		<description>All actions (public methods) must operate on Data objects, if parameters
+		are required for the action. This enforces the creation and use of Data classes, which
+		allows for easier parametrization of Test Cases, and avoids hidden encoding of values.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- Page rules. AWL rules also apply to Pages. -->
+	<!-- PC1 -->
+	<rule name="PageClassNamingConvention"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.page.PageClassNamingConvention"
+		typeResolution="true">
+		<description>All classes which extend the class org.aludratest.service.gui.web.page.Page
+		should have a name ending with "Page". This increases code readability.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- PC4 -->
+	<rule name="PageClassSimpleNameMustBeUnique"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.page.PageClassSimpleNameMustBeUnique"
+		typeResolution="true">
+		<description>The simple name of a Page Class should be unique. This makes the possible integration
+		with grapical Test Case editors easier.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- PA2 -->
+	<rule name="PageNoPublicAttribute"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.page.PageNoPublicAttribute"
+		typeResolution="true">
+		<description>Pages should not expose any public fields. Page objects are, at best, completely 
+		stateless, as each and every of their public methods return a new Page object. Even if some
+		state is required for whatever reason, public fields allow for state changes without calling an
+		action method, which is very error-prone.
+		</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- PM1 -->
+	<rule name="PageActionMethodReturnPageObject"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.page.PageActionMethodReturnPageObject"
+		typeResolution="true">
+		<description>Every public method of a Page class must return a Page type (but not necessarily the same type).
+		This allows for fluent programming and reflects the possible state
+		change of the System under Test by the executed operation. Non-state changing methods should
+		still return a new object of the same type instead of returning "this".
+		</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- PM2 -->
+	<rule name="PageUtilityClassStructure"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.page.PageUtilityClassStructure"
+		typeResolution="true">
+		<description>Page Utility classes (extending base class org.aludratest.service.gui.web.page.PageUtility)
+		must only have public static methods and a hidden constructor. This ensures that the methods
+		are stateless helper methods, e.g. encapsulating recurring code segments.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- PU1 -->
+	<rule name="PageUsageRestriction"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.page.PageUsageRestriction"
+		typeResolution="true">
+		<description>Page classes must only be used by Test Cases and Page related classes. This
+		enforces that e.g. no UIMaps reference Page classes, which would be an indicator for bad
+		component design.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- PU2 -->
+	<rule name="PageHelperUsageRestriction"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.page.PageHelperUsageRestriction"
+		typeResolution="true">
+		<description>Page Helper classes (extending base class org.aludratest.service.gui.web.page.PageHelper)
+		must only be used by Page and other PageHelper classes. This ensures that the reusable code
+		designed to be used by Pages is not used in UIMaps or Test Cases, which would be a break in code design.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- PU3 -->
+	<rule name="PageUtilityUsageRestriction"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.page.PageUtilityUsageRestriction"
+		typeResolution="true">
+		<description>Page Utility classes must only be used by Pages, Page Helpers, and other Page Utility classes.
+		This ensures that the reusable code
+		designed to be used by Pages is not used in UIMaps or Test Cases, which would be a break in code design.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- PI1 -->
+	<rule name="PageImportRestriction"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.page.PageImportRestriction"
+		typeResolution="true">
+		<description>Pages must only use classes of type Data, UIMap, Page, PageUtility, PageHelper, GUIComponent, and AludraService.
+		Although this is already relatively broad, this ensures that e.g. special code dealing with complex classes is put into PageUtility
+		classes, making it reusable from the start.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- UIMap rules -->
+	<!-- UC1 -->
+	<rule name="UIMapNamingConvention"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.uimap.UIMapNamingConvention"
+		typeResolution="true">
+		<description>UIMap classes should have a name ending with "UIMap". This increases code readability.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- UA1 -->
+	<rule name="UIMapNoPublicField"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.uimap.UIMapNoPublicField"
+		typeResolution="true">
+		<description>UIMaps must not expose any public fields. UIMaps should be completely stateless,
+		as every method invocation should create a new GUIComponent object. The only fields
+		which are allowed in a UIMap class are static String constants being used e.g. as
+		XPath strings for Locators. These constants should never be public.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- UA3 -->
+	<rule name="UIMapNoInstanceField"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.uimap.UIMapNoInstanceField"
+		typeResolution="true">
+		<description>UIMaps must not have any non-static fields (not even private ones). This shall
+		enforce that UIMaps are always stateless, as every method invocation should create a new GUIComponent object.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- UM1 -->
+	<rule name="UIMapMethodReturnComponent"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.uimap.UIMapMethodReturnComponent"
+		typeResolution="true">
+		<description>Every public method of a UIMap should create and return a GUIComponent. Other method
+		types should not be used in a UIMap.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- UM2 -->
+	<rule name="UIMapUtilityClassStructure"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.uimap.UIMapUtilityClassStructure"
+		typeResolution="true">
+		<description>UIMap Utility classes (extending base class org.aludratest.service.gui.web.uimap.UIMapUtility)
+		must only have public static methods and a hidden constructor. This ensures that the methods
+		are stateless helper methods, e.g. encapsulating recurring code segments.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- UU1 -->
+	<rule name="UIMapUsageRestriction"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.uimap.UIMapUsageRestriction"
+		typeResolution="true">
+		<description>UIMaps must only be used by UIMap related and Page related classes. This enforces
+		good component design and prevents e.g. Test Cases from accessing GUI components directly (use
+		high level methods of Page classes instead).</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- UI1 -->
+	<rule name="UIMapImportRestriction"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.uimap.UIMapImportRestriction"
+		typeResolution="true">
+		<description>UIMap classes are only allowed to use these types of classes: GUIComponent, 
+		Locator, UIMap, UIMapHelper, UIMapUtility, AludraGUI. This enforces good component design and
+		prohibits e.g. "back-access" to Page objects.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- UI2 -->
+	<rule name="UIMapHelperImportRestriction"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.uimap.UIMapHelperImportRestriction"
+		typeResolution="true">
+		<description>UIMapHelper classes (extending base class org.aludratest.service.gui.web.uimap.UIMapHelper) 
+		are NOT allowed to use these types of classes: PageHelper, 
+		PageUtility, ActionWordLibrary, AludraTest. This enforces good component design.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- GUIComponent rules -->
+	<!-- GU1 -->
+	<rule name="OnlyUIMapsConstructGUIComponent"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.guicomponent.OnlyUIMapsConstructGUIComponent"
+		typeResolution="true">
+		<description>Only UIMaps are allowed to create new instances of GUIComponent objects. This makes sure
+		that the knowledge on how to create these components is bundled in UIMap classes only.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- Data Class rules -->
+	<!-- DC1 -->
+	<rule name="DataClassNamingConvention"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.data.DataClassNamingConvention"
+		typeResolution="true">
+		<description>Data classes (extending base class org.aludratest.dict.Data) should
+		have a class name ending with "Data". This increases code readability.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- DC4 -->
+	<rule name="DataClassSimpleNameMustBeUnique"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.data.DataClassSimpleNameMustBeUnique"
+		typeResolution="true">
+		<description>The simple name of a Data Class should be unique. This makes the possible integration
+		with grapical Test Case editors easier.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- DC5 -->
+	<rule name="DataClassNoArgConstructor"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.data.DataClassNoArgConstructor"
+		typeResolution="true">
+		<description>Data classes must have a public no-arg constructor. This is important, as instances
+		of data classes are created by the framework, e.g. when loading Test Case parameters.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- DC6 -->
+	<rule name="DataClassImplementToString"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.data.DataClassImplementToString"
+		typeResolution="true">
+		<description>Data classes should implement toString(). This string representation is used in the
+		Test Case log.
+		</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- DA1 -->
+	<rule name="DataSimpleAttribute"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.data.DataSimpleAttribute"
+		typeResolution="true">
+		<description>All fields of a Data class should be of type String, another Data class, or
+		Collection (or a subtype) of a Data class. This ensures that all Data is (in the end) String-based
+		and can easily be read from text-based input (e.g. files). This also allows Test Cases to
+		use invalid input for e.g. Date fields.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- DA2 -->
+	<rule name="DataNoCircularGraphs"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.data.DataNoCircularGraphs"
+		typeResolution="true">
+		<description>No circular graphs may exist between the properties of two Data classes. This would
+		possibly be an endless recursion and, in every case, prohibit a "flattened" representation of the
+		Data contents (e.g. with a dot-based notation).</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- DA3 -->
+	<rule name="DataNoStaticAttributes"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.data.DataNoStaticAttributes"
+		typeResolution="true">
+		<description>Data classes must be kept as simple as possible (simple data containers). There should
+		not be any static attributes carrying any class-wide information.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- DA4 -->
+	<rule name="DataAttributeMustBeAccessible"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.data.DataAttributeMustBeAccessible"
+		typeResolution="true">
+		<description>Every Data field must have appropriate Getter and Setter methods. This allows
+		setting the field values from the outside via the framework. Please notice that the same
+		logic as used by Eclipse applies. Just press Ctrl+Space in your class body to see if there
+		are any "set..." methods still offered by Eclipse to be created as Setter methods - implement
+		these methods using this technique.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- DA5 -->
+	<rule name="DataFieldsMustNotBePublic"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.data.DataFieldsMustNotBePublic"
+		typeResolution="true">
+		<description>Data fields must not be public. Create simple Getters and Setters for them,
+		e.g. using Eclipse's mechanisms. This implements the official Bean logic for this class and
+		allows easier integration with external tools and, in the future, a graphical IDE editor.</description>
+		<priority>1</priority>
+	</rule>
+
+	<!-- Annotation rules -->
+	<rule name="DoNotCombineBeforeAndAfter"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.annot.NonCombinableAnnotations"
+		typeResolution="true">
+		<description>Do not use annotations Before and After on the same method. Split into two methods, if required.</description>
+		<priority>1</priority>
+		<properties>
+			<property name="annotationNames" value="Before,After" />
+		</properties>
+	</rule>
+	
+	<rule name="DoNotCombineSequentialAndParallel"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.annot.NonCombinableAnnotations"
+		typeResolution="true">
+		<description>Do not use annotations Sequential and Parallel on the same class or method. It does not make any sense.</description>
+		<priority>1</priority>
+		<properties>
+			<property name="annotationNames" value="Sequential,Parallel" />
+		</properties>
+	</rule>
+	
+	<rule name="NoTrailingCommaInAnnotationArray"
+		since="2.7.0"
+		class="org.aludratest.codecheck.rule.pmd.annot.NoTrailingCommaInAnnotationArray"
+		typeResolution="true">
+		<description>Do not end array initializers in Annotations with a comma. There is a javac bug around unable to compile (ignore) these.</description>
+		<priority>1</priority>
+		<example>
+			<![CDATA[
+@Suite(value = { MyTest.class, YourTest.class, })
+public class MySuite {
+}			
+			]]>
+		</example>
+	</rule>
+
+</ruleset>

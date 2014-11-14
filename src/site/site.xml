@@ -1,0 +1,34 @@
+<project name="AludraTest" xmlns="http://maven.apache.org/DECORATION/1.6.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/DECORATION/1.6.0 http://maven.apache.org/xsd/decoration-1.6.0.xsd">
+  
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>1.3.1</version>
+  </skin>
+  
+  <body>
+  
+    <menu name="Using AludraTest">
+    	<item name="User Guide" href="user-guide.html" />
+    	<item name="Action Word Libraries" href="actionwordlibrary.html" />
+    	<item name="Service Configuration" href="service-configuration.html" />
+    	<item name="Log4Testing" href="log4testing-user-guide.html" />
+    	<item name="Code Checks" href="codechecks.html" />
+    	<item name="PMD Ruleset" href="aludra-pmd-rules.html" />
+    </menu>
+    <menu name="AludraTest Services">
+    	<item name="File Service" href="fileservice.html" />
+    	<item name="FlatFile Service" href="flatfileservice.html" />
+    	<item name="SeparatedFile Service" href="separatedfileservice.html" />
+    </menu>
+    <menu name="Extending AludraTest">
+    	<item name="Developer Guide" href="aludratest-developer-guide.html" />
+    	<item name="Develop a Service" href="developing-service.html" />
+    	<item name="FileService Developer Guide" href="fileservice-developer-guide.html" />
+    </menu>
+    
+    <menu ref="reports" />
+    
+  </body>
+</project>

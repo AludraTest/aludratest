@@ -1,0 +1,76 @@
+= FileService Developer Guide =
+
+This document describes the internal mechanisms used in the implementation of the AludraTest FileService. Its intended audience is the maintainers and extenders of the AludraTest Framework.
+
+== Class Diagram ==
+
+[[Image:FileServiceImpl.png]]
+
+
+== Interfaces ==
+
+The FileService follows the AludraService conventions defining an Interface FileService with methods that provide file-realated action interfaces:
+
+* perform(): FileInteraction
+* verify(): FileVerification
+* check(): FileCondition
+
+== Implementation ==
+
+The FileService implementation resides in package <code>org.aludratest.service.file.impl</code>. It uses the [http://commons.apache.org/proper/commons-vfs/ Commons VFS] API and its implementations to access different types of file systems in a uniform manner while completely hiding the Common VFS classes from the user. Thus, commons-vfs may be exchanged with another library without any affect on the test code that invokes the FileService.
+
+=== FileServiceImpl ===
+
+The class <code>FileServiceImpl</code> implements the FileService interface.
+
+Since the feature set is not too big, a single class was designed to implement all three action interfaces: FileActionImpl. The FileServiceImpl holds only a single instance of the FileActionImpl and returns this from any call to perform(), verify() and check().
+
+FileServiceImpl creates a FileServiceConfiguration and hands it over to the FileActionImpl. When closing the service, also the configuration must be closed, since it manages the Commons VFS resources.
+
+=== FileServiceConfiguration ===
+
+The FileServiceConfiguration object is created using the FileService Preferences (passed by the framework via the Configurable interface). After that, it queries all configuration properties to assure the configuration is complete. 
+
+== Commons VFS ==
+
+=== Commons VFS API ===
+
+Core classes of Commons VFS are the StandardFileSystemManager and the class FileObject. The first one provides access to a file system and the latter one represents an element in a file system: a file or a directory.
+
+Commons VFS is able to support arbirary file systems by a plugin mechanism which is configured in an XML file, <code>META-INF/vfs-providers.xml</code>, and evaluated by the StandardFileSystemManager.
+
+=== Plugging in File System Types ===
+
+The VFS configuration file <code>META-INF/vfs-providers.xml</code> resides in AludraTest's folder <code>src/main/resources</code>. The current configuration is:
+
+ <?xml version="1.0" encoding="UTF-8"&nbsp;?>
+ <providers> 
+    <provider class-name="org.apache.commons.vfs2.provider.ftp.FtpFileProvider" />
+    <provider class-name="org.apache.commons.vfs2.provider.sftp.SftpFileProvider" />
+    <provider class-name="org.apache.commons.vfs2.provider.http.HttpFileProvider" />
+    <provider class-name="org.apache.commons.vfs2.provider.https.HttpsFileProvider" />
+ </providers>
+
+If support for further file systems is desired in the future, this is the place to start.
+
+=== VFS integration into FileService ===
+
+Commons VFS' <code>StandardFileSystemManager</code> is wrapped by FileService's class <code>FileServiceConfig</code>. It is responsible for creating and closing it.
+
+Note that closing a network connection (e.g. FTP) happens when the related FileSystemManager is close()d.
+
+=== FileObject Abstraction ===
+
+In Commons VFS, each file system item is represented by a FileObject. AludraTest's FileService uses a path string (relative from the file system's base directory) to represent a file.
+
+Mapping a file path to a FileObject happens in FileServiceConfiguration's getFileObject() method, the opposite transformation in pathFromRoot().
+
+=== Special adapter classes ===
+
+For copy operations, VFS requires a FileSelector implementation to select the files to be copied. FileService provides a '''FilePathSelector''' to include only a single file by its path.
+
+There exists an enumeration class '''Linefeed''' with to instances, '''WINDOWS''' and '''UNIX''' (providing the linefeeds \r\n and \n) which are used to simplify configuration file parsing.
+
+== Links ==
+
+* [http://commons.apache.org/proper/commons-vfs/ Commons VFS]

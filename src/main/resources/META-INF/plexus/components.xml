@@ -1,0 +1,9 @@
+<component-set>
+	<!-- for AludraTest services and components, use aludraservice.properties for configuration. -->
+	<components>
+		<component>
+			<role>org.aludratest.config.Configurator</role>
+			<implementation>org.aludratest.config.impl.DefaultConfigurator</implementation>
+		</component>
+	</components>
+</component-set>

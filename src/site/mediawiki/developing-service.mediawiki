@@ -1,0 +1,127 @@
+== Developing an AludraTest service ==
+
+This page describes how to implement a service to be used by test cases with the AludraTest framework.
+
+'''This documentation is intended for developers wanting to extend AludraTest, not for clients using AludraTest.'''
+
+=== Service and Action Interfaces ===
+
+A service provides AludraTest test cases with features to access systems under test. Service invocations can be logged automatically using the ''Log4testing'' component.
+
+There exists a separation of concern between a core service management class (implementing the interface ''AludraService'') and three operational interfaces (implementors of the Action interfaces ''Interaction'', ''Verification'' and ''Condition''). An optional interface for error checking (ErrorChecker) may be implemented to provide information about errors.
+
+[[Image:AludraTest_Service_Design.png|Core interfaces of an AludraTest service]]
+
+=== Service and Action Implementation ===
+
+The following steps need to be performed in order to implement a new AludraTest service called '''HelloService''':
+
+* Design the operations which shall be supported by this service.
+* Create specific interfaces of the action interfaces, e.g. '''HelloInteraction''', '''HelloVerification''' and '''HelloCondition''' and assign the operations to them. If there is no adequate operation for e.g. the Condition interface, declare a child interface anyway, as spaceholder for future operations.
+* Create an interface '''HelloService''' and declare the methods <code>perform()</code>, <code>verify()</code> and <code>check()</code> to return the specific action interface type:
+** '''perform(): HelloInteraction'''
+** '''verify(): HelloVerification'''
+** '''check(): HelloCondition'''
+* Implement the specific Action interfaces, e.g. with the classes '''HelloInteractionImpl''', '''HelloVerificationImpl''' and '''HelloConditionImpl'''
+* Implement the specific AludraService interface e.g. with a class '''HelloServiceImpl''' by implementing the interface '''HelloService''' directly or extending the helper class '''AbstractAludraService'''. The class must have a public default (no-arg) constructor. If your service shall be [[Service Configuration|configurable]], extend helper class '''AbstractConfigurableAludraService''' instead.
+
+<br/>
+
+'''TODO Remove ErrorChecker from image''' 
+
+[[Image:AludraTest_Custom_Service_Design.png]]
+
+=== Exceptions ===
+
+When your service operations detect an error, throw one of the predefined AludraTest exceptions:
+
+* '''FunctionalFailure''' when the Component Under Test does not behave like asserted. Usually, only methods of the '''Verification''' object throw this exception type. Example:
+ 
+ public void assertHello() {
+   String msg = componentUnderTest.retrieveMessage();
+   if (!msg.equals("Hello")) {
+     throw new FunctionalFailure("Retrieved message other than 'Hello'");
+ }
+
+* '''AutomationException''' when a problem arises which makes it unable to complete current task. Usually, methods of the '''Perform''' and '''Check''' objects thow this exception type. AutomationExceptions allow you to add the root cause of the exception (Exception chaining). Example:
+
+ public void isHello() {
+   try {
+     String msg = componentUnderTest.retrieveMessage();
+     return msg.equals("Hello");
+   }
+   catch (SomeSocketOrIOException e) {
+     throw new AutomationException("Could not check message because of communication error", e);
+   }
+
+* '''PerformanceFailure''' marks that the Component Under Test does not react in a certain amount of time (in most cases, configured timeouts). This can be thrown by all kinds of methods on the service objects. In most cases, internal helper methods deal with this. Example:
+
+ private String retrieveMessage() {
+   try {
+     complexExternalSystem.setTimeout(getMyConfiguredTimeout());
+     String message = complexExternalSystem.readNextMessage();
+   }
+   catch (SomeTimeoutException e) {
+     throw new PerformanceFailure("Timeout when waiting for message");
+   }
+ }
+ 
+* '''AccessFailure''' can be used to mark cases when external systems are not available, which renders the complete test of the component unusable. You can throw it already in the <code>initService()</code> method of the service (when extending '''AbstractAludraService'''), e.g.:
+
+ public void initService() {
+   try {
+     complexExternalSystem = MyLibrary.connectToHelloSystem(getConfiguredAddress());
+   }
+   catch (SomeConnectionException e) {
+     throw new AccessFailure("Cannot connect to the Hello System at " + getConfiguredAddress(), e);
+   }
+ }
+
+* All other (checked) exceptions can be wrapped in a '''TechnicalException'''. The AludraTest framework wraps all unchecked exceptions (e.g. <code>NullPointerException</code>) automatically in a TechnicalException. This marks an "completely unexpected exception", which could indicate an AludraTest error (e.g. in your service implementation itself).
+
+The different types of exceptions imply different outcomes of the test case, and are used by the Log4Testing component to render the output, e.g. the color coding used for single test steps.
+
+=== Service Life Cycle ===
+
+A service is instantiated and initialized by the AludraTest framework in three steps:
+
+# Creating an instance of the service class using a '''public default constructor'''
+# Calling the method '''init()''' on the instance
+# The method '''getDescription()''' is called on the instance to retrieve a String with elementary configuration information which is logged with the test case that requested the service.
+
+After a test is finished, the AludraTest framework closes all services by calling each one's '''close()''' method.
+
+<br/>[[Image:AludraTest_AludraService_Lifecycle.png|AludraService Life Cycle]]
+
+=== Custom Service Configuration ===
+
+Complex services often require the possibility to configure the service, in many cases it is even required to use different configurations for different tests. AludraTest has a complex Configuration Component which can be used by services just by extending '''AbstractConfigurableAludraService''' instead of '''AbstractAludraService'''. Please refer to [[Service Configuration]] on information how you can configure your service, and refer to the Javadoc of the interface '''Configurable''' to learn how your service instance will receive the configuration.
+
+== Accessing the new service ==
+
+In order to access the service in a test run, one has to assign the service implementation to the service interface in the configuration file <code>aludraservice.properties</code>, e.g.
+
+ com.my.HelloService=com.my.HelloServiceImpl
+
+Any AludraTestCase class has one method available with which it can obtain an instance of the service: <code>getService()</code>. This method expects a '''ComponentId''' parameter which identifies the type of service you want to obtain. <code>ComponentId</code> has no constructor, but two static factory methods:
+
+* ComponentId.create(Class<?> serviceClass)
+* ComponentId.create(Class<?> serviceClass, String instanceName)
+
+The method you use influences the configuration which is used for the service, if any. For a non-configurable service, you can always use the first method. Also use the first method to identify the "global" variant of a configurable service. The service object you retrieve will use the "global" configuration for the service type.
+
+The second method adds an ''instance'' identifier to the service identifier. This allows configurators to provide configuration especially for a single use case of the service type. 
+
+Please refer to [[Service Configuration]] to learn more about the different configuration scopes and the effect of different instance identifiers.
+
+Example for retrieving a HelloService:
+
+ @Test
+ public void myTest() {
+   HelloService myServiceObj = getService(ComponentId.create(HelloService.class, 'MyTest'));
+   
+   // some complex operations on myServiceObj
+   
+   // no close required - is called automatically by AludraTest framework
+ }
+

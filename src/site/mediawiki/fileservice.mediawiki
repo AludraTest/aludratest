@@ -1,0 +1,214 @@
+The FileService service gives access to files and file systems on local or remote drives as well as on FTP, SFTP, HTTP and HTTPS servers.
+
+== Configuration ==
+
+The configuration files have the base name '''fileService.properties''' and support the following configuration properties:
+
+ # protocol can be file, ftp, sftp or http
+ protocol=file
+ 
+ base.url=${user.dir}
+ 
+ writing.permitted=false
+ 
+ #linefeed can be either WINDOWS or LINUX
+ linefeed=WINDOWS
+ 
+ encoding=UTF-8
+ 
+ # for remote systems
+ user=myuser
+ password=1234
+ 
+ wait.timeout=5000
+ wait.max.retries=4
+
+;protocol (required)
+:'''file''' for local or remote drive access
+:'''ftp''' for regular FTP server access
+:'''sftp''' for SFTP-based (secure) FTP server access
+:'''http''' for HTTP-based web server access
+:'''https''' for HTTPS-based (secure) web server access
+
+;base.url (required)
+:the base URL of the file system, e.g.
+:'''src/test/resources/fileService''' for a local directory or
+:'''testftp.myacme.com:2121/users/aludratest''' for an FTP server directory (optionally with special port)
+
+;writing.permitted (default false)
+:flag (true or false), which defines if the service may modify files on the connected file system.
+:It applies to content modifications as well as copy, move or delete operations.
+:If a modififying operation is called and writing.permitted is false, an IllegalOperationException is thrown.
+
+;linefeed (required)
+:The linefeed style used on the file system
+:'''WINDOWS''' for Windows-style linefeeds (\r\n)
+:'''UNIX''' for Unix-style linefeeds (\n)
+
+;encoding (required)
+:The file system encoding used on the file system; usually UTF-8
+
+;user (optional)
+:The user name to use for login, e.g. on an FTP server
+
+;password (optional)
+:The password to use for login, e.g. on an FTP server
+
+;wait.timeout (default 30 sec)
+:The maximum number of milliseconds to wait for a file
+
+;wait.max.retries (default 15)
+:The maximum number of polling attemps when waiting for a file, the polling interval results from the fraction wait-timeout / wait.max.retries (default: 2 sec)
+
+For information on how and where to configure these properties, please refer to [[Service Configuration]].
+
+== Usage ==
+
+=== Accessing a FileService instance ===
+
+A FileService instance defined as above is retrieved in the test class code by inheriting the test class from '''AludraTestCase''' and calling the method getService().
+
+Example:
+
+ import java.util.List;
+ import org.aludratest.testcase.Test;
+ import org.aludratest.testcase.AludraTestCase;
+ import org.aludratest.service.ComponentId;
+ import org.aludratest.service.file.FileService;
+ 
+ public class ExampleFsTest extends AludraTestCase {
+    @Test
+    public void test() {
+        FileService fileService = getService(ComponentId.create(FileService.class, "myservice"));
+        List<String> children = fileService.perform().getChildren("/");
+        for (String child : children) {
+            System.out.println(child);
+        }
+    }
+ }
+
+=== FileService API ===
+
+The FileService interface gives access to three action interfaces by which you can perform interactions, verifications and checks on a file system:
+
+ public interface FileService extends AludraService {
+    FileInteraction perform();
+    FileVerification verify();
+    FileCondition check();
+ }
+
+[[Image:AludraTest-FileService-API.png]]
+
+=== Files and Paths ===
+
+A file is identified by its file '''path relative to the the service's root directory'''.
+
+So, "/" refers to the base URL as defined in the fileService properties and may internally resolve to an absolute path such as /home/myuser/testdata/fileService/. Consequentially, path names like "/subfolder/test.txt" and "subfolder/test.txt" would resolve to the same file.
+
+=== Overwriting Files ===
+
+Several operations which create, move or copy files have an '''overwrite''' parameter. When set to true, existing files are silently overwritten. When set to false and the operation encounters an existing file, a '''FunctionalFailure''' is thrown.
+
+=== Reading and writing file content ===
+
+File content can be written and read via FileInteraction using text mode or binary mode methods. Text mode operations automatically convert character encoding and linefeed style between the OS on which the JVM is running and the configured (local or remote) file system.
+
+==== One-Liners ====
+
+There are methods which make file creation/reading a one-liner (read/WriteText/BinaryFile()): You provide the file name, the file content (as string or byte array) and specify wether existing files shall be overwritten. That's it.
+
+Example:
+
+ String content = fileService.perform().readTextFile("file.txt");
+ System.out.println("File Content: " + content);
+
+<br/>However, for very large files, this may not be viable and you need to use streaming.
+
+==== Stream-based Writing ====
+
+For '''writing files''', this requires two steps:
+
+# Create an OutputStream (for binary data) or Reader (for text data) which provides the content to write
+# Call writeBinaryFile() or writeTextFile() to perform the writing. When the method has finished, it closes the stream that you provided.
+
+Example:
+
+ FileService fileService = getService(new ServiceId("localtest", FileService.class));
+ StringReader reader = new StringReader("Content to save");        // step 1.
+ fileService.perform().writeTextFile("newFile.txt", reader, true); // step 2.
+
+==== Stream-based Reading ====
+
+'''Reading file content''' requires one more step:
+
+# Retrieving an InputStream (for binary data) or a Reader (for text data) from the FileService using getInputStreamForFile() or getReaderForTextFile()
+# Iterating through the data in your test code
+# Closing the stream obtained in step 1 calling the close() method
+
+Hint: The method getReaderForTextFile() returns a BufferedReader whose readLine() method can be used to iterate through the stream linewise.
+
+Attention: When iterating the Reader character by character, line feeds are nont converted between the service's file system and the JVM's.
+
+Example:
+
+ BufferedReader reader = null;
+ try {
+    reader = fileService.perform().getReaderForTextFile("file.txt"); // step 1
+    String s;
+    while ((s = reader.readLine())&nbsp;!= null) {                        // step 2
+        System.out.println(line);
+    }
+ } finally {
+    IOUtil.close(reader);                                            // step 3
+ }
+
+
+=== Selecting files using a FileFilter ===
+
+If there is limited knowledge about the file name to open (e.g. because its name contains a timestamp), you can provide FileService operations (getChildren() and waitForFirstMatch()) with a FileFilter implementation. This needs to implement an accept() method which is provided with a FileInfo object which is called for each file and provides file name, path, size, lastModifiedTime and wether it is a drirectory. The accept() method needs to return true for each file that is accepted.
+
+<br/>A set of predefined FileFilter implementations enables you to compose even complex filters without having to develop your own:
+
+<br/>[[Image:AludraTest-FileFilter.png]]
+
+<br/>An example to illustrate the composition:
+
+In order to search for a file named '''BAPLIE_&lt;Date&gt;_&lt;Company&gt;_&lt;Sequence&gt;.EDI''' which has been put on the file system on 2013-11-13 after 9:00 AM, one can combine a RegexFilePathFilter with a LastModifiedTimeFileFilter using the AndFileFilter:
+
+ FileService fileService = getService(new ServiceId("localtest", FileService.class));
+ RegexFilePathFilter regexFilter = new RegexFilePathFilter("BAPLIE_[0-9]{4}-[0-9]{2}-[0-9]{2}_[A-Z]+_[0-9]*\\.EDI");
+ long minTimestamp = new GregorianCalendar(2013, 10, 13, 9, 0).getTimeInMillis();
+ LastModifiedTimeFileFilter timeFilter = new LastModifiedTimeFileFilter(minTimestamp, null);
+ FileFilter filter = new AndFileFilter(regexFilter, timeFilter);
+ List<String> matches = fileService.perform().getChildren("/", filter);
+ for (String match&nbsp;: matches)
+    System.out.println(match);
+
+=== Polling ===
+
+There may be cases in which you trigger a process on the SUT which results in the creation of a file which you want to read for validation. Since the operation may be a lengthy process, the FileService provides a polling feature: You provide a file path or a FileFilter for selecting the file and make the FileService poll the file system for you (calling waitUntilExists() or waitForFirstMatch()). The timeout and the maximum number of polling operations is configured in the fileService.properties file. When no match was found before timeout, a FunctionalFailure is thrown.
+
+Example:
+
+ String expectedFile = "results.txt";
+ fileService.perform().waitUntilExists(expectedFile); // this throws a FunctionalFailure if the file does not appear within timeout
+ String content = fileService.perform().readTextFile(expectedFile);
+ System.out.println(content);
+
+
+=== FileVerification API ===
+
+ public interface FileVerification extends Verification {
+    public void assertPresence(String filePath);
+    public void assertAbsence(String filePath);
+ }
+
+The assert* methods throw an FunctionalFailure exception when the asserted condition is not fulfilled.
+
+=== FileCondition API ===
+
+ public interface FileCondition extends Condition {
+    public boolean exists(String filePath);
+    boolean isDirectory(String filePath);
+ }
+
