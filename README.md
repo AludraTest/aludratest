@@ -8,7 +8,7 @@ We will release aludratest to repo1.maven.org in calendar week 47 2014. Until th
 Latest documentation is available wihtin the repository at `src/site`.
 Please `git clone` the repository and perform `mvn site` to render the documentation.
 
-After first release of aludratest, documentation of release version will be provided at [github pages](http://pages.github.io/AludraTest/aludratest).
+After the first release of AludraTest, documentation of release version will be provided at [github pages](http://pages.github.io/AludraTest/aludratest).
 
 ##Build
 Perform:
@@ -17,7 +17,7 @@ Perform:
 * `mvn site` to render documentation
  
 ##Maven Dependency
-Please referre to `build.pom` in root directory of repository.
+Please refer to `pom.xml` in root directory of repository.
 * Group ID: org.aludratest
 *	Artifact ID: aludratest
 
