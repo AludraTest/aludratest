@@ -5,7 +5,7 @@ aludratest
 We will release aludratest to repo1.maven.org in calendar week 47 2014. Until then, **you have to build the code and documentation on your own**.
 
 ##Documentation
-Latest documentation is available wihtin the repostiory at `src/site`.
+Latest documentation is available wihtin the repository at `src/site`.
 Please `git clone` the repository and perform `mvn site` to render the documentation.
 
 After first release of aludratest, documentation of release version will be provided at [github pages](http://pages.github.io/AludraTest/aludratest).
