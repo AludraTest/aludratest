@@ -4,14 +4,16 @@
 
 	<groupId>org.aludratest</groupId>
 	<artifactId>aludratest</artifactId>
-	<version>0.0.0-SNAPSHOT</version>
+	<version>2.7.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>AludraTest</name>
-	<description>AludraTest is a test framework which helps you to automate
-		functional tests against an Ajax driven web application. AludraTest
-		uses Selenium to interact with the application under test and
-		the internal log4testing module to generate well structured and readable reports.</description>
+	<description>Test automation framework providing seamless integration of selenium based web GUI tests, 
+	file and stream content, and protocols.
+	It enforces a unified programming model for testing different technologies: Web GUI including AJAX (using Selenium),
+	HTML, XML, EDIFACT, Flat File, CSV/TSV, protocols like HTTP, JMS, FTP, SFTP, Network Shares.
+	The framework is extensible via a flexible service API.
+	</description>
 	<url>http://www.aludratest.org/</url>
 
 	<properties>
@@ -138,7 +140,8 @@
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-container-default</artifactId>
 			<version>1.6</version>
-			<!-- exclude google collections, as it conflicts with Guava (required by Selenium) -->
+			<!-- exclude google collections, as it conflicts with Guava (required 
+				by Selenium) -->
 			<exclusions>
 				<exclusion>
 					<groupId>com.google.collections</groupId>
@@ -480,12 +483,8 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-
-			<!-- TODO FAL needs to be activated for deployments to Maven Central <plugin> 
-				<groupId>org.apache.maven.plugins</groupId> <artifactId>maven-gpg-plugin</artifactId> 
-				<version>1.5</version> <executions> <execution> <id>sign-artifacts</id> <phase>verify</phase> 
-				<goals> <goal>sign</goal> </goals> </execution> </executions> </plugin> -->
 		</plugins>
+		
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
@@ -584,14 +583,103 @@
 
 	</reporting>
 
-	<distributionManagement>
-		<!-- TODO FAL these will be the repos for uploads to Maven Central <snapshotRepository> 
-			<id>ossrh</id> <url>https://oss.sonatype.org/content/repositories/snapshots</url> 
-			</snapshotRepository> <repository> <id>ossrh</id> <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url> 
-			</repository> -->
-	</distributionManagement>
+	<profiles>
+		<!-- Profile to activate for all deployment operations (Snapshots and Releases). -->
+		<profile>
+			<id>aludratest-sign</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 
-	<!-- TODO FAL these will be the github URLs when moved to github <scm> <connection>scm:TODO</connection> 
-		<developerConnection>scm:TODO</developerConnection> <url>TODO</url> </scm> -->
+		<!-- Profile to publish pages to GitHub. -->
+		<profile>
+			<id>aludratest-github-pages</id>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.github.github</groupId>
+						<artifactId>site-maven-plugin</artifactId>
+						<version>0.10</version>
+						<!-- fix wrong dependency in 0.10 -->
+						<dependencies>
+							<dependency>
+								<groupId>org.eclipse.mylyn.github</groupId>
+								<artifactId>org.eclipse.egit.github.core</artifactId>
+								<version>2.1.5</version>
+							</dependency>
+						</dependencies>
+						<configuration>
+							<server>github</server>
+							<message>Updating site for ${project.artifactId}
+								${project.version}</message>
+							<repositoryOwner>AludraTest</repositoryOwner>
+							<repositoryName>aludratest-helper-maven-plugin</repositoryName>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>site</goal>
+								</goals>
+								<phase>site-deploy</phase>
+							</execution>
+						</executions>
+					</plugin>
+
+					<!-- during release, force site-deploy, because default would be only 
+						"deploy" with our config -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-release-plugin</artifactId>
+						<version>2.5.1</version>
+						<configuration>
+							<goals>deploy site-deploy</goals>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
+
+	<scm>
+		<connection>scm:git:https://git@github.com:AludraTest/aludratest.git</connection>
+		<developerConnection>scm:git:https://git@github.com/AludraTest/aludratest.git</developerConnection>
+		<url>https://github.com/AludraTest/aludratest.git</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<issueManagement>
+		<url>https://github.com/AludraTest/aludratest/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 </project>
