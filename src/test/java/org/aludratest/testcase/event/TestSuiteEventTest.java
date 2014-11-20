@@ -59,7 +59,7 @@ public class TestSuiteEventTest {
 
     @Before
     public void initializeAludra() {
-        System.setProperty("ALUDRATEST_CONFIG/aludratest/number.of.threads", "3");
+        System.setProperty("ALUDRATEST_CONFIG/aludratest/number.of.threads", "6");
         aludraTest = AludraTest.startFramework();
     }
 

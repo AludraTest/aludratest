@@ -23,7 +23,6 @@ import java.util.List;
 import junit.framework.AssertionFailedError;
 
 import org.aludratest.PreconditionFailedException;
-import org.aludratest.exception.AutomationException;
 import org.aludratest.impl.log4testing.data.TestLogger;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.RunnerTreeBuilder;
@@ -60,7 +59,7 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
             parseTestClass(testClass);
             throw new AssertionFailedError("Exception expected");
         }
-        catch (AutomationException e) {
+        catch (PreconditionFailedException e) {
             String expectedMessage = "Abstract class not suitable as test class: "
                     + "org.aludratest.suite.RunnerTreeBuilderImplTest$AbstractTestClass";
             assertEquals(expectedMessage, e.getMessage());
@@ -81,7 +80,7 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
             parseTestClass(testClass);
             throw new AssertionFailedError("Exception expected");
         }
-        catch (AutomationException e) {
+        catch (PreconditionFailedException e) {
             String expectedMessage = "Test class org.aludratest.suite.RunnerTreeBuilderImplTest$TestClassWithoutParent "
                     + "does not inherit from org.aludratest.testcase.AludraTestCase";
             assertEquals(expectedMessage, e.getMessage());
@@ -102,7 +101,7 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
             parseTestClass(testClass);
             throw new AssertionFailedError("Exception expected");
         }
-        catch (AutomationException e) {
+        catch (PreconditionFailedException e) {
             String expectedMessage = "No @Test methods found in class "
                     + "org.aludratest.suite.RunnerTreeBuilderImplTest$EmptyTestClass";
             assertEquals(expectedMessage, e.getMessage());
