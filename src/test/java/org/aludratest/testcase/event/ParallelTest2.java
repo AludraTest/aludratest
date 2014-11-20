@@ -22,12 +22,10 @@ public class ParallelTest2 extends AludraTestCase {
 
     @Test
     public void testSomething() {
-
     }
 
     @Test
     public void testSomething2() {
-
     }
 
 }

@@ -27,7 +27,8 @@ public class ParallelTest1 extends AludraTestCase {
             return;
         }
 
-        for (int i = 0; i < 5; i++) {
+        /* Wait up to two seconds - is okay because only first time, and it MUST be there then */
+        for (int i = 0; i < 20; i++) {
             if (SequentialTest.running.get() > 0) {
                 sequentialRunning = true;
                 return;
