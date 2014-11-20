@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.aludratest.PreconditionFailedException;
 import org.aludratest.dict.Data;
-import org.aludratest.exception.AutomationException;
 import org.aludratest.invoker.AludraTestMethodInvoker;
 import org.aludratest.invoker.ErrorReportingInvoker;
 import org.aludratest.invoker.TestInvoker;
@@ -88,14 +87,14 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
     private void assertTestClass(Class<?> testClass) {
         if ((testClass.getModifiers() & Modifier.ABSTRACT) == Modifier.ABSTRACT) {
-            throw new AutomationException("Abstract class not suitable as test class: " + testClass.getName());
+            throw new PreconditionFailedException("Abstract class not suitable as test class: " + testClass.getName());
         }
         else if (!AludraTestCase.class.isAssignableFrom(testClass)) {
-            throw new AutomationException("Test class " + testClass.getName() + " does not inherit from "
+            throw new PreconditionFailedException("Test class " + testClass.getName() + " does not inherit from "
                     + AludraTestCase.class.getName());
         }
         else if (testMethodCount(testClass) == 0) {
-            throw new AutomationException("No @Test methods found in class " + testClass.getName());
+            throw new PreconditionFailedException("No @Test methods found in class " + testClass.getName());
         }
     }
 
