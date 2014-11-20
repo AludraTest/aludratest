@@ -49,8 +49,13 @@ public abstract class AbstractSchedulerTest extends LocalTestCase {
         RunnerTree tree = builder.buildRunnerTree(suiteClass);
 
         AludraTestRunner runner = aludraTest.getServiceManager().newImplementorInstance(AludraTestRunner.class);
-        runner.runAludraTests(tree);
-        aludraTest.stopFramework();
+        try {
+            runner.runAludraTests(tree);
+        }
+        finally {
+            aludraTest.stopFramework();
+            System.getProperties().remove("ALUDRATEST_CONFIG/aludratest/number.of.threads");
+        }
     }
 
     /** Asserts the given test invocation count.

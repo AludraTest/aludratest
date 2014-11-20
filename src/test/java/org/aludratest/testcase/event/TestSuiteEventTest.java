@@ -24,7 +24,6 @@ import org.aludratest.scheduler.RunnerListenerRegistry;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerLeaf;
-import org.aludratest.suite.ParallelTestSuite;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -67,24 +66,36 @@ public class TestSuiteEventTest {
     @After
     public void stopAludra() {
         aludraTest.stopFramework();
+        System.getProperties().remove("ALUDRATEST_CONFIG/aludratest/number.of.threads");
     }
 
     @Test
     public void testMixedExecution() {
-        // FIXME this does not work when ALL AludraTest tests are executed, as ParallelTestSuite is used twice.
-        // either fix Log4Testing to be non-static, or use another class here (preferred at the moment)
-
         // get the listener registry
         RunnerListenerRegistry registry = aludraTest.getServiceManager().newImplementorInstance(RunnerListenerRegistry.class);
 
         TestRunnerListener listener = new TestRunnerListener();
         registry.addRunnerListener(listener);
 
-        aludraTest.run(ParallelTestSuite.class);
+        // prepare test case classes (markers)
+        SequentialTest.parallel = false;
+        SequentialTest.test1 = false;
+        SequentialTest.test2 = false;
+        SequentialTest.running.set(0);
+        ParallelTest1.sequentialRunning = false;
+
+        aludraTest.run(ParallelSuite.class);
 
         if (assertionError != null) {
             Assert.fail(assertionError);
         }
+
+        Assert.assertTrue("SequentialTest tests should have been executed parallel to ParallelTest1",
+                ParallelTest1.sequentialRunning);
+        Assert.assertTrue(SequentialTest.test1);
+        Assert.assertTrue(SequentialTest.test2);
+        Assert.assertFalse(SequentialTest.parallel);
+        Assert.assertEquals(0, SequentialTest.running.get());
     }
 
     private void assertFalse(String message, boolean condition) {
@@ -111,81 +122,63 @@ public class TestSuiteEventTest {
             assertFalse("Duplicate start for runner group " + runnerGroup.getName(),
                     allRunningGroups.contains(runnerGroup));
 
-            try {
-                Thread.sleep((long) (Math.random() * 1000) + 200);
-            }
-            catch (InterruptedException e) {
-            }
-            System.out.println("Starting group " + runnerGroup.getName());
-            try {
-                Thread.sleep((long) (Math.random() * 1000) + 200);
-            }
-            catch (InterruptedException e) {
-            }
             runningGroups.add(runnerGroup);
             allRunningGroups.add(runnerGroup);
+
+            // simulate a bad listener, wasting time (must not influence notification correctness)
+            try {
+                Thread.sleep((long) (Math.random() * 100));
+            }
+            catch (InterruptedException e) {
+            }
         }
 
         @Override
         public void startingTestLeaf(RunnerLeaf runnerLeaf) {
             assertFalse("Duplicate start for runner leaf " + runnerLeaf.getName(), runningLeafs.contains(runnerLeaf));
             assertFalse("Duplicate start for runner leaf " + runnerLeaf.getName(), allRunningLeafs.contains(runnerLeaf));
-            try {
-                Thread.sleep((long) (Math.random() * 1000) + 200);
-            }
-            catch (InterruptedException e) {
-            }
-            System.out.println("Starting LEAF " + runnerLeaf.getName() + " (" + runnerLeaf.getId() + ")");
-            try {
-                Thread.sleep((long) (Math.random() * 1000) + 200);
-            }
-            catch (InterruptedException e) {
-            }
+
             runningLeafs.add(runnerLeaf);
             allRunningLeafs.add(runnerLeaf);
+
+            try {
+                Thread.sleep((long) (Math.random() * 100));
+            }
+            catch (InterruptedException e) {
+            }
+
         }
 
         @Override
         public void finishedTestLeaf(RunnerLeaf runnerLeaf) {
             assertTrue("Finish without start for runner leaf " + runnerLeaf.getName(), runningLeafs.contains(runnerLeaf));
             assertFalse("Duplicate finish for runner leaf " + runnerLeaf.getName(), allStoppedLeafs.contains(runnerLeaf));
-            try {
-                Thread.sleep((long) (Math.random() * 1000) + 200);
-            }
-            catch (InterruptedException e) {
-            }
-            System.out.println("FINISHED LEAF " + runnerLeaf.getName());
-            try {
-                Thread.sleep((long) (Math.random() * 1000) + 200);
-            }
-            catch (InterruptedException e) {
-            }
+
             runningLeafs.remove(runnerLeaf);
             allStoppedLeafs.add(runnerLeaf);
+
+            try {
+                Thread.sleep((long) (Math.random() * 100));
+            }
+            catch (InterruptedException e) {
+            }
         }
 
         @Override
         public void finishedTestGroup(RunnerGroup runnerGroup) {
-            assertTrue("Finish without start for runner group " + runnerGroup.getName(),
-                    runningGroups.contains(runnerGroup));
-            assertFalse("Duplicate finish for runner group " + runnerGroup.getName(),
-                    allStoppedGroups.contains(runnerGroup));
+            synchronized (runningGroups) {
+                assertTrue("Finish without start for runner group " + runnerGroup.getName(), runningGroups.contains(runnerGroup));
+                assertFalse("Duplicate finish for runner group " + runnerGroup.getName(), allStoppedGroups.contains(runnerGroup));
 
+                try {
+                    Thread.sleep((long) (Math.random() * 100));
+                }
+                catch (InterruptedException e) {
+                }
 
-            try {
-                Thread.sleep((long) (Math.random() * 1000) + 200);
+                runningGroups.remove(runnerGroup);
+                allStoppedGroups.add(runnerGroup);
             }
-            catch (InterruptedException e) {
-            }
-            System.out.println("FINISHED group " + runnerGroup.getName());
-            try {
-                Thread.sleep((long) (Math.random() * 1000) + 200);
-            }
-            catch (InterruptedException e) {
-            }
-
-            runningGroups.remove(runnerGroup);
-            allStoppedGroups.add(runnerGroup);
         }
 
         @Override

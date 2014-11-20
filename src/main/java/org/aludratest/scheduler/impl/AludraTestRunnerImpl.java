@@ -378,12 +378,11 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
             finally {
                 Thread.currentThread().setName(oldName);
 
-                leaf.setRunStatus(RunStatus.FINISHED);
-                listenerRegistry.fireFinishedTestLeaf(leaf);
 
                 // check tree upwards for finished groups
                 List<RunnerGroup> toFire = new ArrayList<RunnerGroup>();
                 synchronized (runStatusSemaphore) {
+                    leaf.setRunStatus(RunStatus.FINISHED);
                     RunnerGroup group = leaf.getParent();
                     while (group != null && group.getRunStatus() == RunStatus.FINISHED) {
                         toFire.add(group);
@@ -391,6 +390,7 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
                     }
                 }
 
+                listenerRegistry.fireFinishedTestLeaf(leaf);
                 for (RunnerGroup group : toFire) {
                     listenerRegistry.fireFinishedTestGroup(group);
                 }
