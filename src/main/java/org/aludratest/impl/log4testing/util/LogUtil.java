@@ -26,14 +26,10 @@ import org.aludratest.impl.log4testing.TechnicalArgument;
 import org.aludratest.impl.log4testing.TechnicalLocator;
 import org.aludratest.impl.log4testing.data.TestCaseLog;
 import org.aludratest.impl.log4testing.data.TestStepLog;
-import org.aludratest.impl.log4testing.data.attachment.Attachment;
-import org.aludratest.impl.log4testing.handler.AludraServiceInvocationHandler;
-import org.aludratest.impl.log4testing.handler.LoggingInvocationHandler;
 import org.aludratest.service.Action;
-import org.aludratest.service.AludraContext;
-import org.aludratest.service.AludraService;
 import org.aludratest.service.ComponentId;
 import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.util.AludraTestUtil;
 import org.databene.commons.ArrayUtil;
 import org.databene.commons.CollectionUtil;
@@ -58,38 +54,6 @@ public class LogUtil {
 
     /** Private constructor of utility class preventing instantiation by other classes */
     private LogUtil() {
-    }
-
-    /** Wraps an {@link AludraService} implementor with a dynamically generated proxy which assures that any object X returned by
-     * the service methods perform(), verify() and check() is wrapped with a proxy that logs any invocation to X in log4testing.
-     * @param realObject
-     * @param serviceId
-     * @param testCase
-     * @param context Current AludraTest context.
-     * @return a proxy object that wraps the provided realObject and forwards calls to it */
-    public static <T extends AludraService, U extends T> U wrapWithAludraProxy(U realObject, ComponentId<T> serviceId,
-            TestCaseLog testCase, AludraContext context) {
-        Class<T> serviceInterface = serviceId.getInterfaceClass();
-        AludraServiceInvocationHandler invocationHandler = new AludraServiceInvocationHandler(realObject, serviceId, testCase,
-                context);
-        return AludraTestUtil.<T, U> wrapWithInvocationHandler(serviceInterface, invocationHandler);
-    }
-
-    /**
-     * Wraps any given <code>realObject</code> with a proxy of the given
-     * <code>interfaceType</code>. The proxy forwards any method invocation
-     * to the real object and logs it with log4testing.
-     * @param realObject the real object to wrap
-     * @param interfaceType the interface which shall be implemented by the proxy
-     * @param serviceId the {@link ComponentId} of the related service
-     * @param testCase the log4testing {@link TestCaseLog} to log the invocation data with
-     * @return a proxy of the given realObject which implements the given interfaceType
-     * @see LoggingInvocationHandler
-     */
-    public static <T, U extends T> U wrapWithLogger(U realObject, Class<T> interfaceType, ComponentId<?> serviceId,
-            TestCaseLog testCase) {
-        LoggingInvocationHandler invocationHandler = new LoggingInvocationHandler(realObject, serviceId, testCase);
-        return AludraTestUtil.<T, U> wrapWithInvocationHandler(interfaceType, invocationHandler);
     }
 
     /**
@@ -240,7 +204,6 @@ public class LogUtil {
         testStepLog.setTechnicalArguments(formatList(technicalArgs));
         testStepLog.setUsedArguments(formatList(unconsumedArgs));
     }
-
 
     // private helper methods --------------------------------------------------
 

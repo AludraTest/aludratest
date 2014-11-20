@@ -43,10 +43,7 @@ public class TestCaseLog extends TestSuiteLogComponent {
      *  @param name Name of the TestCase */
     protected TestCaseLog(String name) {
         super(name);
-        this.ignored = false;
         this.state = State.NEW;
-        this.startingTime = null;
-        this.finishingTime = null;
     }
 
     // TestStepGroup handling --------------------------------------------------

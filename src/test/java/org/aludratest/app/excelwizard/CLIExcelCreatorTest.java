@@ -17,8 +17,6 @@ package org.aludratest.app.excelwizard;
 
 import java.io.File;
 
-import org.aludratest.AludraTestTest;
-import org.aludratest.app.excelwizard.CLIExcelCreator;
 import org.aludratest.data.configtests.ConfigTestWithProperConfig;
 import org.databene.commons.FileUtil;
 import org.junit.Assert;
@@ -40,7 +38,6 @@ public class CLIExcelCreatorTest {
         System.setProperty(PROP_KEY, "./target/testfiles/xlstest");
 
         try {
-            AludraTestTest.setInstance(null);
             CLIExcelCreator.main(new String[] { ConfigTestWithProperConfig.class.getName() });
             Assert.assertEquals(1, f.getAbsoluteFile().listFiles().length);
         }
@@ -52,7 +49,6 @@ public class CLIExcelCreatorTest {
             else {
                 System.setProperty(PROP_KEY, oldProp);
             }
-            AludraTestTest.setInstance(null);
         }
     }
 

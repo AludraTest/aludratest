@@ -16,14 +16,14 @@
 package org.aludratest.service;
 
 import org.aludratest.AludraTest;
-import org.aludratest.AludraTestTest;
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.config.impl.AludraTestingTestConfigImpl;
 import org.aludratest.impl.log4testing.data.TestCaseLog;
 import org.aludratest.impl.log4testing.data.TestLogger;
 import org.aludratest.impl.log4testing.data.TestSuiteLog;
-import org.aludratest.impl.log4testing.util.LogUtil;
+import org.aludratest.service.util.DirectLogTestListener;
 import org.aludratest.testcase.AludraTestContext;
+import org.aludratest.testcase.impl.AludraTestContextImpl;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,13 +48,13 @@ public abstract class AbstractAludraServiceTest {
         System.setProperty("ALUDRATEST_CONFIG/aludraservice/" + AludraTestConfig.class.getName(),
                 AludraTestingTestConfigImpl.class.getName());
 
-        AludraTestTest.setInstance(null);
-        this.aludra = new AludraTest();
+        this.aludra = AludraTest.startFramework();
         String baseName = getClass().getName() + "-" + (++count);
         this.testSuite = TestLogger.getTestSuite(baseName + "-suite");
         this.testCase = TestLogger.getTestCase(baseName + "-test");
         this.testSuite.add(testCase);
-        this.context = new AludraTestContext(testCase, aludra);
+
+        this.context = new AludraTestContextImpl(new DirectLogTestListener(testCase), aludra.getServiceManager());
 
         // inject our own configuration object to be able to override configs for test, and initialize it
         Assert.assertTrue(context.newComponentInstance(AludraTestConfig.class) instanceof AludraTestingTestConfigImpl);
@@ -68,14 +68,12 @@ public abstract class AbstractAludraServiceTest {
         catch (Throwable t) {
             // ignore here (could be a test case without using testCase)
         }
-        AludraTestTest.setInstance(null);
+        aludra.stopFramework();
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends AludraService, U extends T> U getLoggingService(Class<T> interfaceClass, String moduleName) {
-        @SuppressWarnings("unchecked")
-        U service = (U) this.<T> getService(interfaceClass, moduleName);
-        ComponentId<T> serviceId = ComponentId.create(interfaceClass, moduleName);
-        service = LogUtil.wrapWithAludraProxy(service, serviceId, testCase, context);
+        U service = (U) this.context.getService(ComponentId.create(interfaceClass, moduleName));
         this.testCase.newTestStepGroup("group1");
         return service;
     }

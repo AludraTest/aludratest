@@ -19,7 +19,9 @@ import org.aludratest.config.ConfigProperties;
 import org.aludratest.config.ConfigProperty;
 import org.aludratest.config.Configurable;
 import org.aludratest.config.Configurator;
+import org.codehaus.plexus.component.annotations.Component;
 
+@Component(role = Configurator.class)
 public class DefaultConfigurator implements Configurator {
 
     public DefaultConfigurator() {

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>aludratest</name>
-	<comment></comment>
+	<name>AludraTest</name>
+	<comment>AludraTest is a test framework which helps you to automate
+		functional tests against an Ajax driven web application. AludraTest
+		uses Selenium to interact with the application under test and
+		log4testing to generate well structured and readable reports. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
 	<projects>
 	</projects>
 	<buildSpec>
@@ -17,6 +20,7 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
+		<nature>org.sonar.ide.eclipse.core.sonarNature</nature>
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>

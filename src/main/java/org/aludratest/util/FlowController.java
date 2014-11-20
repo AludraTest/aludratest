@@ -18,7 +18,7 @@ package org.aludratest.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.aludratest.impl.log4testing.data.TestCaseLog;
+import org.aludratest.testcase.AludraTestContext;
 
 /**
  * Tracks stopped test cases.
@@ -35,31 +35,30 @@ public class FlowController {
         return INSTANCE;
     }
 
-    /** {@link Set} which stores the stopped test cases */
-    private Set<TestCaseLog> stoppedTestCases;
+    /** {@link Set} which stores the stopped test contexts */
+    private Set<AludraTestContext> stoppedTestContexts;
 
     /** Default constructor. */
     private FlowController() {
-        stoppedTestCases = new HashSet<TestCaseLog>();
+        stoppedTestContexts = new HashSet<AludraTestContext>();
     }
 
-    /** Tells if the given test case was stopped. 
-     *  @param testCase 
-     *  @return true if test case execution was stopped for the test, otherwise false */
-    public boolean isStopped(TestCaseLog testCase) {
-        return stoppedTestCases.contains(testCase);
+    /** Tells if the given test case was stopped.
+     * @param testContext Context of the test case.
+     * @return true if test case execution was stopped for the test, otherwise false */
+    public boolean isStopped(AludraTestContext testContext) {
+        return stoppedTestContexts.contains(testContext);
     }
 
-    /** Stores the information that the given test case is stopped. 
-     *  @param testCase the test case for which to stop test case execution */
-    public void stopTestCaseExecution(TestCaseLog testCase) {
-        stoppedTestCases.add(testCase);
+    /** Stores the information that the given test case is stopped.
+     * @param testContext the context of the test case for which to stop test case execution */
+    public void stopTestCaseExecution(AludraTestContext testContext) {
+        stoppedTestContexts.add(testContext);
     }
 
-    /** Clears the list of stopped test cases, 
-     *  making each one executable again. */
+    /** Clears the list of stopped test contexts, making each one executable again. */
     public void reset() {
-        this.stoppedTestCases.clear();
+        stoppedTestContexts.clear();
     }
 
 }

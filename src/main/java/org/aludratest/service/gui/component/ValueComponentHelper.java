@@ -15,8 +15,6 @@
  */
 package org.aludratest.service.gui.component;
 
-import org.aludratest.AludraTest;
-import org.aludratest.config.AludraTestConfig;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.aludratest.util.validator.ContainsIgnoreCaseTrimmedValidator;
 import org.aludratest.util.validator.ContainsValidator;
@@ -155,7 +153,7 @@ class ValueComponentHelper implements ValueComponent {
     }
 
     private double getNumericTolerance() {
-        return AludraTest.getInstance().getServiceManager().newImplementorInstance(AludraTestConfig.class).getNumericTolerance();
+        return DataMarkerCheck.getNumericTolerance();
     }
 
 }

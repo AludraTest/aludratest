@@ -15,10 +15,8 @@
  */
 package org.aludratest.service.util;
 
-import java.util.List;
-
-import org.aludratest.service.ErrorReport;
 import org.aludratest.service.SystemConnector;
+import org.aludratest.service.SystemConnectorInterface;
 
 /**
  * Abstract empty implementation of the {@link SystemConnector} interface.
@@ -27,25 +25,20 @@ import org.aludratest.service.SystemConnector;
 public abstract class AbstractSystemConnector implements SystemConnector {
 
     private final String name;
-    
+
     /** Constructor
      *  @param name the name to use for the system connector */
     public AbstractSystemConnector(String name) {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
+    @SuppressWarnings("unchecked")
     @Override
-    public List<ErrorReport> checkForErrors() {
+    public <T extends SystemConnectorInterface> T getConnector(Class<T> interfaceClass) {
+        if (interfaceClass.isAssignableFrom(getClass())) {
+            return (T) this;
+        }
         return null;
-    }
-
-    @Override
-    public boolean isBusy() {
-        return false;
     }
 
     @Override

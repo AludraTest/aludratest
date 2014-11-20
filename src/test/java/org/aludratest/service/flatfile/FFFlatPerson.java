@@ -19,8 +19,8 @@ import java.util.Date;
 
 import org.aludratest.content.flat.FlatFileColumn;
 import org.aludratest.content.flat.data.FlatFileBeanData;
+import org.aludratest.service.flatfile.FlatFileService;
 import org.databene.commons.Formatter;
-import org.databene.commons.NullSafeComparator;
 
 /**
  * FlatFileBean for testing the {@link FlatFileService}
@@ -68,15 +68,32 @@ public class FFFlatPerson extends FlatFileBeanData {
     // java.lang.Object overrides ----------------------------------------------
 
     /** Compares this object with another for equality. */
-    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
         if (obj == null || getClass() != obj.getClass())
             return false;
-        FFFlatPerson that = (FFFlatPerson) obj;
-        return (this.age == that.age && NullSafeComparator.equals(this.birthDate, that.birthDate)
-                && NullSafeComparator.equals(this.name, that.name) && NullSafeComparator.equals(this.petName, that.petName) && this.rowType == that.rowType);
+        FFFlatPerson other = (FFFlatPerson) obj;
+        if (age != other.age)
+            return false;
+        if (birthDate == null) {
+            if (other.birthDate != null)
+                return false;
+        } else if (!birthDate.equals(other.birthDate))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (petName == null) {
+            if (other.petName != null)
+                return false;
+        } else if (!petName.equals(other.petName))
+            return false;
+        if (rowType != other.rowType)
+            return false;
+        return true;
     }
 
     /** Creates a String representation of the instance. */

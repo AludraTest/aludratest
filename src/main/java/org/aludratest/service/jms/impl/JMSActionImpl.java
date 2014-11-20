@@ -32,11 +32,11 @@ import javax.jms.TextMessage;
 
 import org.aludratest.exception.AccessFailure;
 import org.aludratest.exception.TechnicalException;
-import org.aludratest.impl.log4testing.data.attachment.Attachment;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.jms.JMSCondition;
 import org.aludratest.service.jms.JMSInteraction;
 import org.aludratest.service.jms.JMSVerification;
+import org.aludratest.testcase.event.attachment.Attachment;
 
 /**
  * Implements all action interfaces of AludraJMS in one class.

@@ -24,13 +24,13 @@ import org.aludratest.content.separated.SeparatedContent;
 import org.aludratest.content.separated.data.SeparatedFileBeanData;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.TechnicalException;
-import org.aludratest.impl.log4testing.data.attachment.Attachment;
 import org.aludratest.service.Action;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.file.FileService;
 import org.aludratest.service.separatedfile.SeparatedFileCondition;
 import org.aludratest.service.separatedfile.SeparatedFileInteraction;
 import org.aludratest.service.separatedfile.SeparatedFileVerification;
+import org.aludratest.testcase.event.attachment.Attachment;
 
 /**
  * Default implementation of the interfaces {@link SeparatedFileInteraction}, 

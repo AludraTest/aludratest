@@ -17,10 +17,11 @@ package org.aludratest.scheduler.node;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.aludratest.impl.log4testing.data.TestSuiteLog;
+import org.aludratest.scheduler.RunStatus;
 
 /**
  * {@link RunnerNode} implementation which forms a tree node that can have
@@ -35,48 +36,18 @@ public class RunnerGroup extends RunnerNode {
     /** The child nodes. */
     private final List<RunnerNode> children;
 
-    /** The log4testing log suite to log test results to */
-    private final TestSuiteLog logSuite;
-
     /** Flag indicating if the child nodes may be executed concurrently. */
     private ExecutionMode mode;
 
-    /** Comparator object for ordering the {@link #children}. */
-    private final Comparator<RunnerNode> comparator;
-
-    /** Flag indicating if the comparator has already been applied. */
-    private boolean sorted;
-
-    /**
-     * Constructs an instance without connection to log4testing.
-     * This is mainly for backwards compatibility of existing code
-     * which used this constructor and managed log4testing logs
-     * outside itself.
+    /** Constructor
      * @param path The path of the node.
      * @param mode See {@link #mode}.
-     * @param parent See {@link #parent}.
-     * @param comparator See {@link #comparator}.
-     */
-    public RunnerGroup(String path, ExecutionMode mode, RunnerGroup parent, Comparator<RunnerNode> comparator) {
-        this(path, mode, parent, comparator, null);
-    }
-
-    /**
-     * Constructor
-     * @param path The path of the node.
-     * @param mode See {@link #mode}.
-     * @param parent See {@link #parent}.
-     * @param comparator See {@link #comparator}.
-     * @param logSuite See {@link #logSuite}
-     */
-    public RunnerGroup(String path, ExecutionMode mode, RunnerGroup parent, Comparator<RunnerNode> comparator, TestSuiteLog logSuite) {
+     * @param parent See {@link #parent}. */
+    public RunnerGroup(String path, ExecutionMode mode, RunnerGroup parent) {
         super(path, parent);
         this.parent = parent;
         this.mode = mode;
-        this.comparator = comparator;
         this.children = new ArrayList<RunnerNode>();
-        this.sorted = true;
-        this.logSuite = logSuite;
     }
 
     /** Tells if the child nodes may be executed concurrently. */
@@ -92,49 +63,54 @@ public class RunnerGroup extends RunnerNode {
         }
     }
 
-    public TestSuiteLog getLogSuite() {
-        return logSuite;
-    }
-
-    /** Returns the {@link #children},
-     *  ordered with respect to the {@link #comparator}. */
+    /** Returns the children of this runner group.
+     * @return The children of this runner group, as an unmodifiable list. */
     public List<RunnerNode> getChildren() {
-        if (!sorted && comparator != null) {
-            Collections.sort(children, comparator);
-            sorted = true;
-        }
-        return children;
+        return Collections.unmodifiableList(children);
     }
 
     /** Add a child node to the {@link #children}. */
     public void addChild(RunnerNode childNode) {
         children.add(childNode);
-        sorted = false;
-        if (childNode instanceof RunnerGroup) {
-            logSuite.addTestSuite(((RunnerGroup) childNode).getLogSuite());
-        } else {
-            logSuite.addTestCase(((RunnerLeaf) childNode).getLogCase());
-        }
+        // if (childNode instanceof RunnerGroup) {
+        // logSuite.addTestSuite(((RunnerGroup) childNode).getLogSuite());
+        // } else {
+        // logSuite.addTestCase(((RunnerLeaf) childNode).getLogCase());
+        // }
     }
 
-    // private helpers -------------------------------------------------------------------------------------------------
-
-    void childFinished(RunnerNode child) { // default visibility to be accessible only from classes of the same package
-        if (logSuite != null && hasFinished()) {
-            if (parent != null) {
-                parent.childFinished(this);
-            }
+    /** Reorders the children of this group, so they are in the order of the passed list.
+     * 
+     * @param children List which must contain all children of this group, but in the desired new order. */
+    public void reorderChildren(List<RunnerNode> children) {
+        List<RunnerNode> checks = new ArrayList<RunnerNode>(this.children);
+        checks.removeAll(children);
+        if (!checks.isEmpty()) {
+            throw new IllegalArgumentException("Passed list does not contain all children of this group");
         }
+        checks.addAll(children);
+        checks.removeAll(this.children);
+        if (!checks.isEmpty()) {
+            throw new IllegalArgumentException("Passed list contains more than the children of this group");
+        }
+        this.children.clear();
+        this.children.addAll(children);
     }
 
     @Override
-    public synchronized boolean hasFinished() {
+    public synchronized RunStatus getRunStatus() {
+        Set<RunStatus> allStates = new HashSet<RunStatus>();
+
         for (RunnerNode child : children) {
-            if (!child.hasFinished()) {
-                return false;
-            }
+            allStates.add(child.getRunStatus());
         }
-        return true;
+
+        if (allStates.size() == 1) {
+            return allStates.iterator().next();
+        }
+
+        // now, it contains RUNNING, or it's FINISHED + WAITING, so RUNNING...
+        return RunStatus.RUNNING;
     }
 
     // java.lang.Object overrides --------------------------------------------------------------------------------------

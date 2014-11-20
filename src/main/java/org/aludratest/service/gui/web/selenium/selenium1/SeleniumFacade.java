@@ -72,7 +72,15 @@ public class SeleniumFacade {
     private final String zIndexSearch = "this.browserbot.findElement('xpath=(//" + "iframe[contains(@style, \"z-index\")])[%d]')"
             + ".getAttribute('style')";
 
-    /* This is a helper script for an Ajax error in conjunction with IceFaces. */
+    /*
+     * The event AsynchronousReceive will be checked and the variable
+     * 'ajaxGuiReady' will be set to true. But because of an error of request
+     * handling in Globe application, the event AsynchronousReceive can not be
+     * triggered in some special situation. So the variable 'ajaxGuiReady' can
+     * not be checked as a condition. The function onAsynchronousReceive() will
+     * be called anyway to balance the waiting time of a request and the waiting
+     * time of GUI update.
+     */
     private static final String REQUEST_COUNTER_SCRIPT = "var requestCounter = 0;" + "var ajaxGuiReady = true;"
             + "var intervalId = setInterval('inject()', 0);" + "function onIceSend() {" + "    requestCounter++;" + "}"
             + "function onIceReceive() {" + "	if (requestCounter>=1) {" + "    requestCounter--;" + " }" + "}"

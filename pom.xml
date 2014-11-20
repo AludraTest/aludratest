@@ -334,6 +334,20 @@
 				</configuration>
 			</plugin>
 
+			<!-- generate (amend) components.xml for Plexus -->
+			<plugin>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-component-metadata</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate-metadata</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- download and extract JQuery JS during generate-resources -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -484,7 +498,7 @@
 				</dependencies>
 			</plugin>
 		</plugins>
-		
+
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
@@ -509,6 +523,27 @@
 										</versionRange>
 										<goals>
 											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.plexus
+										</groupId>
+										<artifactId>
+											plexus-component-metadata
+										</artifactId>
+										<versionRange>
+											[1.6,)
+										</versionRange>
+										<goals>
+											<goal>
+												generate-metadata
+											</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>

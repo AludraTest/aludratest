@@ -18,7 +18,7 @@ package org.aludratest.exception;
 import org.aludratest.testcase.TestStatus;
 
 /** Indicates that the access of a system has failed.
- * @author Volker Bergmann */
+ * @author volker.bergmann@bergmann-it.de */
 public final class AccessFailure extends AludraTestException {
 
     private static final long serialVersionUID = 1L;

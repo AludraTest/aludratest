@@ -30,8 +30,9 @@ import org.aludratest.data.configtests.ConfigTestWithMissingTab;
 import org.aludratest.data.configtests.ConfigTestWithProperConfig;
 import org.aludratest.impl.log4testing.data.TestCaseLog;
 import org.aludratest.impl.log4testing.data.TestLogger;
-import org.aludratest.scheduler.AludraSuiteParser;
+import org.aludratest.scheduler.AludraTestRunner;
 import org.aludratest.scheduler.RunnerTree;
+import org.aludratest.scheduler.RunnerTreeBuilder;
 import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.scheduler.node.RunnerNode;
@@ -58,11 +59,18 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
         AludraTestingTestConfigImpl.getTestInstance().setXlsRootPath("src/test/resources");
     }
 
+    private RunnerTree runTestsAndWait(Class<?> classToTest) {
+        RunnerTreeBuilder builder = aludra.getServiceManager().newImplementorInstance(RunnerTreeBuilder.class);
+        RunnerTree tree = builder.buildRunnerTree(classToTest);
+        AludraTestRunner runner = aludra.getServiceManager().newImplementorInstance(AludraTestRunner.class);
+        runner.runAludraTests(tree);
+        return tree;
+    }
+
     @Test
     public void testProperConfig() {
         String testClassName = ConfigTestWithProperConfig.class.getName();
-        RunnerTree tree = new AludraSuiteParser(aludra).parse(testClassName);
-        tree.performAllTestsAndWait(1);
+        RunnerTree tree = runTestsAndWait(ConfigTestWithProperConfig.class);
         List<RunnerLeaf> tests = extractTestCaseList(tree.getRoot());
         assertEquals(2, tests.size());
         assertNameAndStatus(tests.get(0), testClassName + ".test-testing Alice", TestStatus.PASSED);
@@ -72,8 +80,7 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
     @Test
     public void testIgnoredMethod() {
         String testClassName = ConfigTestWithIgnoredMethod.class.getName();
-        RunnerTree tree = new AludraSuiteParser(aludra).parse(testClassName);
-        tree.performAllTestsAndWait(1);
+        RunnerTree tree = runTestsAndWait(ConfigTestWithIgnoredMethod.class);
         List<RunnerLeaf> tests = extractTestCaseList(tree.getRoot());
         assertEquals(2, tests.size());
         assertNameAndStatus(tests.get(0), testClassName + ".test-testing Alice", TestStatus.IGNORED);
@@ -87,8 +94,7 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
         cfg.setIgnoreEnabled(true);
         try {
             String testClassName = ConfigTestWithIgnoreConfig.class.getName();
-            RunnerTree tree = new AludraSuiteParser(aludra).parse(testClassName);
-            tree.performAllTestsAndWait(1);
+            RunnerTree tree = runTestsAndWait(ConfigTestWithIgnoreConfig.class);
             List<RunnerLeaf> tests = extractTestCaseList(tree.getRoot());
             assertEquals(2, tests.size());
             assertNameAndStatus(tests.get(0), testClassName + ".test-testing Alice", TestStatus.IGNORED);
@@ -105,8 +111,7 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
         cfg.setIgnoreEnabled(false);
         try {
             String testClassName = ConfigTestWithIgnoreConfig.class.getName();
-            RunnerTree tree = new AludraSuiteParser(aludra).parse(testClassName);
-            tree.performAllTestsAndWait(1);
+            RunnerTree tree = runTestsAndWait(ConfigTestWithIgnoreConfig.class);
             List<RunnerLeaf> tests = extractTestCaseList(tree.getRoot());
             assertEquals(2, tests.size());
             assertNameAndStatus(tests.get(0), testClassName + ".test-testing Alice", TestStatus.INCONCLUSIVE);
@@ -119,8 +124,7 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
     @Test
     public void testMissingSource() {
         String testClassName = ConfigTestWithMissingSource.class.getName();
-        RunnerTree tree = new AludraSuiteParser(aludra).parse(testClassName);
-        tree.performAllTestsAndWait(1);
+        RunnerTree tree = runTestsAndWait(ConfigTestWithMissingSource.class);
         List<RunnerLeaf> tests = extractTestCaseList(tree.getRoot());
         assertEquals(1, tests.size());
         assertNameAndStatus(tests.get(0), testClassName + ".test_error_1", TestStatus.FAILEDAUTOMATION);
@@ -133,8 +137,7 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
         cfg.setConfigTabRequired(true);
         try {
             String testClassName = ConfigTestWithMissingTab.class.getName();
-            RunnerTree tree = new AludraSuiteParser(aludra).parse(testClassName);
-            tree.performAllTestsAndWait(1);
+            RunnerTree tree = runTestsAndWait(ConfigTestWithMissingTab.class);
             List<RunnerLeaf> tests = extractTestCaseList(tree.getRoot());
             assertEquals(2, tests.size());
             assertNameAndStatus(tests.get(0), testClassName + ".test_error_1", TestStatus.FAILEDAUTOMATION);
@@ -151,8 +154,7 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
         cfg.setConfigTabRequired(false);
         try {
             String testClassName = ConfigTestWithMissingTab.class.getName();
-            RunnerTree tree = new AludraSuiteParser(aludra).parse(testClassName);
-            tree.performAllTestsAndWait(1);
+            RunnerTree tree = runTestsAndWait(ConfigTestWithMissingTab.class);
             List<RunnerLeaf> tests = extractTestCaseList(tree.getRoot());
             assertEquals(2, tests.size());
             assertNameAndStatus(tests.get(0), testClassName + ".test-0", TestStatus.PASSED);
@@ -169,8 +171,7 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
         cfg.setConfigTabRequired(false);
         try {
             String testClassName = ConfigTestWithMissingConfigRow.class.getName();
-            RunnerTree tree = new AludraSuiteParser(aludra).parse(testClassName);
-            tree.performAllTestsAndWait(1);
+            RunnerTree tree = runTestsAndWait(ConfigTestWithMissingConfigRow.class);
             RunnerGroup root = tree.getRoot();
             List<RunnerLeaf> tests = extractTestCaseList(root);
             assertEquals(2, tests.size());
@@ -188,8 +189,7 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
         cfg.setConfigTabRequired(false);
         try {
             String testClassName = ConfigTestWithAddidtionalConfigRow.class.getName();
-            RunnerTree tree = new AludraSuiteParser(aludra).parse(testClassName);
-            tree.performAllTestsAndWait(1);
+            RunnerTree tree = runTestsAndWait(ConfigTestWithAddidtionalConfigRow.class);
             RunnerGroup root = tree.getRoot();
             List<RunnerLeaf> tests = extractTestCaseList(root);
             assertEquals(3, tests.size());
@@ -219,7 +219,7 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
     }
 
     private static void assertNameAndStatus(RunnerLeaf testCase, String name, TestStatus status) {
-        TestCaseLog logCase = testCase.getLogCase();
+        TestCaseLog logCase = TestLogger.getTestCase(testCase.getName());
         assertEquals(status, logCase.getStatus());
         assertEquals(name, logCase.getName());
     }

@@ -19,10 +19,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import org.aludratest.AludraTestTest;
 import org.aludratest.impl.log4testing.data.TestLogger;
 import org.aludratest.suite.PlainTestClass;
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -54,11 +52,6 @@ public class AludraTestJUnitSuiteTest {
         List<Failure> failures = result.getFailures();
         Failure failure = failures.get(0);
         assertEquals("This is a failure!", failure.getMessage());
-    }
-
-    @After
-    public void cleanupInstance() {
-        AludraTestTest.setInstance(null);
     }
 
 }

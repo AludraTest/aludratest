@@ -15,7 +15,6 @@
  */
 package org.aludratest.testcase;
 
-import org.aludratest.impl.log4testing.data.TestStepGroup;
 import org.aludratest.service.AludraService;
 import org.aludratest.service.ComponentId;
 
@@ -59,18 +58,10 @@ public class AludraTestCase {
     }
 
     // logging features for child classes --------------------------------------
-
-    /** Creates a new {@link TestStepGroup}.
-     *  @param name of the group to create */
+    /** Creates a new Test Step Group.
+     * @param name of the group to create */
     protected void newTestStepGroup(String name) {
         context.newTestStepGroup(name);
-    }
-
-    /** Logs an informational test to the AludraTest logging engine.
-     * 
-     * @param text Test to log. */
-    protected void logInfo(String text) {
-        context.logInfo(text);
     }
 
     /** Logs a testing error to the AludraTest logging engine.

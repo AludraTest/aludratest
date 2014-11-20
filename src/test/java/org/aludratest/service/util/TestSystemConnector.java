@@ -19,7 +19,7 @@ import org.aludratest.service.SystemConnector;
 
 /** {@link SystemConnector} implementation for testing.
  * @author Volker Bergmann */
-public abstract class TestSystemConnector extends AbstractSystemConnector {
+public abstract class TestSystemConnector extends AbstractSystemConnector implements SystemBusyIndicator {
 
     int busyCallCount;
 

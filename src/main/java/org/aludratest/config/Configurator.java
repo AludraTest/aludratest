@@ -22,6 +22,8 @@ package org.aludratest.config;
  * @author falbrech */
 public interface Configurator {
 
+    public static final String ROLE = Configurator.class.getName();
+
     public void configure(Configurable configurable);
 
     public void configure(String instanceName, Configurable configurable);

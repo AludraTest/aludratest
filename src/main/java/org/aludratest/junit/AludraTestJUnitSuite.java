@@ -15,14 +15,27 @@
  */
 package org.aludratest.junit;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.aludratest.AludraTest;
-import org.aludratest.config.AludraTestConfig;
-import org.aludratest.scheduler.AludraSuiteParser;
+import org.aludratest.exception.FunctionalFailure;
+import org.aludratest.scheduler.AludraTestRunner;
+import org.aludratest.scheduler.RunnerListener;
+import org.aludratest.scheduler.RunnerListenerRegistry;
 import org.aludratest.scheduler.RunnerTree;
+import org.aludratest.scheduler.RunnerTreeBuilder;
+import org.aludratest.scheduler.node.RunnerGroup;
+import org.aludratest.scheduler.node.RunnerLeaf;
+import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
+import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.event.TestStepInfo;
+import org.databene.commons.BeanUtil;
 import org.databene.commons.StringUtil;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
+import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
@@ -31,7 +44,7 @@ import org.slf4j.LoggerFactory;
 /** JUnit {@link Runner} which creates a JUnit test suite structure based on AludraTest files. The related AludraTest base suite is
  * specified using a virtual machine parameter 'suite' with a fully qualified class name, e.g. -Dsuite=com.foo.MyTest
  * @author Volker Bergmann */
-public class AludraTestJUnitSuite extends Runner {
+public class AludraTestJUnitSuite extends Runner implements RunnerListener {
 
     public static final String SUITE_SYSPROP = "suite";
 
@@ -48,18 +61,19 @@ public class AludraTestJUnitSuite extends Runner {
     /** The scheduler which coordinates test execution. */
     private RunnerTree tree;
 
-    private int poolSize;
+    private AludraTest aludraTest;
 
-    /** Standard JUnit {@link Runner} constructor which takes the JUnit test class as argument. */
+    private RunNotifier notifier;
+
+    private Map<RunnerLeaf, TestStatus> leafStatus = new HashMap<RunnerLeaf, TestStatus>();
+
+    private Map<RunnerLeaf, Throwable> leafErrors = new HashMap<RunnerLeaf, Throwable>();
+
+    /** Standard JUnit {@link Runner} constructor which takes the JUnit test class as argument.
+     * @param testClass JUnit test class. */
     public AludraTestJUnitSuite(Class<?> testClass) throws InitializationError {
-        AludraTest aludraTest = new AludraTest();
-        AludraTestConfig config = aludraTest.getServiceManager().newImplementorInstance(AludraTestConfig.class);
+        aludraTest = AludraTest.startFramework();
         this.testClass = testClass;
-        poolSize = config.getNumberOfThreads();
-        if (poolSize <= 0) {
-            LOGGER.warn("Please set a correct poolSize, which should be >=1. By default it uses poolSize=1.");
-            poolSize = 1;
-        }
         String suiteName = System.getProperty(SUITE_SYSPROP);
 
         if (StringUtil.isEmpty(suiteName)) {
@@ -67,7 +81,13 @@ public class AludraTestJUnitSuite extends Runner {
             throw new InitializationError("No suite configured");
 
         }
-        tree = new AludraSuiteParser(aludraTest).parse(suiteName);
+
+        RunnerTreeBuilder builder = aludraTest.getServiceManager().newImplementorInstance(RunnerTreeBuilder.class);
+        tree = builder.buildRunnerTree(BeanUtil.forName(suiteName));
+
+        // register this class as listener for events
+        RunnerListenerRegistry registry = aludraTest.getServiceManager().newImplementorInstance(RunnerListenerRegistry.class);
+        registry.addRunnerListener(this);
     }
 
     // Runner interface implementation ---------------------------------------------------------------------------------
@@ -82,13 +102,116 @@ public class AludraTestJUnitSuite extends Runner {
         return description;
     }
 
-    /** Injects a {@link JUnitWrapperFactory} into the runner {@link #tree}
-     * and makes the tree execute the tests.
-     *  @see Runner#run(RunNotifier) */
     @Override
     public void run(RunNotifier notifier) {
-        tree.setWrapperFactory(new JUnitWrapperFactory(notifier, testClass));
-        tree.performAllTestsAndWait(poolSize);
+        this.notifier = notifier;
+        AludraTestRunner runner = aludraTest.getServiceManager().newImplementorInstance(AludraTestRunner.class);
+        try {
+            runner.runAludraTests(tree);
+        }
+        finally {
+            aludraTest.stopFramework();
+        }
     }
+
+    private Class<?> getTestClass(RunnerLeaf runnerLeaf) {
+        Class<?> clazz = runnerLeaf.getTestInvoker().getTestClass();
+        return clazz == null ? testClass : clazz;
+    }
+
+    private boolean isIgnored(RunnerLeaf runnerLeaf) {
+        return Boolean.TRUE.equals(runnerLeaf.getAttribute(CommonRunnerLeafAttributes.IGNORE));
+    }
+
+    @Override
+    public void startingTestProcess(RunnerTree runnerTree) {
+        // not reported to JUnit.
+    }
+
+    @Override
+    public void startingTestGroup(RunnerGroup runnerGroup) {
+        // not reported to JUnit.
+    }
+
+    @Override
+    public void startingTestLeaf(RunnerLeaf runnerLeaf) {
+        if (!isIgnored(runnerLeaf)) {
+            notifier.fireTestStarted(JUnitUtil.createDescription(runnerLeaf, getTestClass(runnerLeaf)));
+            synchronized (leafStatus) {
+                leafStatus.put(runnerLeaf, TestStatus.PASSED);
+            }
+        }
+    }
+
+    @Override
+    public void finishedTestLeaf(RunnerLeaf runnerLeaf) {
+        TestStatus status;
+        Throwable error;
+        synchronized (leafStatus) {
+            status = leafStatus.get(runnerLeaf);
+            error = leafErrors.get(runnerLeaf);
+
+            leafStatus.remove(runnerLeaf);
+            leafErrors.remove(runnerLeaf);
+        }
+
+        if (isIgnored(runnerLeaf)) {
+            notifier.fireTestIgnored(JUnitUtil.createDescription(runnerLeaf, getTestClass(runnerLeaf)));
+        }
+        else {
+            if (status.isFailure()) {
+                if (error == null) {
+                    error = new FunctionalFailure("Test Case reported status " + status + ", please refer to log");
+                }
+
+                notifier.fireTestFailure(new Failure(description, error));
+            }
+            notifier.fireTestFinished(JUnitUtil.createDescription(runnerLeaf, getTestClass(runnerLeaf)));
+        }
+    }
+
+    @Override
+    public void finishedTestGroup(RunnerGroup runnerGroup) {
+        // not reported to JUnit.
+    }
+
+    @Override
+    public void finishedTestProcess(RunnerTree runnerTree) {
+        // not reported to JUnit.
+    }
+
+    @Override
+    public void newTestStepGroup(RunnerLeaf runnerLeaf, String groupName) {
+        // not reported to JUnit.
+    }
+
+    @Override
+    public void newTestStep(RunnerLeaf runnerLeaf, TestStepInfo testStepInfo) {
+        if (testStepInfo.getTestStatus().isFailure()) {
+            synchronized (leafStatus) {
+                leafStatus.put(runnerLeaf, testStepInfo.getTestStatus());
+                if (testStepInfo.getError() != null) {
+                    leafErrors.put(runnerLeaf, testStepInfo.getError());
+                }
+            }
+        }
+    }
+
+    // @Override
+    // public void executionError(RunnerLeaf runnerLeaf, String message, Throwable error) {
+    // if (!isIgnored(runnerLeaf)) {
+    // Failure failure = new Failure(JUnitUtil.createDescription(runnerLeaf, getTestClass(runnerLeaf)), error);
+    // notifier.fireTestFailure(failure);
+    // }
+    // }
+    //
+    // @Override
+    // public void executionFailure(RunnerLeaf runnerLeaf, String message, TestStatus testStatus) {
+    // if (testStatus.isFailure() && !isIgnored(runnerLeaf)) {
+    // Throwable t = new AssertionError(message);
+    // Failure failure = new Failure(JUnitUtil.createDescription(runnerLeaf, getTestClass(runnerLeaf)), t);
+    // notifier.fireTestFailure(failure);
+    // }
+    // }
 
 }

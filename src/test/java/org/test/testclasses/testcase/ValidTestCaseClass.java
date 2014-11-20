@@ -20,11 +20,13 @@ import org.aludratest.service.ComponentId;
 import org.aludratest.service.file.FileService;
 import org.aludratest.service.gui.web.page.Page;
 import org.aludratest.testcase.AludraTestCase;
+import org.aludratest.testcase.Test;
 import org.test.testclasses.page.InvalidPage;
 
 public class ValidTestCaseClass extends AludraTestCase {
 
     @SuppressWarnings("unused")
+    @Test
     public void test() {
         Page pg = new InvalidPage();
         pg.verifyState();

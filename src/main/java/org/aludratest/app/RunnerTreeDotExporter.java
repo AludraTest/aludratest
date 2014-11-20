@@ -20,12 +20,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.aludratest.AludraTest;
-import org.aludratest.AludraTestConstants;
-import org.aludratest.scheduler.AludraSuiteParser;
+import org.aludratest.impl.AludraTestConstants;
 import org.aludratest.scheduler.RunnerTree;
+import org.aludratest.scheduler.RunnerTreeBuilder;
 import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.scheduler.node.RunnerNode;
+import org.aludratest.scheduler.util.RunnerTreeUtil;
 import org.databene.commons.Encodings;
 import org.databene.formats.dot.ArrowShape;
 import org.databene.formats.dot.DefaultDotGraphModel;
@@ -34,6 +35,7 @@ import org.databene.formats.dot.DotNode;
 import org.databene.formats.dot.DotWriter;
 import org.databene.formats.dot.NodeShape;
 import org.databene.formats.dot.RankDir;
+import org.slf4j.LoggerFactory;
 
 /**
  * Exports a {@link RunnerTree} structure as DOT diagram file.
@@ -58,9 +60,17 @@ public class RunnerTreeDotExporter {
         }
         // execute
         String resourceName = args[0];
-        RunnerTree tree = new AludraSuiteParser(new AludraTest()).parse(resourceName);
-        tree.debugSubTree(tree.getRoot(), "");
-        export(tree, resourceName + ".dot");
+
+        AludraTest aludraTest = AludraTest.startFramework();
+        try {
+            RunnerTreeBuilder builder = aludraTest.getServiceManager().newImplementorInstance(RunnerTreeBuilder.class);
+            RunnerTree tree = builder.buildRunnerTree(AppUtil.classForPotentialResourceName(resourceName));
+            RunnerTreeUtil.debugSubTree(tree.getRoot(), LoggerFactory.getLogger(RunnerTreeDotExporter.class), "");
+            export(tree, resourceName + ".dot");
+        }
+        finally {
+            aludraTest.stopFramework();
+        }
     }
 
     /**

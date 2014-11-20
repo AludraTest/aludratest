@@ -25,7 +25,6 @@ import org.aludratest.content.flat.data.FlatFileBeanData;
 import org.aludratest.content.flat.data.RowTypeData;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.TechnicalException;
-import org.aludratest.impl.log4testing.data.attachment.Attachment;
 import org.aludratest.service.Action;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.file.FileService;
@@ -33,6 +32,7 @@ import org.aludratest.service.flatfile.FlatFileCondition;
 import org.aludratest.service.flatfile.FlatFileInteraction;
 import org.aludratest.service.flatfile.FlatFileService;
 import org.aludratest.service.flatfile.FlatFileVerification;
+import org.aludratest.testcase.event.attachment.Attachment;
 
 /**
  * Implements all {@link FlatFileService} action interfaces.

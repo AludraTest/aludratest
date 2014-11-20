@@ -15,7 +15,6 @@
  */
 package org.aludratest.service;
 
-import org.aludratest.impl.log4testing.data.TestCaseLog;
 
 /**
  * Interface for AludraService contexts. Each service will get such a context during its initialization. The context can be used
@@ -47,12 +46,5 @@ public interface AludraServiceContext extends AludraContext {
      * 
      * @return A ready-to-use service instance. */
     public <T extends AludraService> T getNonLoggingService(Class<T> serviceInterface);
-
-    /**
-     * Returns the log for the current test case which can be used for test related logging purposes.
-     * 
-     * @return The current test case log, never <code>null</code>.
-     */
-    public TestCaseLog getTestCaseLog();
 
 }

@@ -170,8 +170,7 @@ public abstract class AbstractDropdownboxTest extends GUITest {
     public void hasValues_multiarg() {
         // positive test
         guiTestUIMap.dropDownBox().assertHasValues("Partner Name", "Partner Short Name", "City", "State", "Country", "Sales Rep", "Partner Number", "District", "Customer Facility Code",
- "Equipment Customer", "External BP", "Creation SOU",
-                "Disabled entry");
+                "Equipment Customer", "Non Globe BP", "Creation SOU", "Disabled entry");
         checkLastStepStatus(TestStatus.PASSED);
         // negative test with multiple values
         guiTestUIMap.dropDownBox().assertHasValues("Partner Name", "Partner Short Name");
@@ -188,8 +187,7 @@ public abstract class AbstractDropdownboxTest extends GUITest {
     public void hasLabels_multiarg() {
         // positive test
         guiTestUIMap.dropDownBox().assertHasLabels("Partner Name", "Partner Short Name", "City", "State", "Country", "Sales Rep", "Partner Number", "District", "Customer Facility Code",
- "Equipment Customer", "External BP", "Creation SOU",
-                "Disabled entry");
+                "Equipment Customer", "Non Globe BP", "Creation SOU", "Disabled entry");
         checkLastStepStatus(TestStatus.PASSED);
         // negative test with multiple values
         guiTestUIMap.dropDownBox().assertHasLabels("Partner Name", "Partner Short Name");
@@ -201,7 +199,7 @@ public abstract class AbstractDropdownboxTest extends GUITest {
         // positive test
         boolean checkValue = guiTestUIMap.dropDownBox().checkEqualsLabels("Partner Name", "Partner Short Name", "City", "State",
                 "Country", "Sales Rep", "Partner Number", "District", "Customer Facility Code", "Equipment Customer",
-                "External BP", "Creation SOU", "Disabled entry");
+                "Non Globe BP", "Creation SOU", "Disabled entry");
         Assert.assertTrue(checkValue);
         // negative test with multiple values
         checkValue = guiTestUIMap.dropDownBox().checkEqualsLabels("Partner Name", "Partner Short Name");
@@ -224,8 +222,7 @@ public abstract class AbstractDropdownboxTest extends GUITest {
     public void containsLabels() {
         // positive test with complete label list
         guiTestUIMap.dropDownBox().assertContainsLabels("Partner Name", "Partner Short Name", "City", "State", "Country", "Sales Rep", "Partner Number", "District", "Customer Facility Code",
- "Equipment Customer", "External BP",
-                "Creation SOU", "Disabled entry");
+                "Equipment Customer", "Non Globe BP", "Creation SOU", "Disabled entry");
         checkLastStepStatus(TestStatus.PASSED);
         // positive test with partial label list
         guiTestUIMap.dropDownBox().assertContainsLabels("Partner Short Name", "Disabled entry");
@@ -240,7 +237,7 @@ public abstract class AbstractDropdownboxTest extends GUITest {
         // positive test with complete label list
         boolean checkValue = guiTestUIMap.dropDownBox().checkContainsLabels("Partner Name", "Partner Short Name", "City",
                 "State", "Country", "Sales Rep", "Partner Number", "District", "Customer Facility Code", "Equipment Customer",
-                "External BP", "Creation SOU", "Disabled entry");
+                "Non Globe BP", "Creation SOU", "Disabled entry");
         Assert.assertTrue(checkValue);
         // positive test with partial label list
         checkValue = guiTestUIMap.dropDownBox().checkContainsLabels("Partner Short Name", "Disabled entry");

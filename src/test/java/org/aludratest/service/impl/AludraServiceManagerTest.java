@@ -24,7 +24,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.aludratest.AludraTest;
-import org.aludratest.AludraTestTest;
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.config.impl.AludraTestingTestConfigImpl;
 import org.junit.Assert;
@@ -36,8 +35,8 @@ public class AludraServiceManagerTest {
 
     @Test
     public void testSingletonRaceCondition() throws Exception {
-        AludraTestTest.setInstance(null);
-        new AludraTest();
+        AludraTest aludraTest = AludraTest.startFramework();
+
         // register singletonComponent service
         System.setProperty("ALUDRATEST_CONFIG/aludraservice/" + SingletonComponent.class.getName(),
                 SingletonComponentImpl.class.getName());
@@ -45,7 +44,7 @@ public class AludraServiceManagerTest {
         // start 100 Threads, check if some get same object
         List<SingletonRaceTestCallable> callables = new ArrayList<SingletonRaceTestCallable>();
         for (int i = 0; i < 100; i++) {
-            callables.add(new SingletonRaceTestCallable());
+            callables.add(new SingletonRaceTestCallable(aludraTest));
         }
 
         List<Future<SingletonComponent>> futures = Executors.newFixedThreadPool(100).invokeAll(callables);
@@ -56,6 +55,7 @@ public class AludraServiceManagerTest {
         }
 
         Assert.assertEquals(1, objs.size());
+        aludraTest.stopFramework();
     }
 
     @Test
@@ -63,27 +63,32 @@ public class AludraServiceManagerTest {
         String propertyName = "ALUDRATEST_CONFIG/aludraservice/" + AludraTestConfig.class.getName();
         System.getProperties().remove(propertyName);
 
-        AludraTestTest.setInstance(null);
-        new AludraTest();
+        AludraTest aludraTest = AludraTest.startFramework();
 
-        Assert.assertFalse(AludraTest.getInstance().getServiceManager().newImplementorInstance(AludraTestConfig.class) instanceof AludraTestingTestConfigImpl);
+        Assert.assertFalse(aludraTest.getServiceManager().newImplementorInstance(AludraTestConfig.class) instanceof AludraTestingTestConfigImpl);
 
         System.setProperty(propertyName, AludraTestingTestConfigImpl.class.getName());
 
         // the only way to get a new, clean IoC container
-        AludraTestTest.setInstance(null);
-        new AludraTest();
+        aludraTest.stopFramework();
+        aludraTest = AludraTest.startFramework();
 
-        Assert.assertTrue(AludraTest.getInstance().getServiceManager().newImplementorInstance(AludraTestConfig.class) instanceof AludraTestingTestConfigImpl);
+        Assert.assertTrue(aludraTest.getServiceManager().newImplementorInstance(AludraTestConfig.class) instanceof AludraTestingTestConfigImpl);
 
         System.getProperties().remove(propertyName);
     }
 
     private static class SingletonRaceTestCallable implements Callable<SingletonComponent> {
 
+        private AludraTest aludraTest;
+
+        public SingletonRaceTestCallable(AludraTest aludraTest) {
+            this.aludraTest = aludraTest;
+        }
+
         @Override
         public SingletonComponent call() throws Exception {
-            return AludraTest.getInstance().getServiceManager().newImplementorInstance(SingletonComponent.class);
+            return aludraTest.getServiceManager().newImplementorInstance(SingletonComponent.class);
         }
     }
 

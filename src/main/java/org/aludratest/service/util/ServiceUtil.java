@@ -18,8 +18,10 @@ package org.aludratest.service.util;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.service.locator.Locator;
 
-/** Provides general utility methods for AludraTest services.
- * @author Volker Bergmann */
+/**
+ * Provides general utility methods for AludraTest services.
+ * @author volker.bergmann@bergmann-it.de
+ */
 public final class ServiceUtil {
 
     private ServiceUtil() {

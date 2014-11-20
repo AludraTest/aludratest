@@ -17,7 +17,7 @@ package org.aludratest.service.flatfile;
 
 import org.aludratest.content.flat.FlatFileColumn;
 import org.aludratest.content.flat.data.FlatFileBeanData;
-import org.databene.commons.NullSafeComparator;
+import org.aludratest.service.flatfile.FlatFileService;
 
 /**
  * FlatFileBean for testing the {@link FlatFileService}
@@ -66,10 +66,22 @@ public class FFAddress extends FlatFileBeanData {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        FFAddress that = (FFAddress) obj;
-        return (NullSafeComparator.equals(this.city, that.city)
-                && Double.doubleToLongBits(this.num) == Double.doubleToLongBits(that.num) && this.rowType == that.rowType && NullSafeComparator
-                .equals(this.street, that.street));
+        FFAddress other = (FFAddress) obj;
+        if (city == null) {
+            if (other.city != null)
+                return false;
+        } else if (!city.equals(other.city))
+            return false;
+        if (Double.doubleToLongBits(num) != Double.doubleToLongBits(other.num))
+            return false;
+        if (rowType != other.rowType)
+            return false;
+        if (street == null) {
+            if (other.street != null)
+                return false;
+        } else if (!street.equals(other.street))
+            return false;
+        return true;
     }
 
     /** Creates a String representation of the object. */

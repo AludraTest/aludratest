@@ -18,9 +18,8 @@ package org.aludratest.util;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.aludratest.impl.log4testing.data.TestCaseLog;
-import org.aludratest.impl.log4testing.data.TestLogger;
-import org.aludratest.util.FlowController;
+import org.aludratest.testcase.AludraTestContext;
+import org.aludratest.testcase.impl.AludraTestContextImpl;
 import org.junit.Test;
 
 /**
@@ -36,17 +35,17 @@ public class FlowControllerTest {
         FlowController controller = FlowController.getInstance();
         controller.reset();
         // WHEN a test case is created newly...
-        TestCaseLog testCase = TestLogger.getTestCase(getClass());
+        AludraTestContext context = new AludraTestContextImpl(null, null);
         // ...THEN it is not supposed to be stopped
-        assertFalse(controller.isStopped(testCase));
+        assertFalse(controller.isStopped(context));
         // WHEN asking the controller to stop the test case...
-        controller.stopTestCaseExecution(testCase);
+        controller.stopTestCaseExecution(context);
         // ...THEN it is supposed to register it as stopped.
-        assertTrue(controller.isStopped(testCase));
+        assertTrue(controller.isStopped(context));
         // WHEN resetting the controller...
         controller.reset();
-        // ...THEN the test case shall be executable again 
-        assertFalse(controller.isStopped(testCase));
+        // ...THEN the test case shall be executable again
+        assertFalse(controller.isStopped(context));
     }
 
 }

@@ -28,4 +28,20 @@ public interface AludraContext {
      * @return An object of a class implementing the component interface. */
     public <T> T newComponentInstance(Class<T> componentInterface);
 
+    /** Provides a service with the given component ID for use within this context. The service will <b>not</b> be wrapped with
+     * registered service wrappers, so operations on this service will not be logged or otherwise noticed.
+     * 
+     * @param serviceId Service ID for the service.
+     * 
+     * @return The service object for use. */
+    public <T extends AludraService> T getNonLoggingService(ComponentId<T> serviceId);
+
+    /** Provides a service with the given component ID for use within this context. The service will be wrapped with registered
+     * service wrappers, so operations on this service will be logged.
+     * 
+     * @param serviceId Service ID for the service.
+     * 
+     * @return The service object for use. */
+    public <T extends AludraService> T getService(ComponentId<T> serviceId);
+
 }

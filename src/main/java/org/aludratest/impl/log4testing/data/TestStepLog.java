@@ -18,34 +18,33 @@ package org.aludratest.impl.log4testing.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aludratest.impl.log4testing.data.attachment.Attachment;
 import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.event.attachment.Attachment;
 import org.joda.time.DateTime;
 
-/**
- * <p>This class stores all the data which corresponds to a test step. Which data
- * is to be stored in a test step is to be decided by test writers themselves.
- * That means that test writers can decide if they want log technical or domain
- * driven commands or for instance which messages will be provided by their
- * implementations of their commands after execution. The starting time of a
- * test step will be automatically set when a new instance of this test step is
- * created.</p>
+/** <p>
+ * This class stores all the data which corresponds to a test step. Which data is to be stored in a test step is to be decided by
+ * test writers themselves. That means that test writers can decide if they want log technical or domain driven commands or for
+ * instance which messages will be provided by their implementations of their commands after execution. The starting time of a
+ * test step will be automatically set when a new instance of this test step is created.
+ * </p>
  * 
- * <p>In addition to all the mentioned information every test step has its unique
- * id which is unique in the context of the JVM in which the test step is
- * created. Ids can change across two executions. This means that the id of a
- * test step can change with the next execution.</p>
+ * <p>
+ * In addition to all the mentioned information every test step has its unique id which is unique in the context of the JVM in
+ * which the test step is created. Ids can change across two executions. This means that the id of a test step can change with the
+ * next execution.
+ * </p>
  * 
- * <p>{@link TestStepLog}s can provide more information through attachments which
- * itself can be text files, pictures, binary files or something else.
- * Purpose of these attachments is, that more information about the object
- * under test can be provided. Simple messages are not enough sometimes and
- * additional information is needed.</br> Tip: Very helpful</p>
+ * <p>
+ * {@link TestStepLog}s can provide more information through attachments which itself can be text files, pictures, binary files or
+ * something else. Purpose of these attachments is, that more information about the object under test can be provided. Simple
+ * messages are not enough sometimes and additional information is needed.<br>
+ * Tip: Very helpful
+ * </p>
  * 
  * @author Marcel Malitz
  * @author Joerg Langnickel
- * @author Volker Bergmann
- */
+ * @author Volker Bergmann */
 public class TestStepLog extends TestObject {
 
     private static final String NOT_SET = "Not SET";
@@ -93,7 +92,6 @@ public class TestStepLog extends TestObject {
 
     private String technicalArguments;
 
-
     // constructor -------------------------------------------------------------
 
     /**
@@ -105,6 +103,10 @@ public class TestStepLog extends TestObject {
         this.parent = parent;
         this.error = null;
         start();
+    }
+
+    public TestStepLog() {
+
     }
 
     // interface ---------------------------------------------------------------

@@ -22,9 +22,6 @@ import java.util.Map;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.TechnicalException;
-import org.aludratest.impl.log4testing.data.attachment.Attachment;
-import org.aludratest.impl.log4testing.data.attachment.BinaryAttachment;
-import org.aludratest.impl.log4testing.data.attachment.StringAttachment;
 import org.aludratest.service.gui.web.selenium.ConditionCheck;
 import org.aludratest.service.gui.web.selenium.ElementCommand;
 import org.aludratest.service.gui.web.selenium.ProxyPool;
@@ -35,6 +32,9 @@ import org.aludratest.service.gui.web.selenium.httpproxy.AuthenticatingHttpProxy
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.option.OptionLocator;
 import org.aludratest.service.locator.window.WindowLocator;
+import org.aludratest.testcase.event.attachment.Attachment;
+import org.aludratest.testcase.event.attachment.BinaryAttachment;
+import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

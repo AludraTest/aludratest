@@ -23,12 +23,13 @@ import java.util.Map;
 
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.exception.AludraTestException;
-import org.aludratest.impl.log4testing.data.TestCaseLog;
 import org.aludratest.service.AludraContext;
+import org.aludratest.service.AludraService;
 import org.aludratest.service.ComponentId;
 import org.aludratest.service.Interaction;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.Verification;
+import org.aludratest.testcase.AludraTestContext;
 import org.aludratest.testcase.TestStatus;
 
 /** Provides general functionality for AludraTest.
@@ -78,8 +79,9 @@ public class AludraTestUtil {
      * Wraps the given object with a dynamic proxy that implements a parent interface of the object
      * and transparently add control flow logic using the {@link ControlFlowHandler}.
      */
-    public static <T, U extends T> T wrapWithControlFlowHandler(U object, Class<T> interfaceType, ComponentId serviceId,
-            SystemConnector systemConnector, TestCaseLog testCase, AludraContext context) {
+    public static <T, U extends T> T wrapWithControlFlowHandler(U object, Class<T> interfaceType,
+            ComponentId<? extends AludraService> serviceId,
+            SystemConnector systemConnector, AludraContext context) {
         AludraTestConfig config = context.newComponentInstance(AludraTestConfig.class);
         boolean stopOnException;
         if (Interaction.class.isAssignableFrom(interfaceType)) {
@@ -89,8 +91,12 @@ public class AludraTestUtil {
         } else {
             stopOnException = config.isStopTestCaseOnOtherException();
         }
-        InvocationHandler invocationHandler = new ControlFlowHandler(object, serviceId, systemConnector, testCase, stopOnException);
-        return AludraTestUtil.<T, U> wrapWithInvocationHandler(interfaceType, invocationHandler);
+        if (context instanceof AludraTestContext) {
+            InvocationHandler invocationHandler = new ControlFlowHandler(object, serviceId, systemConnector,
+                    (AludraTestContext) context, stopOnException);
+            return AludraTestUtil.<T, U> wrapWithInvocationHandler(interfaceType, invocationHandler);
+        }
+        return object;
     }
 
     /**
