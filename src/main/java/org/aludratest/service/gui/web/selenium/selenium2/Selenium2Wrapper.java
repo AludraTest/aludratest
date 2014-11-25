@@ -82,18 +82,18 @@ public class Selenium2Wrapper {
                 try {
                     seleniumPort = Integer.parseInt(usedSeleniumHost.substring(usedSeleniumHost.indexOf(':') + 1).trim());
                     usedSeleniumHost = usedSeleniumHost.substring(0, usedSeleniumHost.indexOf(':'));
-                    // TODO where is this used?
                 }
                 catch (NumberFormatException e) {
                     LOGGER.error("Invalid host:port syntax for selenium host: " + usedSeleniumHost);
                 }
             }
 
-            this.selenium = new Selenium2Facade(configuration);
+            this.selenium = new Selenium2Facade(configuration, usedSeleniumHost, seleniumPort);
         } catch (Exception e) {
             LOGGER.error("Error initializing Selenium 2", e);
+            String host = usedSeleniumHost;
             forceCloseApplicationUnderTest();
-            throw new TechnicalException(e.getMessage() + ". Used Host = " + usedSeleniumHost, e);
+            throw new TechnicalException(e.getMessage() + ". Used Host = " + host, e);
         }
     }
 

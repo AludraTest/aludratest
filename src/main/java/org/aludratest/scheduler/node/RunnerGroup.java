@@ -72,11 +72,6 @@ public class RunnerGroup extends RunnerNode {
     /** Add a child node to the {@link #children}. */
     public void addChild(RunnerNode childNode) {
         children.add(childNode);
-        // if (childNode instanceof RunnerGroup) {
-        // logSuite.addTestSuite(((RunnerGroup) childNode).getLogSuite());
-        // } else {
-        // logSuite.addTestCase(((RunnerLeaf) childNode).getLogCase());
-        // }
     }
 
     /** Reorders the children of this group, so they are in the order of the passed list.

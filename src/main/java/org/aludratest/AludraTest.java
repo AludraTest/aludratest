@@ -64,6 +64,8 @@ public final class AludraTest {
     /** The IoC container for AludraTest. */
     private final PlexusContainer iocContainer;
 
+    private static AludraTest instance;
+
     private AludraTest() {
         // start IoC and instantiate service manager
         this.iocContainer = createIoCContainer();
@@ -82,11 +84,25 @@ public final class AludraTest {
         // static accessors to "dynamic" content are initialized here.
         DataMarkerCheck.init(framework.getServiceManager());
 
+        instance = framework;
         return framework;
     }
 
     public void stopFramework() {
         iocContainer.dispose();
+        instance = null;
+    }
+
+    /** Returns the current AludraTest instance. This method will only return a non-null value between calls to
+     * {@link #startFramework()} and {@link #stopFramework()}.
+     * 
+     * @return The current AludraTest instance, or <code>null</code>.
+     * 
+     * @deprecated This method should not be used for software design reasons. Better keep your AludraTest instance which is
+     *             returned by startFramework, or use IoC patterns to retrieve components you need. */
+    @Deprecated
+    public static AludraTest getInstance() {
+        return instance;
     }
 
     private static PlexusContainer createIoCContainer() {

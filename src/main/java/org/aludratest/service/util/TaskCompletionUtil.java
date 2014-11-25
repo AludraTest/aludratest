@@ -119,6 +119,9 @@ public class TaskCompletionUtil {
     }
 
     private static boolean isBusy(SystemConnector connector) {
+        if (connector == null) {
+            return false;
+        }
         SystemBusyIndicator busyIndicator = connector.getConnector(SystemBusyIndicator.class);
         return busyIndicator != null ? busyIndicator.isBusy() : false;
     }

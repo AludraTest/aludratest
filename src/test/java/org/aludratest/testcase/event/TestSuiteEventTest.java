@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.aludratest.AludraTest;
-import org.aludratest.scheduler.RunnerListener;
+import org.aludratest.scheduler.AbstractRunnerListener;
 import org.aludratest.scheduler.RunnerListenerRegistry;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.node.RunnerGroup;
@@ -110,11 +110,7 @@ public class TestSuiteEventTest {
         }
     }
 
-    private class TestRunnerListener implements RunnerListener {
-
-        @Override
-        public void startingTestProcess(RunnerTree runnerTree) {
-        }
+    private class TestRunnerListener extends AbstractRunnerListener {
 
         @Override
         public void startingTestGroup(RunnerGroup runnerGroup) {
@@ -187,14 +183,6 @@ public class TestSuiteEventTest {
             assertTrue("Process finished while leaf running", runningLeafs.isEmpty());
             assertTrue("Group notifier size mismatch", allRunningGroups.size() == allStoppedGroups.size());
             assertTrue("Leaf notifier size mismatch", allRunningLeafs.size() == allStoppedLeafs.size());
-        }
-
-        @Override
-        public void newTestStepGroup(RunnerLeaf runnerLeaf, String groupName) {
-        }
-
-        @Override
-        public void newTestStep(RunnerLeaf runnerLeaf, TestStepInfo testStepInfo) {
         }
 
     }

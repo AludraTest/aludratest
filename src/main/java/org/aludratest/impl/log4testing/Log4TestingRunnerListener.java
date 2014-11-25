@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import org.aludratest.impl.log4testing.data.TestCaseLog;
 import org.aludratest.impl.log4testing.data.TestLogger;
 import org.aludratest.impl.log4testing.data.TestSuiteLog;
+import org.aludratest.scheduler.AbstractRunnerListener;
 import org.aludratest.scheduler.RunnerListener;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.node.RunnerGroup;
@@ -34,18 +35,13 @@ import org.codehaus.plexus.component.annotations.Component;
 import org.databene.commons.StringUtil;
 
 @Component(role = RunnerListener.class, hint = "log4testing")
-public class Log4TestingRunnerListener implements RunnerListener {
+public class Log4TestingRunnerListener extends AbstractRunnerListener {
 
     @Override
     public void startingTestProcess(RunnerTree runnerTree) {
         // parse tree and prepare all logs
         TestSuiteLog root = TestLogger.getTestSuite(runnerTree.getRoot().getName());
         parseRunnerTree(runnerTree.getRoot(), root);
-    }
-
-    @Override
-    public void startingTestGroup(RunnerGroup runnerGroup) {
-        // nothing to do for now - will be fired by test leaf
     }
 
     @Override

@@ -20,10 +20,13 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfEl
 import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,11 +54,12 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.ErrorHandler.UnknownServerException;
+import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
@@ -97,10 +101,14 @@ public class Selenium2Facade {
 
     private WebElement highlightedElement;
 
+    private URL seleniumUrl;
+
     // constructor -------------------------------------------------------------
 
-    public Selenium2Facade(SeleniumWrapperConfiguration configuration) {
+    public Selenium2Facade(SeleniumWrapperConfiguration configuration, String usedSeleniumHost, int usedSeleniumPort)
+            throws MalformedURLException {
         this.configuration = configuration;
+        this.seleniumUrl = new URL("http://" + usedSeleniumHost + ":" + usedSeleniumPort + "/wd/hub");
         this.driver = newDriver();
         this.zIndexSupport = new ZIndexSupport(driver);
     }
@@ -110,29 +118,24 @@ public class Selenium2Facade {
         try {
             String driverName = configuration.getDriverName();
             Drivers driverEnum = Drivers.valueOf(driverName);
-            if (!configuration.isUsingRemoteDriver()) {
-                Class<? extends WebDriver> driverClass = driverEnum.getDriverClass();
-                // TODO cleanup chrome-specific dirt
-                if (driverEnum == Drivers.CHROME) {
-                    driverClass = ChromeDriver.class;
-                }
 
-                if (driverClass == ChromeDriver.class) {
+            if (configuration.isUsingRemoteDriver()) {
+                // set Chrome Options capability always, will be ignored for other browsers
+                DesiredCapabilities caps = new DesiredCapabilities();
+                if (driverName.toLowerCase(Locale.US).contains("chrome")) {
+                    caps = DesiredCapabilities.chrome();
                     ChromeOptions opts = new ChromeOptions();
                     opts.addArguments("--disable-extensions");
-                    return BeanUtil.newInstance(driverClass, new Object[] { opts });
+                    caps.setCapability(ChromeOptions.CAPABILITY, opts);
                 }
-                return BeanUtil.newInstance(driverClass);
+                else {
+                    caps.setBrowserName(driverEnum.getBrowserName());
+                }
+                HttpCommandExecutor executor = new HttpCommandExecutor(seleniumUrl);
+                return new RemoteWebDriver(executor, caps);
             }
             else {
-                // TODO cleanup chrome-specific dirt
-                DesiredCapabilities caps = new DesiredCapabilities();
-                caps.setBrowserName(driverEnum.getBrowserName());
-                ChromeOptions opts = new ChromeOptions();
-                opts.addArguments("--disable-extensions");
-                caps.setCapability(ChromeOptions.CAPABILITY, opts);
-                // caps.setCapability(CapabilityType.HAS_NATIVE_EVENTS, true);
-                return new RemoteWebDriver(caps);
+                return BeanUtil.newInstance(driverEnum.getDriverClass());
             }
         }
         catch (IllegalStateException e) {
@@ -529,6 +532,7 @@ public class Selenium2Facade {
         long timeoutInSeconds = (timeOutInMillis + SECOND_MILLIS - 1) / SECOND_MILLIS;
         int sleepInMillis = configuration.getPauseBetweenRetries();
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds, sleepInMillis);
+        wait.ignoring(UnknownServerException.class);
         wait.until(condition);
     }
 

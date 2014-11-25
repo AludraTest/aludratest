@@ -42,7 +42,6 @@ import org.aludratest.testcase.event.InternalTestListener;
 import org.aludratest.testcase.event.TestStepInfo;
 import org.aludratest.testcase.event.impl.LogUtil;
 import org.aludratest.testcase.impl.AludraTestContextImpl;
-import org.aludratest.util.FlowController;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.slf4j.Logger;
@@ -341,10 +340,6 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
             // mark as ignored, if leaf is ignored
             boolean ignore = Boolean.TRUE.equals(leaf.getAttribute(CommonRunnerLeafAttributes.IGNORE))
                     && aludraConfig.isIgnoreEnabled();
-            if (ignore) {
-                // do not execute any steps
-                FlowController.getInstance().stopTestCaseExecution(context);
-            }
 
             // rename current Thread for logging purposes
             String oldName = Thread.currentThread().getName();
