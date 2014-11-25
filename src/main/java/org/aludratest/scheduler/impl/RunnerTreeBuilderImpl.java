@@ -17,8 +17,11 @@ package org.aludratest.scheduler.impl;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -59,6 +62,9 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
     /** Used to trace added files and detect recursions & multi-uses of classes */
     private Set<Class<?>> addedClasses = new HashSet<Class<?>>();
 
+    /** Map Class -> Assertion Error for classes where an assertion failed */
+    private Map<Class<?>, String> assertionErrorClasses = new HashMap<Class<?>, String>();
+
     @Requirement
     private TestDataProvider testDataProvider;
 
@@ -66,7 +72,24 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
     public RunnerTree buildRunnerTree(Class<?> suiteOrTestClass) {
         RunnerTree tree = new RunnerTree();
         parseTestOrSuiteClass(suiteOrTestClass, null, tree);
+        if (!assertionErrorClasses.isEmpty()) {
+            // concatenate all exceptions
+            Iterator<Map.Entry<Class<?>, String>> iter = assertionErrorClasses.entrySet().iterator();
+            throw concatAssertionExceptions(iter, null);
+        }
         return tree;
+    }
+
+    private PreconditionFailedException concatAssertionExceptions(Iterator<Map.Entry<Class<?>, String>> iterator,
+            PreconditionFailedException cause) {
+        if (!iterator.hasNext()) {
+            return cause;
+        }
+        Map.Entry<Class<?>, String> entry = iterator.next();
+        String msg = entry.getValue() + ": " + entry.getKey().getName();
+        PreconditionFailedException ex = cause == null ? new PreconditionFailedException(msg) : new PreconditionFailedException(
+                msg, cause);
+        return concatAssertionExceptions(iterator, ex);
     }
 
     /** Parses an AludraTest test class or suite. */
@@ -76,8 +99,9 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             parseSuiteClass(testClass, parentGroup, tree);
         }
         else {
-            assertTestClass(testClass);
-            parseTestClass(testClass, parentGroup, tree);
+            if (assertTestClass(testClass)) {
+                parseTestClass(testClass, parentGroup, tree);
+            }
         }
     }
 
@@ -85,17 +109,21 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         return (testClass.getAnnotation(Suite.class) != null);
     }
 
-    private void assertTestClass(Class<?> testClass) {
+    private boolean assertTestClass(Class<?> testClass) {
         if ((testClass.getModifiers() & Modifier.ABSTRACT) == Modifier.ABSTRACT) {
-            throw new PreconditionFailedException("Abstract class not suitable as test class: " + testClass.getName());
+            assertionErrorClasses.put(testClass, "Abstract class not suitable as test class");
+            return false;
         }
         else if (!AludraTestCase.class.isAssignableFrom(testClass)) {
-            throw new PreconditionFailedException("Test class " + testClass.getName() + " does not inherit from "
-                    + AludraTestCase.class.getName());
+            assertionErrorClasses.put(testClass, "Test class does not inherit from " + AludraTestCase.class.getName());
+            return false;
         }
         else if (testMethodCount(testClass) == 0) {
-            throw new PreconditionFailedException("No @Test methods found in class " + testClass.getName());
+            assertionErrorClasses.put(testClass, "No @Test methods found in class");
+            return false;
         }
+
+        return true;
     }
 
     private int testMethodCount(Class<?> testClass) {

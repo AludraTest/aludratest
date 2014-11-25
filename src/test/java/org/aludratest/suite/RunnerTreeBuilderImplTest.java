@@ -81,8 +81,7 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
             throw new AssertionFailedError("Exception expected");
         }
         catch (PreconditionFailedException e) {
-            String expectedMessage = "Test class org.aludratest.suite.RunnerTreeBuilderImplTest$TestClassWithoutParent "
-                    + "does not inherit from org.aludratest.testcase.AludraTestCase";
+            String expectedMessage = "Test class does not inherit from org.aludratest.testcase.AludraTestCase: org.aludratest.suite.RunnerTreeBuilderImplTest$TestClassWithoutParent";
             assertEquals(expectedMessage, e.getMessage());
         }
     }
@@ -102,7 +101,7 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
             throw new AssertionFailedError("Exception expected");
         }
         catch (PreconditionFailedException e) {
-            String expectedMessage = "No @Test methods found in class "
+            String expectedMessage = "No @Test methods found in class: "
                     + "org.aludratest.suite.RunnerTreeBuilderImplTest$EmptyTestClass";
             assertEquals(expectedMessage, e.getMessage());
         }
