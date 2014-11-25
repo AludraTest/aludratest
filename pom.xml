@@ -671,7 +671,7 @@
 							<message>Updating site for ${project.artifactId}
 								${project.version}</message>
 							<repositoryOwner>AludraTest</repositoryOwner>
-							<repositoryName>aludratest-helper-maven-plugin</repositoryName>
+							<repositoryName>aludratest</repositoryName>
 						</configuration>
 						<executions>
 							<execution>
@@ -684,7 +684,7 @@
 					</plugin>
 
 					<!-- during release, force site-deploy, because default would be only 
-						"deploy" with our config -->
+						"deploy" with our config (no distributionManagement element for sites) -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-release-plugin</artifactId>
