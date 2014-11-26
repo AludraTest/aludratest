@@ -79,7 +79,6 @@ public class AludraTestJUnitSuite extends Runner implements RunnerListener {
         if (StringUtil.isEmpty(suiteName)) {
             LOGGER.debug("SuiteName:\"" + suiteName + "\"");
             throw new InitializationError("No suite configured");
-
         }
 
         RunnerTreeBuilder builder = aludraTest.getServiceManager().newImplementorInstance(RunnerTreeBuilder.class);
@@ -114,11 +113,6 @@ public class AludraTestJUnitSuite extends Runner implements RunnerListener {
         }
     }
 
-    private Class<?> getTestClass(RunnerLeaf runnerLeaf) {
-        Class<?> clazz = runnerLeaf.getTestInvoker().getTestClass();
-        return clazz == null ? testClass : clazz;
-    }
-
     private boolean isIgnored(RunnerLeaf runnerLeaf) {
         return Boolean.TRUE.equals(runnerLeaf.getAttribute(CommonRunnerLeafAttributes.IGNORE));
     }
@@ -136,7 +130,7 @@ public class AludraTestJUnitSuite extends Runner implements RunnerListener {
     @Override
     public void startingTestLeaf(RunnerLeaf runnerLeaf) {
         if (!isIgnored(runnerLeaf)) {
-            notifier.fireTestStarted(JUnitUtil.createDescription(runnerLeaf, getTestClass(runnerLeaf)));
+            notifier.fireTestStarted(createDescription(runnerLeaf));
             synchronized (leafStatus) {
                 leafStatus.put(runnerLeaf, TestStatus.PASSED);
             }
@@ -156,7 +150,7 @@ public class AludraTestJUnitSuite extends Runner implements RunnerListener {
         }
 
         if (isIgnored(runnerLeaf)) {
-            notifier.fireTestIgnored(JUnitUtil.createDescription(runnerLeaf, getTestClass(runnerLeaf)));
+            notifier.fireTestIgnored(createDescription(runnerLeaf));
         }
         else {
             if (status.isFailure()) {
@@ -164,9 +158,9 @@ public class AludraTestJUnitSuite extends Runner implements RunnerListener {
                     error = new FunctionalFailure("Test Case reported status " + status + ", please refer to log");
                 }
 
-                notifier.fireTestFailure(new Failure(description, error));
+                notifier.fireTestFailure(new Failure(createDescription(runnerLeaf), error));
             }
-            notifier.fireTestFinished(JUnitUtil.createDescription(runnerLeaf, getTestClass(runnerLeaf)));
+            notifier.fireTestFinished(createDescription(runnerLeaf));
         }
     }
 
@@ -197,21 +191,7 @@ public class AludraTestJUnitSuite extends Runner implements RunnerListener {
         }
     }
 
-    // @Override
-    // public void executionError(RunnerLeaf runnerLeaf, String message, Throwable error) {
-    // if (!isIgnored(runnerLeaf)) {
-    // Failure failure = new Failure(JUnitUtil.createDescription(runnerLeaf, getTestClass(runnerLeaf)), error);
-    // notifier.fireTestFailure(failure);
-    // }
-    // }
-    //
-    // @Override
-    // public void executionFailure(RunnerLeaf runnerLeaf, String message, TestStatus testStatus) {
-    // if (testStatus.isFailure() && !isIgnored(runnerLeaf)) {
-    // Throwable t = new AssertionError(message);
-    // Failure failure = new Failure(JUnitUtil.createDescription(runnerLeaf, getTestClass(runnerLeaf)), t);
-    // notifier.fireTestFailure(failure);
-    // }
-    // }
-
+    private Description createDescription(RunnerLeaf runnerLeaf) {
+        return JUnitUtil.createDescription(runnerLeaf, testClass);
+    }
 }

@@ -21,7 +21,7 @@ import org.aludratest.scheduler.node.RunnerNode;
 import org.junit.runner.Description;
 
 /**
- * Utility class that provides general JUnit related testing features. 
+ * Utility class that provides general JUnit related testing features.
  * @author Volker Bergmann
  */
 public class JUnitUtil {
@@ -32,15 +32,17 @@ public class JUnitUtil {
 
     /**
      * Creates a JUnit {@link Description} object for a {@link RunnerNode}.
-     * For a {@link RunnerGroup}, a suite is created, for atomic tests a 
+     * For a {@link RunnerGroup}, a suite is created, for atomic tests a
      * simple description object.
      * @param node the RunnerNode object to be wrapped
-     * @param testClass the class which triggered JUnit execution 
+     * @param testClass the class which triggered JUnit execution
      * @return a description of of the node
      */
     public static Description createDescription(RunnerNode node, Class<?> testClass) {
+        System.out.println("Create description for node " + node.getName() + " and test class " + testClass);
+
         if (node instanceof RunnerLeaf) {
-            return Description.createTestDescription(testClass, node.getName());
+            return Description.createTestDescription(getTestClass((RunnerLeaf) node, testClass), node.getName());
         } else {
             RunnerGroup group = (RunnerGroup) node;
             Description suite = Description.createSuiteDescription(node.getName());
@@ -49,6 +51,11 @@ public class JUnitUtil {
             }
             return suite;
         }
+    }
+
+    private static Class<?> getTestClass(RunnerLeaf runnerLeaf, Class<?> defaultTestClass) {
+        Class<?> clazz = runnerLeaf.getTestInvoker().getTestClass();
+        return clazz == null ? defaultTestClass : clazz;
     }
 
 }
