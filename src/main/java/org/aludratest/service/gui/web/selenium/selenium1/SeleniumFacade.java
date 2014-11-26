@@ -355,7 +355,16 @@ public class SeleniumFacade {
      * @return true if the element is visible, otherwise false
      */
     public boolean isVisible(GUIElementLocator locator) {
-        return selenium.isVisible(getSeleniumLocator(locator));
+        try {
+            return selenium.isVisible(getSeleniumLocator(locator));
+        }
+        catch (SeleniumException e) {
+            String msg = e.getMessage();
+            if (msg != null && msg.endsWith(" not found")) {
+                return false;
+            }
+            throw e;
+        }
     }
 
     /**
