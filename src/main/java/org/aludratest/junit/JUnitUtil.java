@@ -52,6 +52,10 @@ public class JUnitUtil {
     }
 
     private static Class<?> getTestClass(RunnerLeaf runnerLeaf, Class<?> defaultTestClass) {
+        if (runnerLeaf == null || runnerLeaf.getTestInvoker() == null) {
+            return defaultTestClass;
+        }
+
         Class<?> clazz = runnerLeaf.getTestInvoker().getTestClass();
         return clazz == null ? defaultTestClass : clazz;
     }
