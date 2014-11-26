@@ -100,8 +100,13 @@ public class AludraSelenium1 extends AbstractSeleniumService implements AludraWe
     @Override
     public void open() {
         assertState(State.INITIALIZED, "open()");
-        interaction.open(configuration.getUrlOfAut());
-        state = State.OPEN;
+        try {
+            interaction.open(configuration.getUrlOfAut());
+        }
+        finally {
+            // also in case of error, treat as OPEN to be able to perform additional steps (which will fail)
+            state = State.OPEN;
+        }
     }
 
     @Override
