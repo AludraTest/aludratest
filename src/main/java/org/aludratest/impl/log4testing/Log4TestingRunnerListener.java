@@ -109,7 +109,7 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
             PrintWriter pw = new PrintWriter(sw);
             testStepInfo.getError().printStackTrace(pw);
             pw.flush();
-            log.getLastTestStep().setComment(sw.toString());
+            log.getLastTestStep().setComment(sw.toString().replace("\n", "<br />"));
         }
     }
 
