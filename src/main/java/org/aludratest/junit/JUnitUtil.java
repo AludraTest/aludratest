@@ -39,8 +39,6 @@ public class JUnitUtil {
      * @return a description of of the node
      */
     public static Description createDescription(RunnerNode node, Class<?> testClass) {
-        System.out.println("Create description for node " + node.getName() + " and test class " + testClass);
-
         if (node instanceof RunnerLeaf) {
             return Description.createTestDescription(getTestClass((RunnerLeaf) node, testClass), node.getName());
         } else {
