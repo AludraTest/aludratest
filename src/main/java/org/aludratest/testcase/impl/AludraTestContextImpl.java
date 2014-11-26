@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.aludratest.exception.AutomationException;
 import org.aludratest.service.AludraService;
 import org.aludratest.service.AludraServiceManager;
 import org.aludratest.service.ComponentId;
@@ -118,8 +119,10 @@ public class AludraTestContextImpl implements AludraTestContext {
 
     @Override
     public void closeService(ComponentId<?> serviceId) {
-        closeService(serviceId, nonLoggingServices);
-        closeService(serviceId, loggingServices);
+        if (!closeService(serviceId, nonLoggingServices) && !closeService(serviceId, loggingServices)) {
+            logError("Error closing Service: Service not found: " + serviceId, new AutomationException(
+                    "Service could not be found. Please check the ComponentID."));
+        }
     }
 
     @Override
@@ -148,16 +151,14 @@ public class AludraTestContextImpl implements AludraTestContext {
         map.clear();
     }
 
-    private void closeService(ComponentId<?> serviceId, Map<ComponentId<?>, AludraService> map) {
+    private boolean closeService(ComponentId<?> serviceId, Map<ComponentId<?>, AludraService> map) {
         AludraService aludraService = map.get(serviceId);
         if (aludraService != null) {
             map.remove(serviceId);
             aludraService.close();
+            return true;
         }
-        else {
-            logError("Error closing Service: Service not found: " + serviceId + ". "
-                    + "Service could not be found. Please check the ComponentID.", TestStatus.FAILEDAUTOMATION);
-        }
+        return false;
     }
 
 
