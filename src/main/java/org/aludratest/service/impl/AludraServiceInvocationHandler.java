@@ -77,7 +77,7 @@ public class AludraServiceInvocationHandler implements InvocationHandler {
         // Note: The following code provokes 'Security - Array is stored directly' in SonarCube,
         //       but the behavior is correct, since this is wrapper code which has to forward
         //       invocation data unchanged.
-        Object invocationResult = method.invoke(realObject, args);
+        Object invocationResult = invokeMethod(realObject, method, args);
         String methodName = method.getName();
         if ("setSystemConnector".equals(methodName)) {
             SystemConnector newConnector = (SystemConnector) args[0];
@@ -93,6 +93,17 @@ public class AludraServiceInvocationHandler implements InvocationHandler {
 
 
     // private helper methods --------------------------------------------------
+
+    private Object invokeMethod(Object realObject, Method method, Object[] args) throws Throwable { // NOSONAR
+        // for non-proxied calls, invoke the real method with "direct" ControlFlowHandler call to handle exceptions properly
+        // and offer e.g. Retry mechanism
+        String methodName = method.getName();
+        if (!methodName.matches("setSystemConnector|perform|verify|check|getDescription|getInstanceName|close")) {
+            return new ControlFlowHandler(realObject, serviceId, systemConnector, (AludraTestContext) context, false).invoke(
+                    null, method, args);
+        }
+        return method.invoke(realObject, args);
+    }
 
     private Object getOrCreateProxy(Object realResult, Class<?> interfaceType) {
         String objectId = interfaceType.getName() + "@" + System.identityHashCode(realResult);
