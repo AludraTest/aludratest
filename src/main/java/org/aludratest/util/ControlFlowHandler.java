@@ -26,7 +26,6 @@ import org.aludratest.impl.log4testing.AttachResult;
 import org.aludratest.service.Action;
 import org.aludratest.service.AludraService;
 import org.aludratest.service.ComponentId;
-import org.aludratest.service.Condition;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.testcase.AludraTestContext;
 import org.aludratest.testcase.TestStatus;
@@ -67,14 +66,17 @@ public class ControlFlowHandler implements InvocationHandler {
      *  the occurrence of an exception. */
     private boolean stopOnException;
 
+    private boolean logTestSteps;
+
     /** Constructor which takes the initialization values for all attributes.
      * @param target the target object to forward calls to
      * @param serviceId the {@link ComponentId} related to the target object
      * @param systemConnector an optional {@link SystemConnector} to to provide SUT information
      * @param testContext the test context to log to
-     * @param stopOnException a flag that indicates whether to stop on exceptions */
+     * @param stopOnException a flag that indicates whether to stop on exceptions
+     * @param logTestSteps If <code>true</code>, method invocations will be fired to the test context as new test step. */
     public ControlFlowHandler(Object target, ComponentId<? extends AludraService> serviceId, SystemConnector systemConnector,
-            AludraTestContext testContext, boolean stopOnException) {
+            AludraTestContext testContext, boolean stopOnException, boolean logTestSteps) {
         // check preconditions
         Assert.notNull(target, "target");
         Assert.notNull(testContext, "testContext");
@@ -86,6 +88,7 @@ public class ControlFlowHandler implements InvocationHandler {
         this.exceptionUnderErrorChecking = null;
         this.testContext = testContext;
         this.stopOnException = stopOnException;
+        this.logTestSteps = logTestSteps;
     }
 
 
@@ -105,7 +108,7 @@ public class ControlFlowHandler implements InvocationHandler {
             }
             return forwardAndHandleException(method, args);
         } else {
-            if (!(target instanceof Condition)) {
+            if (logTestSteps) {
                 TestStepInfoBean testStep = new TestStepInfoBean();
                 testStep.setServiceId(serviceId);
                 testStep.setCommandNameAndArguments(method, args);
@@ -131,20 +134,20 @@ public class ControlFlowHandler implements InvocationHandler {
         TestStepInfoBean testStep = new TestStepInfoBean();
         try {
             testStep.setCommandNameAndArguments(method, args);
-            if (!(target instanceof Condition)) {
+            if (logTestSteps) {
                 // attach parameters, if applicable
                 attachAttachableParameters(testStep, method, args);
                 testContext.addTestStep(testStep);
             }
             Object result = forwardWithRetry(method, args, testStep);
-            if (!(target instanceof Condition)) {
+            if (logTestSteps) {
                 attachResultIfAttachable(testStep, method, result);
             }
             return result;
         }
         catch (Exception e) { // NOSONAR
-            // OK, if it was a condition, add the test step now
-            if (target instanceof Condition) {
+            // OK, also log if logTestSteps was false
+            if (!logTestSteps) {
                 testContext.addTestStep(testStep);
             }
             try {
