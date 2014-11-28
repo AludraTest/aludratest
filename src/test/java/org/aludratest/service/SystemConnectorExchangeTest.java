@@ -74,9 +74,9 @@ public class SystemConnectorExchangeTest extends AbstractAludraServiceTest {
             TestStepGroup group1 = testCase.getTestStepGroups().get(0);
             assertEquals("succeed", group1.getTestStep(0).getCommand());
             String message2 = group1.getTestStep(1).getErrorMessage();
-            assertTrue(message2.startsWith("The system refuses to coooperate "));
+            assertTrue(message2.startsWith("Nothing found"));
             String message3 = group1.getTestStep(2).getErrorMessage();
-            assertTrue(message3.startsWith("Nothing found"));
+            assertTrue(message3.startsWith("The system refuses to coooperate "));
         }
         finally {
             // restore original settings
