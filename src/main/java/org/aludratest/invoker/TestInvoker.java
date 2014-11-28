@@ -31,7 +31,7 @@ public interface TestInvoker {
      * @throws Throwable */
     void invoke() throws Throwable; //NOSONAR
 
-    /** Returns the class which contains the test for execution, if any. <b>This is for documentational purposes only<b>, and
+    /** Returns the class which contains the test for execution, if any. <b>This is for documentational purposes only</b>, and
      * <code>null</code> is permitted as return value if the test does not base on a class.
      * 
      * @return The class which contains the test for execution, or <code>null</code> if no class information is available for this
