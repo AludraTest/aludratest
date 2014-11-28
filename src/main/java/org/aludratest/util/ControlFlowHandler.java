@@ -105,11 +105,13 @@ public class ControlFlowHandler implements InvocationHandler {
             }
             return forwardAndHandleException(method, args);
         } else {
-            TestStepInfoBean testStep = new TestStepInfoBean();
-            testStep.setServiceId(serviceId);
-            testStep.setCommandNameAndArguments(method, args);
-            testStep.setTestStatus(TestStatus.IGNORED);
-            testContext.addTestStep(testStep);
+            if (!(target instanceof Condition)) {
+                TestStepInfoBean testStep = new TestStepInfoBean();
+                testStep.setServiceId(serviceId);
+                testStep.setCommandNameAndArguments(method, args);
+                testStep.setTestStatus(TestStatus.IGNORED);
+                testContext.addTestStep(testStep);
+            }
             return AludraTestUtil.nullOrPrimitiveDefault(method.getReturnType());
         }
     }
@@ -141,6 +143,10 @@ public class ControlFlowHandler implements InvocationHandler {
             return result;
         }
         catch (Exception e) { // NOSONAR
+            // OK, if it was a condition, add the test step now
+            if (target instanceof Condition) {
+                testContext.addTestStep(testStep);
+            }
             try {
                 handleException(e, testStep);
             } finally {
@@ -226,29 +232,26 @@ public class ControlFlowHandler implements InvocationHandler {
             // ignore from now on
             FlowController.getInstance().stopTestCaseExecution(testContext);
 
-            TestStepInfoBean cause = new TestStepInfoBean();
-            cause.copyBaseInfoFrom(testStep);
-            cause.setError(testStep.getError());
-            cause.setErrorMessage(testStep.getErrorMessage());
+            TestStepInfoBean sysConnError = new TestStepInfoBean();
+            sysConnError.copyBaseInfoFrom(testStep);
+            sysConnError.setError(null);
+            sysConnError.setErrorMessage(error.getMessage());
 
-            // convert "original" test step to system connector error
-            testStep.setErrorMessage(error.getMessage());
-            testStep.setError(null);
             for (Attachment a : error.getAttachments()) {
-                testStep.addAttachment(a);
+                sysConnError.addAttachment(a);
             }
-            testStep.setTestStatus(error.getTestStatus());
-            cause.setTestStatus(error.getTestStatus());
+            sysConnError.setTestStatus(error.getTestStatus());
 
-            // also add test step with original failure
-            testContext.addTestStep(cause);
+            testContext.addTestStep(sysConnError);
 
             if (target instanceof Action) {
                 Action action = (Action) target;
                 for (Attachment attachment : action.createDebugAttachments()) {
-                    testStep.addAttachment(attachment);
+                    sysConnError.addAttachment(attachment);
                 }
             }
+
+            testContext.fireTestSteps();
         }
     }
 
