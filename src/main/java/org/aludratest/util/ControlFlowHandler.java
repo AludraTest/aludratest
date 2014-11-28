@@ -132,10 +132,12 @@ public class ControlFlowHandler implements InvocationHandler {
             if (!(target instanceof Condition)) {
                 // attach parameters, if applicable
                 attachAttachableParameters(testStep, method, args);
+                testContext.addTestStep(testStep);
             }
-            testContext.addTestStep(testStep);
             Object result = forwardWithRetry(method, args, testStep);
-            attachResultIfAttachable(testStep, method, result);
+            if (!(target instanceof Condition)) {
+                attachResultIfAttachable(testStep, method, result);
+            }
             return result;
         }
         catch (Exception e) { // NOSONAR

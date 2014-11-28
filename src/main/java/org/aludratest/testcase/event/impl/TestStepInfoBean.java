@@ -17,6 +17,7 @@ package org.aludratest.testcase.event.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,9 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.aludratest.exception.AutomationException;
 import org.aludratest.service.AludraService;
 import org.aludratest.service.ComponentId;
 import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.data.ParamConverter;
 import org.aludratest.testcase.event.TestStepArgumentMarker;
 import org.aludratest.testcase.event.TestStepInfo;
 import org.aludratest.testcase.event.attachment.Attachment;
@@ -205,13 +208,16 @@ public final class TestStepInfoBean implements TestStepInfo {
         for (int i = 0; i < parameters.length; i++) {
             Annotation[] paramAnnos = paramsAnnos[Math.min(i, paramsAnnos.length - 1)];
             boolean consumedArg = false;
+            // find converter, if present
+            Format paramFormat = findParamConverter(paramAnnos);
+
             for (Annotation paramAnno : paramAnnos) {
                 if (isTestArgumentMarkerAnnotation(paramAnno.annotationType())) {
                     List<Object> ls = fillMap.get(paramAnno.annotationType());
                     if (ls == null) {
                         fillMap.put(paramAnno.annotationType(), ls = new ArrayList<Object>());
                     }
-                    ls.add(parameters[i]);
+                    ls.add(paramFormat == null ? parameters[i] : paramFormat.format(parameters[i]));
                     consumedArg = true;
                 }
             }
@@ -220,7 +226,7 @@ public final class TestStepInfoBean implements TestStepInfo {
                 if (ls == null) {
                     fillMap.put(null, ls = new ArrayList<Object>());
                 }
-                ls.add(parameters[i]);
+                ls.add(paramFormat == null ? parameters[i] : paramFormat.format(parameters[i]));
             }
         }
 
@@ -228,6 +234,21 @@ public final class TestStepInfoBean implements TestStepInfo {
         for (Map.Entry<Class<? extends Annotation>, List<Object>> entry : fillMap.entrySet()) {
             setArguments(entry.getKey(), entry.getValue().toArray(new Object[0]));
         }
+    }
+
+    private Format findParamConverter(Annotation[] paramAnnos) {
+        for (Annotation a : paramAnnos) {
+            if (a.annotationType() == ParamConverter.class) {
+                try {
+                    return ((ParamConverter) a).value().newInstance();
+                }
+                catch (Exception e) {
+                    throw new AutomationException("Could not instantiate parameter converter class ", e);
+                }
+            }
+        }
+
+        return null;
     }
 
     private static boolean isTestArgumentMarkerAnnotation(Class<? extends Annotation> annoClass) {

@@ -16,9 +16,10 @@
 package org.aludratest.service.gui.web;
 
 import org.aludratest.service.gui.GUIInteraction;
+import org.aludratest.testcase.data.ParamConverter;
 
 /**
- * Specialization of the {@link GUIInteraction} interface 
+ * Specialization of the {@link GUIInteraction} interface
  * which adds features specific for Web GUIs.
  * @author Volker Bergmann
  */
@@ -46,6 +47,6 @@ public interface WebGUIInteraction extends GUIInteraction {
      * browser is configured to use the built in Selenium proxy.
      * @param key the header name
      * @param value the header value */
-    void addCustomHttpHeaderCommand(String key, String value);
+    void addCustomHttpHeaderCommand(String key, @ParamConverter(HttpHeaderFormat.class) String value);
 
 }

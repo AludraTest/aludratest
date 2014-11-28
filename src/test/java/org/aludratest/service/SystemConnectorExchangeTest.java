@@ -15,7 +15,6 @@
  */
 package org.aludratest.service;
 
-import static org.aludratest.impl.log4testing.util.LogUtil.LF;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -40,6 +39,8 @@ import org.aludratest.testcase.event.attachment.StringAttachment;
 public class SystemConnectorExchangeTest extends AbstractAludraServiceTest {
 
     private static ComponentId<PseudoService> SERVICE_ID = ComponentId.create(PseudoService.class, "localhost");
+
+    private static final String LF = "\n";
 
     /** The connector instance to be applied first */
     private static final PlainConnector connector1 = new PlainConnector();

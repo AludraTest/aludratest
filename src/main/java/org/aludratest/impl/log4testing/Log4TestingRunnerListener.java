@@ -32,7 +32,6 @@ import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
 import org.aludratest.testcase.event.TestStepInfo;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.codehaus.plexus.component.annotations.Component;
-import org.databene.commons.StringUtil;
 
 @Component(role = RunnerListener.class, hint = "log4testing")
 public class Log4TestingRunnerListener extends AbstractRunnerListener {
@@ -92,7 +91,6 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
             log.getLastTestStep().addAttachment(a);
         }
 
-        copyArgumentsFromTestStep(log, testStepInfo);
         log.getLastTestStep().setError(testStepInfo.getError());
         log.getLastTestStep().setErrorMessage(testStepInfo.getErrorMessage());
 
@@ -149,33 +147,6 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
                 parseRunnerTree((RunnerGroup) node, child);
             }
         }
-    }
-
-    private void copyArgumentsFromTestStep(TestCaseLog testCaseLog, TestStepInfo testStep) {
-        // extract technical locator, if any
-        Object[] params = testStep.getArguments(TechnicalLocator.class);
-        if (params.length > 0 && params[0] != null) {
-            testCaseLog.getLastTestStep().setTechnicalLocator(params[0].toString());
-        }
-
-        // extract element name and element type, if any
-        params = testStep.getArguments(ElementName.class);
-        if (params.length > 0 && params[0] != null) {
-            testCaseLog.getLastTestStep().setElementName(params[0].toString());
-        }
-        params = testStep.getArguments(ElementType.class);
-        if (params.length > 0 && params[0] != null) {
-            testCaseLog.getLastTestStep().setElementType(params[0].toString());
-        }
-
-        // combine other arguments
-        params = testStep.getArguments(null);
-        String[] strings = new String[params.length];
-        for (int i = 0; i < params.length; i++) {
-            strings[i] = params[i] == null ? "null" : params[i].toString();
-        }
-
-        testCaseLog.getLastTestStep().setUsedArguments(StringUtil.concat('\n', strings));
     }
 
 }

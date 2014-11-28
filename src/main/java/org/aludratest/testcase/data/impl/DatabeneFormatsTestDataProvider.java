@@ -90,7 +90,13 @@ public class DatabeneFormatsTestDataProvider implements TestDataProvider {
             for (int i = 0; i < paramCount; i++) {
                 String paramName = method.getName() + " param #" + i;
                 Source sourceAnno = getRequiredSourceAnnotation(paramsAnnos[i], paramName);
-                List<Data> paramValues = parseValuesForParam(sourceAnno, offsetAnno, parameterTypes[i], testClass);
+                List<Data> paramValues;
+                try {
+                    paramValues = parseValuesForParam(sourceAnno, offsetAnno, parameterTypes[i], testClass);
+                }
+                catch (ArrayIndexOutOfBoundsException ae) {
+                    throw new AutomationException("Error when parsing values for parameter " + paramName, ae);
+                }
                 paramValueLists.add(paramValues);
                 int dataSetCount = paramValues.size();
                 if (minDataSetCount < 0) {
