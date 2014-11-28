@@ -23,6 +23,7 @@ import java.util.List;
 import org.aludratest.config.impl.AludraTestingTestConfigImpl;
 import org.aludratest.data.configtests.ConfigTestWithMissingSource;
 import org.aludratest.data.configtests.ConfigTestWithAddidtionalConfigRow;
+import org.aludratest.data.configtests.ConfigTestWithHierarchy;
 import org.aludratest.data.configtests.ConfigTestWithIgnoreConfig;
 import org.aludratest.data.configtests.ConfigTestWithIgnoredMethod;
 import org.aludratest.data.configtests.ConfigTestWithMissingConfigRow;
@@ -38,6 +39,7 @@ import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.scheduler.node.RunnerNode;
 import org.aludratest.service.AbstractAludraServiceTest;
 import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.data.impl.TestConfigInfoHelper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -75,6 +77,16 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
         assertEquals(2, tests.size());
         assertNameAndStatus(tests.get(0), testClassName + ".test-testing Alice", TestStatus.PASSED);
         assertNameAndStatus(tests.get(1), testClassName + ".test-testing Bob", TestStatus.PASSED);
+    }
+
+    @Test
+    public void testHierarchy() {
+        String testClassName = ConfigTestWithHierarchy.class.getName();
+        RunnerTree tree = runTestsAndWait(ConfigTestWithHierarchy.class);
+        List<RunnerLeaf> tests = extractTestCaseList(tree.getRoot());
+        assertEquals(2, tests.size());
+        assertNameAndStatus(tests.get(0), testClassName + ".test-0", TestStatus.PASSED);
+        assertNameAndStatus(tests.get(1), testClassName + ".test-1", TestStatus.PASSED);
     }
 
     @Test
