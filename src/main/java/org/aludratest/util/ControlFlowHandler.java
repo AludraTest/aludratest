@@ -60,6 +60,8 @@ public class ControlFlowHandler implements InvocationHandler {
 
     private Throwable exceptionUnderErrorChecking;
 
+    private TestStepInfoBean stepUnderErrorChecking;
+
     private AludraTestContext testContext;
 
     /** If set to true, the instance will ignore further invocations after
@@ -85,7 +87,6 @@ public class ControlFlowHandler implements InvocationHandler {
         this.target = target;
         this.serviceId = serviceId;
         this.systemConnector = systemConnector;
-        this.exceptionUnderErrorChecking = null;
         this.testContext = testContext;
         this.stopOnException = stopOnException;
         this.logTestSteps = logTestSteps;
@@ -203,6 +204,9 @@ public class ControlFlowHandler implements InvocationHandler {
         setErrorAndStatus(currentTestStep, e);
         if (systemConnector != null && requiresErrorChecking(t)) {
             if (this.exceptionUnderErrorChecking != null) {
+                testContext.fireTestStep(stepUnderErrorChecking);
+                // marker for inner call
+                stepUnderErrorChecking = null;
                 String errorMessage = "An exception occurred while " + "SystemConnector '" + systemConnector + "' "
                         + "examined the cause of another exception. " + "Cancelled execution to avoid infinite recursion.";
                 currentTestStep.setErrorMessage(errorMessage);
@@ -211,10 +215,12 @@ public class ControlFlowHandler implements InvocationHandler {
                 testContext.fireTestStep(currentTestStep);
             } else {
                 this.exceptionUnderErrorChecking = t;
+                this.stepUnderErrorChecking = currentTestStep;
                 try {
                     checkAndLogErrors(currentTestStep);
                 } finally {
                     this.exceptionUnderErrorChecking = null;
+                    this.stepUnderErrorChecking = null;
                 }
             }
         }
@@ -228,7 +234,10 @@ public class ControlFlowHandler implements InvocationHandler {
         ErrorReport error = checkForError(systemConnector);
         if (error == null) {
             LOGGER.debug("No errors found by system connector {}", systemConnector);
-            testContext.fireTestStep(testStep);
+            // assert no recursion error occurred
+            if (stepUnderErrorChecking != null) {
+                testContext.fireTestStep(testStep);
+            }
         }
         else {
             LOGGER.debug("System connector {} reported error: {}", systemConnector, error);
