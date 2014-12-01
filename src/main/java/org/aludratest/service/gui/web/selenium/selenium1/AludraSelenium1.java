@@ -53,6 +53,8 @@ public class AludraSelenium1 extends AbstractSeleniumService implements AludraWe
 
     private State state;
 
+    private boolean openFailed;
+
     /** Default constructor as required by the framework */
     public AludraSelenium1() {
         this.state = State.CREATED;
@@ -100,13 +102,14 @@ public class AludraSelenium1 extends AbstractSeleniumService implements AludraWe
     @Override
     public void open() {
         assertState(State.INITIALIZED, "open()");
-        try {
-            interaction.open(configuration.getUrlOfAut());
-        }
-        finally {
-            // also in case of error, treat as OPEN to be able to perform additional steps (which will fail)
-            state = State.OPEN;
-        }
+
+        // mark a failed open() to return proxies in perform() etc. anyway
+        openFailed = true;
+
+        interaction.open(configuration.getUrlOfAut());
+
+        openFailed = false;
+        state = State.OPEN;
     }
 
     @Override
@@ -147,6 +150,9 @@ public class AludraSelenium1 extends AbstractSeleniumService implements AludraWe
 
     // private helpers ---------------------------------------------------------
     private void assertState(State expectedState, String operation) {
+        if (expectedState == State.OPEN && openFailed) {
+            return;
+        }
         if (this.state != expectedState) {
             throw new TechnicalException("Operation '" + operation + "' " +
                     "expects state '" + expectedState + "', but found " + this.state);

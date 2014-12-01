@@ -15,9 +15,7 @@
  */
 package org.aludratest.testcase.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.aludratest.exception.AutomationException;
@@ -42,8 +40,6 @@ public class AludraTestContextImpl implements AludraTestContext {
     /** A {@link Map} of the services used by the test. */
     private Map<ComponentId<?>, AludraService> loggingServices;
 
-    private List<TestStepInfo> testStepInfos = new ArrayList<TestStepInfo>();
-
     public AludraTestContextImpl(InternalTestListener testListener, AludraServiceManager serviceManager) {
         this.testListener = testListener;
         this.serviceManager = serviceManager;
@@ -53,16 +49,7 @@ public class AludraTestContextImpl implements AludraTestContext {
 
     @Override
     public void newTestStepGroup(String name) {
-        fireTestSteps();
         testListener.newTestStepGroup(name);
-    }
-
-    @Override
-    public void fireTestSteps() {
-        for (TestStepInfo step : testStepInfos) {
-            testListener.newTestStep(step);
-        }
-        testStepInfos.clear();
     }
 
     @Override
@@ -111,8 +98,6 @@ public class AludraTestContextImpl implements AludraTestContext {
 
     @Override
     public void closeServices() {
-        // fire test steps of last group
-        fireTestSteps();
         closeAll(nonLoggingServices);
         closeAll(loggingServices);
     }
@@ -136,10 +121,8 @@ public class AludraTestContextImpl implements AludraTestContext {
     }
 
     @Override
-    public void addTestStep(TestStepInfo step) {
-        if (!testStepInfos.contains(step)) {
-            testStepInfos.add(step);
-        }
+    public void fireTestStep(TestStepInfo step) {
+        testListener.newTestStep(step);
     }
 
     // private helper methods --------------------------------------------------

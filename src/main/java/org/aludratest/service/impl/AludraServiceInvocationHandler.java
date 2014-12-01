@@ -99,8 +99,8 @@ public class AludraServiceInvocationHandler implements InvocationHandler {
         // and offer e.g. Retry mechanism
         String methodName = method.getName();
         if (!methodName.matches("setSystemConnector|perform|verify|check|getDescription|getInstanceName|close")) {
-            return new ControlFlowHandler(realObject, serviceId, systemConnector, (AludraTestContext) context, false, true)
-                    .invoke(
+            return new ControlFlowHandler(realObject, serviceId, systemConnector, (AludraTestContext) context, true, true)
+            .invoke(
                     null, method, args);
         }
         return method.invoke(realObject, args);

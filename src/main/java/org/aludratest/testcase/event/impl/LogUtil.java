@@ -67,8 +67,7 @@ public class LogUtil {
             info.setTestStatus(TestStatus.IGNORED);
         }
 
-        testContext.addTestStep(info);
-        testContext.fireTestSteps();
+        testContext.fireTestStep(info);
     }
 
     public static void logErrorAsNewGroup(AludraTestContext testContext, String errorMessage, TestStatus status) {
@@ -79,8 +78,7 @@ public class LogUtil {
 
         info.setTestStatus(status);
 
-        testContext.addTestStep(info);
-        testContext.fireTestSteps();
+        testContext.fireTestStep(info);
     }
 
 }

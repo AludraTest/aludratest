@@ -113,7 +113,7 @@ public class ControlFlowHandler implements InvocationHandler {
                 testStep.setServiceId(serviceId);
                 testStep.setCommandNameAndArguments(method, args);
                 testStep.setTestStatus(TestStatus.IGNORED);
-                testContext.addTestStep(testStep);
+                testContext.fireTestStep(testStep);
             }
             return AludraTestUtil.nullOrPrimitiveDefault(method.getReturnType());
         }
@@ -132,24 +132,23 @@ public class ControlFlowHandler implements InvocationHandler {
      */
     private Object forwardAndHandleException(Method method, Object[] args) throws Throwable { //NOSONAR
         TestStepInfoBean testStep = new TestStepInfoBean();
+        TestStepInfoBean[] outArr = new TestStepInfoBean[1];
         try {
             testStep.setCommandNameAndArguments(method, args);
             if (logTestSteps) {
                 // attach parameters, if applicable
                 attachAttachableParameters(testStep, method, args);
-                testContext.addTestStep(testStep);
             }
-            Object result = forwardWithRetry(method, args, testStep);
+            Object result = forwardWithRetry(method, args, testStep, outArr);
+            testStep = outArr[0];
             if (logTestSteps) {
                 attachResultIfAttachable(testStep, method, result);
+                testContext.fireTestStep(testStep);
             }
             return result;
         }
         catch (Exception e) { // NOSONAR
-            // OK, also log if logTestSteps was false
-            if (!logTestSteps) {
-                testContext.addTestStep(testStep);
-            }
+            testStep = outArr[0];
             try {
                 handleException(e, testStep);
             } finally {
@@ -160,9 +159,6 @@ public class ControlFlowHandler implements InvocationHandler {
                 }
             }
             return AludraTestUtil.nullOrPrimitiveDefault(method.getReturnType());
-        }
-        finally {
-            testContext.fireTestSteps();
         }
     }
 
@@ -212,7 +208,7 @@ public class ControlFlowHandler implements InvocationHandler {
                 currentTestStep.setErrorMessage(errorMessage);
                 currentTestStep.setError(t);
                 currentTestStep.setTestStatus(TestStatus.FAILEDAUTOMATION);
-                // testContext.addTestStep(currentTestStep); // should already be added
+                testContext.fireTestStep(currentTestStep);
             } else {
                 this.exceptionUnderErrorChecking = t;
                 try {
@@ -222,6 +218,10 @@ public class ControlFlowHandler implements InvocationHandler {
                 }
             }
         }
+        else {
+            testContext.fireTestStep(currentTestStep);
+        }
+
     }
 
     private void checkAndLogErrors(TestStepInfoBean testStep) {
@@ -234,9 +234,10 @@ public class ControlFlowHandler implements InvocationHandler {
 
             // ignore from now on
             FlowController.getInstance().stopTestCaseExecution(testContext);
+            testContext.fireTestStep(testStep);
 
             TestStepInfoBean sysConnError = new TestStepInfoBean();
-            sysConnError.copyBaseInfoFrom(testStep);
+            sysConnError.copyBaseInfoFrom(testStep, true);
             sysConnError.setError(null);
             sysConnError.setErrorMessage(error.getMessage());
 
@@ -245,8 +246,6 @@ public class ControlFlowHandler implements InvocationHandler {
             }
             sysConnError.setTestStatus(error.getTestStatus());
 
-            testContext.addTestStep(sysConnError);
-
             if (target instanceof Action) {
                 Action action = (Action) target;
                 for (Attachment attachment : action.createDebugAttachments()) {
@@ -254,7 +253,7 @@ public class ControlFlowHandler implements InvocationHandler {
                 }
             }
 
-            testContext.fireTestSteps();
+            testContext.fireTestStep(sysConnError);
         }
     }
 
@@ -272,11 +271,13 @@ public class ControlFlowHandler implements InvocationHandler {
         return reporter != null ? reporter.checkForError() : null;
     }
 
-    private Object forwardWithRetry(Method method, Object[] args, TestStepInfoBean testStep) throws Throwable { // NOSONAR
+    private Object forwardWithRetry(Method method, Object[] args, TestStepInfoBean testStep, TestStepInfoBean[] outTestStep)
+            throws Throwable { // NOSONAR
         int retryCount = 0;
         boolean doRetry;
         Throwable recentException;
         TestStepInfoBean currentStep = testStep;
+        outTestStep[0] = currentStep;
         do {
             doRetry = false;
             try {
@@ -295,13 +296,13 @@ public class ControlFlowHandler implements InvocationHandler {
                     currentStep.setTestStatus(TestStatus.IGNORED);
                     currentStep.setErrorMessage("Ignored Exception: " + t.getMessage());
                     currentStep.setError(t);
-                    testContext.addTestStep(currentStep);
+                    testContext.fireTestStep(currentStep);
                     currentStep = new TestStepInfoBean();
-                    currentStep.copyBaseInfoFrom(testStep);
+                    currentStep.copyBaseInfoFrom(testStep, true);
+                    outTestStep[0] = currentStep;
                 }
             }
         } while (doRetry);
-        testContext.addTestStep(currentStep); // no-op if original step which has already been added
         throw recentException;
     }
 

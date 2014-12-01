@@ -46,14 +46,9 @@ public interface AludraTestContext extends AludraContext {
      * @param t the {@link Throwable} to be reported. */
     public void logError(String errorMessage, Throwable t);
 
-    /** Adds a test step to this context. Call {@link #fireTestSteps()} to fire all added test steps at once and reset the internal
-     * list of test steps.
+    /** Fires a new test step to all listeners of the current execution context.
      * 
-     * @param step Step to add to the internal list of steps of this context. */
-    public void addTestStep(TestStepInfo step);
-
-    /** Fires the whole internal list of test steps. Implementations will know where to fire it to. Afterwards, the internal list
-     * will be empty, so a second call to this method without adding a new test step has no effect. */
-    public void fireTestSteps();
+     * @param step Step to notify listeners about. */
+    public void fireTestStep(TestStepInfo step);
 
 }
