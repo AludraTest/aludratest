@@ -25,6 +25,11 @@ import org.aludratest.testcase.data.ParamConverter;
  */
 public interface WebGUIInteraction extends GUIInteraction {
 
+    /** Opens the main URL of the Application Unter Test (configuration property: <code>url.of.aut</code>) in a new browser window
+     * and waits until the page is fully loaded. This method has to be called before most methods of the <code>check()</code>,
+     * <code>perform()</code> and <code>verify()</code> objects can be used. */
+    public void open();
+
     /**
      * Refreshes the page of the currently selected window and waits until the
      * page is fully loaded.

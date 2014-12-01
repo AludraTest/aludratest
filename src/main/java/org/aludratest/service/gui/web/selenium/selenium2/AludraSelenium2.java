@@ -63,11 +63,6 @@ public class AludraSelenium2 extends AbstractSeleniumService implements AludraWe
     }
 
     @Override
-    public void open() {
-        interaction.open(configuration.getUrlOfAut());
-    }
-
-    @Override
     public WebGUIInteraction perform() {
         return this.interaction;
     }

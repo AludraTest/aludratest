@@ -124,7 +124,7 @@ public abstract class GUITest extends LocalTestCase {
 
     // Open test page
     private void openTestPage() {
-        aludraWebGUI.open();
+        aludraWebGUI.perform().open();
         aludraWebGUI.perform().windowMaximize();
         //		aludraWebGUI.perform().windowFocus();
         aludraWebGUI.perform().refresh();

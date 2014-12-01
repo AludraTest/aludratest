@@ -48,6 +48,7 @@ import com.thoughtworks.selenium.Selenium;
  * @author Joerg Langnickel
  * @author Volker Bergmann
  */
+@SuppressWarnings("javadoc")
 public class Selenium2Wrapper {
 
     // FIXME Currently, Selenium2 does not work with Selenium RC on configured hosts/ports, as far as I can see.
@@ -619,6 +620,10 @@ public class Selenium2Wrapper {
 
     public int getPauseBetweenRetries() {
         return configuration.getPauseBetweenRetries();
+    }
+
+    public SeleniumWrapperConfiguration getConfiguration() {
+        return configuration;
     }
 
 }

@@ -53,8 +53,6 @@ public class AludraSelenium1 extends AbstractSeleniumService implements AludraWe
 
     private State state;
 
-    private boolean openFailed;
-
     /** Default constructor as required by the framework */
     public AludraSelenium1() {
         this.state = State.CREATED;
@@ -100,43 +98,26 @@ public class AludraSelenium1 extends AbstractSeleniumService implements AludraWe
     }
 
     @Override
-    public void open() {
-        assertState(State.INITIALIZED, "open()");
-
-        // mark a failed open() to return proxies in perform() etc. anyway
-        openFailed = true;
-
-        interaction.open(configuration.getUrlOfAut());
-
-        openFailed = false;
-        state = State.OPEN;
-    }
-
-    @Override
     public WebGUIInteraction perform() {
-        // workaround to allow calls to "addCustomHttpHeaderCommand" before open().
-        // TODO clean location for addCustomHttpHeaderCommand has to be found!
-        if (state != State.OPEN && state != State.INITIALIZED) {
-            assertState(State.OPEN, "perform()");
-        }
+        assertState(State.INITIALIZED, "perform()");
         return this.interaction;
     }
 
     @Override
     public WebGUIVerification verify() {
-        assertState(State.OPEN, "verify()");
+        assertState(State.INITIALIZED, "verify()");
         return this.verification;
     }
 
     @Override
     public WebGUICondition check() {
-        assertState(State.OPEN, "check()");
+        assertState(State.INITIALIZED, "check()");
         return this.condition;
     }
 
     @Override
     public void close() {
-        if (this.state == State.INITIALIZED || this.state == State.OPEN) {
+        if (this.state == State.INITIALIZED) {
             this.state = State.CLOSED;
             LOGGER.info("Closed " + getDescription());
             try {
@@ -150,9 +131,6 @@ public class AludraSelenium1 extends AbstractSeleniumService implements AludraWe
 
     // private helpers ---------------------------------------------------------
     private void assertState(State expectedState, String operation) {
-        if (expectedState == State.OPEN && openFailed) {
-            return;
-        }
         if (this.state != expectedState) {
             throw new TechnicalException("Operation '" + operation + "' " +
                     "expects state '" + expectedState + "', but found " + this.state);
@@ -160,7 +138,7 @@ public class AludraSelenium1 extends AbstractSeleniumService implements AludraWe
     }
 
     static enum State {
-        CREATED, INITIALIZED, OPEN, CLOSED
+        CREATED, INITIALIZED, CLOSED
     }
 
 }
