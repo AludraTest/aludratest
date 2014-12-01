@@ -228,6 +228,7 @@ public class ControlFlowHandler implements InvocationHandler {
         ErrorReport error = checkForError(systemConnector);
         if (error == null) {
             LOGGER.debug("No errors found by system connector {}", systemConnector);
+            testContext.fireTestStep(testStep);
         }
         else {
             LOGGER.debug("System connector {} reported error: {}", systemConnector, error);
