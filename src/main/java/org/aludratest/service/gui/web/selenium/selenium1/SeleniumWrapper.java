@@ -16,6 +16,7 @@
 package org.aludratest.service.gui.web.selenium.selenium1;
 
 import org.aludratest.exception.AutomationException;
+import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.gui.component.Link;
@@ -707,9 +708,18 @@ public class SeleniumWrapper {
     private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout,
             boolean visible, boolean enabled, ElementCommand<T> command) {
         doBeforeDelegate(locator, visible, enabled, command.isInteraction());
-        T returnValue = command.call(locator);
-        doAfterDelegate(taskCompletionTimeout, command.toString());
-        return returnValue;
+        try {
+            T returnValue = command.call(locator);
+            doAfterDelegate(taskCompletionTimeout, command.toString());
+            return returnValue;
+        }
+        catch (SeleniumException e) {
+            String msg = e.getMessage();
+            if (msg != null && msg.matches("ERROR: Element .* not found")) {
+                throw new FunctionalFailure(msg);
+            }
+            throw e;
+        }
     }
 
     private void doBeforeDelegate(GUIElementLocator locator,
