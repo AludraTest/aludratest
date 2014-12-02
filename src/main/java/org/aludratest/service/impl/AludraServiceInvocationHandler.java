@@ -95,14 +95,6 @@ public class AludraServiceInvocationHandler implements InvocationHandler {
     // private helper methods --------------------------------------------------
 
     private Object invokeMethod(Object realObject, Method method, Object[] args) throws Throwable { // NOSONAR
-        // for non-proxied calls, invoke the real method with "direct" ControlFlowHandler call to handle exceptions properly
-        // and offer e.g. Retry mechanism
-        String methodName = method.getName();
-        if (!methodName.matches("setSystemConnector|perform|verify|check|getDescription|getInstanceName|close")) {
-            return new ControlFlowHandler(realObject, serviceId, systemConnector, (AludraTestContext) context, true, true)
-            .invoke(
-                    null, method, args);
-        }
         return method.invoke(realObject, args);
     }
 

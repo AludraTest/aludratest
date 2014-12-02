@@ -79,14 +79,11 @@ public final class TestStepInfoBean implements TestStepInfo {
      * 
      * @param otherTestStep Other test step object (e.g. previous test step) to copy information from.
      * @param includeAttachments If to include attachments in copy. */
-    public void copyBaseInfoFrom(TestStepInfoBean otherTestStep, boolean includeAttachments) {
+    public void copyBaseInfoFrom(TestStepInfoBean otherTestStep) {
         this.serviceId = otherTestStep.serviceId;
         this.command = otherTestStep.command;
         if (otherTestStep.arguments != null) {
             this.arguments = new HashMap<Class<? extends Annotation>, Object[]>(otherTestStep.arguments);
-        }
-        if (includeAttachments && otherTestStep.attachments != null) {
-            this.attachments = new ArrayList<Attachment>(otherTestStep.attachments);
         }
     }
 

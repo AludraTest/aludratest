@@ -247,7 +247,7 @@ public class ControlFlowHandler implements InvocationHandler {
             testContext.fireTestStep(testStep);
 
             TestStepInfoBean sysConnError = new TestStepInfoBean();
-            sysConnError.copyBaseInfoFrom(testStep, true);
+            sysConnError.copyBaseInfoFrom(testStep);
             sysConnError.setError(null);
             sysConnError.setErrorMessage(error.getMessage());
 
@@ -308,7 +308,7 @@ public class ControlFlowHandler implements InvocationHandler {
                     currentStep.setError(t);
                     testContext.fireTestStep(currentStep);
                     currentStep = new TestStepInfoBean();
-                    currentStep.copyBaseInfoFrom(testStep, true);
+                    currentStep.copyBaseInfoFrom(testStep);
                     outTestStep[0] = currentStep;
                 }
             }
