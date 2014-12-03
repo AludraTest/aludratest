@@ -502,6 +502,10 @@
 						<version>${helper.plugin.version}</version>
 					</dependency>
 				</dependencies>
+				<configuration>
+					<!-- never deploy, as GitHub site-deploy does it. -->
+					<skipDeploy>true</skipDeploy>
+				</configuration>
 			</plugin>
 		</plugins>
 
@@ -571,7 +575,7 @@
 				<artifactId>aludratest-helper-maven-plugin</artifactId>
 				<version>${helper.plugin.version}</version>
 			</plugin>
-
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -688,17 +692,6 @@
 							</execution>
 						</executions>
 					</plugin>
-
-					<!-- during release, force site-deploy, because default would be only 
-						"deploy" with our config (no distributionManagement element for sites) -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-release-plugin</artifactId>
-						<version>2.5.1</version>
-						<configuration>
-							<goals>deploy site-deploy</goals>
-						</configuration>
-					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -727,6 +720,11 @@
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
+		<site>
+			<!-- this is not used at all, as GitHub site-deploy is used. But site Plugin requires this to be here to work! -->
+			<id>local-dummy</id>
+			<url>file:/./target/site-deployment</url>
+		</site>
 	</distributionManagement>
 
 </project>
