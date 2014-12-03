@@ -15,26 +15,30 @@
  */
 package org.aludratest.util.data.helper;
 
-import org.aludratest.AludraTest;
-import org.aludratest.config.ComponentConfigurator;
+import org.aludratest.config.AludraTestConfig;
 import org.aludratest.data.DataConfiguration;
-import org.aludratest.data.DataConfigurationImpl;
+import org.aludratest.service.AludraServiceManager;
 
 public class DataMarkerCheck {
+
+    private static AludraTestConfig aludraConfiguration;
+
+    private static DataConfiguration dataConfiguration;
 
     /** Private constructor of utility class preventing instantiation by other classes */
     private DataMarkerCheck() {
     }
 
+    public static void init(AludraServiceManager serviceManager) {
+        dataConfiguration = serviceManager.newImplementorInstance(DataConfiguration.class);
+        aludraConfiguration = serviceManager.newImplementorInstance(AludraTestConfig.class);
+    }
+
     private static DataConfiguration getDataConfiguration() {
-        if (AludraTest.getInstance() != null) {
-            return AludraTest.getInstance().getServiceManager().newImplementorInstance(DataConfiguration.class);
+        if (dataConfiguration == null) {
+            throw new IllegalStateException("DataMarkerCheck class has not been initialized yet");
         }
-
-        DataConfigurationImpl impl = new DataConfigurationImpl();
-        ComponentConfigurator.configure(impl);
-        return impl;
-
+        return dataConfiguration;
     }
 
     public static boolean isNull(String string) {
@@ -64,6 +68,11 @@ public class DataMarkerCheck {
             }
         }
         return strings;
+    }
+
+    public static double getNumericTolerance() {
+        getDataConfiguration(); // to check init state
+        return aludraConfiguration.getNumericTolerance();
     }
 
 }

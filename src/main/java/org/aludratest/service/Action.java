@@ -17,7 +17,7 @@ package org.aludratest.service;
 
 import java.util.List;
 
-import org.aludratest.impl.log4testing.data.attachment.Attachment;
+import org.aludratest.testcase.event.attachment.Attachment;
 
 /** Parent interface for all service actions which can provide file-based information useful for debugging.
  * @author Joerg Langnickel

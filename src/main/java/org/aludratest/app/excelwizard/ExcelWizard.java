@@ -57,10 +57,15 @@ public class ExcelWizard extends JFrame {
         String rootPackage = (args.length > 0 ? args[0] : "org.aludratest");
 
         // start an AludraTest to retrieve configuration
-        AludraTest aludraTest = new AludraTest();
-        AludraTestConfig config = aludraTest.getServiceManager().newImplementorInstance(AludraTestConfig.class);
+        AludraTest aludraTest = AludraTest.startFramework();
+        try {
+            AludraTestConfig config = aludraTest.getServiceManager().newImplementorInstance(AludraTestConfig.class);
 
-        new ExcelWizard(rootPackage, config.getXlsRootPath()).setVisible(true);
+            new ExcelWizard(rootPackage, config.getXlsRootPath()).setVisible(true);
+        }
+        finally {
+            aludraTest.stopFramework();
+        }
     }
 
 

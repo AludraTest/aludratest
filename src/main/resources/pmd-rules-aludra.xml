@@ -27,7 +27,7 @@
 		<properties>
 			<!-- for now, also accept Data Helper package -->
 			<property name="allowedImportPrefixes"
-				value="java.lang.,java.util.,org.aludratest.util.data.helper." />
+				value="java.lang.,java.util.,org.globetest.util.data.helper." />
 		</properties>
 	</rule>
 

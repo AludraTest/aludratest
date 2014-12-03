@@ -15,28 +15,13 @@
  */
 package org.aludratest.service;
 
-import java.util.List;
 
-/**
- * Callback interface for systems to provide information asynchronously 
- * like {@link ErrorReport}s or activity statuses. 
+/** Callback interface for systems to provide information about asynchronous state changes of the system under test, e.g. busy
+ * indication or system error reports.
  * @author Volker Bergmann
- */
+ * @author falbrech */
 public interface SystemConnector {
 
-    /** @return the name of the system */
-    String getName();
-
-    /** 
-     * Tells if the system is ready to receive new requests or user actions.
-     * @return true if the system is ready to receive 
-     *      new requests or user actions, otherwise false */
-    boolean isBusy();
-
-    /** Called by the framework to get informations about errors which 
-     *  may have occurred asynchronously. Examples are AJAX error pop-ups 
-     *  on web pages or delivery failures on messaging systems.
-     *  @return a {@link List} of {@link ErrorReport}s or null */
-    List<ErrorReport> checkForErrors();
+    public <T extends SystemConnectorInterface> T getConnector(Class<T> interfaceClass);
 
 }

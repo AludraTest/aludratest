@@ -23,9 +23,9 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 
 import org.aludratest.impl.log4testing.data.TestStepLog;
-import org.aludratest.impl.log4testing.data.attachment.Attachment;
-import org.aludratest.impl.log4testing.data.attachment.StringAttachment;
 import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.event.attachment.Attachment;
+import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.joda.time.DateTime;
 import org.junit.Test;
 

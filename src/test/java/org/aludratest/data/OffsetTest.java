@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aludratest.AludraTest;
-import org.aludratest.AludraTestTest;
 import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.Offset;
 import org.aludratest.testcase.data.Source;
@@ -38,10 +37,11 @@ public class OffsetTest {
 
     @org.junit.Test
     public void test() {
-        AludraTestTest.setInstance(null);
-        new AludraTest().run(OffsetTestClass.class);
+        AludraTest aludraTest = AludraTest.startFramework();
+        aludraTest.run(OffsetTestClass.class);
         assertEquals(2, data0.size());
         assertEquals(1, data1.size());
+        aludraTest.stopFramework();
     }
 
     public static class OffsetTestClass extends AludraTestCase {

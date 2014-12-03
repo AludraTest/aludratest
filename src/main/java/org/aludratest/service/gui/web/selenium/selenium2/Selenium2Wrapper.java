@@ -22,9 +22,6 @@ import java.util.Map;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.TechnicalException;
-import org.aludratest.impl.log4testing.data.attachment.Attachment;
-import org.aludratest.impl.log4testing.data.attachment.BinaryAttachment;
-import org.aludratest.impl.log4testing.data.attachment.StringAttachment;
 import org.aludratest.service.gui.web.selenium.ConditionCheck;
 import org.aludratest.service.gui.web.selenium.ElementCommand;
 import org.aludratest.service.gui.web.selenium.ProxyPool;
@@ -35,6 +32,9 @@ import org.aludratest.service.gui.web.selenium.httpproxy.AuthenticatingHttpProxy
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.option.OptionLocator;
 import org.aludratest.service.locator.window.WindowLocator;
+import org.aludratest.testcase.event.attachment.Attachment;
+import org.aludratest.testcase.event.attachment.BinaryAttachment;
+import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +48,7 @@ import com.thoughtworks.selenium.Selenium;
  * @author Joerg Langnickel
  * @author Volker Bergmann
  */
+@SuppressWarnings("javadoc")
 public class Selenium2Wrapper {
 
     // FIXME Currently, Selenium2 does not work with Selenium RC on configured hosts/ports, as far as I can see.
@@ -82,18 +83,18 @@ public class Selenium2Wrapper {
                 try {
                     seleniumPort = Integer.parseInt(usedSeleniumHost.substring(usedSeleniumHost.indexOf(':') + 1).trim());
                     usedSeleniumHost = usedSeleniumHost.substring(0, usedSeleniumHost.indexOf(':'));
-                    // TODO where is this used?
                 }
                 catch (NumberFormatException e) {
                     LOGGER.error("Invalid host:port syntax for selenium host: " + usedSeleniumHost);
                 }
             }
 
-            this.selenium = new Selenium2Facade(configuration);
+            this.selenium = new Selenium2Facade(configuration, usedSeleniumHost, seleniumPort);
         } catch (Exception e) {
             LOGGER.error("Error initializing Selenium 2", e);
+            String host = usedSeleniumHost;
             forceCloseApplicationUnderTest();
-            throw new TechnicalException(e.getMessage() + ". Used Host = " + usedSeleniumHost, e);
+            throw new TechnicalException(e.getMessage() + ". Used Host = " + host, e);
         }
     }
 
@@ -619,6 +620,10 @@ public class Selenium2Wrapper {
 
     public int getPauseBetweenRetries() {
         return configuration.getPauseBetweenRetries();
+    }
+
+    public SeleniumWrapperConfiguration getConfiguration() {
+        return configuration;
     }
 
 }

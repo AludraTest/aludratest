@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.aludratest.AludraTest;
-import org.aludratest.AludraTestTest;
 import org.aludratest.LocalTestCase;
 import org.aludratest.impl.log4testing.data.TestLogger;
 import org.junit.Before;
@@ -43,9 +42,20 @@ public abstract class AbstractSchedulerTest extends LocalTestCase {
     /** Parses the given test class and
      *  executes its tests with the given pool size. */
     protected void executeTests(Class<?> suiteClass, int poolSize) {
-        AludraTestTest.setInstance(null);
-        RunnerTree tree = new AludraSuiteParser(new AludraTest()).parse(suiteClass.getName());
-        tree.performAllTestsAndWait(poolSize);
+        System.setProperty("ALUDRATEST_CONFIG/aludratest/number.of.threads", "" + poolSize);
+        AludraTest aludraTest = AludraTest.startFramework();
+
+        RunnerTreeBuilder builder = aludraTest.getServiceManager().newImplementorInstance(RunnerTreeBuilder.class);
+        RunnerTree tree = builder.buildRunnerTree(suiteClass);
+
+        AludraTestRunner runner = aludraTest.getServiceManager().newImplementorInstance(AludraTestRunner.class);
+        try {
+            runner.runAludraTests(tree);
+        }
+        finally {
+            aludraTest.stopFramework();
+            System.getProperties().remove("ALUDRATEST_CONFIG/aludratest/number.of.threads");
+        }
     }
 
     /** Asserts the given test invocation count.

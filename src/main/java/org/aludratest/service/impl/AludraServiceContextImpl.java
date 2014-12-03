@@ -15,20 +15,19 @@
  */
 package org.aludratest.service.impl;
 
-import org.aludratest.impl.log4testing.data.TestCaseLog;
+import org.aludratest.service.AludraContext;
 import org.aludratest.service.AludraService;
 import org.aludratest.service.AludraServiceContext;
 import org.aludratest.service.ComponentId;
-import org.aludratest.testcase.AludraTestContext;
 
 public final class AludraServiceContextImpl implements AludraServiceContext {
 
-    private AludraTestContext testContext;
+    private AludraContext delegate;
 
     private String instanceName;
 
-    public AludraServiceContextImpl(AludraTestContext testContext, String instanceName) {
-        this.testContext = testContext;
+    public AludraServiceContextImpl(AludraContext delegate, String instanceName) {
+        this.delegate = delegate;
         this.instanceName = instanceName;
     }
 
@@ -40,23 +39,28 @@ public final class AludraServiceContextImpl implements AludraServiceContext {
     @Override
     public <T extends AludraService> T getService(Class<T> serviceInterface) {
         ComponentId<T> id = ComponentId.create(serviceInterface, instanceName);
-        return testContext.getService(id);
+        return delegate.getService(id);
     }
 
     @Override
     public <T extends AludraService> T getNonLoggingService(Class<T> serviceInterface) {
         ComponentId<T> id = ComponentId.create(serviceInterface, instanceName);
-        return testContext.getNonLoggingService(id);
+        return delegate.getNonLoggingService(id);
     }
 
     @Override
     public <T> T newComponentInstance(Class<T> componentInterface) {
-        return testContext.newComponentInstance(componentInterface);
+        return delegate.newComponentInstance(componentInterface);
     }
 
     @Override
-    public TestCaseLog getTestCaseLog() {
-        return testContext.getTestCaseLog();
+    public <T extends AludraService> T getNonLoggingService(ComponentId<T> serviceId) {
+        return delegate.getNonLoggingService(serviceId);
+    }
+
+    @Override
+    public <T extends AludraService> T getService(ComponentId<T> serviceId) {
+        return delegate.getService(serviceId);
     }
 
 }

@@ -17,18 +17,25 @@ package org.aludratest.invoker;
 
 import org.aludratest.testcase.AludraTestContext;
 
-/** Abstraction of a test invoker. This is provided as extension point for hypothetical other test execution mechanisms than the
- * invocation of AludraTest Java test methods.
- * @see AludraTestMethodInvoker
+/** Abstraction of a test invoker. A test invoker is responsible to set up a test to execute with a given test context and to
+ * execute it.
+ * 
  * @author Volker Bergmann */
 public interface TestInvoker {
 
-    /** Callback method to inject the {@link AludraTestContext}
-     *  @param context */
+    /** Sets the test context to use for execution. The invoker is reponsible to provide it to the test to execute.
+     * @param context Test context to use for execution. */
     void setContext(AludraTestContext context);
 
-    /** Callback method to perform the test
-     *  @throws Throwable */
+    /** Performs the test.
+     * @throws Throwable */
     void invoke() throws Throwable; //NOSONAR
+
+    /** Returns the class which contains the test for execution, if any. <b>This is for documentational purposes only</b>, and
+     * <code>null</code> is permitted as return value if the test does not base on a class.
+     * 
+     * @return The class which contains the test for execution, or <code>null</code> if no class information is available for this
+     *         test. */
+    Class<?> getTestClass();
 
 }

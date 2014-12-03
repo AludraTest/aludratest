@@ -18,17 +18,15 @@ package org.aludratest.service.edifactfile;
 import static org.junit.Assert.assertEquals;
 
 import org.aludratest.service.AbstractAludraServiceTest;
-import org.aludratest.service.edifactfile.EdifactFileService;
-import org.aludratest.service.edifactfile.EdifactFileVerifier;
 import org.aludratest.testcase.TestStatus;
 import org.aludratest.util.data.StringData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-/** 
+/**
  * Tests the {@link EdifactFileService}.
- * @author Volker Bergmann 
+ * @author Volker Bergmann
  */
 @SuppressWarnings("javadoc")
 public class EdifactFileServiceIntegrationTest extends AbstractAludraServiceTest {

@@ -158,8 +158,9 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
         return StringUtil.nullToEmpty(text);
     }
 
-    public void open(String url) {
-        wrapper.open(url);
+    @Override
+    public void open() {
+        wrapper.open(wrapper.getConfiguration().getUrlOfAut());
     }
 
     @Override

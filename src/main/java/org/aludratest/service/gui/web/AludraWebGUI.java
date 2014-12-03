@@ -30,11 +30,6 @@ import org.aludratest.service.gui.AludraGUI;
     @ConfigProperty(name = "close.testapp.after.execution", type = boolean.class, description = "Indicates if the application under test shall be closed after test execution.", defaultValue = "true") })
 public interface AludraWebGUI extends AludraGUI {
 
-    /** Opens the main URL of the Application Unter Test (configuration property: <code>url.of.aut</code>) in a new browser window
-     * and waits until the page is fully loaded. This method has to be called before <code>check()</code>, <code>perform()</code>
-     * and <code>verify()</code> methods and their operations can be used. */
-    public void open();
-
     @Override
     public WebGUIInteraction perform();
 

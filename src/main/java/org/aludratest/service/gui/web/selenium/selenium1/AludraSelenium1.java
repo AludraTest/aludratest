@@ -98,37 +98,26 @@ public class AludraSelenium1 extends AbstractSeleniumService implements AludraWe
     }
 
     @Override
-    public void open() {
-        assertState(State.INITIALIZED, "open()");
-        interaction.open(configuration.getUrlOfAut());
-        state = State.OPEN;
-    }
-
-    @Override
     public WebGUIInteraction perform() {
-        // workaround to allow calls to "addCustomHttpHeaderCommand" before open().
-        // TODO clean location for addCustomHttpHeaderCommand has to be found!
-        if (state != State.OPEN && state != State.INITIALIZED) {
-            assertState(State.OPEN, "perform()");
-        }
+        assertState(State.INITIALIZED, "perform()");
         return this.interaction;
     }
 
     @Override
     public WebGUIVerification verify() {
-        assertState(State.OPEN, "verify()");
+        assertState(State.INITIALIZED, "verify()");
         return this.verification;
     }
 
     @Override
     public WebGUICondition check() {
-        assertState(State.OPEN, "check()");
+        assertState(State.INITIALIZED, "check()");
         return this.condition;
     }
 
     @Override
     public void close() {
-        if (this.state == State.INITIALIZED || this.state == State.OPEN) {
+        if (this.state == State.INITIALIZED) {
             this.state = State.CLOSED;
             LOGGER.info("Closed " + getDescription());
             try {
@@ -149,7 +138,7 @@ public class AludraSelenium1 extends AbstractSeleniumService implements AludraWe
     }
 
     static enum State {
-        CREATED, INITIALIZED, OPEN, CLOSED
+        CREATED, INITIALIZED, CLOSED
     }
 
 }

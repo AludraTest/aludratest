@@ -15,12 +15,11 @@
  */
 package org.aludratest.service;
 
-import static org.aludratest.impl.log4testing.util.LogUtil.LF;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 import org.aludratest.config.impl.AludraTestingTestConfigImpl;
 import org.aludratest.impl.log4testing.data.TestCaseLog;
@@ -31,12 +30,17 @@ import org.aludratest.service.pseudo.PseudoService;
 import org.aludratest.service.util.AbstractSystemConnector;
 import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.event.ErrorReport;
+import org.aludratest.testcase.event.SystemErrorReporter;
+import org.aludratest.testcase.event.attachment.StringAttachment;
 
 /** Verifies that SystemConnectors can be exchanged dynamically on a service.
  * @author Volker Bergmann */
 public class SystemConnectorExchangeTest extends AbstractAludraServiceTest {
 
     private static ComponentId<PseudoService> SERVICE_ID = ComponentId.create(PseudoService.class, "localhost");
+
+    private static final String LF = "\n";
 
     /** The connector instance to be applied first */
     private static final PlainConnector connector1 = new PlainConnector();
@@ -65,7 +69,7 @@ public class SystemConnectorExchangeTest extends AbstractAludraServiceTest {
 
             // THEN the following reporting characteristics are expected
             assertTrue("ErrorConnector #1 has not been called", connector1.invoked);
-            assertTrue("ErrorConnector #2 has not been called", connector2.invoked);
+            assertFalse("ErrorConnector #2 has been called despite previous error", connector2.invoked);
             assertEquals(TestStatus.FAILED, testCase.getStatus());
             TestStepGroup group1 = testCase.getTestStepGroups().get(0);
             assertEquals("succeed", group1.getTestStep(0).getCommand());
@@ -99,7 +103,7 @@ public class SystemConnectorExchangeTest extends AbstractAludraServiceTest {
     }
 
     /** {@link SystemConnector} implementation which reports a fix {@link ErrorReport}. */
-    static class PlainConnector extends AbstractSystemConnector {
+    static class PlainConnector extends AbstractSystemConnector implements SystemErrorReporter {
 
         public PlainConnector() {
             super("system");
@@ -109,18 +113,17 @@ public class SystemConnectorExchangeTest extends AbstractAludraServiceTest {
 
         /** Reports a single fix {@link ErrorReport}. */
         @Override
-        public List<ErrorReport> checkForErrors() {
+        public ErrorReport checkForError() {
             this.invoked = true;
-            testCase.newTestStep(TestStatus.PASSED, "system connector action", "...");
-            List<ErrorReport> errors = new ArrayList<ErrorReport>();
+            // testCase.newTestStep(TestStatus.PASSED, "system connector action", "...");
             String errorMessage = "The system refuses to coooperate for personal reasons";
             String stackTrace = "com.example.ExampleError: I'll provide this info to anybody but you" + LF
                     + "at com.example.Blabla.fail(ThePseudoInteraction.java:22)" + LF
                     + "at com.example.Blabla.invoke0(Native Method)" + LF
                     + "at com.example.NativeMethodAccessorImpl.invoke(Unknown Source)" + LF
                     + "at com.example.DelegatingMethodAccessorImpl.invoke(Unknown Source)";
-            errors.add(new ErrorReport("123", errorMessage, "GeneralError", stackTrace));
-            return errors;
+            return new ErrorReport("123", errorMessage, Collections.singleton(new StringAttachment("Server Stack Trace",
+                    stackTrace, "txt")));
         }
 
     }

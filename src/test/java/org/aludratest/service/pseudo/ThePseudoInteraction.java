@@ -20,9 +20,9 @@ import java.util.List;
 
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.TechnicalException;
-import org.aludratest.impl.log4testing.data.attachment.Attachment;
-import org.aludratest.impl.log4testing.data.attachment.StringAttachment;
 import org.aludratest.service.SystemConnector;
+import org.aludratest.testcase.event.attachment.Attachment;
+import org.aludratest.testcase.event.attachment.StringAttachment;
 
 /**
  * Pseudo interaction implementation for testing.

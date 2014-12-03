@@ -16,16 +16,19 @@
 package org.aludratest.service.gui.web.selenium.selenium2;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.BrowserType;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 
 public enum Drivers {
 
-    FIREFOX(BrowserType.FIREFOX, FirefoxDriver.class), INTERNET_EXPLORER(BrowserType.IE, InternetExplorerDriver.class), HTML_UNIT(BrowserType.HTMLUNIT, HtmlUnitDriver.class), CHROME(
-            BrowserType.CHROME, InternetExplorerDriver.class), SAFARI(BrowserType.SAFARI, SafariDriver.class);
+    FIREFOX(BrowserType.FIREFOX, FirefoxDriver.class), INTERNET_EXPLORER(BrowserType.IE, InternetExplorerDriver.class), HTML_UNIT(
+            BrowserType.HTMLUNIT, HtmlUnitDriver.class), CHROME(BrowserType.GOOGLECHROME, ChromeDriver.class), SAFARI(
+                    BrowserType.SAFARI, SafariDriver.class), PHANTOMJS(BrowserType.PHANTOMJS, RemoteWebDriver.class);
 
     private String browserName;
     private Class<? extends WebDriver> driverClass;

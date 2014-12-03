@@ -16,13 +16,19 @@
 package org.aludratest.service.gui.web;
 
 import org.aludratest.service.gui.GUIInteraction;
+import org.aludratest.testcase.data.ParamConverter;
 
 /**
- * Specialization of the {@link GUIInteraction} interface 
+ * Specialization of the {@link GUIInteraction} interface
  * which adds features specific for Web GUIs.
  * @author Volker Bergmann
  */
 public interface WebGUIInteraction extends GUIInteraction {
+
+    /** Opens the main URL of the Application Unter Test (configuration property: <code>url.of.aut</code>) in a new browser window
+     * and waits until the page is fully loaded. This method has to be called before most methods of the <code>check()</code>,
+     * <code>perform()</code> and <code>verify()</code> objects can be used. */
+    public void open();
 
     /**
      * Refreshes the page of the currently selected window and waits until the
@@ -46,6 +52,6 @@ public interface WebGUIInteraction extends GUIInteraction {
      * browser is configured to use the built in Selenium proxy.
      * @param key the header name
      * @param value the header value */
-    void addCustomHttpHeaderCommand(String key, String value);
+    void addCustomHttpHeaderCommand(String key, @ParamConverter(HttpHeaderFormat.class) String value);
 
 }

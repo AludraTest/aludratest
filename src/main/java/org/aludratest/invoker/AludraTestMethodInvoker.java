@@ -80,6 +80,11 @@ public class AludraTestMethodInvoker implements TestInvoker {
         }
     }
 
+    @Override
+    public Class<?> getTestClass() {
+        return testObject.getClass();
+    }
+
     /** Creates a String representation of the object. */
     @Override
     public String toString() {

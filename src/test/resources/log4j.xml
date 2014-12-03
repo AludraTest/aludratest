@@ -19,6 +19,19 @@
       </layout>
    </appender>
 
+   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+      <!--errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/-->
+
+      <param name="Target" value="System.out"/>
+      <param name="Threshold" value="info"/>
+
+      <layout class="org.apache.log4j.PatternLayout">
+         <!-- The default pattern: Date Priority [Category] Message\n -->
+         <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p (%t) [%c{1}] %m%n"/>
+      </layout>
+   </appender>
+   
+
    <!-- ================ -->
    <!-- Limit categories -->
    <!-- ================ -->

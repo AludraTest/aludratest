@@ -15,10 +15,8 @@
  */
 package org.aludratest.service.util;
 
-import java.util.List;
-
-import org.aludratest.service.ErrorReport;
 import org.aludratest.service.SystemConnector;
+import org.aludratest.service.SystemConnectorInterface;
 import org.aludratest.util.ControlFlowHandler;
 
 /** Permits separation of an {@link SystemConnector} reference and its implementation. This is used by the
@@ -42,20 +40,8 @@ public class SystemConnectorProxy implements SystemConnector {
     }
 
     @Override
-    public String getName() {
-        return (realConnector != null ? realConnector.getName() : null);
-    }
-
-    /** Forwards the invocation to the {@link #realConnector}. */
-    @Override
-    public boolean isBusy() {
-        return (realConnector != null ? realConnector.isBusy() : false);
-    }
-
-    /** Forwards the invocation to the {@link #realConnector}. */
-    @Override
-    public List<ErrorReport> checkForErrors() {
-        return (realConnector != null ? realConnector.checkForErrors() : null);
+    public <T extends SystemConnectorInterface> T getConnector(Class<T> interfaceClass) {
+        return (realConnector != null ? realConnector.getConnector(interfaceClass) : null);
     }
 
 

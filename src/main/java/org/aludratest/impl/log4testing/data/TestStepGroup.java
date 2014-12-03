@@ -49,6 +49,7 @@ public class TestStepGroup extends TestStepContainer {
     }
 
     /** @return the number of TestSteps */
+    @Override
     public int getNumberOfTestSteps() {
         return testSteps.size();
     }
@@ -87,6 +88,12 @@ public class TestStepGroup extends TestStepContainer {
         testStep.setComment(comment);
         testStep.setStatus(status);
         return testStep;
+    }
+
+    public void newTestStep(TestStepLog testStep) {
+        this.testSteps.add(testStep);
+        testStep.start();
+        testStep.finish();
     }
 
     /** @return the {@link #testSteps}  */

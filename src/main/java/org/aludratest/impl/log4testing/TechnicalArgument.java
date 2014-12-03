@@ -20,12 +20,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.aludratest.testcase.event.TestStepArgumentMarker;
+
 /**
  * Marks a service method argument to be logged as technical argument. 
  * @author Volker Bergmann
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
+@TestStepArgumentMarker
 public @interface TechnicalArgument {
 
 }

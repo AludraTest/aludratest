@@ -18,12 +18,15 @@ package org.aludratest.impl.log4testing;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.aludratest.testcase.event.TestStepArgumentMarker;
+
 /**
  * Marks a service method argument to be logged as element type. 
  * @author Volker Bergmann
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target(java.lang.annotation.ElementType.PARAMETER)
+@TestStepArgumentMarker
 public @interface ElementType {
 
 }

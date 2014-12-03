@@ -18,7 +18,7 @@ package org.aludratest.exception;
 import org.aludratest.testcase.TestStatus;
 
 /** Indicates an error condition that is likely to be the result of a test programmer's fault.
- * @author Volker Bergmann */
+ * @author volker.bergmann@bergmann-it.de */
 public final class AutomationException extends AludraTestException {
 
     private static final long serialVersionUID = 1L;

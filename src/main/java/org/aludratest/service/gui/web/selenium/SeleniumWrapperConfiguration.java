@@ -226,8 +226,7 @@ public final class SeleniumWrapperConfiguration {
      * @return <code>true</code> if a remote driver shall be used, <code>false</code> otherwise.
      */
     public boolean isUsingRemoteDriver() {
-        // TODO remove chrome dirt
-        return !"CHROME".equals(getDriverName());
+        return Boolean.valueOf(configuration.getStringValue("use.remotedriver", "false")).booleanValue();
     }
 
 }

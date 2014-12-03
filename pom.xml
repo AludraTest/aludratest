@@ -340,6 +340,20 @@
 				</configuration>
 			</plugin>
 
+			<!-- generate (amend) components.xml for Plexus -->
+			<plugin>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-component-metadata</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate-metadata</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 			<!-- download and extract JQuery JS during generate-resources -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -521,6 +535,27 @@
 										<ignore></ignore>
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.plexus
+										</groupId>
+										<artifactId>
+											plexus-component-metadata
+										</artifactId>
+										<versionRange>
+											[1.6,)
+										</versionRange>
+										<goals>
+											<goal>
+												generate-metadata
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -642,7 +677,7 @@
 							<message>Updating site for ${project.artifactId}
 								${project.version}</message>
 							<repositoryOwner>AludraTest</repositoryOwner>
-							<repositoryName>aludratest-helper-maven-plugin</repositoryName>
+							<repositoryName>aludratest</repositoryName>
 						</configuration>
 						<executions>
 							<execution>
@@ -655,7 +690,7 @@
 					</plugin>
 
 					<!-- during release, force site-deploy, because default would be only 
-						"deploy" with our config -->
+						"deploy" with our config (no distributionManagement element for sites) -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-release-plugin</artifactId>

@@ -15,9 +15,8 @@
  */
 package org.aludratest.scheduler.node;
 
-import org.aludratest.impl.log4testing.data.TestCaseLog;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.aludratest.invoker.TestInvoker;
+import org.aludratest.scheduler.RunStatus;
 
 /**
  * {@link RunnerNode} implementation which represents a leaf,
@@ -25,66 +24,67 @@ import org.slf4j.LoggerFactory;
  * object implementing the {@link Runnable} interface.
  * @author Volker Bergmann
  */
-public class RunnerLeaf extends RunnerNode implements Runnable {
+public final class RunnerLeaf extends RunnerNode {
 
-    /** The {@link Logger} of the class. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RunnerLeaf.class);
+    private final TestInvoker testInvoker;
 
-    /** The test {@link Runnable} to execute in {@link #run()}. */
-    private final Runnable runnable;
+    private RunStatus runStatus;
 
-    protected final TestCaseLog logCase;
-
-    private boolean finished;
+    private int id;
 
     /** Constructor requiring the tree path and the runnable to execute.
-     *  @param path
-     *  @param parent
-     *  @param runnable
-     *  @param logCase */
-    public RunnerLeaf(String path, RunnerGroup parent, Runnable runnable, TestCaseLog logCase) {
+     * @param id The ID of the test case, assigned by the tree builder.
+     * @param path
+     * @param parent
+     * @param testInvoker */
+    public RunnerLeaf(int id, String path, RunnerGroup parent, TestInvoker testInvoker) {
         super(path, parent);
-        this.runnable = runnable;
-        this.logCase = logCase;
-        this.finished = false;
+        this.id = id;
+        this.testInvoker = testInvoker;
+        this.runStatus = RunStatus.WAITING;
     }
 
-    /** Implements {@link Runnable#run()} delegation work
-     *  to the wrapped {@link #runnable} */
-    @Override
-    public void run() {
-        LOGGER.debug("Starting " + runnable);
-
-        // rename current Thread for logging purposes
-        String oldName = Thread.currentThread().getName();
-        Thread.currentThread().setName("RunnerLeaf " + getLogCase().getId());
-
-        try {
-            runnable.run();
-            this.finished = true;
-            LOGGER.debug("Finished " + runnable);
-            Thread.currentThread().setName(oldName);
-            parent.childFinished(this);
-        }
-        finally {
-            Thread.currentThread().setName(oldName);
-        }
+    public TestInvoker getTestInvoker() {
+        return testInvoker;
     }
 
     /** Creates a string representation of the leaf. */
     @Override
     public String toString() {
-        return "leaf:[" + runnable + "], path:" + name;
+        return "leaf:[" + testInvoker + "], path:" + name;
     }
 
     @Override
-    public boolean hasFinished() {
-        return finished;
+    public RunStatus getRunStatus() {
+        return runStatus;
     }
 
-    /** @return the {@link #logCase} */
-    public TestCaseLog getLogCase() {
-        return logCase;
+    public void setRunStatus(RunStatus runStatus) {
+        this.runStatus = runStatus;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+
+        RunnerLeaf leaf = (RunnerLeaf) obj;
+        return leaf.id == id;
+    }
 }

@@ -16,10 +16,8 @@
 package org.aludratest.service.gui.web.selenium.selenium1;
 
 import org.aludratest.exception.AutomationException;
+import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.TechnicalException;
-import org.aludratest.impl.log4testing.data.attachment.Attachment;
-import org.aludratest.impl.log4testing.data.attachment.BinaryAttachment;
-import org.aludratest.impl.log4testing.data.attachment.StringAttachment;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.gui.component.Link;
 import org.aludratest.service.gui.web.selenium.ConditionCheck;
@@ -34,6 +32,9 @@ import org.aludratest.service.locator.window.TitleLocator;
 import org.aludratest.service.locator.window.WindowLocator;
 import org.aludratest.service.util.ServiceUtil;
 import org.aludratest.service.util.TaskCompletionUtil;
+import org.aludratest.testcase.event.attachment.Attachment;
+import org.aludratest.testcase.event.attachment.BinaryAttachment;
+import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -707,9 +708,18 @@ public class SeleniumWrapper {
     private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout,
             boolean visible, boolean enabled, ElementCommand<T> command) {
         doBeforeDelegate(locator, visible, enabled, command.isInteraction());
-        T returnValue = command.call(locator);
-        doAfterDelegate(taskCompletionTimeout, command.toString());
-        return returnValue;
+        try {
+            T returnValue = command.call(locator);
+            doAfterDelegate(taskCompletionTimeout, command.toString());
+            return returnValue;
+        }
+        catch (SeleniumException e) {
+            String msg = e.getMessage();
+            if (msg != null && msg.matches("ERROR: Element .* not found")) {
+                throw new FunctionalFailure(msg);
+            }
+            throw e;
+        }
     }
 
     private void doBeforeDelegate(GUIElementLocator locator,

@@ -17,7 +17,7 @@ package org.aludratest.util;
 
 /** Interface for classes which provide data.
  * @param <E> the type of the provided value
- * @author Volker Bergmann */
+ * @author volker.bergmann@bergmann-it.de */
 public interface Provider<E> {
 
     /** Returns the name of the provider

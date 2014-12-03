@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * The column (or row) bearing the description must have the header 'testConfiguration'.
  * @author Volker Bergmann
  * @author Yibo Wang */
-class TestConfigInfoHelper {
+public class TestConfigInfoHelper {
 
     /** The class' slf4j logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(TestConfigInfoHelper.class);
@@ -71,7 +71,7 @@ class TestConfigInfoHelper {
      * @param method the method for which to determine the test infos
      * @param invocations the expected number of invocations
      * @return a List of the test infos for the method */
-    List<TestDataLoadInfo> testInfos(Method method, int invocations) {
+    public List<TestDataLoadInfo> testInfos(Method method, int invocations) {
         // check if the Excel document is available
         String excelFilePath = testConfigurationFilePath(method);
         if (excelFilePath == null) {
@@ -228,7 +228,7 @@ class TestConfigInfoHelper {
             return null;
         }
         String absoluteFilePath = SystemInfo.getCurrentDir() + File.separator
- + aludraConfig.getXlsRootPath();
+                + aludraConfig.getXlsRootPath();
         absoluteFilePath = absoluteFilePath.replace('/', File.separatorChar);
         absoluteFilePath = absoluteFilePath + File.separatorChar + testClass.getName().replace('.', File.separatorChar);
         return absoluteFilePath + File.separator + localFileName;

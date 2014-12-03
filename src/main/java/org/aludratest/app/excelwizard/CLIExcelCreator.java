@@ -20,8 +20,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.aludratest.AludraTest;
-import org.aludratest.AludraTestConstants;
 import org.aludratest.config.AludraTestConfig;
+import org.aludratest.impl.AludraTestConstants;
 import org.databene.commons.BeanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,17 +51,23 @@ public class CLIExcelCreator {
         checkArguments(args);
 
         // create a new AludraTest instance to have configuration framework available
-        AludraTest aludraTest = new AludraTest();
-        AludraTestConfig config = aludraTest.getServiceManager().newImplementorInstance(AludraTestConfig.class);
-        Class<?> testClass = getTestClass(args);
-        List<Method> testMethodsWithExcelSource = WizardUtil.getTestMethodsWithExcelSource(testClass);
-        if (!testMethodsWithExcelSource.isEmpty()) {
-            LOGGER.info("Generating Excel documents for test class {}", testClass.getName());
-            for (Method testMethod : testMethodsWithExcelSource) {
-                ExcelCreationUtil.createDocuments(testMethod, null, config.getXlsRootPath());
+        AludraTest aludraTest = AludraTest.startFramework();
+        try {
+            AludraTestConfig config = aludraTest.getServiceManager().newImplementorInstance(AludraTestConfig.class);
+            Class<?> testClass = getTestClass(args);
+            List<Method> testMethodsWithExcelSource = WizardUtil.getTestMethodsWithExcelSource(testClass);
+            if (!testMethodsWithExcelSource.isEmpty()) {
+                LOGGER.info("Generating Excel documents for test class {}", testClass.getName());
+                for (Method testMethod : testMethodsWithExcelSource) {
+                    ExcelCreationUtil.createDocuments(testMethod, null, config.getXlsRootPath());
+                }
             }
-        } else {
-            LOGGER.info("Test class {} does not have test methods with Excel sources", testClass.getName());
+            else {
+                LOGGER.info("Test class {} does not have test methods with Excel sources", testClass.getName());
+            }
+        }
+        finally {
+            aludraTest.stopFramework();
         }
     }
 

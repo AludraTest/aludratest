@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 public @interface InternalComponent {
 
     /** If <code>true</code>, ensures that this service will only be instantiated once. Additional calls to
-     * {@link org.aludratest.service.impl.AludraServiceManager#newImplementorInstance(Class)} will receive the same instance.
+     * {@link org.aludratest.service.AludraServiceManager#newImplementorInstance(Class)} will receive the same instance.
      * 
      * @return <code>true</code> if only one instance of the marked class shall be instantiated at runtime, <code>false</code>
      *         otherwise. */

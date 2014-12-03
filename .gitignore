@@ -2,3 +2,4 @@
 /bin
 *.log
 .settings/org.sonar.*
+/target

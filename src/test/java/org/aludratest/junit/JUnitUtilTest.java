@@ -19,8 +19,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.aludratest.impl.log4testing.data.TestLogger;
-import org.aludratest.junit.JUnitUtil;
 import org.aludratest.scheduler.node.ExecutionMode;
 import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerLeaf;
@@ -37,7 +35,7 @@ public class JUnitUtilTest {
      *  for {@link RunnerLeaf} instances. */
     @Test
     public void testCreateDescriptionForLeaf() {
-        RunnerLeaf leaf = new RunnerLeaf("path", null, null, null);
+        RunnerLeaf leaf = new RunnerLeaf(1, "path", null, null);
         Description description = JUnitUtil.createDescription(leaf, getClass());
         assertNotNull(description);
         assertEquals(getClass(), description.getTestClass());
@@ -50,8 +48,8 @@ public class JUnitUtilTest {
      *  for {@link RunnerGroup} instances. */
     @Test
     public void testCreateDescriptionForGroup() {
-        RunnerGroup group = new RunnerGroup("path", ExecutionMode.SEQUENTIAL, null, null, TestLogger.getTestSuite("suite"));
-        RunnerLeaf leaf = new RunnerLeaf("path/p1", null, null, TestLogger.getTestCase("case"));
+        RunnerGroup group = new RunnerGroup("path", ExecutionMode.SEQUENTIAL, null);
+        RunnerLeaf leaf = new RunnerLeaf(2, "path/p1", null, null);
         group.addChild(leaf);
         Description description = JUnitUtil.createDescription(group, getClass());
         assertTrue(description.isSuite());

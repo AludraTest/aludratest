@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 
 import org.aludratest.AludraTest;
-import org.aludratest.AludraTestTest;
 import org.aludratest.LocalTestCase;
 import org.aludratest.impl.log4testing.data.TestCaseLog;
 import org.aludratest.impl.log4testing.data.TestLogger;
@@ -28,8 +27,9 @@ import org.aludratest.service.ComponentId;
 import org.aludratest.service.gui.web.AludraWebGUI;
 import org.aludratest.service.gui.web.selenium.selenium1.AludraSelenium1;
 import org.aludratest.service.gui.web.selenium.selenium2.AludraSelenium2;
-import org.aludratest.testcase.AludraTestContext;
+import org.aludratest.service.util.DirectLogTestListener;
 import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.impl.AludraTestContextImpl;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,6 +40,8 @@ import org.junit.Before;
  */
 @SuppressWarnings("javadoc")
 public abstract class GUITest extends LocalTestCase {
+
+    private AludraTest aludraTest;
 
     protected AludraWebGUI aludraWebGUI;
     protected GUITestUIMap guiTestUIMap;
@@ -55,12 +57,12 @@ public abstract class GUITest extends LocalTestCase {
     public void initializeAludra() {
         if (shallPerformLocalTests()) {
             // reset AludraTest instance, if there is already one created
-            AludraTestTest.setInstance(null);
+            aludraTest = AludraTest.startFramework();
 
             // set test case instance, gives every test method a new ID
             tCase = TestLogger.getTestCase(this.getClass().getName() + testMethodID++);
             tCase.newTestStepGroup("initialization");
-            setContext(new AludraTestContext(tCase, new AludraTest()));
+            setContext(new AludraTestContextImpl(new DirectLogTestListener(tCase), aludraTest.getServiceManager()));
 
             // configure aludra service with url.of.aut
             System.setProperty("ALUDRATEST_CONFIG/seleniumWrapper/_testui/url.of.aut", getSeleniumLinkForTestPage());
@@ -81,7 +83,9 @@ public abstract class GUITest extends LocalTestCase {
         if (aludraWebGUI != null) { // if precondition is violated, the service has not been initialized
             closeService(serviceId);
         }
-        AludraTestTest.setInstance(null);
+        if (aludraTest != null) {
+            aludraTest.stopFramework();
+        }
     }
 
     protected static void activateSelenium1() {
@@ -120,7 +124,7 @@ public abstract class GUITest extends LocalTestCase {
 
     // Open test page
     private void openTestPage() {
-        aludraWebGUI.open();
+        aludraWebGUI.perform().open();
         aludraWebGUI.perform().windowMaximize();
         //		aludraWebGUI.perform().windowFocus();
         aludraWebGUI.perform().refresh();

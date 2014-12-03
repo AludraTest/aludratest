@@ -18,9 +18,7 @@ package org.aludratest.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.aludratest.impl.log4testing.data.TestCaseLog;
 import org.aludratest.impl.log4testing.data.TestLogger;
@@ -30,6 +28,8 @@ import org.aludratest.service.pseudo.PseudoService;
 import org.aludratest.service.util.AbstractSystemConnector;
 import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.event.ErrorReport;
+import org.aludratest.testcase.event.SystemErrorReporter;
 
 /** Tests the behavior of AludraTest when an exception occurs in a call to {@link SystemConnector#checkForErrors()}.
  * @author Volker Bergmann */
@@ -81,7 +81,7 @@ public class SystemConnectorExceptionTest extends AbstractAludraServiceTest {
     }
 
     /** {@link SystemConnector} implementation which reports a fix {@link ErrorReport}. */
-    static class RecurringConnector extends AbstractSystemConnector {
+    static class RecurringConnector extends AbstractSystemConnector implements SystemErrorReporter {
 
         PseudoService service;
         boolean invoked = false;
@@ -93,12 +93,11 @@ public class SystemConnectorExceptionTest extends AbstractAludraServiceTest {
 
         /** Reports a single fix {@link ErrorReport}. */
         @Override
-        public List<ErrorReport> checkForErrors() {
+        public ErrorReport checkForError() {
             this.invoked = true;
-            List<ErrorReport> errors = new ArrayList<ErrorReport>();
             // cause an exception
             service.perform().fail("pseudoService", "operation2", "locator2");
-            return errors;
+            return null;
         }
     }
 

@@ -15,42 +15,40 @@
  */
 package org.aludratest;
 
-import static org.aludratest.AludraTestConstants.EXIT_EXECUTION_ERROR;
-import static org.aludratest.AludraTestConstants.EXIT_EXECUTION_FAILURE;
-import static org.aludratest.AludraTestConstants.EXIT_ILLEGAL_ARGUMENT;
-import static org.aludratest.AludraTestConstants.EXIT_NORMAL;
-
-import java.lang.reflect.Method;
-import java.util.List;
+import static org.aludratest.impl.AludraTestConstants.EXIT_EXECUTION_ERROR;
+import static org.aludratest.impl.AludraTestConstants.EXIT_EXECUTION_FAILURE;
+import static org.aludratest.impl.AludraTestConstants.EXIT_ILLEGAL_ARGUMENT;
+import static org.aludratest.impl.AludraTestConstants.EXIT_NORMAL;
 
 import org.aludratest.config.AludraTestConfig;
+import org.aludratest.config.impl.DefaultConfigurator;
 import org.aludratest.impl.log4testing.data.TestLogger;
 import org.aludratest.impl.log4testing.data.TestSuiteLog;
 import org.aludratest.impl.plexus.AludraTestClosePhase;
+import org.aludratest.impl.plexus.AludraTestComponentDiscoverer;
 import org.aludratest.impl.plexus.AludraTestConfigurationPhase;
-import org.aludratest.scheduler.AludraSuiteParser;
+import org.aludratest.scheduler.AludraTestRunner;
 import org.aludratest.scheduler.RunnerTree;
-import org.aludratest.service.impl.AludraServiceManager;
-import org.aludratest.testcase.data.TestCaseData;
-import org.aludratest.testcase.data.TestDataProvider;
+import org.aludratest.scheduler.RunnerTreeBuilder;
+import org.aludratest.service.AludraServiceManager;
+import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.lifecycle.UndefinedLifecycleHandlerException;
 import org.databene.commons.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** AludraTest framework class. This is the main entry point to AludraTest. Clients can either invoke the class via its main method
- * directly, or construct an instance of this class and call one of its <code>run</code> methods. <br>
- * Currently, this class is a "quasi-singleton". Invoke the constructor <code>new AludraTest()</code> once to initialize
- * AludraTest and set the one and only AludraTest instance which can be accessed via <code>AludraTest.getInstance()</code>. This
- * behaviour is somewhat "asymmetric" and is subject to change - either towards a clean singleton structure, or towards a real
- * instance structure.
+/**
+ * AludraTest framework class. This is the main entry point to AludraTest. Clients can either invoke the class via its main method
+ * directly, or construct an instance of this class and call one of its <code>run</code> methods.
  * 
  * @author Volker Bergmann
- * @author falbrech */
+ * @author falbrech
+ */
 public final class AludraTest {
 
     /**
@@ -60,33 +58,51 @@ public final class AludraTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AludraTest.class);
 
-    protected TestDataProvider dataProvider;
-
-    private static AludraTest instance;
-
-    /** The life cycle state of the instance. */
-    private State state;
-
     /** The component bootstrap of AludraTest. */
     private final AludraServiceManager serviceManager;
 
     /** The IoC container for AludraTest. */
     private final PlexusContainer iocContainer;
 
-    /** Public default constructor. */
-    public AludraTest() {
-        if (instance != null && instance.state != State.FINISHED) {
-            throw new IllegalStateException("There is already an AludraTest instance which is not yet finished.");
-        }
+    private static AludraTest instance;
 
-        state = State.CREATED;
-        instance = this; // NOSONAR
-
+    private AludraTest() {
         // start IoC and instantiate service manager
         this.iocContainer = createIoCContainer();
-        serviceManager = new AludraServiceManager(iocContainer);
+        try {
+            serviceManager = iocContainer.lookup(AludraServiceManager.class);
+        }
+        catch (ComponentLookupException e) {
+            throw new RuntimeException("Could not create AludraServiceManager instance", e);
+        }
+    }
 
-        LOGGER.info("Starting AludraTest {}", getAludraTestConfig().getVersion());
+    public static AludraTest startFramework() {
+        AludraTest framework = new AludraTest();
+        LOGGER.info("Starting AludraTest {}", framework.getAludraTestConfig().getVersion());
+
+        // static accessors to "dynamic" content are initialized here.
+        DataMarkerCheck.init(framework.getServiceManager());
+
+        instance = framework;
+        return framework;
+    }
+
+    public void stopFramework() {
+        iocContainer.dispose();
+        instance = null;
+    }
+
+    /** Returns the current AludraTest instance. This method will only return a non-null value between calls to
+     * {@link #startFramework()} and {@link #stopFramework()}.
+     * 
+     * @return The current AludraTest instance, or <code>null</code>.
+     * 
+     * @deprecated This method should not be used for software design reasons. Better keep your AludraTest instance which is
+     *             returned by startFramework, or use IoC patterns to retrieve components you need. */
+    @Deprecated
+    public static AludraTest getInstance() {
+        return instance;
     }
 
     private static PlexusContainer createIoCContainer() {
@@ -97,6 +113,10 @@ public final class AludraTest {
             config.getLifecycleHandlerManager().getLifecycleHandler("plexus").addBeginSegment(new AludraTestConfigurationPhase());
             config.getLifecycleHandlerManager().getLifecycleHandler("basic").addEndSegment(new AludraTestClosePhase());
             config.getLifecycleHandlerManager().getLifecycleHandler("plexus").addEndSegment(new AludraTestClosePhase());
+
+            // register AludraTest component lookup
+            config.addComponentDiscoverer(new AludraTestComponentDiscoverer(new DefaultConfigurator()));
+
             return new DefaultPlexusContainer(config);
         }
         catch (PlexusContainerException e) {
@@ -106,13 +126,6 @@ public final class AludraTest {
             LOGGER.error("Internal exception when configuring IoC container", e);
         }
         return null;
-    }
-
-    /** Returns the one and only AludraTest instance. The instance is set as soon as the constructor is invoked.
-     * 
-     * @return The one and only AludraTest instance. */
-    public static AludraTest getInstance() {
-        return instance;
     }
 
     /**
@@ -142,36 +155,21 @@ public final class AludraTest {
     }
 
     /**
-     * @param method the method for which to receive the test data sets.
-     * @return the test data sets configured for the method
-     */
-    public List<TestCaseData> getTestDataSets(Method method) {
-        if (dataProvider == null) {
-            dataProvider = serviceManager.newImplementorInstance(TestDataProvider.class);
-        }
-        return dataProvider.getTestDataSets(method);
-    }
-
-    /**
      * Parses the test class/suite, executes it and waits until all tests are finished.
      * 
      * @param testClass
      *            The AludraTest class or test suite to run
      */
     public void run(Class<?> testClass) {
-        assertState(State.CREATED);
 
-        int numberOfThreads = getAludraTestConfig().getNumberOfThreads();
-        try {
-            this.state = State.RUNNING;
-            RunnerTree runnerTree = new AludraSuiteParser(this).parse(testClass.getName());
-            runnerTree.performAllTestsAndWait(numberOfThreads);
-        }
-        finally {
-            this.state = State.FINISHED;
-            setInstance(null);
-            instance = null; // NOSONAR
-        }
+        RunnerTreeBuilder builder = serviceManager.newImplementorInstance(RunnerTreeBuilder.class);
+        RunnerTree runnerTree = builder.buildRunnerTree(testClass);
+
+        // This would SORT the tree
+        // RunnerTreeSorter.sortTree(runnerTree, new Alphabetic());
+
+        AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
+        runner.runAludraTests(runnerTree);
     }
 
     // private helpers ---------------------------------------------------------------
@@ -180,23 +178,11 @@ public final class AludraTest {
         return serviceManager.newImplementorInstance(AludraTestConfig.class);
     }
 
-    /** Requires the instance to be in a given state, if it is not, an {@link IllegalStateException} is thrown. */
-    private void assertState(State state) {
-        if (this.state != state) {
-            throw new IllegalStateException("Expected state '" + state + "' but found state '" + this.state + "'");
-        }
-    }
-
     private static int exitCode(Class<?> testClass) {
         TestSuiteLog suite = TestLogger.getTestSuite(testClass);
         int failures = suite.getNumberOfFailedTestCases();
         int exitCode = (failures > 0 ? EXIT_EXECUTION_FAILURE : EXIT_NORMAL);
         return exitCode;
-    }
-
-    /** The life cycle states of this class. */
-    static enum State {
-        CREATED, RUNNING, FINISHED
     }
 
     // main method -------------------------------------------------------------
@@ -212,7 +198,7 @@ public final class AludraTest {
             System.exit(EXIT_ILLEGAL_ARGUMENT);
         } else {
             // execute
-            AludraTest aludra = new AludraTest();
+            AludraTest aludra = startFramework();
             try {
                 Class<?> testClass = Class.forName(args[0]);
                 aludra.run(testClass);
@@ -221,24 +207,9 @@ public final class AludraTest {
                 t.printStackTrace(System.err);
                 System.exit(EXIT_EXECUTION_ERROR);
             } finally {
-                aludra.iocContainer.dispose();
+                aludra.stopFramework();
             }
         }
-    }
-
-
-    /**
-     * Helper method for AludraTest internal unit tests. DO NOT CALL.
-     * 
-     * @param instance
-     *            Instance.
-     */
-    static void setInstance(AludraTest instance) {
-        if (AludraTest.instance != null && AludraTest.instance.iocContainer != null) {
-            AludraTest.instance.iocContainer.dispose();
-        }
-
-        AludraTest.instance = instance;
     }
 
 }

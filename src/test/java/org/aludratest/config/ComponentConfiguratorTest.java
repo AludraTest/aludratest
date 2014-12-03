@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 
 import org.aludratest.AludraTest;
-import org.aludratest.AludraTestTest;
 import org.junit.Test;
 import org.test.testclasses.service.MoreComplexComponent;
 import org.test.testclasses.service.MoreComplexComponentImpl;
@@ -35,11 +34,10 @@ public class ComponentConfiguratorTest {
         System.setProperty(propName, MoreComplexComponentImpl.class.getName());
 
         // init AludraTest framework
-        new AludraTest();
+        AludraTest aludraTest = AludraTest.startFramework();
 
         // retrieve an MCC
-        MoreComplexComponent comp = AludraTest.getInstance().getServiceManager()
-                .newImplementorInstance(MoreComplexComponent.class);
+        MoreComplexComponent comp = aludraTest.getServiceManager().newImplementorInstance(MoreComplexComponent.class);
         assertTrue(comp instanceof MoreComplexComponentImpl);
         MoreComplexComponentImpl confComp = (MoreComplexComponentImpl) comp;
         assertTrue(confComp.configured);
@@ -55,7 +53,7 @@ public class ComponentConfiguratorTest {
         assertEquals("!", prefs.getStringValue("dynamicValue"));
 
         System.getProperties().remove(propName);
-        AludraTestTest.setInstance(null);
+        aludraTest.stopFramework();
     }
 
 }

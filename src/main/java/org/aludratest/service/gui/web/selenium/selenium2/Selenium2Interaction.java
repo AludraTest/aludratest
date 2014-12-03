@@ -52,8 +52,9 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
         super(seleniumWrapper);
     }
 
-    public void open(String url) {
-        wrapper.open(url);
+    @Override
+    public void open() {
+        wrapper.open(wrapper.getConfiguration().getUrlOfAut());
     }
 
     // life cycle operations ---------------------------------------------------

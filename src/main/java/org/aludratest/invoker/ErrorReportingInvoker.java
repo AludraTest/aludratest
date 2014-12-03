@@ -46,10 +46,12 @@ public class ErrorReportingInvoker implements TestInvoker {
     /** Is called to set the testCase property on the test object,
      *  but since the called instance of this class only exists to 
      *  report an exception, this does nothing. */
+    @Override
     public void setContext(AludraTestContext context) {
     }
 
     /** rethrows the error.  */
+    @Override
     public void invoke() throws Throwable { //NOSONAR
         throw error;
     }
@@ -58,6 +60,11 @@ public class ErrorReportingInvoker implements TestInvoker {
     @Override
     public String toString() {
         return method.getDeclaringClass().getName() + '.' + method.getName() + '(' + error + ')';
+    }
+
+    @Override
+    public Class<?> getTestClass() {
+        return method == null ? null : method.getDeclaringClass();
     }
 
 }
