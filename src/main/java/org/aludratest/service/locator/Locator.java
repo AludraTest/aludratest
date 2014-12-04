@@ -15,7 +15,7 @@
  */
 package org.aludratest.service.locator;
 
-import org.databene.commons.Assert;
+import org.aludratest.exception.TechnicalException;
 
 /**
  * Identifies a component of the SUT, for example a button in a GUI.
@@ -28,12 +28,15 @@ public abstract class Locator {
     /** Constructor.
      *  @param locator */
     protected Locator(String locator) {
-        Assert.notNull(locator, "locator");
+        if (locator == null) {
+            throw new TechnicalException("Locator string is NULL");
+        }
         this.locator = locator;
     }
 
     // java.lang.Object overrides ----------------------------------------------
 
+    @Override
     public String toString() {
         return locator;
     }
