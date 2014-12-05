@@ -16,6 +16,7 @@
 package org.aludratest.data.formats;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
@@ -24,6 +25,7 @@ import java.util.List;
 import org.aludratest.config.impl.AludraTestConfigImpl;
 import org.aludratest.config.impl.DefaultConfigurator;
 import org.aludratest.data.AddressBean;
+import org.aludratest.data.DataConfigurationImpl;
 import org.aludratest.data.PersonBean;
 import org.aludratest.dict.Data;
 import org.aludratest.testcase.Offset;
@@ -31,6 +33,7 @@ import org.aludratest.testcase.data.Source;
 import org.aludratest.testcase.data.TestCaseData;
 import org.aludratest.testcase.data.impl.DatabeneFormatsTestDataProvider;
 import org.codehaus.plexus.util.ReflectionUtils;
+import org.databene.commons.AssertionError;
 import org.databene.commons.BeanUtil;
 import org.junit.Test;
 
@@ -44,10 +47,13 @@ public class DatabeneFormatsTestDataProviderTest {
     private DatabeneFormatsTestDataProvider createProvider() throws Exception {
         DatabeneFormatsTestDataProvider provider = new DatabeneFormatsTestDataProvider();
         AludraTestConfigImpl config = new AludraTestConfigImpl();
+        DataConfigurationImpl dataConfig = new DataConfigurationImpl();
         DefaultConfigurator configurator = new DefaultConfigurator();
         configurator.configure(config);
+        configurator.configure(dataConfig);
 
         ReflectionUtils.setVariableValueInObject(provider, "aludraConfig", config);
+        ReflectionUtils.setVariableValueInObject(provider, "dataConfig", dataConfig);
         return provider;
     }
 
@@ -89,14 +95,53 @@ public class DatabeneFormatsTestDataProviderTest {
         assertPersonAndAddress("Jens", 34, "Hamburg", testDataSets.get(1).getData());
     }
 
+    @Test
+    public void testEmptyValuesMethod() throws Exception {
+        Method nullValuesMethod = BeanUtil.getMethod(DatabeneFormatsTestDataProviderTest.class, "withNullValuesMethod",
+                PersonBean.class);
+        List<TestCaseData> testDataSets = createProvider().getTestDataSets(nullValuesMethod);
+        assertTrue("No test data sets created for null values method", testDataSets.size() >= 1);
+        assertEquals(5, testDataSets.size());
+
+        assertPerson("Alice", 23, null, null, testDataSets.get(0).getData());
+        assertPerson("Bob", 34, null, null, testDataSets.get(1).getData());
+        assertPerson(null, 35, null, null, testDataSets.get(2).getData());
+        assertPerson("", 36, null, null, testDataSets.get(3).getData());
+        assertPerson(null, 37, null, null, testDataSets.get(4).getData());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testNullHeaderMethod() throws Exception {
+        Method nullValuesMethod = BeanUtil.getMethod(DatabeneFormatsTestDataProviderTest.class, "nullHeaderMethod",
+                PersonBean.class);
+        List<TestCaseData> testDataSets = createProvider().getTestDataSets(nullValuesMethod);
+        assertTrue("No test data sets created for null values method", testDataSets.size() >= 1);
+    }
+
     // private helper methods --------------------------------------------------
 
     private void assertPerson(String name, int age, String city1, String city2, Data[] args) {
         assertEquals(1, args.length);
+        PersonBean person = (PersonBean) args[0];
+        assertEquals(name, person.getName());
+        assertEquals(age, person.getAge());
+        if (city1 != null) {
+            assertNotNull(person.getAddresses());
+            assertTrue(person.getAddresses().size() > 0);
+            assertEquals(city1, person.getAddresses().get(0).getCity());
+            if (city2 != null) {
+                assertTrue(person.getAddresses().size() > 1);
+                assertEquals(city2, person.getAddresses().get(1).getCity());
+            }
+        }
     }
 
     private void assertPersonAndAddress(String name, int age, String city, Data[] args) {
         assertEquals(2, args.length);
+        Data[] personArray = new Data[] { args[0] };
+        assertPerson(name, age, null, null, personArray);
+        AddressBean address = (AddressBean) args[1];
+        assertEquals(city, address.getCity());
     }
 
 
@@ -120,6 +165,12 @@ public class DatabeneFormatsTestDataProviderTest {
             @Source(uri = "persons-plain.xlsx", segment = "addresses") AddressBean address
             ) {
         // not intended to be invoked
+    }
+
+    public void withNullValuesMethod(@Source(uri = "empty-and-null.xls", segment = "persons") PersonBean person) {
+    }
+
+    public void nullHeaderMethod(@Source(uri = "null-header.xls", segment = "persons") PersonBean person) {
     }
 
 }
