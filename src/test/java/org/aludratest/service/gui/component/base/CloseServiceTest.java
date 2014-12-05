@@ -28,17 +28,17 @@ import org.junit.Test;
 public class CloseServiceTest extends GUITest {
 
     @Test
-    public void closeAndOpenTest() {
-        close();
+    public void closeAndOpenTest() throws Exception {
+        tearDown();
         assertNull(tCase.getLastFailed());
         initializeAludra();
         assertNull(tCase.getLastFailed());
     }
 
     @Test
-    public void doubleCloseTest() {
-        close();
-        close();
+    public void doubleCloseTest() throws Exception {
+        tearDown();
+        tearDown();
         assertNotNull(tCase.getLastFailed());
         assertTrue(tCase.getLastFailed().getError() instanceof AutomationException);
     }

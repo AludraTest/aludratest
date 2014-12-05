@@ -227,8 +227,8 @@ public class Selenium2Facade {
         throw exception;
     }
 
-    public void type(GUIElementLocator locator, String value) {
-        findElement(locator).sendKeys(value);
+    public void sendKeys(GUIElementLocator locator, String keys) {
+        findElement(locator).sendKeys(keys);
     }
 
     public void select(GUIElementLocator locator, OptionLocator optionLocator) {

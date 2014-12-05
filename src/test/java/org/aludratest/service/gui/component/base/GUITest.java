@@ -52,40 +52,57 @@ public abstract class GUITest extends LocalTestCase {
     protected static final int DEFAULT_TIMEOUT = 1000;
     private static final String TEST_PAGE_FOLDER = "src/test/resources/testPages/";
 
-    // Initialization
     @Before
-    public void initializeAludra() {
+    public void setUp() throws Exception {
         if (shallPerformLocalTests()) {
-            // reset AludraTest instance, if there is already one created
-            aludraTest = AludraTest.startFramework();
-
-            // set test case instance, gives every test method a new ID
-            tCase = TestLogger.getTestCase(this.getClass().getName() + testMethodID++);
-            tCase.newTestStepGroup("initialization");
-            setContext(new AludraTestContextImpl(new DirectLogTestListener(tCase), aludraTest.getServiceManager()));
-
-            // configure aludra service with url.of.aut
-            System.setProperty("ALUDRATEST_CONFIG/seleniumWrapper/_testui/url.of.aut", getSeleniumLinkForTestPage());
-
-            // get aludra service
-            serviceId = ComponentId.create(AludraWebGUI.class, "testui");
-            aludraWebGUI = getService(serviceId);
-            // open test page
-            openTestPage();
-            // get uimap
-            guiTestUIMap = new GUITestUIMap(aludraWebGUI);
+            startServer();
+            initializeAludra();
         }
     }
 
-    // Close test page
     @After
-    public void close() {
+    public void tearDown() throws Exception {
+        tearDownAludra();
+        stopServer();
+    }
+
+    protected void startServer() throws Exception {
+    }
+
+    protected void initializeAludra() {
+        logger.debug("Initializing AludraTest");
+        // reset AludraTest instance, if there is already one created
+        aludraTest = AludraTest.startFramework();
+
+        // set test case instance, gives every test method a new ID
+        tCase = TestLogger.getTestCase(this.getClass().getName() + testMethodID++);
+        tCase.newTestStepGroup("initialization");
+        setContext(new AludraTestContextImpl(new DirectLogTestListener(tCase), aludraTest.getServiceManager()));
+
+        // configure aludra service with url.of.aut
+        System.setProperty("ALUDRATEST_CONFIG/seleniumWrapper/_testui/url.of.aut", getSeleniumLinkForTestPage());
+
+        // get aludra service
+        serviceId = ComponentId.create(AludraWebGUI.class, "testui");
+        aludraWebGUI = getService(serviceId);
+        // open test page
+        openTestPage();
+        // get uimap
+        guiTestUIMap = new GUITestUIMap(aludraWebGUI);
+        logger.debug("AludraTest initialization finished");
+    }
+
+    private void tearDownAludra() {
+        logger.debug("Closing AludraTest");
         if (aludraWebGUI != null) { // if precondition is violated, the service has not been initialized
             closeService(serviceId);
         }
         if (aludraTest != null) {
             aludraTest.stopFramework();
         }
+    }
+
+    public void stopServer() throws Exception {
     }
 
     protected static void activateSelenium1() {
@@ -140,8 +157,8 @@ public abstract class GUITest extends LocalTestCase {
         return tCase.getLastTestStep().getStatus();
     }
 
-    // Get the selenium compatible link for the test page
-    private String getSeleniumLinkForTestPage() {
+    // Get the Selenium-compatible link for the test page
+    protected String getSeleniumLinkForTestPage() {
         return "file:///" + normalizedPathToFolder(TEST_PAGE_FOLDER) + '/' + getTestPage();
     }
 

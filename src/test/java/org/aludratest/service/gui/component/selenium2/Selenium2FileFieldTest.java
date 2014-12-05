@@ -15,13 +15,13 @@
  */
 package org.aludratest.service.gui.component.selenium2;
 
-import org.aludratest.service.gui.component.base.AbstractInputFieldTest;
+import org.aludratest.service.gui.component.base.AbstractFileFieldTest;
 import org.aludratest.service.gui.web.selenium.selenium2.AludraSelenium2;
 import org.junit.BeforeClass;
 
-/** Tests input field features of {@link AludraSelenium2}.
+/** Tests file field features of {@link AludraSelenium2}.
  * @author Volker Bergmann */
-public class Selenium2InputFieldTest extends AbstractInputFieldTest {
+public class Selenium2FileFieldTest extends AbstractFileFieldTest {
 
     /** Activates Selenium 2 before the tests
      *  (inherited from the parent class) are executed. */

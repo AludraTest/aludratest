@@ -204,6 +204,15 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
         return textValue.toString();
     }
 
+    // file operations ---------------------------------------------------------
+
+    @Override
+    public void assignFileResource(String elementType, String elementName, Locator locator, String filePath,
+            int taskCompletionTimeout) {
+        GUIElementLocator elementLocator = getDefaultElementLocator(locator);
+        wrapper.sendKeys(elementLocator, filePath);
+    }
+
     // window operations -------------------------------------------------------
 
     @Override

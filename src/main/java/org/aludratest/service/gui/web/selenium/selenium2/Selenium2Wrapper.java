@@ -214,11 +214,11 @@ public class Selenium2Wrapper {
         highlight(locator);
     }
 
-    private Object callElementCommand(GUIElementLocator locator, ElementCommand command) {
+    private Object callElementCommand(GUIElementLocator locator, ElementCommand<Object> command) {
         return callElementCommand(locator, command, true, true);
     }
 
-    private Object callElementCommand(GUIElementLocator locator, ElementCommand command, boolean visible, boolean enabled) {
+    private Object callElementCommand(GUIElementLocator locator, ElementCommand<Object> command, boolean visible, boolean enabled) {
         doBeforeDelegate(locator, visible, enabled);
         final List<Object> returnValues = new ArrayList<Object>();
         Object returnValue = command.call(locator);
@@ -249,7 +249,7 @@ public class Selenium2Wrapper {
 
     public boolean isElementPresent(GUIElementLocator locator) {
         final Boolean returnValue = (Boolean) callElementCommand(locator,
-                new ElementCommand("isElementPresent", false) {
+ new ElementCommand<Object>("isElementPresent", false) {
 
             @Override
             public Object call(GUIElementLocator locator) {
@@ -264,7 +264,7 @@ public class Selenium2Wrapper {
 
     public boolean isEditable(GUIElementLocator locator) {
         final Boolean returnValue = (Boolean) callElementCommand(locator,
-                new ElementCommand("isEditable", false) {
+                new ElementCommand<Object>("isEditable", false) {
 
             @Override
             public Object call(GUIElementLocator locator) {
@@ -276,7 +276,7 @@ public class Selenium2Wrapper {
     }
 
     public void select(GUIElementLocator locator, final OptionLocator optionLocator) {
-        callElementCommand(locator, new ElementCommand("select", true) {
+        callElementCommand(locator, new ElementCommand<Object>("select", true) {
 
             @Override
             public Object call(GUIElementLocator locator) {
@@ -288,11 +288,23 @@ public class Selenium2Wrapper {
     }
 
     public void type(GUIElementLocator locator, final String value) {
-        callElementCommand(locator, new ElementCommand("type", true) {
+        callElementCommand(locator, new ElementCommand<Object>("type", true) {
 
             @Override
             public Object call(GUIElementLocator locator) {
-                selenium.type(locator, value);
+                selenium.sendKeys(locator, value);
+                return null;
+            }
+
+        });
+    }
+
+    public void sendKeys(GUIElementLocator locator, final String keys) {
+        callElementCommand(locator, new ElementCommand<Object>("sendKeys", true) {
+
+            @Override
+            public Object call(GUIElementLocator locator) {
+                selenium.sendKeys(locator, keys);
                 return null;
             }
 
@@ -301,7 +313,7 @@ public class Selenium2Wrapper {
 
     public String getText(GUIElementLocator locator, Boolean visible) {
         final String text = (String) callElementCommand(locator,
-                new ElementCommand("getText", false) {
+                new ElementCommand<Object>("getText", false) {
 
             @Override
             public Object call(GUIElementLocator locator) {
@@ -313,7 +325,7 @@ public class Selenium2Wrapper {
 
     public boolean isChecked(GUIElementLocator locator) {
         final Boolean returnValue = (Boolean) callElementCommand(locator,
-                new ElementCommand("isChecked", false) {
+                new ElementCommand<Object>("isChecked", false) {
 
             @Override
             public Object call(GUIElementLocator locator) {
@@ -325,7 +337,8 @@ public class Selenium2Wrapper {
 
     public String[] getSelectOptions(GUIElementLocator locator) {
         final String[] selectedOptions = (String[]) callElementCommand(
-                locator, new ElementCommand("getSelectOptions", false) {
+                locator, new ElementCommand<Object>("getSelectOptions",
+                false) {
 
                     @Override
                     public Object call(GUIElementLocator locator) {
@@ -337,7 +350,7 @@ public class Selenium2Wrapper {
 
     public String getSelectedValue(GUIElementLocator locator) {
         final String selectedValue = (String) callElementCommand(locator,
-                new ElementCommand("getSelectedValue", false) {
+                new ElementCommand<Object>("getSelectedValue", false) {
 
             @Override
             public Object call(GUIElementLocator locator) {
@@ -349,7 +362,7 @@ public class Selenium2Wrapper {
 
     public String getSelectedLabel(GUIElementLocator locator) {
         final String selectedLabel = (String) callElementCommand(locator,
-                new ElementCommand("getSelectedLabel", false) {
+                new ElementCommand<Object>("getSelectedLabel", false) {
 
             @Override
             public Object call(GUIElementLocator locator) {
@@ -471,7 +484,7 @@ public class Selenium2Wrapper {
 
     public boolean hasFocus(final GUIElementLocator locator) {
         boolean returnValue = (Boolean) callElementCommand(locator,
-                new ElementCommand("hasFocus", false) {
+                new ElementCommand<Object>("hasFocus", false) {
 
             @Override
             public Object call(GUIElementLocator locators) {
@@ -488,7 +501,7 @@ public class Selenium2Wrapper {
 
     public String[] getValues(final GUIElementLocator locator) {
         String[] returnValue = (String[]) callElementCommand(locator,
-                new ElementCommand("getValues", false) {
+                new ElementCommand<Object>("getValues", false) {
 
             @Override
             public Object call(GUIElementLocator locators) {
@@ -504,7 +517,7 @@ public class Selenium2Wrapper {
 
     public String getAttributeValue(final GUIElementLocator elementLocator, final String attributeName) {
         String returnValue = (String) callElementCommand(elementLocator,
-                new ElementCommand("getAttributeValue", false) {
+                new ElementCommand<Object>("getAttributeValue", false) {
 
             @Override
             public Object call(GUIElementLocator locators) {

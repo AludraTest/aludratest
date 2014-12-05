@@ -33,7 +33,7 @@ public class AludraTestCase {
     // interface ---------------------------------------------------------------
 
     /** Sets the {@link #context}
-     *  @param context the context ro set */
+     * @param context the context to set */
     public void setContext(AludraTestContext context) {
         this.context = context;
     }
