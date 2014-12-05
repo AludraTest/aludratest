@@ -49,7 +49,9 @@ public abstract class AbstractFileFieldTest extends GUITest {
 
     @Override
     public void stopServer() throws Exception {
-        server.stop();
+        if (server != null) {
+            server.stop();
+        }
         logger.debug("Stopped Jetty");
     }
 
