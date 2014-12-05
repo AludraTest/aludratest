@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.aludratest.config.AludraTestConfig;
+import org.aludratest.data.DataConfiguration;
 import org.aludratest.dict.Data;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.testcase.Offset;
@@ -34,6 +35,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
+import org.databene.commons.converter.util.ConstantClassProvider;
 import org.databene.formats.DataContainer;
 import org.databene.formats.DataIterator;
 import org.databene.formats.util.OffsetDataIterator;
@@ -49,6 +51,9 @@ public class DatabeneFormatsTestDataProvider implements TestDataProvider {
 
     @Requirement
     private AludraTestConfig aludraConfig;
+
+    @Requirement
+    private DataConfiguration dataConfig;
 
     // TestDataProvider interface implementation -------------------------------
 
@@ -192,7 +197,9 @@ public class DatabeneFormatsTestDataProvider implements TestDataProvider {
 
         // create iterator
         uri = getPathFor(uri, testClass);
-        DataIterator<Object> iterator = new XLSJavaBeanIterator(uri, segment, true, paramClass);
+        XLSJavaBeanIterator xlsIterator = new XLSJavaBeanIterator(uri, segment, true, dataConfig.getNullMarker(),
+                dataConfig.getEmptyMarker(), new ConstantClassProvider<Object>(paramClass));
+        DataIterator<Object> iterator = xlsIterator;
         if (offset > 0) {
             iterator = new OffsetDataIterator<Object>(iterator, offset);
         }
