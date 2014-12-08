@@ -117,8 +117,7 @@ public class FileField extends InputComponent<InputField> implements ValueCompon
             IOUtil.transfer(in, out);
         }
         finally {
-            out.close();
-            in.close();
+            IOUtil.close(out);
         }
     }
 
