@@ -120,7 +120,7 @@
 		<dependency>
 			<groupId>org.databene</groupId>
 			<artifactId>databene-formats</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.3</version>
 		</dependency>
 
 		<dependency>
