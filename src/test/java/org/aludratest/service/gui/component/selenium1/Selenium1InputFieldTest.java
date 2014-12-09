@@ -18,13 +18,11 @@ package org.aludratest.service.gui.component.selenium1;
 import org.aludratest.service.gui.component.base.AbstractInputFieldTest;
 import org.junit.BeforeClass;
 
-/**
- * Tests radio-button features with Selenium 1.
- * @author Volker Bergmann
- */
+/** Tests input field features with Selenium 1.
+ * @author Volker Bergmann */
 public class Selenium1InputFieldTest extends AbstractInputFieldTest {
 
-    /** Activates Selenium 1 before the tests 
+    /** Activates Selenium 1 before the tests
      *  (inherited from the parent class) are executed. */
     @BeforeClass
     public static void setUpSelenium1() {

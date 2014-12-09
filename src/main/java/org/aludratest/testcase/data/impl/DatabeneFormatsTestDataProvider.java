@@ -197,9 +197,8 @@ public class DatabeneFormatsTestDataProvider implements TestDataProvider {
 
         // create iterator
         uri = getPathFor(uri, testClass);
-        XLSJavaBeanIterator xlsIterator = new XLSJavaBeanIterator(uri, segment, true, dataConfig.getNullMarker(),
+        DataIterator<Object> iterator = new XLSJavaBeanIterator(uri, segment, true, dataConfig.getNullMarker(),
                 dataConfig.getEmptyMarker(), new ConstantClassProvider<Object>(paramClass));
-        DataIterator<Object> iterator = xlsIterator;
         if (offset > 0) {
             iterator = new OffsetDataIterator<Object>(iterator, offset);
         }

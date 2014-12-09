@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Volker Bergmann */
 public abstract class LocalTestCase extends AludraTestCase {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String LOCAL_TESTS_ACTIVATION_FILE = "performLocalTests";
 

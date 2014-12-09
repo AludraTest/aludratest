@@ -87,6 +87,13 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
+    public void assignFileResource(String elementType, String elementName, Locator locator, String filePath,
+            int taskCompletionTimeout) {
+        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
+        wrapper.type(elementLocator, filePath, taskCompletionTimeout);
+    }
+
+    @Override
     public void click(String elementType, String operation, Locator locator, int taskCompletionTimeout) {
         GUIElementLocator elementLocator = assertGUIElementLocator(locator);
         wrapper.click(elementLocator, taskCompletionTimeout);

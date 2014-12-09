@@ -18,6 +18,7 @@ package org.aludratest.service.gui.component.base;
 import org.aludratest.service.gui.component.Button;
 import org.aludratest.service.gui.component.Checkbox;
 import org.aludratest.service.gui.component.Dropdownbox;
+import org.aludratest.service.gui.component.FileField;
 import org.aludratest.service.gui.component.InputField;
 import org.aludratest.service.gui.component.Label;
 import org.aludratest.service.gui.component.Link;
@@ -63,6 +64,11 @@ public class GUITestUIMap extends UIMap {
     public final static Locator IMAGE_BUTTON_ID = new IdLocator("gF:msgimg");
 
     public final static Locator LABEL_ID = new IdLocator("LabelTest:after");
+
+    public final static Locator FILE_FIELD_ID = new IdLocator("FileField:after");
+    public final static Locator SUBMIT_FILE_ID = new IdLocator("SubmitFile");
+    public final static Locator FILE_NAME_ID = new IdLocator("FileName");
+    public final static Locator FILE_CONTENT_ID = new IdLocator("FileContent");
 
     // There is no element defined on test web page with this ID
     public final static Locator NOT_EXISTING_BUTTON_ID = new IdLocator("test:test:test");
@@ -146,4 +152,21 @@ public class GUITestUIMap extends UIMap {
     public Label label() {
         return new Label(aludraGUI, LABEL_ID);
     }
+
+    public FileField fileField() {
+        return new FileField(aludraGUI, FILE_FIELD_ID);
+    }
+
+    public Button fileSubmitButton() {
+        return new Button(aludraGUI, SUBMIT_FILE_ID);
+    }
+
+    public Label fileNameLabel() {
+        return new Label(aludraGUI, FILE_NAME_ID);
+    }
+
+    public Label fileContentLabel() {
+        return new Label(aludraGUI, FILE_CONTENT_ID);
+    }
+
 }
