@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -32,6 +33,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.databene.commons.SystemInfo;
 import org.databene.commons.ui.swing.AlignedPane;
 
 /**
@@ -125,20 +127,25 @@ public class ExcelSettingsPane extends AlignedPane {
         public void actionPerformed(ActionEvent evt) {
             try {
                 Method testMethod = methodSelector.getSelectedItem();
-                List<File> createdFiles = ExcelCreationUtil.createDocuments(testMethod, ExcelSettingsPane.this, xlsRootPath);
-                displayCreatedFiles(createdFiles);
+                File testDataRootFolder = new File(SystemInfo.getCurrentDir(), xlsRootPath).getCanonicalFile();
+                Collection<WorkbookTracker> workbooks = JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod,
+                        ExcelSettingsPane.this, testDataRootFolder);
+                displayCreatedFiles(workbooks);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(ExcelSettingsPane.this, e.getMessage(),
                         "Error in Excel Creator", JOptionPane.ERROR_MESSAGE);
             }
         }
 
-        private void displayCreatedFiles(List<File> createdFiles) {
-            if (createdFiles.size() > 0) {
-                List<Object> message = new ArrayList<Object>(createdFiles.size() + 1);
-                message.add("Created Files:");
-                for (File file : createdFiles) {
-                    message.add(file);
+        private void displayCreatedFiles(Collection<WorkbookTracker> workbooks) {
+            if (workbooks.size() > 0) {
+                List<Object> message = new ArrayList<Object>(workbooks.size() + 1);
+                message.add("Processed Files:");
+                for (WorkbookTracker workbook : workbooks) {
+                    message.add(workbook);
+                    for (String warning : workbook.getWarnings()) {
+                        message.add("\tWarning: " + warning);
+                    }
                 }
                 JOptionPane.showMessageDialog(ExcelSettingsPane.this, message.toArray(),
                         "Excel Creator", JOptionPane.INFORMATION_MESSAGE);
