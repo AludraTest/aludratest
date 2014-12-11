@@ -19,7 +19,6 @@ import org.aludratest.service.AludraContext;
 import org.aludratest.service.AludraService;
 import org.aludratest.service.ComponentId;
 import org.aludratest.service.ServiceWrapper;
-import org.aludratest.service.impl.AludraServiceInvocationHandler;
 import org.aludratest.testcase.AludraTestContext;
 import org.aludratest.util.AludraTestUtil;
 import org.codehaus.plexus.component.annotations.Component;
@@ -36,6 +35,5 @@ public class DefaultAludraServiceWrapper implements ServiceWrapper {
         return AludraTestUtil.wrapWithInvocationHandler(serviceId.getInterfaceClass(), new AludraServiceInvocationHandler(
                 serviceObject, serviceId, (AludraTestContext) testContext));
     }
-
 
 }
