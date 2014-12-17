@@ -46,8 +46,9 @@ public abstract class AbstractDynamicElementTest extends GUITest {
         checkLastStepStatus(TestStatus.PASSED);
     }
 
+    @Override
     protected String getTestPage() {
-        return "dynamic.html";
+        return "http://localhost:8080/dynamic.html";
     }
 
 }
