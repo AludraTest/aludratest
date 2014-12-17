@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium1;
+package org.aludratest.service.gui.integrationtest.selenium2;
 
-import org.aludratest.service.gui.component.Element;
-import org.aludratest.service.gui.component.base.AbstractElementTest;
+import org.aludratest.service.gui.component.base.AbstractDynamicElementTest;
 import org.junit.BeforeClass;
 
 /**
- * Tests {@link Element} features with Selenium 1.
+ * Tests dynamic features with Selenium 1.
  * @author Volker Bergmann
  */
-public class Selenium1ElementTest extends AbstractElementTest {
+public class Selenium2DynamicElementTest extends AbstractDynamicElementTest {
 
-    /** Activates Selenium 1 before the tests 
+    /** Activates Selenium 2 before the tests
      *  (inherited from the parent class) are executed. */
     @BeforeClass
-    public static void setUpSelenium1() {
-        activateSelenium1();
+    public static void setUpSelenium2() {
+        activateSelenium2();
     }
 
 }

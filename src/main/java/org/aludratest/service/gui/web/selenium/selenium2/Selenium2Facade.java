@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +40,6 @@ import org.aludratest.service.locator.option.OptionLocator;
 import org.aludratest.service.locator.window.TitleLocator;
 import org.aludratest.service.locator.window.WindowLocator;
 import org.aludratest.service.util.ServiceUtil;
-import org.databene.commons.BeanUtil;
 import org.databene.commons.CollectionUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -54,12 +52,9 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.Augmenter;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.ErrorHandler.UnknownServerException;
-import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
@@ -117,29 +112,17 @@ public class Selenium2Facade {
     private WebDriver newDriver() {
         try {
             String driverName = configuration.getDriverName();
-            Drivers driverEnum = Drivers.valueOf(driverName);
+            Selenium2Driver driverEnum = Selenium2Driver.valueOf(driverName);
 
             if (configuration.isUsingRemoteDriver()) {
-                // set Chrome Options capability always, will be ignored for other browsers
-                DesiredCapabilities caps = new DesiredCapabilities();
-                if (driverName.toLowerCase(Locale.US).contains("chrome")) {
-                    caps = DesiredCapabilities.chrome();
-                    ChromeOptions opts = new ChromeOptions();
-                    opts.addArguments("--disable-extensions");
-                    caps.setCapability(ChromeOptions.CAPABILITY, opts);
-                }
-                else {
-                    caps.setBrowserName(driverEnum.getBrowserName());
-                }
-                HttpCommandExecutor executor = new HttpCommandExecutor(seleniumUrl);
-                return new RemoteWebDriver(executor, caps);
+                return driverEnum.newRemoteDriver(seleniumUrl);
             }
             else {
-                return BeanUtil.newInstance(driverEnum.getDriverClass());
+                return driverEnum.newLocalDriver();
             }
         }
-        catch (IllegalStateException e) {
-            throw new TechnicalException("Could not create Web Driver for Selenium", e);
+        catch (Exception e) {
+            throw new TechnicalException("WebDriver creation failed: ", e);
         }
     }
 

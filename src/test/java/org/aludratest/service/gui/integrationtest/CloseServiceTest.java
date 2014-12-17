@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.base;
+package org.aludratest.service.gui.integrationtest;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.aludratest.exception.AutomationException;
+import org.aludratest.service.gui.component.base.GUITest;
 import org.junit.Test;
 
 /** Closes and reopens a service to ensure closeService works as expected.

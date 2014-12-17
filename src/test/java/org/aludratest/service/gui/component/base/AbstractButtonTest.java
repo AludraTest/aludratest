@@ -32,7 +32,7 @@ public abstract class AbstractButtonTest extends GUITest {
 
     /**
      *  positive case to test method {@link org.aludratest.service.gui.component.Button#equals(String)}
-     *  <br/> for button with value "Find" 
+     *  <br/> for button with value "Find"
      *  <br/> to check IgnoreCaseTrimmed text
      */
     @Test
@@ -65,7 +65,7 @@ public abstract class AbstractButtonTest extends GUITest {
     /**
      *  negative case to test method {@link org.aludratest.service.gui.component.Button#equals(String)}
      *  <br/> for button with value "Find"
-     *  <br/> to check text with a blank in it 
+     *  <br/> to check text with a blank in it
      */
     @Test
     public void equalsWithSpaceInMiddle() {
@@ -110,7 +110,7 @@ public abstract class AbstractButtonTest extends GUITest {
      *  disabled button is not enabled (with default timeout)
      */
     @Test
-    public void enalbedOnDisabledButtonWithTimeout() {
+    public void enabledOnDisabledButtonWithTimeout() {
         assertEquals(false, guiTestUIMap.disabledButton().isEnabled(DEFAULT_TIMEOUT));
         checkLastStepStatus(TestStatus.PASSED);
     }

@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium2;
+package org.aludratest.service.gui.integrationtest.selenium2;
 
-import org.aludratest.service.gui.component.Element;
-import org.aludratest.service.gui.component.base.AbstractElementTest;
+import org.aludratest.service.gui.component.base.AbstractInputFieldTest;
+import org.aludratest.service.gui.web.selenium.selenium2.AludraSelenium2;
 import org.junit.BeforeClass;
 
-/**
- * Tests {@link Element} features with Selenium 2.
- * @author Volker Bergmann
- */
-public class Selenium2ElementTest extends AbstractElementTest {
+/** Tests input field features of {@link AludraSelenium2}.
+ * @author Volker Bergmann */
+public class Selenium2InputFieldTest extends AbstractInputFieldTest {
 
-    /** Activates Selenium 2 before the tests 
+    /** Activates Selenium 2 before the tests
      *  (inherited from the parent class) are executed. */
     @BeforeClass
     public static void setUpSelenium2() {

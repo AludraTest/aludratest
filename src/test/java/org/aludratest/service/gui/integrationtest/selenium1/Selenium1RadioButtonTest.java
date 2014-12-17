@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium1;
+package org.aludratest.service.gui.integrationtest.selenium1;
 
-import org.aludratest.service.gui.component.Link;
-import org.aludratest.service.gui.component.Window;
-import org.aludratest.service.gui.component.base.AbstractLinkAndWindowTest;
+import org.aludratest.service.gui.component.base.AbstractRadioButtonTest;
 import org.junit.BeforeClass;
 
 /**
- * Tests {@link Link} and {@link Window} features with Selenium 1.
+ * Tests radio-button features with Selenium 1.
  * @author Volker Bergmann
  */
-public class Selenium1LinkAndWindowTest extends AbstractLinkAndWindowTest {
+public class Selenium1RadioButtonTest extends AbstractRadioButtonTest {
 
-    /** Activates Selenium 1 before the tests 
+    /** Activates Selenium 1 before the tests
      *  (inherited from the parent class) are executed. */
     @BeforeClass
     public static void setUpSelenium1() {

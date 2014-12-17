@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium1;
+package org.aludratest.service.gui.integrationtest.selenium2;
 
-import org.aludratest.service.gui.component.base.AbstractInputFieldTest;
+import org.aludratest.service.gui.component.Checkbox;
+import org.aludratest.service.gui.component.base.AbstractCheckBoxTest;
 import org.junit.BeforeClass;
 
-/** Tests input field features with Selenium 1.
- * @author Volker Bergmann */
-public class Selenium1InputFieldTest extends AbstractInputFieldTest {
+/**
+ * Tests {@link Checkbox} features with Selenium 2.
+ * @author Volker Bergmann
+ */
+public class Selenium2CheckboxTest extends AbstractCheckBoxTest {
 
-    /** Activates Selenium 1 before the tests
+    /** Activates Selenium 2 before the tests
      *  (inherited from the parent class) are executed. */
     @BeforeClass
-    public static void setUpSelenium1() {
-        activateSelenium1();
+    public static void setUpSelenium2() {
+        activateSelenium2();
     }
 
 }

@@ -13,23 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium2;
+package org.aludratest.service.gui.integrationtest.selenium1;
 
-import org.aludratest.service.gui.component.Button;
-import org.aludratest.service.gui.component.base.AbstractButtonTest;
+import org.aludratest.service.gui.component.base.AbstractLocatorTest;
 import org.junit.BeforeClass;
 
 /**
- * Tests {@link Button} features with Selenium 2.
+ * Tests locators with Selenium 1.
  * @author Volker Bergmann
  */
-public class Selenium2ButtonTest extends AbstractButtonTest {
+public class Selenium1LocatorTest extends AbstractLocatorTest {
 
-    /** Activates Selenium 2 before the tests 
+    /** Activates Selenium 1 before the tests
      *  (inherited from the parent class) are executed. */
     @BeforeClass
-    public static void setUpSelenium2() {
-        activateSelenium2();
+    public static void setUpSelenium1() {
+        activateSelenium1();
     }
 
 }

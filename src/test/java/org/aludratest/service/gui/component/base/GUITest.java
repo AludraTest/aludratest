@@ -158,8 +158,9 @@ public abstract class GUITest extends LocalTestCase {
     }
 
     // Get the Selenium-compatible link for the test page
-    protected String getSeleniumLinkForTestPage() {
-        return "file:///" + normalizedPathToFolder(TEST_PAGE_FOLDER) + '/' + getTestPage();
+    protected String getSeleniumLinkForTestPage() { // TODO remove
+        // return "file:///" + normalizedPathToFolder(TEST_PAGE_FOLDER) + '/' + getTestPage();
+        return getTestPage();
     }
 
     private String normalizedPathToFolder(String folder) {
@@ -167,7 +168,7 @@ public abstract class GUITest extends LocalTestCase {
     }
 
     protected String getTestPage() {
-        return "index.html";
+        return "http://localhost:8080/index.html";
     }
 
     protected static void overrideImplementor(Class<?> ifaceClass, Class<?> implClass) {

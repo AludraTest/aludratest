@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium2;
+package org.aludratest.service.gui.integrationtest.selenium2;
 
-import org.aludratest.service.gui.component.Link;
-import org.aludratest.service.gui.component.Window;
-import org.aludratest.service.gui.component.base.AbstractLinkAndWindowTest;
+import org.aludratest.service.gui.component.base.AbstractLocatorTest;
+import org.aludratest.service.locator.Locator;
 import org.junit.BeforeClass;
 
 /**
- * Tests {@link Link} and {@link Window} features with Selenium 2.
+ * Tests {@link Locator}s with Selenium 2.
  * @author Volker Bergmann
  */
 @SuppressWarnings("javadoc")
-public class Selenium2LinkAndWindowTest extends AbstractLinkAndWindowTest {
+public class Selenium2LocatorTest extends AbstractLocatorTest {
 
     @BeforeClass
     public static void setUpSelenium2() {

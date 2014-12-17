@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium1;
+package org.aludratest.service.gui.integrationtest.selenium1;
 
-import org.aludratest.service.gui.component.base.AbstractLocatorTest;
+import org.aludratest.service.gui.component.Element;
+import org.aludratest.service.gui.component.base.AbstractElementTest;
 import org.junit.BeforeClass;
 
 /**
- * Tests locators with Selenium 1.
+ * Tests {@link Element} features with Selenium 1.
  * @author Volker Bergmann
  */
-public class Selenium1LocatorTest extends AbstractLocatorTest {
+public class Selenium1ElementTest extends AbstractElementTest {
 
-    /** Activates Selenium 1 before the tests 
+    /** Activates Selenium 1 before the tests
      *  (inherited from the parent class) are executed. */
     @BeforeClass
     public static void setUpSelenium1() {

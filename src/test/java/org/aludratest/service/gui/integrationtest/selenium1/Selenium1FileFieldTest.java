@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium1;
+package org.aludratest.service.gui.integrationtest.selenium1;
 
 import org.aludratest.service.gui.component.base.AbstractFileFieldTest;
 import org.junit.BeforeClass;

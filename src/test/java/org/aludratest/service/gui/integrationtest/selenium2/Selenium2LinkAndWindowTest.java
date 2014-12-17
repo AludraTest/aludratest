@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium2;
+package org.aludratest.service.gui.integrationtest.selenium2;
 
-import org.aludratest.service.gui.component.Checkbox;
-import org.aludratest.service.gui.component.base.AbstractCheckBoxTest;
+import org.aludratest.service.gui.component.Link;
+import org.aludratest.service.gui.component.Window;
+import org.aludratest.service.gui.component.base.AbstractLinkAndWindowTest;
 import org.junit.BeforeClass;
 
 /**
- * Tests {@link Checkbox} features with Selenium 2.
+ * Tests {@link Link} and {@link Window} features with Selenium 2.
  * @author Volker Bergmann
  */
-public class Selenium2CheckboxTest extends AbstractCheckBoxTest {
+@SuppressWarnings("javadoc")
+public class Selenium2LinkAndWindowTest extends AbstractLinkAndWindowTest {
 
-    /** Activates Selenium 2 before the tests 
-     *  (inherited from the parent class) are executed. */
     @BeforeClass
     public static void setUpSelenium2() {
         activateSelenium2();

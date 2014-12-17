@@ -13,17 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium2;
+package org.aludratest.service.gui.integrationtest.selenium1;
 
-import org.aludratest.service.gui.component.base.AbstractXPathTest;
+import org.aludratest.service.gui.component.Link;
+import org.aludratest.service.gui.component.Window;
+import org.aludratest.service.gui.component.base.AbstractLinkAndWindowTest;
 import org.junit.BeforeClass;
 
-public class Selenium2XPathTest extends AbstractXPathTest {
+/**
+ * Tests {@link Link} and {@link Window} features with Selenium 1.
+ * @author Volker Bergmann
+ */
+public class Selenium1LinkAndWindowTest extends AbstractLinkAndWindowTest {
 
-    /** Activates Selenium 2 before the tests (inherited from the parent class) are executed. */
+    /** Activates Selenium 1 before the tests
+     *  (inherited from the parent class) are executed. */
     @BeforeClass
-    public static void setUpSelenium2() {
-        activateSelenium2();
+    public static void setUpSelenium1() {
+        activateSelenium1();
     }
 
 }

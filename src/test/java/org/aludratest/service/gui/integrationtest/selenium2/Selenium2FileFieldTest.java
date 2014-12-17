@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium1;
+package org.aludratest.service.gui.integrationtest.selenium2;
 
-import org.aludratest.service.gui.component.Dropdownbox;
-import org.aludratest.service.gui.component.base.AbstractDropdownboxTest;
+import org.aludratest.service.gui.component.base.AbstractFileFieldTest;
+import org.aludratest.service.gui.web.selenium.selenium2.AludraSelenium2;
 import org.junit.BeforeClass;
 
-/**
- * Tests {@link Dropdownbox} features with Selenium 1.
- * @author Volker Bergmann
- */
-public class Selenium1DropdownboxTest extends AbstractDropdownboxTest {
+/** Tests file field features of {@link AludraSelenium2}.
+ * @author Volker Bergmann */
+public class Selenium2FileFieldTest extends AbstractFileFieldTest {
 
-    /** Activates Selenium 1 before the tests 
+    /** Activates Selenium 2 before the tests
      *  (inherited from the parent class) are executed. */
     @BeforeClass
-    public static void setUpSelenium1() {
-        activateSelenium1();
+    public static void setUpSelenium2() {
+        activateSelenium2();
     }
 
 }

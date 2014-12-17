@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium1;
+package org.aludratest.service.gui.integrationtest.selenium1;
 
-import org.aludratest.service.gui.component.base.AbstractXPathTest;
+import org.aludratest.service.gui.component.base.AbstractLabelTest;
 import org.junit.BeforeClass;
 
-public class Selenium1XPathTest extends AbstractXPathTest {
+/**
+ * Tests label features of with Selenium 1.
+ * @author Volker Bergmann
+ */
+public class Selenium1LabelTest extends AbstractLabelTest {
 
-    /** Activates Selenium 1 before the tests (inherited from the parent class) are executed. */
+    /** Activates Selenium 1 before the tests
+     *  (inherited from the parent class) are executed. */
     @BeforeClass
     public static void setUpSelenium1() {
         activateSelenium1();

@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium2;
+package org.aludratest.service.gui.integrationtest.selenium2;
 
-import org.aludratest.service.gui.component.base.AbstractRadioButtonTest;
+import org.aludratest.service.gui.component.base.AbstractXPathTest;
 import org.junit.BeforeClass;
 
-/**
- * Tests radio-button features of {@link AludraSelenium2}.
- * @author Volker Bergmann
- */
-@SuppressWarnings("javadoc")
-public class Selenium2RadioButtonTest extends AbstractRadioButtonTest {
+public class Selenium2XPathTest extends AbstractXPathTest {
 
+    /** Activates Selenium 2 before the tests (inherited from the parent class) are executed. */
     @BeforeClass
     public static void setUpSelenium2() {
         activateSelenium2();

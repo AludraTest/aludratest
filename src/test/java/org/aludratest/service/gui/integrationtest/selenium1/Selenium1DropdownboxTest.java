@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.selenium1;
+package org.aludratest.service.gui.integrationtest.selenium1;
 
-import org.aludratest.service.gui.component.base.AbstractLabelTest;
+import org.aludratest.service.gui.component.Dropdownbox;
+import org.aludratest.service.gui.component.base.AbstractDropdownboxTest;
 import org.junit.BeforeClass;
 
 /**
- * Tests label features of with Selenium 1.
+ * Tests {@link Dropdownbox} features with Selenium 1.
  * @author Volker Bergmann
  */
-public class Selenium1LabelTest extends AbstractLabelTest {
+public class Selenium1DropdownboxTest extends AbstractDropdownboxTest {
 
-    /** Activates Selenium 1 before the tests 
+    /** Activates Selenium 1 before the tests
      *  (inherited from the parent class) are executed. */
     @BeforeClass
     public static void setUpSelenium1() {
