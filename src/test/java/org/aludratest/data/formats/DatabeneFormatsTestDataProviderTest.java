@@ -107,7 +107,7 @@ public class DatabeneFormatsTestDataProviderTest {
         assertPerson("Bob", 34, null, null, testDataSets.get(1).getData());
         assertPerson(null, 35, null, null, testDataSets.get(2).getData());
         assertPerson("", 36, null, null, testDataSets.get(3).getData());
-        assertPerson(null, 37, null, null, testDataSets.get(4).getData());
+        assertPerson("<NULL>", 37, null, null, testDataSets.get(4).getData());
     }
 
     @Test(expected = AssertionError.class)
