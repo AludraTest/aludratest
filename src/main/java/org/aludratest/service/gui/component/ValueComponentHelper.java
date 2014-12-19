@@ -41,6 +41,9 @@ class ValueComponentHelper implements ValueComponent {
 
     @Override
     public String getText() {
+        if (value) {
+            return component.perform().getInputFieldValue(component.elementType, component.elementName, component.locator);
+        }
         return component.perform().getText(component.elementType, component.elementName, component.locator);
     }
 
