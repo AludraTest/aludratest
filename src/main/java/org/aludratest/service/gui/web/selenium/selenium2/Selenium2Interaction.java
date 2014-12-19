@@ -288,6 +288,12 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     // special features --------------------------------------------------------
 
     @Override
+    public void switchToIFrame(Locator iframeLocator) {
+        wrapper.switchToIFrame(iframeLocator);
+
+    }
+
+    @Override
     public void focus(String elementType, String operation, Locator locator) {
         GUIElementLocator elementLocator = getDefaultElementLocator(locator);
         wrapper.focus(elementLocator);

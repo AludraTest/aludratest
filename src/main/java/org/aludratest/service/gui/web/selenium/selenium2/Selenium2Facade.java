@@ -375,6 +375,15 @@ public class Selenium2Facade {
         executeScript("window.focus()");
     }
 
+    public void switchToIFrame(Locator iframeLocator) {
+        if (iframeLocator == null) {
+            driver.switchTo().defaultContent();
+        }
+        else {
+            driver.switchTo().frame(findElement(iframeLocator));
+        }
+    }
+
     public String getHtmlSource() {
         return driver.getPageSource();
     }
