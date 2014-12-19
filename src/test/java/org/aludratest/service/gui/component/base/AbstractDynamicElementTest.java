@@ -47,7 +47,7 @@ public abstract class AbstractDynamicElementTest extends GUITest {
     }
 
     @Override
-    protected String getTestPage() {
+    protected String getTestPageUrl() {
         return "http://localhost:8080/dynamic.html";
     }
 

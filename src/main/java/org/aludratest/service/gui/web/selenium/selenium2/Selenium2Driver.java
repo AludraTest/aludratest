@@ -69,15 +69,15 @@ public class Selenium2Driver {
 
     private final String browserName;
     private final Class<? extends WebDriver> driverClass;
-    private final DesiredCapabilities capsForRemoteDriver;
+    private final DesiredCapabilities capabilities;
 
     // constructor -------------------------------------------------------------
 
     private Selenium2Driver(String driverName, String browserName, Class<? extends WebDriver> driverClass,
-            DesiredCapabilities capsForRemoteDriver) {
+            DesiredCapabilities capabilities) {
         this.browserName = browserName;
         this.driverClass = driverClass;
-        this.capsForRemoteDriver = capsForRemoteDriver;
+        this.capabilities = capabilities;
         INSTANCES.put(driverName, this);
     }
 
@@ -97,7 +97,7 @@ public class Selenium2Driver {
      * @return a freshly created instance of the related WebDriver class */
     public WebDriver newRemoteDriver(URL url) {
         HttpCommandExecutor executor = new HttpCommandExecutor(url);
-        return new RemoteWebDriver(executor, capsForRemoteDriver);
+        return new RemoteWebDriver(executor, capabilities);
     }
 
     // public static interface -------------------------------------------------
@@ -116,8 +116,7 @@ public class Selenium2Driver {
     // private helper methods --------------------------------------------------
 
     private static DesiredCapabilities createChromeCaps() {
-        DesiredCapabilities caps = new DesiredCapabilities();
-        caps = DesiredCapabilities.chrome();
+        DesiredCapabilities caps = DesiredCapabilities.chrome();
         ChromeOptions opts = new ChromeOptions();
         opts.addArguments("--disable-extensions");
         caps.setCapability(ChromeOptions.CAPABILITY, opts);

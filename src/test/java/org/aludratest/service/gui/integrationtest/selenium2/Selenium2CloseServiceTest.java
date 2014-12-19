@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.integrationtest;
+package org.aludratest.service.gui.integrationtest.selenium2;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -21,12 +21,20 @@ import static org.junit.Assert.assertTrue;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.service.gui.component.base.GUITest;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /** Closes and reopens a service to ensure closeService works as expected.
  * 
  * @author falbrech */
-public class CloseServiceTest extends GUITest {
+@SuppressWarnings("javadoc")
+public class Selenium2CloseServiceTest extends GUITest {
+
+    /** Activates Selenium 2 before the tests are executed. */
+    @BeforeClass
+    public static void setUpSelenium2() {
+        activateSelenium2();
+    }
 
     @Test
     public void closeAndOpenTest() throws Exception {

@@ -349,7 +349,7 @@
 					<webAppSourceDirectory>${project.basedir}/src/test/webapp</webAppSourceDirectory>
 					<classesDirectory>${project.basedir}/target/test-classes</classesDirectory>
 					<stopKey>stop-integration-test</stopKey>
-					<stopPort>8081</stopPort>
+					<stopPort>8088</stopPort>
 				</configuration>
 				<executions>
 					<execution>

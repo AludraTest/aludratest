@@ -17,8 +17,6 @@ package org.aludratest.service.gui.component.base;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-
 import org.aludratest.AludraTest;
 import org.aludratest.LocalTestCase;
 import org.aludratest.impl.log4testing.data.TestCaseLog;
@@ -50,12 +48,10 @@ public abstract class GUITest extends LocalTestCase {
     static int testMethodID = 0;
 
     protected static final int DEFAULT_TIMEOUT = 1000;
-    private static final String TEST_PAGE_FOLDER = "src/test/resources/testPages/";
 
     @Before
     public void setUp() throws Exception {
         if (shallPerformLocalTests()) {
-            startServer();
             initializeAludra();
         }
     }
@@ -63,10 +59,6 @@ public abstract class GUITest extends LocalTestCase {
     @After
     public void tearDown() throws Exception {
         tearDownAludra();
-        stopServer();
-    }
-
-    protected void startServer() throws Exception {
     }
 
     protected void initializeAludra() {
@@ -80,7 +72,7 @@ public abstract class GUITest extends LocalTestCase {
         setContext(new AludraTestContextImpl(new DirectLogTestListener(tCase), aludraTest.getServiceManager()));
 
         // configure aludra service with url.of.aut
-        System.setProperty("ALUDRATEST_CONFIG/seleniumWrapper/_testui/url.of.aut", getSeleniumLinkForTestPage());
+        System.setProperty("ALUDRATEST_CONFIG/seleniumWrapper/_testui/url.of.aut", getTestPageUrl());
 
         // get aludra service
         serviceId = ComponentId.create(AludraWebGUI.class, "testui");
@@ -100,9 +92,6 @@ public abstract class GUITest extends LocalTestCase {
         if (aludraTest != null) {
             aludraTest.stopFramework();
         }
-    }
-
-    public void stopServer() throws Exception {
     }
 
     protected static void activateSelenium1() {
@@ -157,17 +146,7 @@ public abstract class GUITest extends LocalTestCase {
         return tCase.getLastTestStep().getStatus();
     }
 
-    // Get the Selenium-compatible link for the test page
-    protected String getSeleniumLinkForTestPage() { // TODO remove
-        // return "file:///" + normalizedPathToFolder(TEST_PAGE_FOLDER) + '/' + getTestPage();
-        return getTestPage();
-    }
-
-    private String normalizedPathToFolder(String folder) {
-        return new File(folder).getAbsolutePath().replace(File.separatorChar, '/');
-    }
-
-    protected String getTestPage() {
+    protected String getTestPageUrl() {
         return "http://localhost:8080/index.html";
     }
 
