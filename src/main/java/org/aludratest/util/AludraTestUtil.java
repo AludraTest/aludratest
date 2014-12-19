@@ -76,10 +76,14 @@ public class AludraTestUtil {
         return NULL_REPLACEMENTS.get(type);
     }
 
-    /**
-     * Wraps the given object with a dynamic proxy that implements a parent interface of the object
-     * and transparently add control flow logic using the {@link ControlFlowHandler}.
-     */
+    /** Wraps the given object with a dynamic proxy that implements a parent interface of the object and transparently add control
+     * flow logic using the {@link ControlFlowHandler}.
+     * @param object
+     * @param interfaceType
+     * @param serviceId
+     * @param systemConnector
+     * @param context
+     * @return */
     public static <T, U extends T> T wrapWithControlFlowHandler(U object, Class<T> interfaceType,
             ComponentId<? extends AludraService> serviceId,
             SystemConnector systemConnector, AludraContext context) {
@@ -95,29 +99,30 @@ public class AludraTestUtil {
         if (context instanceof AludraTestContext) {
             InvocationHandler invocationHandler = new ControlFlowHandler(object, serviceId, systemConnector,
                     (AludraTestContext) context, stopOnException, !Condition.class.isAssignableFrom(interfaceType));
-            return AludraTestUtil.<T, U> wrapWithInvocationHandler(interfaceType, invocationHandler);
+            return AludraTestUtil.<T> wrapWithInvocationHandler(interfaceType, invocationHandler);
         }
         return object;
     }
 
-    /**
-     * Calls the Java dynamic proxy API to dynamically implement the given interfaceType
-     * using the given invocationHandler.
-     * @see InvocationHandler
-     */
+    /** Calls the Java dynamic proxy API to dynamically implement the given interfaceType using the given invocationHandler.
+     * @param interfaceType
+     * @param invocationHandler
+     * @return
+     * @see InvocationHandler */
     @SuppressWarnings("unchecked")
-    public static <T, U extends T> U wrapWithInvocationHandler(Class<T> interfaceType, InvocationHandler invocationHandler) {
+    public static <T> T wrapWithInvocationHandler(Class<T> interfaceType, InvocationHandler invocationHandler) {
         try {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            return (U) Proxy.newProxyInstance(classLoader, new Class[] { interfaceType }, invocationHandler);
+            return (T) Proxy.newProxyInstance(classLoader, new Class[] { interfaceType }, invocationHandler);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    /** If the argument is an {@link InvocationTargetException}
-     *  with a non-null cause, the method returns that cause exception,
-     *  otherwise the {@link Throwable} object itself. */
+    /** Unwraps the root cause of an exception.
+     * @param t the Throwable to examine
+     * @return If the argument is an {@link InvocationTargetException} with a non-null cause, the method returns that cause
+     *         exception, otherwise the {@link Throwable} object itself */
     public static Throwable unwrapInvocationTargetException(Throwable t) {
         while (t instanceof InvocationTargetException && t.getCause() != null) {
             t = t.getCause();
@@ -125,6 +130,9 @@ public class AludraTestUtil {
         return t;
     }
 
+    /** Returns a specific the stack trace element of the current invocation stack.
+     * @param levelsUp
+     * @return */
     public static StackTraceElement getStackTraceElement(int levelsUp) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         int index = levelsUp + 1;
@@ -134,6 +142,9 @@ public class AludraTestUtil {
         return stackTrace[index];
     }
 
+    /** Provides the test status for a given exception.
+     * @param t the exception to map to a status
+     * @return the test status for a given exception */
     public static TestStatus getTestStatus(Throwable t) {
         if (t instanceof AludraTestException) {
             return ((AludraTestException) t).getTestStatus();
