@@ -40,6 +40,8 @@ import org.codehaus.plexus.component.repository.ComponentRequirement;
 import org.codehaus.plexus.component.repository.exception.ComponentLifecycleException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
+/** TODO FAL javadoc
+ * @author falbrech */
 @Component(role = AludraServiceManager.class, instantiationStrategy = "singleton")
 public class AludraServiceManagerImpl implements AludraServiceManager {
 
@@ -51,6 +53,7 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
     @Requirement(role = ServiceWrapper.class)
     private List<ServiceWrapper> serviceWrappers;
 
+    /** TODO FAL javadoc */
     public AludraServiceManagerImpl() {
         serviceRegistry = new AludraServiceRegistry();
         new DefaultConfigurator().configure(serviceRegistry);
@@ -146,7 +149,7 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
     }
 
     @Override
-    public <T, U extends T> U newImplementorInstance(Class<T> iface) {
+    public <T> T newImplementorInstance(Class<T> iface) {
         return newImplementorInstance(iface, null);
     }
 
@@ -175,8 +178,7 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
-    private <T, U extends T> U newImplementorInstance(Class<T> iface, String instanceName) {
+    private <T> T newImplementorInstance(Class<T> iface, String instanceName) {
         String implementorClassName = serviceRegistry.getImplementationClassName(iface.getName());
         if ((implementorClassName == null || implementorClassName.trim().isEmpty())
                 && container.getComponentDescriptor(iface.getName(), instanceName) == null) {
@@ -203,10 +205,10 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
 
         try {
             if (instanceName == null) {
-                return (U) container.lookup(iface);
+                return container.lookup(iface);
             }
             else {
-                return (U) container.lookup(iface, instanceName);
+                return container.lookup(iface, instanceName);
             }
         }
         catch (ComponentLookupException e) {

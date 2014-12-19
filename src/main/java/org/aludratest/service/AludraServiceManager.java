@@ -18,7 +18,6 @@ package org.aludratest.service;
 import org.aludratest.config.Configurable;
 
 /** The bootstrap for Aludra Components like e.g. services.
- * 
  * @author falbrech */
 public interface AludraServiceManager {
 
@@ -37,7 +36,7 @@ public interface AludraServiceManager {
      * 
      * @param iface the interface for which to create an implementor instance
      * @return a new instance of the class configured as standard implementor of the interface */
-    public <T, U extends T> U newImplementorInstance(Class<T> iface);
+    public <T> T newImplementorInstance(Class<T> iface);
 
     /** Removes an instantiated singleton from the internal map of singletons, if it has already been instantiated. If it
      * implements the <code>AludraCloseable</code> interface, its <code>close()</code> method is invoked first.
