@@ -30,7 +30,7 @@ import org.aludratest.testcase.data.Source;
  * @author Volker Bergmann
  */
 @SuppressWarnings("javadoc")
-public class ManualTest extends AludraTestCase {
+public abstract class ManualTest extends AludraTestCase {
 
     @Test
     public void testFunctionalFailure() {

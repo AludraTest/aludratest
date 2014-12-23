@@ -16,11 +16,13 @@
 package org.aludratest.testcase.manual;
 
 import org.aludratest.AludraTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /** Uses JUnit to invoke {@link AludraTest} and execute the {@link ManualTest}.
  * @author Volker Bergmann */
 @SuppressWarnings("javadoc")
+@Ignore
 public class ManualJUnitTest {
 
     @Test
