@@ -77,6 +77,8 @@ public final class AludraTest {
         }
     }
 
+    /** Starts the AludraTest framework
+     * @return the freshly created instance */
     public static AludraTest startFramework() {
         AludraTest framework = new AludraTest();
         LOGGER.info("Starting AludraTest {}", framework.getAludraTestConfig().getVersion());
@@ -88,6 +90,7 @@ public final class AludraTest {
         return framework;
     }
 
+    /** Stops the AludraTest framework */
     public void stopFramework() {
         iocContainer.dispose();
         instance = null;
@@ -154,13 +157,10 @@ public final class AludraTest {
         return serviceManager;
     }
 
-    /**
-     * Parses the test class/suite, executes it and waits until all tests are finished.
-     * 
-     * @param testClass
-     *            The AludraTest class or test suite to run
-     */
-    public void run(Class<?> testClass) {
+    /** Parses the test class/suite, executes it and waits until all tests are finished.
+     * @param testClass The AludraTest class or test suite to run
+     * @return the resulting exit code */
+    public int run(Class<?> testClass) {
 
         RunnerTreeBuilder builder = serviceManager.newImplementorInstance(RunnerTreeBuilder.class);
         RunnerTree runnerTree = builder.buildRunnerTree(testClass);
@@ -170,6 +170,38 @@ public final class AludraTest {
 
         AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
         runner.runAludraTests(runnerTree);
+
+        return exitCode(testClass);
+    }
+
+    /** implements the functionality of the class' main method without calling {@link System#exit(int)}, but providing the
+     * respective exit code as method return value.
+     * @param args the command line arguments
+     * @return the exit code resulting from command evaluation, class parsing and test execution */
+    public static int runWithCmdLineArgs(String[] args) {
+        int exitCode;
+        // check preconditions
+        if (args.length == 0) {
+            // test class/suite name missing
+            System.out.println("Please provide a test class name as argument"); // NOSONAR
+            exitCode = EXIT_ILLEGAL_ARGUMENT;
+        }
+        else {
+            // execute
+            AludraTest aludra = startFramework();
+            try {
+                Class<?> testClass = Class.forName(args[0]);
+                exitCode = aludra.run(testClass);
+            }
+            catch (Throwable t) {
+                t.printStackTrace(System.err);
+                exitCode = EXIT_EXECUTION_ERROR;
+            }
+            finally {
+                aludra.stopFramework();
+            }
+        }
+        return exitCode;
     }
 
     // private helpers ---------------------------------------------------------------
@@ -191,25 +223,8 @@ public final class AludraTest {
      *  @param args expects a class name as single argument
      *  @throws ClassNotFoundException if the class of the provided name was not found */
     public static void main(String[] args) throws ClassNotFoundException {
-        // check preconditions
-        if (args.length == 0) {
-            // test class/suite name missing
-            System.out.println("Please provide a test class name as argument"); //NOSONAR
-            System.exit(EXIT_ILLEGAL_ARGUMENT);
-        } else {
-            // execute
-            AludraTest aludra = startFramework();
-            try {
-                Class<?> testClass = Class.forName(args[0]);
-                aludra.run(testClass);
-                System.exit(exitCode(testClass));
-            } catch (Throwable t) {
-                t.printStackTrace(System.err);
-                System.exit(EXIT_EXECUTION_ERROR);
-            } finally {
-                aludra.stopFramework();
-            }
-        }
+        int exitCode = runWithCmdLineArgs(args);
+        System.exit(exitCode);
     }
 
 }

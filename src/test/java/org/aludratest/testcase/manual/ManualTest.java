@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service;
+package org.aludratest.testcase.manual;
 
 import org.aludratest.exception.AccessFailure;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.PerformanceFailure;
+import org.aludratest.service.ComponentId;
 import org.aludratest.service.pseudo.PseudoService;
 import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.Test;
+import org.aludratest.testcase.data.Source;
 
 /**
  * AludraTest for manual verification of the framework behaviour.
  * @author Volker Bergmann
  */
 @SuppressWarnings("javadoc")
-public abstract class ManualTest extends AludraTestCase {
+public class ManualTest extends AludraTestCase {
 
     @Test
     public void testFunctionalFailure() {
@@ -77,12 +79,24 @@ public abstract class ManualTest extends AludraTestCase {
         service.perform().succeed("1", "2", "3");
     }
 
+    @Test
+    public void testEmptySheet(@Source(uri = "emptySheet.xls", segment = "data") String s) {
+        PseudoService service = getService(ComponentId.create(PseudoService.class, "test"));
+        sleep();
+        newTestStepGroup("Group 1");
+        service.perform().succeed("1", "2", "3");
+    }
+
     private void sleep() {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public static class DataClass {
+        public String data;
     }
 
 }
