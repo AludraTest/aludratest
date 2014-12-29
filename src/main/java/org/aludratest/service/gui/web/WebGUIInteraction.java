@@ -15,7 +15,9 @@
  */
 package org.aludratest.service.gui.web;
 
+import org.aludratest.impl.log4testing.TechnicalLocator;
 import org.aludratest.service.gui.GUIInteraction;
+import org.aludratest.service.locator.Locator;
 import org.aludratest.testcase.data.ParamConverter;
 
 /**
@@ -53,5 +55,11 @@ public interface WebGUIInteraction extends GUIInteraction {
      * @param key the header name
      * @param value the header value */
     void addCustomHttpHeaderCommand(String key, @ParamConverter(HttpHeaderFormat.class) String value);
+
+    /** Switches to the given iframe element of the current web page in the current window, or switches back to default content.
+     * 
+     * @param iframeLocator Locator which uniquely identifies the inner frame to switch to. Use <code>null</code> to switch back
+     *            to default content. */
+    void switchToIFrame(@TechnicalLocator Locator iframeLocator);
 
 }

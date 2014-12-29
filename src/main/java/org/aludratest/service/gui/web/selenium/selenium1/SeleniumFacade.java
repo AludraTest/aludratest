@@ -434,6 +434,15 @@ public class SeleniumFacade {
         selenium.windowFocus();
     }
 
+    public void switchToIFrame(GUIElementLocator iframeLocator) {
+        if (iframeLocator == null) {
+            selenium.selectFrame("relative=top");
+        }
+        else {
+            selenium.selectFrame(getSeleniumLocator(iframeLocator));
+        }
+    }
+
     /** @return the HTML source code of the active web page */
     public String getHtmlSource() {
         return selenium.getHtmlSource();

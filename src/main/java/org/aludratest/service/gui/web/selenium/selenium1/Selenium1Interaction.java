@@ -186,6 +186,16 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
+    public void switchToIFrame(Locator iframeLocator) {
+        if (iframeLocator == null) {
+            wrapper.switchToIFrame(null);
+        }
+        else {
+            wrapper.switchToIFrame(assertGUIElementLocator(iframeLocator));
+        }
+    }
+
+    @Override
     public void focus(String elementType, String operation, Locator locator) {
         GUIElementLocator elementLocator = assertGUIElementLocator(locator);
         wrapper.focus(elementLocator);

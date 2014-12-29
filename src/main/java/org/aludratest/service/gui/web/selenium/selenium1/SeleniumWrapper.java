@@ -510,6 +510,10 @@ public class SeleniumWrapper {
         selenium.windowFocus();
     }
 
+    public void switchToIFrame(GUIElementLocator locator) {
+        selenium.switchToIFrame(locator);
+    }
+
     /** @return the source of the current web page */
     public Attachment getPageSource() {
         String pageSource = selenium.getHtmlSource();
