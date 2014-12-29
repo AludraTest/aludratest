@@ -32,10 +32,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
-/**
- * Parent class for GUI tests.
+/** Parent class for GUI tests. <br>
+ * To execute a web based GUI test from within eclipse, you must serve the required resources with a Jetty server. Start the Jetty
+ * server by calling <code>mvn jetty:run</code> from the command line, then execute the JUnit tests as usual from eclipse.
+ * 
  * @author YWANG
- */
+ * @author Volker Bergmann */
 @SuppressWarnings("javadoc")
 public abstract class GUITest extends LocalTestCase {
 
