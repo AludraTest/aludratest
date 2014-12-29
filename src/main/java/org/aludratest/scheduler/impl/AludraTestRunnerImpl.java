@@ -196,7 +196,9 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
      * @param group Group to create and submit callables for.
      * @return A list of the submitted futures. */
     private List<Future<Void>> runParallelGroup(RunnerGroup group) {
-        if (group.getChildren().size() == 0) {
+        if (group.isEmpty()) {
+            listenerRegistry.fireStartingTestGroup(group);
+            listenerRegistry.fireFinishedTestGroup(group);
             return new ArrayList<Future<Void>>();
         }
         else {
@@ -209,7 +211,7 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
                     futures.add(submitParallelLeaf((RunnerLeaf) childNode));
                 }
                 else {
-                    throw new TechnicalException("Not a supported RunnerGroup: " + group.getClass());
+                    throw new TechnicalException("Not a supported RunnerNode: " + childNode.getClass());
                 }
             }
             return futures;
@@ -263,7 +265,11 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
         public void run() {
             try {
                 LOGGER.debug("Starting {}", group);
-                if (!group.getChildren().isEmpty()) {
+                if (group.isEmpty()) {
+                    listenerRegistry.fireStartingTestGroup(group);
+                    listenerRegistry.fireFinishedTestGroup(group);
+                }
+                else {
                     for (RunnerNode childNode : group.getChildren()) {
                         runChildOfSequentialGroup(childNode);
                     }

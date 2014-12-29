@@ -63,6 +63,11 @@ public class RunnerGroup extends RunnerNode {
         }
     }
 
+    /** @return true if the group has no child elements, otherwise false */
+    public boolean isEmpty() {
+        return this.children.isEmpty();
+    }
+
     /** Returns the children of this runner group.
      * @return The children of this runner group, as an unmodifiable list. */
     public List<RunnerNode> getChildren() {
