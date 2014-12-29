@@ -230,13 +230,12 @@
 			<artifactId>pmd</artifactId>
 			<version>5.0.5</version>
 		</dependency>
-
+		
 		<!-- for JMS -->
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>6.0</version>
-			<scope>compile</scope>
+			<groupId>javax.jms</groupId>
+			<artifactId>jms</artifactId>
+			<version>1.1</version>
 		</dependency>
 
 		<dependency> <!-- without this we get NoClassDefFoundError: org/w3c/dom/ElementTraversal -->
