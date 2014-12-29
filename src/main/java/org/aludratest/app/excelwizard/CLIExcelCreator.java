@@ -15,7 +15,7 @@
  */
 package org.aludratest.app.excelwizard;
 
-import java.io.IOException;
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -23,6 +23,7 @@ import org.aludratest.AludraTest;
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.impl.AludraTestConstants;
 import org.databene.commons.BeanUtil;
+import org.databene.commons.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,13 +42,10 @@ public class CLIExcelCreator {
 
     private CLIExcelCreator() { }
 
-    /**
-     * Main method of the class.
-     * @param args an array of length one, containing the fully qualified name of the class
-     *      for which to generate Excel documents
-     * @throws IOException if an error occurs
-     */
-    public static void main(String[] args) throws IOException {
+    /** Main method of the class.
+     * @param args an array of length one, containing the fully qualified name of the class for which to generate Excel documents
+     * @throws Exception if an error occurs */
+    public static void main(String[] args) throws Exception {
         checkArguments(args);
 
         // create a new AludraTest instance to have configuration framework available
@@ -59,7 +57,8 @@ public class CLIExcelCreator {
             if (!testMethodsWithExcelSource.isEmpty()) {
                 LOGGER.info("Generating Excel documents for test class {}", testClass.getName());
                 for (Method testMethod : testMethodsWithExcelSource) {
-                    ExcelCreationUtil.createDocuments(testMethod, null, config.getXlsRootPath());
+                    File testDataRootFolder = new File(SystemInfo.getCurrentDir(), config.getXlsRootPath()).getCanonicalFile();
+                    JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod, null, testDataRootFolder);
                 }
             }
             else {
