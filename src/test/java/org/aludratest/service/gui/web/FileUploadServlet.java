@@ -22,7 +22,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 
-import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -31,7 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import org.databene.commons.IOUtil;
-import org.eclipse.jetty.server.Request;
 
 /** Servlet for testing file upload: the GET method provides an HTML form with a file field and an upload button. 
  * A button click triggers a POST to upload the file to the servlet. The servlet processes the POST by returning 
@@ -40,7 +38,6 @@ import org.eclipse.jetty.server.Request;
 @MultipartConfig
 public class FileUploadServlet extends HttpServlet {
 
-    private static final MultipartConfigElement MULTIPART_CONFIG = new MultipartConfigElement(System.getProperty("java.io.tmpdir"));
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -55,7 +52,6 @@ public class FileUploadServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, MULTIPART_CONFIG);
         Part filePart = request.getPart("file");
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);

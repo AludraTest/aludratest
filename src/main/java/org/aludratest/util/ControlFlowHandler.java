@@ -106,8 +106,18 @@ public class ControlFlowHandler implements InvocationHandler {
         if (shallContinueTestCaseExecution()) {
             if (method.getName().equals("setSystemConnector")) {
                 this.systemConnector = (SystemConnector) args[0];
+                boolean oldLogFlag = logTestSteps;
+                logTestSteps = false;
+                try {
+                    return forwardAndHandleException(method, args);
+                }
+                finally {
+                    logTestSteps = oldLogFlag;
+                }
             }
-            return forwardAndHandleException(method, args);
+            else {
+                return forwardAndHandleException(method, args);
+            }
         } else {
             if (logTestSteps) {
                 TestStepInfoBean testStep = new TestStepInfoBean();

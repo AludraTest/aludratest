@@ -15,7 +15,7 @@
  */
 package org.aludratest.service.gui.component.base;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.aludratest.service.gui.web.AludraWebGUI;
 import org.aludratest.service.locator.Locator;
@@ -73,6 +73,7 @@ public abstract class AbstractLinkAndWindowTest extends GUITest {
         checkLastStepStatus(TestStatus.PASSED);
         // try to select the main page
         aludraWebGUI.perform().selectWindow(GUITestUIMap.TEST_PAGE_TITLE);
+        // TODO VBE the following check fails for Google Chrome with Selenium 1
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
     }
 

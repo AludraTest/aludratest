@@ -19,11 +19,8 @@ import java.io.ByteArrayInputStream;
 
 import org.aludratest.service.gui.component.FileField;
 import org.aludratest.service.gui.web.AludraWebGUI;
-import org.aludratest.service.gui.web.FileUploadServlet;
 import org.aludratest.testcase.TestStatus;
 import org.databene.commons.Encodings;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletHandler;
 import org.junit.Test;
 
 /** Tests the {@link FileField}-related features of {@link AludraWebGUI} services.
@@ -31,49 +28,18 @@ import org.junit.Test;
 @SuppressWarnings("javadoc")
 public abstract class AbstractFileFieldTest extends GUITest {
 
-    private static final int HTTP_PORT = 8080;
-
-    private Server server;
-
-    // test customization ------------------------------------------------------
-
-    @Override
-    public void startServer() throws Exception {
-        logger.debug("Starting Jetty");
-        server = new Server(HTTP_PORT);
-        ServletHandler handler = new ServletHandler();
-        server.setHandler(handler);
-        handler.addServletWithMapping(FileUploadServlet.class, "/*");
-        server.start();
-    }
-
-    @Override
-    public void stopServer() throws Exception {
-        if (server != null) {
-            server.stop();
-        }
-        logger.debug("Stopped Jetty");
-    }
-
-    @Override
-    protected String getSeleniumLinkForTestPage() {
-        return getTestPage();
-    }
-
-    @Override
-    protected String getTestPage() {
-        return "http://localhost:" + HTTP_PORT + "/fileUpload";
-    }
-
-    // tests -------------------------------------------------------------------
-
     @Test
     public void setResourceNameAndContent() throws Exception {
         guiTestUIMap.fileField().assertTextEquals("");
         ByteArrayInputStream content = new ByteArrayInputStream("myTestFileContent".getBytes(Encodings.UTF_8));
+        // TODO VBE the following step fails for Google Chrome with Selenium 1
+        // see https://code.google.com/p/selenium/issues/detail?id=7802
         guiTestUIMap.fileField().setResourceNameAndContent("myTestFile.txt", content);
+        checkLastStepStatus(TestStatus.PASSED);
         guiTestUIMap.fileSubmitButton().click();
+        checkLastStepStatus(TestStatus.PASSED);
         guiTestUIMap.fileNameLabel().assertTextEquals("myTestFile.txt");
+        checkLastStepStatus(TestStatus.PASSED);
         guiTestUIMap.fileContentLabel().assertTextEquals("myTestFileContent");
         checkLastStepStatus(TestStatus.PASSED);
     }
