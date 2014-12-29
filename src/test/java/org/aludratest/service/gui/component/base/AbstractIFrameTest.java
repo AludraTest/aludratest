@@ -27,8 +27,8 @@ import org.junit.Test;
 public abstract class AbstractIFrameTest extends GUITest {
 
     @Override
-    protected String getTestPage() {
-        return "iframe-master.html";
+    protected String getTestPageUrl() {
+        return "http://localhost:8080/iframe-master.html";
     }
 
     @Test
