@@ -1,4 +1,4 @@
-@echo off
-set /p NAME="Please enter name: "
-@echo on
-REM Hello %NAME%
+@ECHO OFF
+ECHO Please enter name: 
+set /p NAME=
+ECHO Hello %NAME%

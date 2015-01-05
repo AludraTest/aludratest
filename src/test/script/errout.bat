@@ -1,1 +1,2 @@
-REM "some error" 1>&2
+@ECHO OFF
+ECHO some error 1>&2

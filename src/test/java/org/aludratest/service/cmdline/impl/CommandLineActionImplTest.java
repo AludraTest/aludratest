@@ -147,7 +147,6 @@ public class CommandLineActionImplTest {
         process.errOut().redirectTo(out);
         assertEquals("some error", out.getValue().trim());
         process.assertExitValue(new IntData(0));
-        process.stdOut().assertEmpty();
     }
 
     // private helper ----------------------------------------------------------
@@ -161,7 +160,7 @@ public class CommandLineActionImplTest {
     private String[] echoCommands(String variable) {
         String[] command;
         if (SystemInfo.isWindows()) {
-            command = new String[] { "cmd", "/C", "rem %" + variable + "%" };
+            command = new String[] { "cmd.exe", "/C", "ECHO %" + variable + "%" };
         }
         else {
             command = new String[] { "/bin/bash", "-c", "echo $" + variable };

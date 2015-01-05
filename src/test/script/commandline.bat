@@ -1,1 +1,2 @@
-REM Hello %1
+@ECHO OFF
+ECHO Hello %1
