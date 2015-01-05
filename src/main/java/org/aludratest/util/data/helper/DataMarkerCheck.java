@@ -42,7 +42,7 @@ public class DataMarkerCheck {
     }
 
     public static boolean isNull(String string) {
-        if ((string == null) || (string.equals(getDataConfiguration().getNullMarker()) || string.equals(""))) {
+        if ((string == null) || (string.length() == 0) || (string.equals(getDataConfiguration().getNullMarker()))) {
             return true;
         }
         return false;
