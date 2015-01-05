@@ -81,11 +81,6 @@ public class LocalSeleniumResourceService implements SeleniumResourceService, Co
     }
 
     @Override
-    public int size() {
-        return getHosts().size();
-    }
-
-    @Override
     public int getHostCount() {
         return executionHosts.size();
     }
@@ -112,7 +107,7 @@ public class LocalSeleniumResourceService implements SeleniumResourceService, Co
         if (this.hosts == null) {
             this.hosts = new ObjectPool<String>(executionHosts.size(), false);
             for (String realHost : executionHosts) {
-                this.hosts.add(realHost);
+                this.hosts.add("http://" + realHost + "/");
             }
         }
         return this.hosts;
