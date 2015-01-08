@@ -470,14 +470,14 @@ public class Selenium2Facade {
         WebElement element = findElement(locator);
         Select select = new Select(element);
         List<WebElement> options = select.getOptions();
-        ArrayList<String> nonEmptyValues = new ArrayList<String>();
+        ArrayList<String> values = new ArrayList<String>();
         for (WebElement option : options) {
             String value = option.getAttribute(propertyName);
-            if (value != null && value.length() > 0) {
-                nonEmptyValues.add(value);
+            if (value != null) {
+                values.add(value);
             }
         }
-        return nonEmptyValues.toArray(new String[nonEmptyValues.size()]);
+        return values.toArray(new String[values.size()]);
     }
 
     public void waitUntilClickable(GUIElementLocator locator) {
