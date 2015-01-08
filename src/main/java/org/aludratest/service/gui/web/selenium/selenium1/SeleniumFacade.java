@@ -56,9 +56,10 @@ public class SeleniumFacade {
 
     static final String HAS_FOCUS_SCRIPT = "this.browserbot.findElement('%s') == window.document.activeElement";
     private static final String DELIMITER = ";;;";
+    private static final String EMPTY_MARKER = "|||";
     private static final String DROPDOWN_SCRIPT = "var dropdownbox = this.browserbot.findElement('%s');" + "var values = '';"
-            + "for (var i = 0; i < dropdownbox.length; i++) {" + "values = values + '" + DELIMITER
-            + "' + dropdownbox.options[i].%s;" + "}" + "values;";
+            + "for (var i = 0; i < dropdownbox.length; i++) { var t=dropdownbox.options[i].%s; " + "values = values + '"
+            + DELIMITER + "' + (t == '' ? '" + EMPTY_MARKER + "' : t);" + "}" + "values;";
     private static final int DEFAULT_Z_INDEX = 0;
 
     private static final String ZINDEX_SCRIPT = "var testObj = this.browserbot.findElement('%s');"
@@ -597,7 +598,7 @@ public class SeleniumFacade {
         ArrayList<String> nonEmptyValues = new ArrayList<String>();
         for (String value : values) {
             if (value.length() > 0) {
-                nonEmptyValues.add(value);
+                nonEmptyValues.add(EMPTY_MARKER.equals(value) ? "" : value);
             }
         }
         return nonEmptyValues.toArray(new String[0]);
