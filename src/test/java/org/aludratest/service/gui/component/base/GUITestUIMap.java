@@ -27,6 +27,7 @@ import org.aludratest.service.gui.web.AludraWebGUI;
 import org.aludratest.service.gui.web.uimap.UIMap;
 import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.element.IdLocator;
+import org.aludratest.service.locator.element.XPathLocator;
 import org.aludratest.service.locator.window.TitleLocator;
 
 /**
@@ -43,6 +44,7 @@ public class GUITestUIMap extends UIMap {
     public final static Locator DISABLED_DROPDOWNBOX_ID = new IdLocator("DisabledDropDown:after");
 
     public final static Locator TEXT_FIELD_ID = new IdLocator("TextField:after");
+    public final static Locator NOID_TEXT_FIELD = new XPathLocator("//input[@class='myclass']");
 
     public final static Locator DISABLED_TEXT_FIELD_ID = new IdLocator("disabled_TextField:after");
 
@@ -87,6 +89,10 @@ public class GUITestUIMap extends UIMap {
 
     public InputField textField() {
         return new InputField(aludraGUI, TEXT_FIELD_ID);
+    }
+
+    public InputField noidTextField() {
+        return new InputField(aludraGUI, NOID_TEXT_FIELD);
     }
 
     public InputField disabledTextField() {

@@ -40,9 +40,11 @@ import org.aludratest.service.locator.option.OptionLocator;
 import org.aludratest.service.locator.window.TitleLocator;
 import org.aludratest.service.locator.window.WindowLocator;
 import org.aludratest.service.util.ServiceUtil;
+import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.databene.commons.CollectionUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
@@ -208,6 +210,27 @@ public class Selenium2Facade {
         }
         // code has repeatedly failed, so forward the last exception
         throw exception;
+    }
+
+    public void setValue(GUIElementLocator locator, String value) {
+        WebElement element = findElement(locator);
+        String id = element.getAttribute("id");
+        if (!DataMarkerCheck.isNull(id)) {
+            executeScript("document.getElementById('" + id + "').setAttribute('value', '" + value.replace("'", "\\'") + "')");
+        }
+        else {
+            element.sendKeys(Keys.END);
+            String text;
+            while (!DataMarkerCheck.isNull(text = element.getAttribute("value"))) {
+                int length = text.length();
+                String[] arr = new String[length];
+                for (int i = 0; i < length; i++) {
+                    arr[i] = "\b";
+                }
+                element.sendKeys(arr);
+            }
+            element.sendKeys(value);
+        }
     }
 
     public void sendKeys(GUIElementLocator locator, String keys) {

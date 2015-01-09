@@ -129,4 +129,32 @@ public abstract class AbstractInputFieldTest extends GUITest {
         checkLastStepStatus(TestStatus.FAILED);
     }
 
+    @Test
+    public void enterWholeField() {
+        guiTestUIMap.textField().assertTextEquals("");
+        checkLastStepStatus(TestStatus.PASSED);
+        guiTestUIMap.textField().enter("4711");
+        // positive test
+        guiTestUIMap.textField().assertTextEquals("4711");
+        checkLastStepStatus(TestStatus.PASSED);
+        // next enter should enter WHOLE field
+        guiTestUIMap.textField().enter("4712");
+        guiTestUIMap.textField().assertTextEquals("4712");
+        checkLastStepStatus(TestStatus.PASSED);
+    }
+
+    @Test
+    public void enterWholeField_noId() {
+        guiTestUIMap.noidTextField().assertTextEquals("");
+        checkLastStepStatus(TestStatus.PASSED);
+        guiTestUIMap.noidTextField().enter("4711");
+        // positive test
+        guiTestUIMap.noidTextField().assertTextEquals("4711");
+        checkLastStepStatus(TestStatus.PASSED);
+        // next enter should enter WHOLE field
+        guiTestUIMap.noidTextField().enter("4712");
+        guiTestUIMap.noidTextField().assertTextEquals("4712");
+        checkLastStepStatus(TestStatus.PASSED);
+    }
+
 }
