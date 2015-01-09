@@ -135,7 +135,12 @@ public class Selenium2Facade {
     }
 
     public void close() {
-        driver.close();
+        try {
+            driver.close();
+        }
+        catch (WebDriverException e) {
+            // ignore this
+        }
     }
 
     public void quit() {
@@ -215,10 +220,18 @@ public class Selenium2Facade {
     public void setValue(GUIElementLocator locator, String value) {
         WebElement element = findElement(locator);
         String id = element.getAttribute("id");
-        if (!DataMarkerCheck.isNull(id)) {
+        String fieldType = element.getAttribute("type");
+        boolean fallback = true;
+        if (!DataMarkerCheck.isNull(id) || "file".equals(fieldType)) {
             executeScript("document.getElementById('" + id + "').setAttribute('value', '" + value.replace("'", "\\'") + "')");
+            // validate success
+            if (value.equals(element.getAttribute("value"))) {
+                fallback = false;
+            }
         }
-        else {
+
+        // fallback code
+        if (fallback) {
             element.sendKeys(Keys.END);
             String text;
             while (!DataMarkerCheck.isNull(text = element.getAttribute("value"))) {
