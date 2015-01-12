@@ -176,7 +176,6 @@ public class Selenium2Facade {
                 Object result = executeScript(
                         "arguments[0].className = arguments[0].className.replace( /(?:^|\\s)selenium-highlight(?!\\S)/g , '' ); return arguments[0].className;",
                         highlightedElement);
-                System.out.println(result);
             }
             catch (WebDriverException e) {
                 LOGGER.trace("Highlight remove failed. ", e);
