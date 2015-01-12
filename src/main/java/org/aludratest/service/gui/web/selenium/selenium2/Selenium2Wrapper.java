@@ -483,7 +483,7 @@ public class Selenium2Wrapper {
     }
 
     private Attachment getScreenshotAttachment(String base64Data) {
-        final String title = getTitle();
+        final String title = "Screenshot";
         final Base64 base64 = new Base64();
         final byte[] decodedData = base64.decode(base64Data);
         return new BinaryAttachment(title, decodedData, configuration.getScreenshotAttachmentExtension());
