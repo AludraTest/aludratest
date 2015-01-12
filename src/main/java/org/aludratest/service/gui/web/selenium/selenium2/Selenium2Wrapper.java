@@ -607,37 +607,20 @@ public class Selenium2Wrapper {
         selenium.waitUntilInvisible(locator);
     }
 
-    public void waitForElementNotPresent(GUIElementLocator locator) { // ENHANCE migrate to Selenium 2
+    public void waitForElementNotPresent(GUIElementLocator locator) {
         waitForElementNotPresent(locator, getTimeout());
     }
 
-    public void waitForElementNotPresent(final GUIElementLocator locator, long timeout) { // ENHANCE migrate to Selenium 2
-        boolean elementIsNotFound = retryUntilTimeout(new ConditionCheck() {
-            @Override
-            public boolean eval() {
-                return !selenium.isElementPresent(locator);
-            }
-        }, timeout);
-        if (!elementIsNotFound) {
-            throw new AutomationException("An element was unexpectedly found");
-        }
+    public void waitForElementNotPresent(final GUIElementLocator locator, long timeout) {
+        selenium.waitUntilNotPresent(locator, timeout);
     }
 
-    public void waitForInForeground(GUIElementLocator locator) { // ENHANCE migrate to Selenium 2
+    public void waitForInForeground(GUIElementLocator locator) {
         waitForInForeground(locator, getTimeout());
     }
 
     public void waitForInForeground(final GUIElementLocator locator, long timeout) {
-        // ENHANCE migrate to Selenium 2
-        boolean elementIsInForeground = retryUntilTimeout(new ConditionCheck() {
-            @Override
-            public boolean eval() {
-                return selenium.isInForeground(locator);
-            }
-        }, timeout);
-        if (!elementIsInForeground) {
-            throw new AutomationException("Element not in foreground.");
-        }
+        selenium.waitUntilInForeground(locator, timeout);
     }
 
     public int getTimeout() {

@@ -66,6 +66,7 @@ import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.ErrorHandler.UnknownServerException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -192,7 +193,7 @@ public class Selenium2Facade {
             // add CSS and element
             executeScript("var css = document.createElement('style'); css.setAttribute('id', '__aludra_selenium_css'); css.setAttribute('type', 'text/css'); css.innerHTML = '.selenium-highlight { border: 3px solid red !important; }'; document.getElementsByTagName('head')[0].appendChild(css);");
             // add hidden element
-            executeScript("var hidden = document.createElement('input'); hidden.setAttribute('id', '__aludra_selenium_hidden'); hidden.setAttribute('type', 'hidden'); document.getElementsByTagName('body')[0].appendChild(hidden);");
+            executeScript("var hidden = document.createElement('div'); hidden.setAttribute('id', '__aludra_selenium_hidden'); hidden.setAttribute('style', 'display:none;'); document.getElementsByTagName('body')[0].appendChild(hidden);");
         }
     }
 
@@ -600,6 +601,15 @@ public class Selenium2Facade {
         }
     }
 
+    public void waitUntilNotPresent(GUIElementLocator locator, long timeout) {
+        try {
+            waitFor(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(LocatorUtil.by(locator))), timeout);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException("Element still present"); // NOSONAR
+        }
+    }
+
     public void waitUntilVisible(GUIElementLocator locator) {
         waitUntilVisible(locator, configuration.getTimeout());
     }
@@ -613,7 +623,31 @@ public class Selenium2Facade {
     }
 
     public void waitUntilInvisible(GUIElementLocator locator) {
-        waitFor(invisibilityOfElementLocated(LocatorUtil.by(locator)), configuration.getTimeout());
+        try {
+            waitFor(invisibilityOfElementLocated(LocatorUtil.by(locator)), configuration.getTimeout());
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException("The element is still visible."); // NOSONAR
+        }
+    }
+
+    public void waitUntilInForeground(final GUIElementLocator locator, long timeout) {
+        try {
+            waitFor(new ExpectedCondition<WebElement>() {
+                @Override
+                public WebElement apply(WebDriver input) {
+                    try {
+                        return isInForeground(locator) ? findElement(locator) : null;
+                    }
+                    catch (WebDriverException e) {
+                        return null;
+                    }
+                }
+            }, timeout);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException("The element is not in foreground.");
+        }
     }
 
     private void waitFor(ExpectedCondition<?> condition, long timeOutInMillis) {
