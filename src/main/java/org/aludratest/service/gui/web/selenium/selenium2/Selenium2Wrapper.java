@@ -37,6 +37,7 @@ import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.BinaryAttachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.apache.commons.codec.binary.Base64;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -187,14 +188,21 @@ public class Selenium2Wrapper {
         final long time = System.currentTimeMillis() + timeout;
         boolean successful = false;
         while (System.currentTimeMillis() < time && !successful) {
-            if (condition.eval()) {
-                successful = true;
-            } else {
-                try {
-                    Thread.sleep(configuration.getPauseBetweenRetries());
-                } catch (InterruptedException e) {
-                    throw new TechnicalException("Interrupted while waiting", e);
+            try {
+                if (condition.eval()) {
+                    successful = true;
                 }
+                else {
+                    try {
+                        Thread.sleep(configuration.getPauseBetweenRetries());
+                    }
+                    catch (InterruptedException e) {
+                        throw new TechnicalException("Interrupted while waiting", e);
+                    }
+                }
+            }
+            catch (StaleElementReferenceException e) {
+                // ignore this exception because can be just a bad timing
             }
         }
         return successful;
