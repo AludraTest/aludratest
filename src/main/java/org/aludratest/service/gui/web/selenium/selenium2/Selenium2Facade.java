@@ -173,7 +173,7 @@ public class Selenium2Facade {
     private void removeHighlight() {
         if (configuration.getHighlightCommands() && this.highlightedElement != null) {
             try {
-                Object result = executeScript(
+                executeScript(
                         "arguments[0].className = arguments[0].className.replace( /(?:^|\\s)selenium-highlight(?!\\S)/g , '' ); return arguments[0].className;",
                         highlightedElement);
             }
