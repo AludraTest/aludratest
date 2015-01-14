@@ -198,14 +198,12 @@ public final class SeleniumWrapperConfiguration {
         return "http".equals(getUrlOfAutAsUrl().getProtocol());
     }
 
-    /**
-     * This property is only used for Selenium 2.
+    /** This property is only used for Selenium 2.
      * 
      * @return the lowest port number to use for the authenticating proxy as defined in the 'proxy.port.min' setting of the
-     *         configuration file, or a default of 8000 if undefined.
-     */
+     *         configuration file, or a default of 19600 if undefined. */
     public int getMinProxyPort() {
-        return configuration.getIntValue("proxy.port.min", 8000);
+        return configuration.getIntValue("proxy.port.min", 19600);
     }
 
     /**

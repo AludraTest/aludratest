@@ -37,6 +37,7 @@ import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.BinaryAttachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.apache.commons.codec.binary.Base64;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -187,14 +188,21 @@ public class Selenium2Wrapper {
         final long time = System.currentTimeMillis() + timeout;
         boolean successful = false;
         while (System.currentTimeMillis() < time && !successful) {
-            if (condition.eval()) {
-                successful = true;
-            } else {
-                try {
-                    Thread.sleep(configuration.getPauseBetweenRetries());
-                } catch (InterruptedException e) {
-                    throw new TechnicalException("Interrupted while waiting", e);
+            try {
+                if (condition.eval()) {
+                    successful = true;
                 }
+                else {
+                    try {
+                        Thread.sleep(configuration.getPauseBetweenRetries());
+                    }
+                    catch (InterruptedException e) {
+                        throw new TechnicalException("Interrupted while waiting", e);
+                    }
+                }
+            }
+            catch (StaleElementReferenceException e) {
+                // ignore this exception because can be just a bad timing
             }
         }
         return successful;
@@ -475,7 +483,7 @@ public class Selenium2Wrapper {
     }
 
     private Attachment getScreenshotAttachment(String base64Data) {
-        final String title = getTitle();
+        final String title = "Screenshot";
         final Base64 base64 = new Base64();
         final byte[] decodedData = base64.decode(base64Data);
         return new BinaryAttachment(title, decodedData, configuration.getScreenshotAttachmentExtension());
@@ -599,37 +607,20 @@ public class Selenium2Wrapper {
         selenium.waitUntilInvisible(locator);
     }
 
-    public void waitForElementNotPresent(GUIElementLocator locator) { // ENHANCE migrate to Selenium 2
+    public void waitForElementNotPresent(GUIElementLocator locator) {
         waitForElementNotPresent(locator, getTimeout());
     }
 
-    public void waitForElementNotPresent(final GUIElementLocator locator, long timeout) { // ENHANCE migrate to Selenium 2
-        boolean elementIsNotFound = retryUntilTimeout(new ConditionCheck() {
-            @Override
-            public boolean eval() {
-                return !selenium.isElementPresent(locator);
-            }
-        }, timeout);
-        if (!elementIsNotFound) {
-            throw new AutomationException("An element was unexpectedly found");
-        }
+    public void waitForElementNotPresent(final GUIElementLocator locator, long timeout) {
+        selenium.waitUntilNotPresent(locator, timeout);
     }
 
-    public void waitForInForeground(GUIElementLocator locator) { // ENHANCE migrate to Selenium 2
+    public void waitForInForeground(GUIElementLocator locator) {
         waitForInForeground(locator, getTimeout());
     }
 
     public void waitForInForeground(final GUIElementLocator locator, long timeout) {
-        // ENHANCE migrate to Selenium 2
-        boolean elementIsInForeground = retryUntilTimeout(new ConditionCheck() {
-            @Override
-            public boolean eval() {
-                return selenium.isInForeground(locator);
-            }
-        }, timeout);
-        if (!elementIsInForeground) {
-            throw new AutomationException("Element not in foreground.");
-        }
+        selenium.waitUntilInForeground(locator, timeout);
     }
 
     public int getTimeout() {
