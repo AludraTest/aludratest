@@ -2,13 +2,13 @@ aludratest
 ==========
 
 ## Release
-We will release aludratest to repo1.maven.org in calendar week 47 2014. Until then, **you have to build the code and documentation on your own**.
+Until now, there is no final release of AludraTest available in Maven Central. Only a Release Candidate, 2.7.0-RC1, is released, which has known issues. We are currently finalizing the Selenium 2 support of AludraTest and will then release version 2.7.0.
 
 ##Documentation
 Latest documentation is available wihtin the repository at `src/site`.
 Please `git clone` the repository and perform `mvn site` to render the documentation.
 
-After the first release of AludraTest, documentation of release version will be provided at [github pages](http://pages.github.io/AludraTest/aludratest).
+Snapshots of the documentation are stored [here](http://aludratest.github.io/aludratest/user-guide.html).
 
 ##Build
 Perform:
@@ -26,6 +26,6 @@ mvn with local build:
 <dependency>
   <groupId>org.aludratest</groupId>
   <artifactId>aludratest</artifactId>
-  <version>0.0.0-SNAPSHOT</version>
+  <version>2.7.0-SNAPSHOT</version>
 </dependency>
 ```
