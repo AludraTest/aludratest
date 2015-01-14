@@ -189,16 +189,22 @@ public final class SeleniumWrapperConfiguration {
         }
     }
 
-    /**
-     * Tells if the URL of the application under test is accessed using http protocol.
+    /** Tells if the URL of the application under test is accessed using http protocol. TODO Should be removed - is used for
+     * Selenium 2 proxy, which should also be able to handle https.
      * 
-     * @return <code>true</code> if the URL of the application under test is accessed using http protocol.
-     */
+     * @return <code>true</code> if the URL of the application under test is accessed using http protocol. */
     public boolean isUrlOfAutHttp() {
         return "http".equals(getUrlOfAutAsUrl().getProtocol());
     }
 
-    /** This property is only used for Selenium 2.
+    /** Returns, for Selenium 2, if a local proxy server shall be used.
+     * 
+     * @return <true> if a local proxy server shall be used, enabling additional HTTP features, <code>false</code> otherwise. */
+    public boolean isUsingLocalProxy() {
+        return Boolean.valueOf(configuration.getStringValue("use.local.proxy", "true")).booleanValue();
+    }
+
+    /** This property is only used for Selenium 2, and only has effect if the local proxy flag is set to <code>true</code>.
      * 
      * @return the lowest port number to use for the authenticating proxy as defined in the 'proxy.port.min' setting of the
      *         configuration file, or a default of 19600 if undefined. */
@@ -218,8 +224,6 @@ public final class SeleniumWrapperConfiguration {
 
     /**
      * Returns, for Selenium 2, if a remote driver shall be used.
-     * 
-     * TODO implement when Selenium 2 support will be completed.
      * 
      * @return <code>true</code> if a remote driver shall be used, <code>false</code> otherwise.
      */
