@@ -18,14 +18,13 @@ package org.aludratest.service.cmdline;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
-import org.aludratest.dict.ActionWordLibrary;
 import org.aludratest.util.data.ByteArrayData;
 import org.aludratest.util.data.StringData;
 import org.databene.commons.Validator;
 
 /** Common parent class for the output streams of a process: stdout and errout.
  * @author Volker Bergmann */
-public abstract class Out implements ActionWordLibrary<Out> {
+public abstract class Out {
 
     final CommandLineProcess<?> process;
 
@@ -42,25 +41,25 @@ public abstract class Out implements ActionWordLibrary<Out> {
      * @return this */
     public Out redirectTo(StringData textOutput) {
         ByteArrayData buffer = new ByteArrayData();
-        Out result = redirectTo(buffer);
+        redirectTo(buffer);
         textOutput.setValue(new String(buffer.getValue()));
-        return result;
+        return this;
     }
 
     /** Redirects the process' stdout to a stream.
-     * @param buffer
+     * @param byteOutput
      * @return this */
-    protected Out redirectTo(ByteArrayData byteOutput) {
+    public Out redirectTo(ByteArrayData byteOutput) {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        Out result = redirectTo(buffer);
+        redirectTo(buffer);
         byteOutput.setValue(buffer.toByteArray());
-        return result;
+        return this;
     }
 
     /** Redirects the output to a stream.
      * @param out the target stream
      * @return this */
-    protected abstract Out redirectTo(OutputStream out);
+    public abstract Out redirectTo(OutputStream out);
 
     /** @return the next line available in this stream */
     public Line nextLine() {
@@ -70,20 +69,15 @@ public abstract class Out implements ActionWordLibrary<Out> {
     /** Asserts that the validator matches the next line of the output.
      * @param validator the matcher
      * @return this */
-    protected abstract Out assertNextLineMatches(Validator<String> validator);
+    public abstract Out assertNextLineMatches(Validator<String> validator);
 
     /** Skips the output lines until a line matches the validator or the end of the file is reached.
      * @param validator the matcher
      * @return a Line object for the first matching line */
-    protected abstract Line skipUntilLineMatches(Validator<String> validator);
+    public abstract Line skipUntilLineMatches(Validator<String> validator);
 
     /** Asserts that the output stream is empty
      * @return this */
     public abstract Out assertEmpty();
-
-    @Override
-    public Out verifyState() {
-        return this;
-    }
 
 }

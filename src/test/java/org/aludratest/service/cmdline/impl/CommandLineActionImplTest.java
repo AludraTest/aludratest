@@ -21,7 +21,6 @@ import org.aludratest.AludraTest;
 import org.aludratest.service.cmdline.CommandLineProcess;
 import org.aludratest.service.cmdline.CommandLineService;
 import org.aludratest.util.data.IntData;
-import org.aludratest.util.data.KeyValueStringData;
 import org.aludratest.util.data.StringData;
 import org.databene.commons.SystemInfo;
 import org.junit.After;
@@ -89,7 +88,7 @@ public class CommandLineActionImplTest {
         // WHEN running it with the variable set to 'test_val'
         @SuppressWarnings("rawtypes")
         CommandLineProcess<?> process2 = new CommandLineProcess("shell", "envtest-pos", service, 3000, command);
-        process2.setEnvironmentVariable(new KeyValueStringData("TEST_ENV", "test_val"));
+        process2.setEnvironmentVariable("TEST_ENV", "test_val");
         process2.start();
         process2.waitUntilFinished();
 
@@ -104,7 +103,7 @@ public class CommandLineActionImplTest {
         CommandLineProcess<?> process = new CommandLineProcess("batch", "interaction", service, 3000, testBatchPath("input"));
         process.start();
         process.stdOut().nextLine().assertPrefix(new StringData("Please enter name"));
-        process.enterLine(new StringData("Tester"));
+        process.enterLine("Tester");
         process.stdOut().nextLine().assertEquals(new StringData("Hello Tester"));
         process.assertExitValue(new IntData(0));
         process.errOut().assertEmpty();

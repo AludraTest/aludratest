@@ -32,7 +32,7 @@ public class StdOut extends Out {
      * @param out the target stream
      * @return this */
     @Override
-    protected Out redirectTo(OutputStream out) {
+    public Out redirectTo(OutputStream out) {
         process.redirectStdOutTo(out);
         return this;
     }
@@ -41,7 +41,7 @@ public class StdOut extends Out {
      * @param validator the matcher
      * @return this */
     @Override
-    protected Out assertNextLineMatches(Validator<String> validator) {
+    public Out assertNextLineMatches(Validator<String> validator) {
         process.assertNextLineOfStdOutMatches(validator);
         return this;
     }
@@ -50,7 +50,7 @@ public class StdOut extends Out {
      * @param validator the matcher
      * @return a Line object for the first matching line */
     @Override
-    protected Line skipUntilLineMatches(Validator<String> validator) {
+    public Line skipUntilLineMatches(Validator<String> validator) {
         process.skipStdOutUntilLineMatches(validator);
         return new Line(this);
     }

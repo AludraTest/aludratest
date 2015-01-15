@@ -19,18 +19,15 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.aludratest.dict.ActionWordLibrary;
 import org.aludratest.util.data.IntData;
-import org.aludratest.util.data.KeyValueStringData;
 import org.aludratest.util.data.StringData;
 import org.databene.commons.SystemInfo;
 import org.databene.commons.Validator;
 
-/** ActionWordLibrary for creating and accessing command line processes, serving as parent class for classes that provide access to
- * specific programs.
+/** Business delegate class for creating and accessing a command line process.
  * @param <E> The child class, to be specified when inheriting the CommandLineProcess class
  * @author Volker Bergmann */
-public class CommandLineProcess<E extends CommandLineProcess<E>> implements ActionWordLibrary<E> {
+public class CommandLineProcess<E extends CommandLineProcess<E>> {
 
     private final CommandLineService service;
     private final String processType;
@@ -54,17 +51,18 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> implements Acti
      * @param directoryPath the path of the directory to be used
      * @return this */
     @SuppressWarnings("unchecked")
-    public E setWorkingDirectory(StringData directoryPath) {
-        service.perform().setWorkingDirectory(processType, processName, processId, new File(directoryPath.getValue()));
+    public E setWorkingDirectory(String directoryPath) {
+        service.perform().setWorkingDirectory(processType, processName, processId, new File(directoryPath));
         return (E) this;
     }
 
     /** Sets an environment variable for the process.
-     * @param variable
+     * @param key
+     * @param value
      * @return this */
     @SuppressWarnings("unchecked")
-    public E setEnvironmentVariable(KeyValueStringData variable) {
-        service.perform().setEnvironmentVariable(processType, processName, processId, variable.getKey(), variable.getValue());
+    public E setEnvironmentVariable(String key, String value) {
+        service.perform().setEnvironmentVariable(processType, processName, processId, key, value);
         return (E) this;
     }
 
@@ -95,9 +93,9 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> implements Acti
      * @param text the text to enter
      * @return this */
     @SuppressWarnings("unchecked")
-    public E enterLine(StringData text) {
+    public E enterLine(String text) {
         String LF = SystemInfo.getLineSeparator();
-        service.perform().enter(processType, processName, processId, text.getValue() + LF);
+        service.perform().enter(processType, processName, processId, text + LF);
         return (E) this;
     }
 
@@ -132,12 +130,6 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> implements Acti
     @SuppressWarnings("unchecked")
     public E destroy() {
         service.perform().destroy(processType, processName, processId);
-        return (E) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public E verifyState() {
         return (E) this;
     }
 

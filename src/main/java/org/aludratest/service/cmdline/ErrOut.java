@@ -31,7 +31,7 @@ public class ErrOut extends Out {
      * @param out
      * @return this */
     @Override
-    protected Out redirectTo(OutputStream out) {
+    public Out redirectTo(OutputStream out) {
         process.redirectErrOutTo(out);
         return this;
     }
@@ -40,7 +40,7 @@ public class ErrOut extends Out {
      * @param validator the matcher
      * @return this */
     @Override
-    protected Out assertNextLineMatches(Validator<String> validator) {
+    public Out assertNextLineMatches(Validator<String> validator) {
         process.assertNextLineOfErrOutMatches(validator);
         return this;
     }
@@ -49,7 +49,7 @@ public class ErrOut extends Out {
      * @param validator the matcher
      * @return a Line object for the first matching line */
     @Override
-    protected Line skipUntilLineMatches(Validator<String> validator) {
+    public Line skipUntilLineMatches(Validator<String> validator) {
         process.skipErrOutUntilLineMatches(validator);
         return new Line(this);
     }

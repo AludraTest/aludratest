@@ -18,12 +18,11 @@ package org.aludratest.service.cmdline;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.aludratest.dict.ActionWordLibrary;
 import org.aludratest.util.data.StringData;
 
 /** Provides access to a process' standard input.
  * @author Volker Bergmann */
-public class StdIn implements ActionWordLibrary<StdIn> {
+public class StdIn {
 
     private CommandLineProcess<?> process;
 
@@ -52,11 +51,6 @@ public class StdIn implements ActionWordLibrary<StdIn> {
      * @return this */
     protected StdIn redirectFrom(InputStream in) {
         process.redirectStdInFrom(in);
-        return this;
-    }
-
-    @Override
-    public StdIn verifyState() {
         return this;
     }
 

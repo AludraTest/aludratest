@@ -22,7 +22,7 @@ import org.databene.commons.Validator;
 import org.databene.commons.validator.PrefixValidator;
 import org.databene.commons.validator.SuffixValidator;
 
-/** ActionWordLibrary for verifying process output line-wise.
+/** Class for verifying process output line-wise.
  * @author Volker Bergmann */
 public class Line {
 
