@@ -328,6 +328,12 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
         return DataUtil.evalXPathInHTML(xpath, html);
     }
 
+    @Override
+    public String evalXPathAsString(String xpath) {
+        String html = new String(wrapper.getPageSource().getFileData(), DataUtil.UTF_8);
+        return DataUtil.evalXPathInHTMLAsString(xpath, html);
+    }
+
     // private methods ---------------------------------------------------------
 
     private void checkLabels(String operation, final OptionLocator optLocator, final GUIElementLocator elementLocator) {

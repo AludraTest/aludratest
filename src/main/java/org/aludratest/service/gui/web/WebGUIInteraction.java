@@ -18,7 +18,9 @@ package org.aludratest.service.gui.web;
 import org.aludratest.impl.log4testing.TechnicalLocator;
 import org.aludratest.service.gui.GUIInteraction;
 import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.XPathLocator;
 import org.aludratest.testcase.data.ParamConverter;
+import org.w3c.dom.NodeList;
 
 /**
  * Specialization of the {@link GUIInteraction} interface
@@ -61,5 +63,21 @@ public interface WebGUIInteraction extends GUIInteraction {
      * @param iframeLocator Locator which uniquely identifies the inner frame to switch to. Use <code>null</code> to switch back
      *            to default content. */
     void switchToIFrame(@TechnicalLocator Locator iframeLocator);
+
+    /** Does the same like {@link #evalXPath(String)} does.
+     * @param locator whose XPath expression will be taken and evaluated
+     * @return NodeList object containing XPath evaluation result */
+    NodeList evalXPath(@TechnicalLocator XPathLocator locator);
+
+    /** Evaluates arbitrary XPath and outputs its result as NodeList object.
+     * @param xpath XPath expression to be executed
+     * @return NodeList object containing XPath evaluation result */
+    NodeList evalXPath(@TechnicalLocator String xpath);
+
+    /** Evaluates arbitrary XPath and outputs its result as String.
+     * @param xpath XPath expression to be executed
+     * 
+     * @return String containing XPath evaluation result */
+    String evalXPathAsString(@TechnicalLocator String xpath);
 
 }
