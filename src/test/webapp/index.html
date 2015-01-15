@@ -19,6 +19,7 @@
 <option value="Equipment Customer_value">Equipment Customer</option>
 <option value="Non Globe BP_value">Non Globe BP</option>
 <option value="Creation SOU_value">Creation SOU</option>
+<option value="empty_value" label=""></option>
 <option value="Disabled entry_value" disabled="disabled">Disabled entry</option>
 </select>
 
@@ -32,6 +33,9 @@
 
 <h3> 2. Test Textfield with restricted length (max 10 characters)</h3>
 <input type="text" value="" onmousedown="this.focus();" onkeypress="action" onfocus="setFocus(this.id);" onchange=" setFocus('')" name="before:TextField:after" maxlength="10" id="before:TextField:after" class="285 ftb noerr up">
+
+<h3>2a. Test Textfield with no ID</h3>
+<input type="text" class="myclass" value="" size="20" />
 
 <h3> 3. Test disabled Textfield </h3>
 <input type="text" value="Text to copy" size="65" onmousedown="this.focus();" name="before:disabled_TextField:after" id="before:disabled_TextField:after" disabled="disabled" class="ftb-dis noerr up">

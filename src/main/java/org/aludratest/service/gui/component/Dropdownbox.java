@@ -53,7 +53,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      * @param label Label of the entry to select. */
     public void selectEntry(String label) {
         if (!DataMarkerCheck.isNull(label)) {
-            selectEntry(new LabelLocator(label));
+            selectEntry(new LabelLocator(DataMarkerCheck.convertIfEmpty(label)));
         }
     }
 
@@ -87,7 +87,8 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      * @param label Label to check the currently selected label against. */
     public void assertIsSelected(String label) {
         if (!DataMarkerCheck.isNull(label)) {
-            verify().assertDropDownEntrySelectionMatches(elementType, elementName, locator, new EqualsValidator(label));
+            verify().assertDropDownEntrySelectionMatches(elementType, elementName, locator,
+                    new EqualsValidator(DataMarkerCheck.convertIfEmpty(label)));
         }
     }
 
@@ -97,7 +98,8 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      * @param label Label to check the currently selected label against. */
     public void assertTextNotEquals(String label) {
         if (!DataMarkerCheck.isNull(label)) {
-            verify().assertDropDownEntrySelectionMatches(elementType, elementName, locator, new NotEqualsValidator(label));
+            verify().assertDropDownEntrySelectionMatches(elementType, elementName, locator,
+                    new NotEqualsValidator(DataMarkerCheck.convertIfEmpty(label)));
         }
     }
 
@@ -119,7 +121,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
     public void assertSelectedIgnoreCaseTrimmed(String label) {
         if (!DataMarkerCheck.isNull(label)) {
             verify().assertDropDownEntrySelectionMatches(elementType, elementName, locator,
-                    new EqualsIgnoreCaseTrimmedValidator(label));
+                    new EqualsIgnoreCaseTrimmedValidator(DataMarkerCheck.convertIfEmpty(label)));
         }
     }
 

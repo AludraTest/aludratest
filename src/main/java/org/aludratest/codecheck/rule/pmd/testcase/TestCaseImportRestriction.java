@@ -15,9 +15,9 @@
  */
 package org.aludratest.codecheck.rule.pmd.testcase;
 
-import org.aludratest.codecheck.rule.pmd.ImportRestrictions;
-
 import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
+
+import org.aludratest.codecheck.rule.pmd.ImportRestrictions;
 
 /**
  * See <code>src/main/resources/pmd-rules-aludra.xml</code> or the project Site
@@ -30,7 +30,7 @@ public class TestCaseImportRestriction extends ImportRestrictions {
 
     @Override
     public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
-        if (!isTestCaseClass(node)) {
+        if (node.isAbstract() || !isTestCaseClass(node)) {
             return null;
         }
 
