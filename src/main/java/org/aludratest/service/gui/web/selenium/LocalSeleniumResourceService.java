@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.aludratest.config.AludraTestConfig;
+import org.aludratest.config.ConfigProperties;
 import org.aludratest.config.ConfigProperty;
 import org.aludratest.config.Configurable;
 import org.aludratest.config.MutablePreferences;
@@ -37,7 +38,9 @@ import org.databene.commons.StringUtil;
  * @author Volker Bergmann
  */
 @Implementation({ SeleniumResourceService.class })
-@ConfigProperty(name = "execution.hosts", type = String.class, description = "Comma-separated list of host names running Selenium. For each Thread configured for AludraTest, one entry must be present. Host names can be appended with :port to specify a different than the default selenium port, e.g. localhost:4445.", defaultValue = "localhost")
+@ConfigProperties({
+    @ConfigProperty(name = "execution.hosts", type = String.class, description = "Comma-separated list of host names running Selenium. For each Thread configured for AludraTest, one entry must be present. Host names can be appended with :port to specify a different than the default selenium port, e.g. localhost:4445.", defaultValue = "localhost"),
+    @ConfigProperty(name = "default.selenium.port", type = String.class, description = "The default port for Selenium hosts to use, when no port is specified for a host.", defaultValue = "4444") })
 public class LocalSeleniumResourceService implements SeleniumResourceService, Configurable {
 
     private static final String EXECUTION_HOSTS_PROP = "execution.hosts";
@@ -51,6 +54,8 @@ public class LocalSeleniumResourceService implements SeleniumResourceService, Co
     /** The AludraTest configuration. Will be injected by IoC container. */
     @Requirement
     private AludraTestConfig aludraConfig;
+
+    private int defaultPort;
 
     @Override
     public String getPropertiesBaseName() {
@@ -76,6 +81,8 @@ public class LocalSeleniumResourceService implements SeleniumResourceService, Co
             throw new AutomationException("Execution hosts size (" + executionHosts.size()
                     + ") is not equal to number of threads of AludraTest (" + aludraConfig.getNumberOfThreads() + ")");
         }
+
+        defaultPort = preferences.getIntValue("default.selenium.port", 4444);
 
         getHosts();
     }
@@ -107,6 +114,9 @@ public class LocalSeleniumResourceService implements SeleniumResourceService, Co
         if (this.hosts == null) {
             this.hosts = new ObjectPool<String>(executionHosts.size(), false);
             for (String realHost : executionHosts) {
+                if (!realHost.contains(":")) {
+                    realHost += ":" + defaultPort;
+                }
                 this.hosts.add("http://" + realHost + "/");
             }
         }

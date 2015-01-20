@@ -20,6 +20,9 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfEl
 import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.PerformanceFailure;
@@ -35,14 +40,18 @@ import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
 import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.element.GUIElementLocator;
+import org.aludratest.service.locator.element.IdLocator;
 import org.aludratest.service.locator.option.IndexLocator;
 import org.aludratest.service.locator.option.OptionLocator;
 import org.aludratest.service.locator.window.TitleLocator;
 import org.aludratest.service.locator.window.WindowLocator;
 import org.aludratest.service.util.ServiceUtil;
+import org.aludratest.util.data.helper.DataMarkerCheck;
+import org.apache.commons.io.IOUtils;
 import org.databene.commons.CollectionUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
@@ -57,6 +66,7 @@ import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.ErrorHandler.UnknownServerException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -129,11 +139,17 @@ public class Selenium2Facade {
     // interface ---------------------------------------------------------------
 
     public void selectWindow(String windowId) {
+        removeHighlight();
         driver.switchTo().window(windowId);
     }
 
     public void close() {
-        driver.close();
+        try {
+            driver.close();
+        }
+        catch (WebDriverException e) {
+            // ignore this
+        }
     }
 
     public void quit() {
@@ -155,14 +171,42 @@ public class Selenium2Facade {
         driver.navigate().refresh();
     }
 
+    private void removeHighlight() {
+        if (configuration.getHighlightCommands() && this.highlightedElement != null) {
+            try {
+                executeScript(
+                        "arguments[0].className = arguments[0].className.replace( /(?:^|\\s)selenium-highlight(?!\\S)/g , '' ); return arguments[0].className;",
+                        highlightedElement);
+            }
+            catch (WebDriverException e) {
+                LOGGER.trace("Highlight remove failed. ", e);
+            }
+        }
+    }
+
+    private void checkHighlightCss() {
+        // check if our hidden element is present
+        try {
+            findElement(new IdLocator("__aludra_selenium_hidden"));
+        }
+        catch (Exception e) {
+            // add CSS and element
+            executeScript("var css = document.createElement('style'); css.setAttribute('id', '__aludra_selenium_css'); css.setAttribute('type', 'text/css'); css.innerHTML = '.selenium-highlight { border: 3px solid red !important; }'; document.getElementsByTagName('head')[0].appendChild(css);");
+            // add hidden element
+            executeScript("var hidden = document.createElement('div'); hidden.setAttribute('id', '__aludra_selenium_hidden'); hidden.setAttribute('style', 'display:none;'); document.getElementsByTagName('body')[0].appendChild(hidden);");
+        }
+    }
+
     public void highlight(GUIElementLocator locator) {
         if (configuration.getHighlightCommands()) {
             try {
-                if (this.highlightedElement != null) {
-                    executeScript("arguments[0].style.border='1px solid gray'", highlightedElement);
-                }
+                removeHighlight();
+
+                // ensure that current document has highlight CSS class
+                checkHighlightCss();
+
                 WebElement elementToHighlight = findElement(locator);
-                executeScript("arguments[0].style.border='3px solid red'", elementToHighlight);
+                executeScript("arguments[0].className +=' selenium-highlight'", elementToHighlight);
                 this.highlightedElement = elementToHighlight;
             } catch (WebDriverException e) {
                 // It does not matter if highlighting works or not, why a
@@ -208,6 +252,35 @@ public class Selenium2Facade {
         }
         // code has repeatedly failed, so forward the last exception
         throw exception;
+    }
+
+    public void setValue(GUIElementLocator locator, String value) {
+        WebElement element = findElement(locator);
+        String id = element.getAttribute("id");
+        String fieldType = element.getAttribute("type");
+        boolean fallback = true;
+        if (!DataMarkerCheck.isNull(id) || "file".equals(fieldType)) {
+            executeScript("document.getElementById('" + id + "').setAttribute('value', '" + value.replace("'", "\\'") + "')");
+            // validate success
+            if (value.equals(element.getAttribute("value"))) {
+                fallback = false;
+            }
+        }
+
+        // fallback code
+        if (fallback) {
+            element.sendKeys(Keys.END);
+            String text;
+            while (!DataMarkerCheck.isNull(text = element.getAttribute("value"))) {
+                int length = text.length();
+                String[] arr = new String[length];
+                for (int i = 0; i < length; i++) {
+                    arr[i] = "\b";
+                }
+                element.sendKeys(arr);
+            }
+            element.sendKeys(value);
+        }
     }
 
     public void sendKeys(GUIElementLocator locator, String keys) {
@@ -278,6 +351,8 @@ public class Selenium2Facade {
                 // on a driver which has just close()d the recent window.
                 // In this case, I fall back to iterating all windows below
             }
+
+            removeHighlight();
 
             // iterate all windows and return the one with the desired title
             for (String handle : getWindowHandles()) {
@@ -372,8 +447,30 @@ public class Selenium2Facade {
     }
 
     public String captureScreenshotToString() {
+        // use Selenium1 interface to capture full screen
+        String url = seleniumUrl.toString();
+        Pattern p = Pattern.compile("(http://.+)/wd/hub");
+        Matcher matcher = p.matcher(url);
+        if (matcher.matches()) {
+            String screenshotUrl = matcher.group(1) + "/selenium-server/driver/?cmd=captureScreenshotToString";
+            InputStream in = null;
+            try {
+                in = new URL(screenshotUrl).openStream();
+                in.read(new byte[3]); // read away "OK,"
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                IOUtils.copy(in, baos);
+                return new String(baos.toByteArray(), "UTF-8");
+            }
+            catch (IOException e) {
+                // OK, fallthrough to Selenium 2 method
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+            }
+        }
+
         WebDriver screenshotDriver;
-        if (RemoteWebDriver.class.equals(driver.getClass())) {
+        if (RemoteWebDriver.class.isAssignableFrom(driver.getClass())) {
             screenshotDriver = new Augmenter().augment(driver);
         } else {
             screenshotDriver = driver;
@@ -470,14 +567,14 @@ public class Selenium2Facade {
         WebElement element = findElement(locator);
         Select select = new Select(element);
         List<WebElement> options = select.getOptions();
-        ArrayList<String> nonEmptyValues = new ArrayList<String>();
+        ArrayList<String> values = new ArrayList<String>();
         for (WebElement option : options) {
             String value = option.getAttribute(propertyName);
-            if (value != null && value.length() > 0) {
-                nonEmptyValues.add(value);
+            if (value != null) {
+                values.add(value);
             }
         }
-        return nonEmptyValues.toArray(new String[nonEmptyValues.size()]);
+        return values.toArray(new String[values.size()]);
     }
 
     public void waitUntilClickable(GUIElementLocator locator) {
@@ -504,6 +601,15 @@ public class Selenium2Facade {
         }
     }
 
+    public void waitUntilNotPresent(GUIElementLocator locator, long timeout) {
+        try {
+            waitFor(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(LocatorUtil.by(locator))), timeout);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException("Element still present"); // NOSONAR
+        }
+    }
+
     public void waitUntilVisible(GUIElementLocator locator) {
         waitUntilVisible(locator, configuration.getTimeout());
     }
@@ -517,7 +623,31 @@ public class Selenium2Facade {
     }
 
     public void waitUntilInvisible(GUIElementLocator locator) {
-        waitFor(invisibilityOfElementLocated(LocatorUtil.by(locator)), configuration.getTimeout());
+        try {
+            waitFor(invisibilityOfElementLocated(LocatorUtil.by(locator)), configuration.getTimeout());
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException("The element is still visible."); // NOSONAR
+        }
+    }
+
+    public void waitUntilInForeground(final GUIElementLocator locator, long timeout) {
+        try {
+            waitFor(new ExpectedCondition<WebElement>() {
+                @Override
+                public WebElement apply(WebDriver input) {
+                    try {
+                        return isInForeground(locator) ? findElement(locator) : null;
+                    }
+                    catch (WebDriverException e) {
+                        return null;
+                    }
+                }
+            }, timeout);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException("The element is not in foreground.");
+        }
     }
 
     private void waitFor(ExpectedCondition<?> condition, long timeOutInMillis) {
@@ -529,7 +659,12 @@ public class Selenium2Facade {
     }
 
     private WebElement findElement(Locator locator) {
-        return LocatorUtil.findElement(locator, driver);
+        try {
+            return LocatorUtil.findElement(locator, driver);
+        }
+        catch (NoSuchElementException e) {
+            throw new AutomationException("Element could not be found.", e);
+        }
     }
 
     private Set<String> getWindowHandles() {

@@ -88,6 +88,14 @@ public abstract class AbstractDropdownboxTest extends GUITest {
         checkLastStepErrorMessage("Element not editable.");
     }
 
+    /** Positive case to select an entry in a dropdown box using the EMPTY marker. This should select the "" entry in the
+     * Dropdownbox. */
+    @Test
+    public void selectEmptyEntryOnDropdownBox() {
+        guiTestUIMap.dropDownBox().selectEntry("<EMPTY>");
+        assertEquals("empty_value", guiTestUIMap.dropDownBox().getSelectedEntry());
+    }
+
     /**
      *  positive case to test method {@link org.aludratest.service.gui.component.Dropdownbox#getSelectedEntry()}
      *  <br/> get selected entry in dropdownbox
@@ -168,9 +176,11 @@ public abstract class AbstractDropdownboxTest extends GUITest {
 
     @Test
     public void hasValues_multiarg() {
+        // FIXME shouldn't these be the VALUES of the option tags? Please clarify.
         // positive test
-        guiTestUIMap.dropDownBox().assertHasValues("Partner Name", "Partner Short Name", "City", "State", "Country", "Sales Rep", "Partner Number", "District", "Customer Facility Code",
-                "Equipment Customer", "Non Globe BP", "Creation SOU", "Disabled entry");
+        guiTestUIMap.dropDownBox().assertHasValues("Partner Name", "Partner Short Name", "City", "State", "Country", "Sales Rep",
+                "Partner Number", "District", "Customer Facility Code", "Equipment Customer", "Non Globe BP", "Creation SOU",
+                "<EMPTY>", "Disabled entry");
         checkLastStepStatus(TestStatus.PASSED);
         // negative test with multiple values
         guiTestUIMap.dropDownBox().assertHasValues("Partner Name", "Partner Short Name");
@@ -186,8 +196,9 @@ public abstract class AbstractDropdownboxTest extends GUITest {
     @Test
     public void hasLabels_multiarg() {
         // positive test
-        guiTestUIMap.dropDownBox().assertHasLabels("Partner Name", "Partner Short Name", "City", "State", "Country", "Sales Rep", "Partner Number", "District", "Customer Facility Code",
-                "Equipment Customer", "Non Globe BP", "Creation SOU", "Disabled entry");
+        guiTestUIMap.dropDownBox().assertHasLabels("Partner Name", "Partner Short Name", "City", "State", "Country", "Sales Rep",
+                "Partner Number", "District", "Customer Facility Code", "Equipment Customer", "Non Globe BP", "Creation SOU",
+                "<EMPTY>", "Disabled entry");
         checkLastStepStatus(TestStatus.PASSED);
         // negative test with multiple values
         guiTestUIMap.dropDownBox().assertHasLabels("Partner Name", "Partner Short Name");
@@ -199,7 +210,7 @@ public abstract class AbstractDropdownboxTest extends GUITest {
         // positive test
         boolean checkValue = guiTestUIMap.dropDownBox().checkEqualsLabels("Partner Name", "Partner Short Name", "City", "State",
                 "Country", "Sales Rep", "Partner Number", "District", "Customer Facility Code", "Equipment Customer",
-                "Non Globe BP", "Creation SOU", "Disabled entry");
+                "Non Globe BP", "Creation SOU", "<EMPTY>", "Disabled entry");
         Assert.assertTrue(checkValue);
         // negative test with multiple values
         checkValue = guiTestUIMap.dropDownBox().checkEqualsLabels("Partner Name", "Partner Short Name");

@@ -29,6 +29,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.HttpCommandExecutor;
+import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 
@@ -97,7 +98,9 @@ public class Selenium2Driver {
      * @return a freshly created instance of the related WebDriver class */
     public WebDriver newRemoteDriver(URL url) {
         HttpCommandExecutor executor = new HttpCommandExecutor(url);
-        return new RemoteWebDriver(executor, capabilities);
+        RemoteWebDriver driver = new RemoteWebDriver(executor, capabilities);
+        driver.setFileDetector(new LocalFileDetector());
+        return driver;
     }
 
     // public static interface -------------------------------------------------

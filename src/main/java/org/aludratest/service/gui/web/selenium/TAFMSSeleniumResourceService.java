@@ -58,6 +58,7 @@ import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
     @ConfigProperty(name = "tafms.url", type = String.class, description = "The base URL to the TAFMS server providing the resources", defaultValue = "http://127.0.0.1:8080/tafms"),
     @ConfigProperty(name = "tafms.user", type = String.class, description = "The user name to use for the TAFMS server", required = true),
     @ConfigProperty(name = "tafms.password", type = String.class, description = "The password to use for the TAFMS server", required = true),
+    @ConfigProperty(name = "tafms.jobName", type = String.class, description = "A name to send to TAFMS as identifying job name. This is used for logging and statistics.", required = false),
     @ConfigProperty(name = "tafms.niceLevel", type = int.class, description = "The nice level to use for this job (-20 to 19). This only affects the priority in relation to other running jobs by the same TAFMS user. The lower the value, the higher the priority.", defaultValue = "0") })
 public class TAFMSSeleniumResourceService implements SeleniumResourceService, Configurable {
 
@@ -78,6 +79,10 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
         try {
             query.put("resourceType", "selenium");
             query.put("niceLevel", configuration.getIntValue("tafms.niceLevel", 0));
+            String jobName = configuration.getStringValue("tafms.jobName");
+            if (jobName != null && !"".equals(jobName)) {
+                query.put("jobName", jobName);
+            }
         }
         catch (JSONException e) {
         }
@@ -113,6 +118,10 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
             }
 
             JSONObject object = new JSONObject(message);
+            if (object.has("errorMessage")) {
+                LOG.error("TAFMS server reported an error: " + object.get("errorMessage"));
+                return null;
+            }
 
             JSONObject resource = object.getJSONObject("resource");
             if (resource == null) {

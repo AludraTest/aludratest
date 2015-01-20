@@ -27,7 +27,7 @@ import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 
 /**
- * Implements Selenium 2's {@link By} interface 
+ * Implements Selenium 2's {@link By} interface
  * wrapping an {@link ElementLocators} instance.
  * @author Volker Bergmann
  */
@@ -44,15 +44,15 @@ public class ByElementLocators extends By {
     @Override
     public List<WebElement> findElements(SearchContext context) {
         List<WebElement> result = new ArrayList<WebElement>();
-        // assume that the ElementLocators' pointer attribute already has been set correctly...
-        try {
-            GUIElementLocator usedOption = elementLocators.getUsedOption();
-            if (usedOption != null) {
-                context.findElement(LocatorUtil.by(usedOption));
-            }
-        } catch (NoSuchElementException e) {
-            // ... otherwise ignore the resulting error...
+        // assume that the ElementLocators' pointer attribute already has been set correctly.
+        // Do NOT fallback to try everything else again, as we would have gotten a new
+        // ByElementLocators object by the LocatorUtil class.
+        GUIElementLocator usedOption = elementLocators.getUsedOption();
+        if (usedOption != null) {
+            result.add(context.findElement(LocatorUtil.by(usedOption)));
+            return result;
         }
+
         // ... and try all alternatives
         for (GUIElementLocator alternative : elementLocators) {
             try {
@@ -62,11 +62,11 @@ public class ByElementLocators extends By {
                 result.add(element);
                 return result;
             } catch (NoSuchElementException e) {
-                // if any single locator cannot be found, simply ignore it 
+                // if any single locator cannot be found, simply ignore it
                 // and loop to the next option
             }
         }
-        // if all alternatives have failed, throw a NoSuchElementException 
+        // if all alternatives have failed, throw a NoSuchElementException
         throw new NoSuchElementException("No element found for locator " + elementLocators);
     }
 
