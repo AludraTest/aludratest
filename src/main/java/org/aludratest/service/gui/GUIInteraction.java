@@ -22,10 +22,8 @@ import org.aludratest.impl.log4testing.TechnicalLocator;
 import org.aludratest.service.Interaction;
 import org.aludratest.service.Verification;
 import org.aludratest.service.locator.Locator;
-import org.aludratest.service.locator.element.XPathLocator;
 import org.aludratest.service.locator.option.OptionLocator;
 import org.aludratest.service.locator.window.TitleLocator;
-import org.w3c.dom.NodeList;
 
 /** The interface {@link Interaction} provides several methods to interact with the active screen of the application under test.
  * This means that the application under test can be controlled with the help of these methods. Every class which implements this
@@ -183,16 +181,6 @@ public interface GUIInteraction extends Interaction {
      * @param taskCompletionTimeout */
     void doubleClick(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
             @TechnicalArgument int taskCompletionTimeout);
-
-    /** Does the same like {@link #evalXPath(String)} does.
-     * @param locator whose XPath expression will be taken and evaluated
-     * @return NodeList object containing XPath evaluation result */
-    NodeList evalXPath(@TechnicalLocator XPathLocator locator);
-
-    /** Evaluates arbitrary XPath and outputs its result as NodeList object.
-     * @param xpath XPath expression to be executed
-     * @return NodeList object containing XPath evaluation result */
-    NodeList evalXPath(@TechnicalLocator String xpath);
 
     /** Closes all windows identified by their name. That means, that if there are several windows with same name all will be
      * closed. This method is not waiting for a window to open.

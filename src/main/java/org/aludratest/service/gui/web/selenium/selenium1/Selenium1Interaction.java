@@ -316,4 +316,10 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
         return DataUtil.evalXPathInHTML(xpath, html);
     }
 
+    @Override
+    public String evalXPathAsString(String xpath) {
+        String html = new String(wrapper.getPageSource().getFileData(), DataUtil.UTF_8);
+        return DataUtil.evalXPathInHTMLAsString(xpath, html);
+    }
+
 }

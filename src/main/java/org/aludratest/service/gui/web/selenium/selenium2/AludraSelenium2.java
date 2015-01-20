@@ -32,7 +32,8 @@ import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
  */
 @Implementation({ AludraWebGUI.class })
 @ConfigProperties({
-        @ConfigProperty(name = "proxy.port.min", type = int.class, description = "The lowest port number to use for the authenticating proxy.", defaultValue = "19600"),
+    @ConfigProperty(name = "use.local.proxy", type = boolean.class, description = "If true, a local HTTP proxy will be used to allow adding custom HTTP headers. If set to false, no proxy will be used, but the method addCustomHttpHeaderCommand will have no effect.", defaultValue = "true"),
+    @ConfigProperty(name = "proxy.port.min", type = int.class, description = "The lowest port number to use for the authenticating proxy.", defaultValue = "19600"),
     @ConfigProperty(name = "driver", type = String.class, description = "The Selenium 2 driver name. Have a look at the org.aludratest.service.gui.web.selenium.selenium2.Drivers enumeration for potential values", defaultValue = "FIREFOX"),
     @ConfigProperty(name = "use.remotedriver", type = boolean.class, description = "If true, use Selenium Remote Driver (talk to Selenium RC), otherwise, directly use driver class.", defaultValue = "false") })
 public class AludraSelenium2 extends AbstractSeleniumService implements AludraWebGUI {
