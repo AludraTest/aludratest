@@ -208,6 +208,22 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
     }
 
     @Override
+    public boolean isElementChecked(String elementType, String elementName, Locator locator) {
+        final GUIElementLocator elementObject = getDefaultElementLocator(locator);
+        try {
+            wrapper.waitUntilPresent(elementObject);
+            return wrapper.isChecked(elementObject);
+        }
+        catch (AludraTestException e) {
+            return false;
+        }
+        catch (Exception e) { // NOSONAR
+            LOGGER.error("Unexpected exception during check which will be ignored", e);
+            return false;
+        }
+    }
+
+    @Override
     public boolean containsLabels(String elementType, String elementName, Locator locator, String... labels) {
         final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
         return checkLabels(labels, elementLocator, true);
