@@ -79,4 +79,11 @@ public class Checkbox extends InputComponent<Checkbox> {
         }
     }
 
+    /** Returns if the checkbox is currently checked or not.
+     * 
+     * @return <code>true</code> if the checkbox is currently checked (has a checkmark in its box), <code>false</code> otherwise. */
+    public boolean isChecked() {
+        return check().isElementChecked(elementType, elementName, locator);
+    }
+
 }
