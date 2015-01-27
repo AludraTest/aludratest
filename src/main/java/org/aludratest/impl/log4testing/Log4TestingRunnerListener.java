@@ -18,6 +18,7 @@ package org.aludratest.impl.log4testing;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 
 import org.aludratest.impl.log4testing.data.TestCaseLog;
 import org.aludratest.impl.log4testing.data.TestLogger;
@@ -122,7 +123,7 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
             if (sb.length() > 0) {
                 sb.append(", ");
             }
-            sb.append(o == null ? "null" : o.toString());
+            sb.append(toString(o));
         }
 
         return sb.toString();
@@ -133,7 +134,7 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
         if (args == null || args.length == 0) {
             return null;
         }
-        return args[0] == null ? null : args[0].toString();
+        return toString(args[0]);
     }
 
     private void parseRunnerTree(RunnerGroup group, TestSuiteLog log) {
@@ -147,6 +148,35 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
                 parseRunnerTree((RunnerGroup) node, child);
             }
         }
+    }
+
+    private String toString(Object o) {
+        if (o == null) {
+            return "null";
+        }
+
+        if (o.getClass().isArray()) {
+            if (!o.getClass().getComponentType().isPrimitive()) {
+                return Arrays.toString((Object[]) o);
+            }
+            else if (o.getClass().getComponentType() == int.class) {
+                return Arrays.toString((int[]) o);
+            }
+            else if (o.getClass().getComponentType() == float.class) {
+                return Arrays.toString((float[]) o);
+            }
+            else if (o.getClass().getComponentType() == boolean.class) {
+                return Arrays.toString((boolean[]) o);
+            }
+            else if (o.getClass().getComponentType() == double.class) {
+                return Arrays.toString((double[]) o);
+            }
+            else if (o.getClass().getComponentType() == short.class) {
+                return Arrays.toString((short[]) o);
+            }
+        }
+
+        return o.toString();
     }
 
 }
