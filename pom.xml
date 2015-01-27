@@ -568,6 +568,14 @@
 					<skipDeploy>true</skipDeploy>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<!-- fixes a bug with 2.3 and 2.4 (commits were not pushed) -->
+				<version>2.5.1</version>
+			</plugin>
+			
 		</plugins>
 
 		<pluginManagement>
