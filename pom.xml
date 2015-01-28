@@ -770,7 +770,7 @@
 		<connection>scm:git:https://git@github.com:AludraTest/aludratest.git</connection>
 		<developerConnection>scm:git:https://git@github.com/AludraTest/aludratest.git</developerConnection>
 		<url>https://github.com/AludraTest/aludratest.git</url>
-		<tag>2.7.x</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<issueManagement>
