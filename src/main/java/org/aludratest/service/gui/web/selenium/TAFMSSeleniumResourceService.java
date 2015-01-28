@@ -92,47 +92,67 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
         provider.addCredentials(configuration.getStringValue("tafms.user"), configuration.getStringValue("tafms.password"));
 
         CloseableHttpClient client = HttpClientBuilder.create().setConnectionReuseStrategy(new NoConnectionReuseStrategy())
-                .disableConnectionState().disableAutomaticRetries()
-                .setDefaultCredentialsProvider(provider).build();
+                .disableConnectionState().disableAutomaticRetries().setDefaultCredentialsProvider(provider).build();
 
-        // send a POST request to resource URL
-        HttpPost request = new HttpPost(getTafmsUrl() + "resource");
-
-        // attach query as JSON string data
-        request.setEntity(new StringEntity(query.toString(), ContentType.APPLICATION_JSON));
-
-        CloseableHttpResponse response = null;
         try {
-            // fire request
-            response = client.execute(request);
+            boolean wait;
 
-            if (response.getStatusLine() == null) {
-                throw new ClientProtocolException("No HTTP status line transmitted");
+            do {
+                // send a POST request to resource URL
+                HttpPost request = new HttpPost(getTafmsUrl() + "resource");
+
+                // attach query as JSON string data
+                request.setEntity(new StringEntity(query.toString(), ContentType.APPLICATION_JSON));
+
+                CloseableHttpResponse response = null;
+
+                // fire request
+                response = client.execute(request);
+
+                try {
+                    if (response.getStatusLine() == null) {
+                        throw new ClientProtocolException("No HTTP status line transmitted");
+                    }
+
+                    String message = extractMessage(response);
+                    if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                        LOG.error("Exception when querying TAFMS server for resource. HTTP Status: "
+                                + response.getStatusLine().getStatusCode() + ", message: " + message);
+                        return null;
+                    }
+
+                    JSONObject object = new JSONObject(message);
+                    if (object.has("errorMessage")) {
+                        LOG.error("TAFMS server reported an error: " + object.get("errorMessage"));
+                        return null;
+                    }
+
+                    // continue wait?
+                    if (object.has("waiting") && object.getBoolean("waiting")) {
+                        wait = true;
+                        query.put("requestId", object.getString("requestId"));
+                    }
+                    else {
+                        JSONObject resource = object.optJSONObject("resource");
+                        if (resource == null) {
+                            LOG.error("TAFMS server response did not provide a resource. Message was: " + message);
+                            return null;
+                        }
+
+                        String url = resource.getString("url");
+                        hostResourceIds.put(url, object.getString("requestId"));
+
+                        return url;
+                    }
+                }
+                finally {
+                    IOUtils.closeQuietly(response);
+                }
             }
+            while (wait);
 
-            String message = extractMessage(response);
-            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                LOG.error("Exception when querying TAFMS server for resource. HTTP Status: "
-                        + response.getStatusLine().getStatusCode() + ", message: " + message);
-                return null;
-            }
-
-            JSONObject object = new JSONObject(message);
-            if (object.has("errorMessage")) {
-                LOG.error("TAFMS server reported an error: " + object.get("errorMessage"));
-                return null;
-            }
-
-            JSONObject resource = object.getJSONObject("resource");
-            if (resource == null) {
-                LOG.error("TAFMS server response did not provide a resource. Message was: " + message);
-                return null;
-            }
-
-            String url = resource.getString("url");
-            hostResourceIds.put(url, object.getString("resourceId"));
-
-            return url;
+            // should never come here
+            return null;
         }
         catch (ClientProtocolException e) {
             LOG.error("Exception in HTTP transmission", e);
@@ -147,13 +167,16 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
             return null;
         }
         finally {
-            IOUtils.closeQuietly(response);
             IOUtils.closeQuietly(client);
         }
     }
 
     @Override
     public void release(String server) {
+        if (server == null) {
+            return;
+        }
+
         String resourceKey = hostResourceIds.remove(server);
         if (resourceKey == null) {
             return;
