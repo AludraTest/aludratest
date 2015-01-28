@@ -207,6 +207,23 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
+    public boolean isElementChecked(String elementType, String elementName, Locator locator) {
+        final GUIElementLocator elementObject = assertGUIElementLocator(locator);
+        try {
+            wrapper.waitForElement(elementObject);
+            wrapper.waitForInForeground(elementObject);
+            return wrapper.isChecked(elementObject);
+        }
+        catch (AludraTestException e) {
+            return false;
+        }
+        catch (Exception e) { // NOSONAR
+            LOGGER.error("Unexpected exception during check which will be ignored", e);
+            return false;
+        }
+    }
+
+    @Override
     public boolean containsLabels(String elementType, String elementName, Locator locator, String... labels) {
         GUIElementLocator elementLocator = assertGUIElementLocator(locator);
         CheckLabelCondition condition = new CheckLabelCondition(true, labels, wrapper, elementLocator);

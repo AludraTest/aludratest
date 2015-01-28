@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -659,11 +660,19 @@ public class Selenium2Facade {
     }
 
     private WebElement findElement(Locator locator) {
+        return findElement(locator, configuration.getTimeout());
+    }
+
+    private WebElement findElement(Locator locator, long timeout) {
         try {
+            this.driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.MILLISECONDS);
             return LocatorUtil.findElement(locator, driver);
         }
         catch (NoSuchElementException e) {
             throw new AutomationException("Element could not be found.", e);
+        }
+        finally {
+            this.driver.manage().timeouts().implicitlyWait(100, TimeUnit.MILLISECONDS);
         }
     }
 
