@@ -67,7 +67,6 @@ import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.ErrorHandler.UnknownServerException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -604,10 +603,10 @@ public class Selenium2Facade {
 
     public void waitUntilNotPresent(GUIElementLocator locator, long timeout) {
         try {
-            waitFor(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(LocatorUtil.by(locator))), timeout);
+            waitFor(AludraTestExpectedConditions.noPresenceOfElementLocated(LocatorUtil.by(locator)), timeout);
         }
         catch (TimeoutException e) {
-            throw new AutomationException("Element still present"); // NOSONAR
+            throw new AutomationException("An element was unexpectedly found"); // NOSONAR
         }
     }
 
@@ -680,6 +679,28 @@ public class Selenium2Facade {
         Set<String> handles = driver.getWindowHandles();
         LOGGER.debug("getWindowHandles() -> {}", handles);
         return handles;
+    }
+
+    private static class AludraTestExpectedConditions {
+
+        private AludraTestExpectedConditions() {
+        }
+
+        private static ExpectedCondition<Boolean> noPresenceOfElementLocated(final By locator) {
+            return new ExpectedCondition<Boolean>() {
+                @Override
+                public Boolean apply(WebDriver input) {
+                    try {
+                        WebElement elem = input.findElement(locator);
+                        return Boolean.valueOf(elem == null);
+                    }
+                    catch (NoSuchElementException e) {
+                        return Boolean.TRUE;
+                    }
+                }
+            };
+        }
+
     }
 
 }
