@@ -37,6 +37,7 @@ import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.BinaryAttachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.apache.commons.codec.binary.Base64;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public class Selenium2Wrapper {
         try {
             this.configuration = configuration;
             this.resourceService = resourceService;
-            if (configuration.isUrlOfAutHttp()) {
+            if (configuration.isUrlOfAutHttp() && configuration.isUsingLocalProxy()) {
                 this.proxy = getProxyPool().acquire();
                 this.proxy.start();
             }
@@ -101,7 +102,7 @@ public class Selenium2Wrapper {
     }
 
     private synchronized ProxyPool getProxyPool() {
-        if (proxyPool == null && configuration.isUrlOfAutHttp()) {
+        if (proxyPool == null && configuration.isUrlOfAutHttp() && configuration.isUsingLocalProxy()) {
             URL url = configuration.getUrlOfAutAsUrl();
             proxyPool = new ProxyPool(url.getHost(), url.getPort(), configuration.getMinProxyPort(),
                     resourceService.getHostCount());
@@ -229,15 +230,21 @@ public class Selenium2Wrapper {
 
     private Object callElementCommand(GUIElementLocator locator, ElementCommand<Object> command, boolean visible, boolean enabled) {
         doBeforeDelegate(locator, visible, enabled);
-        final List<Object> returnValues = new ArrayList<Object>();
-        Object returnValue = command.call(locator);
-        if (returnValue != null) {
-            returnValues.add(returnValue);
+        try {
+            final List<Object> returnValues = new ArrayList<Object>();
+            Object returnValue = command.call(locator);
+            if (returnValue != null) {
+                returnValues.add(returnValue);
+            }
+            if (returnValues.isEmpty()) {
+                return null;
+            }
+            else {
+                return returnValues.get(0);
+            }
         }
-        if (returnValues.isEmpty()) {
-            return null;
-        } else {
-            return returnValues.get(0);
+        catch (NoSuchElementException e) {
+            throw new AutomationException("Element could not be found.", e);
         }
     }
 

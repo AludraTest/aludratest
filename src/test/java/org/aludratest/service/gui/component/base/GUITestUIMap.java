@@ -44,7 +44,9 @@ public class GUITestUIMap extends UIMap {
     public final static Locator DISABLED_DROPDOWNBOX_ID = new IdLocator("DisabledDropDown:after");
 
     public final static Locator TEXT_FIELD_ID = new IdLocator("TextField:after");
-    public final static Locator NOID_TEXT_FIELD = new XPathLocator("//input[@class='myclass']");
+
+    // contains() because highlight changes CSS class of component
+    public final static Locator NOID_TEXT_FIELD = new XPathLocator("//input[contains(@class, 'myclass')]");
 
     public final static Locator DISABLED_TEXT_FIELD_ID = new IdLocator("disabled_TextField:after");
 

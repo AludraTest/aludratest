@@ -75,7 +75,7 @@ public abstract class AbstractCheckBoxTest extends GUITest {
      *  <br/> check the checked status of the second checkbox
      */
     @Test
-    public void isCheckedOnCheckedCheckBox() {
+    public void assertCheckedOnCheckedCheckBox() {
         guiTestUIMap.secondCheckBox().assertChecked();
         checkLastStepStatus(TestStatus.PASSED);
     }
@@ -85,7 +85,7 @@ public abstract class AbstractCheckBoxTest extends GUITest {
      *  <br/> check the unchecked status of the first checkbox
      */
     @Test
-    public void isCheckedOnUncheckedCheckBox() {
+    public void assertCheckedOnUncheckedCheckBox() {
         guiTestUIMap.firstCheckBox().assertChecked();
         checkLastStepStatus(TestStatus.FAILED);
         checkLastStepErrorMessage("Checkbox or Radiobutton is unchecked");
@@ -96,7 +96,7 @@ public abstract class AbstractCheckBoxTest extends GUITest {
      *  <br/> check the checked status of the second checkbox
      */
     @Test
-    public void isCheckedWithValueTrueOnCheckedCheckBox() {
+    public void assertCheckedWithValueTrueOnCheckedCheckBox() {
         guiTestUIMap.secondCheckBox().assertChecked("true");
         checkLastStepStatus(TestStatus.PASSED);
     }
@@ -106,7 +106,7 @@ public abstract class AbstractCheckBoxTest extends GUITest {
      *  <br/> check the unchecked status of the first checkbox
      */
     @Test
-    public void isCheckedWithValueFalseOnUncheckedCheckBox() {
+    public void assertCheckedWithValueFalseOnUncheckedCheckBox() {
         guiTestUIMap.firstCheckBox().assertChecked("false");
         checkLastStepStatus(TestStatus.PASSED);
     }
@@ -116,7 +116,7 @@ public abstract class AbstractCheckBoxTest extends GUITest {
      *  <br/> check the unchecked status of the first checkbox
      */
     @Test
-    public void isCheckedWithValueTrueOnUnCheckedCheckBox() {
+    public void assertCheckedWithValueTrueOnUnCheckedCheckBox() {
         guiTestUIMap.firstCheckBox().assertChecked("true");
         checkLastStepStatus(TestStatus.FAILED);
         checkLastStepErrorMessage("Checkbox or Radiobutton is unchecked");
@@ -127,7 +127,7 @@ public abstract class AbstractCheckBoxTest extends GUITest {
      *  <br/> check the checked status of the second checkbox
      */
     @Test
-    public void isCheckedWithValueFalseOnCheckedCheckBox() {
+    public void assertCheckedWithValueFalseOnCheckedCheckBox() {
         guiTestUIMap.secondCheckBox().assertChecked("false");
         checkLastStepStatus(TestStatus.FAILED);
         checkLastStepErrorMessage("Checkbox or Radiobutton is checked");
@@ -171,4 +171,20 @@ public abstract class AbstractCheckBoxTest extends GUITest {
         assertEquals(false, guiTestUIMap.disabledCheckBox().isEnabled(DEFAULT_TIMEOUT));
     }
 
+    @Test
+    public void checkedOnCheckedCheckBox() {
+        assertEquals(true, guiTestUIMap.secondCheckBox().isChecked());
+    }
+
+    @Test
+    public void checkedOnUncheckedCheckBox() {
+        guiTestUIMap.firstCheckBox().select("false");
+        assertEquals(false, guiTestUIMap.firstCheckBox().isChecked());
+    }
+
+    @Test
+    public void checkedOnDisabledCheckBox() {
+        guiTestUIMap.disabledCheckBox().select("false");
+        assertEquals(false, guiTestUIMap.disabledCheckBox().isChecked());
+    }
 }

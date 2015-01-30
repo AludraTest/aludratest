@@ -113,6 +113,15 @@ public interface GUICondition extends Condition {
             @ElementName String elementName,
             @TechnicalLocator Locator locator);
 
+    /** Determines if the specified element is checked. This normally only applies to checkboxes.
+     * 
+     * @param elementType Type of the element.
+     * @param elementName Name of the element.
+     * @param locator Locator of the element.
+     * 
+     * @return <code>true</code> if the element is checked, <code>false</code> otherwise. */
+    boolean isElementChecked(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator);
+
     /**
      * Determines if the speficied element contains the given labels (and possibly more).
      * 

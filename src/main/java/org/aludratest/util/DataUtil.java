@@ -139,4 +139,15 @@ public class DataUtil {
         }
     }
 
+    public static String evalXPathInHTMLAsString(String xpath, String html) {
+        try {
+            Document document = docCache.get(html);
+            XPathExpression expression = XPathFactory.newInstance().newXPath().compile(xpath);
+            return (String) expression.evaluate(document, XPathConstants.STRING);
+        }
+        catch (XPathExpressionException e) {
+            throw new AutomationException("Illegal XPath: " + xpath, e);
+        }
+    }
+
 }
