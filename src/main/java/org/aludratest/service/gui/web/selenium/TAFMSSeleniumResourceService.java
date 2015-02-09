@@ -94,6 +94,7 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
         CloseableHttpClient client = HttpClientBuilder.create().setConnectionReuseStrategy(new NoConnectionReuseStrategy())
                 .disableConnectionState().disableAutomaticRetries().setDefaultCredentialsProvider(provider).build();
 
+        String message = null;
         try {
             boolean wait;
 
@@ -114,7 +115,7 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
                         throw new ClientProtocolException("No HTTP status line transmitted");
                     }
 
-                    String message = extractMessage(response);
+                    message = extractMessage(response);
                     if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                         LOG.error("Exception when querying TAFMS server for resource. HTTP Status: "
                                 + response.getStatusLine().getStatusCode() + ", message: " + message);
@@ -163,7 +164,7 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
             return null;
         }
         catch (JSONException e) {
-            LOG.error("Invalid JSON received from TAFMS server", e);
+            LOG.error("Invalid JSON received from TAFMS server." + (message != null ? " JSON message was: " + message : ""), e);
             return null;
         }
         finally {
