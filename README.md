@@ -2,30 +2,31 @@ aludratest
 ==========
 
 ## Release
-Until now, there is no final release of AludraTest available in Maven Central. Only a Release Candidate, 2.7.0-RC1, is released, which has known issues. We are currently finalizing the Selenium 2 support of AludraTest and will then release version 2.7.0.
+Version 2.7.0 is the most recent release. Please see below on how to include it e.g. in your Maven build.
 
-##Documentation
-Latest documentation is available wihtin the repository at `src/site`.
-Please `git clone` the repository and perform `mvn site` to render the documentation.
+## Documentation
+The documentation for the most recent release is published [here](http://aludratest.github.io/aludratest/user-guide.html).
 
-Snapshots of the documentation are stored [here](http://aludratest.github.io/aludratest/user-guide.html).
+## Maven Dependency
 
-##Build
-Perform:
-* `mvn compile` to build your own version
-* `mvn install` to your local repository and use with your tests
-* `mvn site` to render documentation
- 
-##Maven Dependency
-Please refer to `pom.xml` in root directory of repository.
-* Group ID: org.aludratest
-*	Artifact ID: aludratest
+To use Aludratest in your Maven project, add this dependency to your pom.xml:
 
-mvn with local build:
 ```
 <dependency>
   <groupId>org.aludratest</groupId>
   <artifactId>aludratest</artifactId>
-  <version>2.7.0-SNAPSHOT</version>
+  <version>2.7.0</version>
 </dependency>
 ```
+
+Please see documentation link above on how to run your first test.
+
+## Build
+
+To build your own copy of Aludratest, locally clone the repository.
+
+Perform:
+
+* `mvn compile` to build your own version
+* `mvn install` to install Aludratest to your local repository and use with your tests
+* `mvn site` to render documentation
