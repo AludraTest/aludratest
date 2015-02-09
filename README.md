@@ -1,6 +1,9 @@
 aludratest
 ==========
 
+## Build Status
+[![Build Status](https://travis-ci.org/AludraTest/aludratest.svg?branch=master)](https://travis-ci.org/AludraTest/aludratest)
+
 ## Release
 Version 2.7.0 is the most recent release. Please see below on how to include it e.g. in your Maven build.
 
