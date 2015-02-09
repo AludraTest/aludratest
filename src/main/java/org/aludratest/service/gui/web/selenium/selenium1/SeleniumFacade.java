@@ -108,10 +108,11 @@ public class SeleniumFacade {
      * 
      * @param configuration the relevant {@link SeleniumWrapperConfiguration} instance
      * @param usedSeleniumHost the used Selenium host
-     * @param seleniumPort The port of the Selenium server on the given host. */
-    public SeleniumFacade(SeleniumWrapperConfiguration configuration, String usedSeleniumHost, int seleniumPort) {
+     * @param seleniumUrl The full Selenium URL, e.g. http://127.0.0.1:4444/. */
+    public SeleniumFacade(SeleniumWrapperConfiguration configuration, String seleniumUrl) {
         this.configuration = configuration;
-        CommandProcessor processor = new HttpCommandProcessor(usedSeleniumHost, seleniumPort,
+        String url = seleniumUrl + (seleniumUrl.endsWith("/") ? "" : "/") + "selenium-server/driver/";
+        CommandProcessor processor = new HttpCommandProcessor(url,
                 configuration.getBrowser(), configuration.getUrlOfAut());
         selenium = new DefaultSelenium(processor);
     }

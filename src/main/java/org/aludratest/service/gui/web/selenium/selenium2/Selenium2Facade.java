@@ -110,10 +110,10 @@ public class Selenium2Facade {
 
     // constructor -------------------------------------------------------------
 
-    public Selenium2Facade(SeleniumWrapperConfiguration configuration, String usedSeleniumHost, int usedSeleniumPort)
+    public Selenium2Facade(SeleniumWrapperConfiguration configuration, String seleniumUrl)
             throws MalformedURLException {
         this.configuration = configuration;
-        this.seleniumUrl = new URL("http://" + usedSeleniumHost + ":" + usedSeleniumPort + "/wd/hub");
+        this.seleniumUrl = new URL(seleniumUrl + "/wd/hub");
         this.driver = newDriver();
         this.zIndexSupport = new ZIndexSupport(driver);
     }

@@ -54,8 +54,6 @@ import com.thoughtworks.selenium.Selenium;
 @SuppressWarnings("javadoc")
 public class Selenium2Wrapper {
 
-    // FIXME Currently, Selenium2 does not work with Selenium RC on configured hosts/ports, as far as I can see.
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Selenium2Wrapper.class);
 
     private static ProxyPool proxyPool = null;
@@ -68,8 +66,6 @@ public class Selenium2Wrapper {
 
     private String usedSeleniumHost = null;
 
-    private int seleniumPort;
-
     private AuthenticatingHttpProxy proxy;
 
     public Selenium2Wrapper(SeleniumWrapperConfiguration configuration, SeleniumResourceService resourceService) {
@@ -81,18 +77,7 @@ public class Selenium2Wrapper {
                 this.proxy.start();
             }
             this.usedSeleniumHost = resourceService.acquire();
-            this.seleniumPort = configuration.getDefaultSeleniumPort();
-            if (usedSeleniumHost.contains(":")) {
-                try {
-                    seleniumPort = Integer.parseInt(usedSeleniumHost.substring(usedSeleniumHost.indexOf(':') + 1).trim());
-                    usedSeleniumHost = usedSeleniumHost.substring(0, usedSeleniumHost.indexOf(':'));
-                }
-                catch (NumberFormatException e) {
-                    LOGGER.error("Invalid host:port syntax for selenium host: " + usedSeleniumHost);
-                }
-            }
-
-            this.selenium = new Selenium2Facade(configuration, usedSeleniumHost, seleniumPort);
+            this.selenium = new Selenium2Facade(configuration, usedSeleniumHost);
         } catch (Exception e) {
             LOGGER.error("Error initializing Selenium 2", e);
             String host = usedSeleniumHost;

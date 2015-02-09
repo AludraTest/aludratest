@@ -32,9 +32,6 @@ public interface SeleniumResourceService {
      * @param server The URL of the server to release, as retrieved from {@link #acquire()}. */
     void release(String server);
 
-    /** @return the number of resources available */
-    int size();
-
     /**
      * @return the number of configured hosts
      */
