@@ -40,6 +40,7 @@ import org.aludratest.testcase.event.attachment.BinaryAttachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.apache.commons.codec.binary.Base64;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -421,7 +422,14 @@ public class Selenium2Wrapper {
             @Override
             public boolean eval() {
                 final String windowTitle = windowLocator.toString();
-                final String[] titles = getAllWindowTitles();
+                final String[] titles;
+                try {
+                    titles = getAllWindowTitles();
+                }
+                catch (NoSuchWindowException e) {
+                    // ignore (just closed); try in next scan
+                    return false;
+                }
                 for (String title : titles) {
                     if (title.equalsIgnoreCase(windowTitle)) {
                         return true;
