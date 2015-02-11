@@ -91,6 +91,23 @@ public class Selenium2Facade {
 
     private static final String HAS_FOCUS_SCRIPT = "return arguments[0] == window.document.activeElement";
 
+    // @formatter:off
+    private static final String FIRE_ONCHANGE_SCRIPT = "var element = arguments[0]; var event; "
+            + "if (document.createEvent) {"
+            + "    event = document.createEvent(\"HTMLEvents\");"
+            + "    event.initEvent(\"change\", true, false);"
+            + "  } else {"
+            + "    event = document.createEventObject();"
+            + "    event.eventType = \"change\";"
+            + "  }"
+            + "  event.eventName = \"change\";"
+            + "  if (document.createEvent) {"
+            + "    element.dispatchEvent(event);"
+            + "  } else {"
+            + "    element.fireEvent(\"on\" + event.eventType, event);"
+            + "  }";
+    // @formatter:on
+
     private static final String DROPDOWN_OPTION_VALUE_PROPERTY = "value";
     private static final String DROPDOWN_OPTION_LABEL_PROPERTY = "text";
 
@@ -264,6 +281,7 @@ public class Selenium2Facade {
             // validate success
             if (value.equals(element.getAttribute("value"))) {
                 fallback = false;
+                executeScript(FIRE_ONCHANGE_SCRIPT, element);
             }
         }
 
@@ -560,7 +578,9 @@ public class Selenium2Facade {
                 // ignore this and retry in the next loop iteration
             }
         }
-        throw new StaleElementReferenceException(element.toString());
+
+        // assert that it is gone forever. This means "not editable".
+        return false;
     }
 
     private String[] getPropertyValues(GUIElementLocator locator, String propertyName) {
