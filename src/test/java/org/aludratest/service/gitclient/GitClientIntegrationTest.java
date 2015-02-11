@@ -52,7 +52,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     @Test
     public void testVersion() {
         VersionData data = new VersionData();
-        new GitClient(service).version(data);
+        new GitClient(service, 10000).version(data);
         System.out.println(data);
         assertFalse("git version number is empty", StringUtil.isEmpty(data.getVersionNumber()));
     }
@@ -60,7 +60,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     @Test
     public void testStatus() {
         StatusData data = new StatusData();
-        new GitClient(service).status(data);
+        new GitClient(service, 10000).status(data);
         System.out.println("Status: On branch " + data.getCurrentBranch());
         assertFalse("Branch name is empty", StringUtil.isEmpty(data.getCurrentBranch()));
     }
@@ -68,7 +68,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     @Test
     public void testListBranches() {
         BranchListData data = new BranchListData();
-        new GitClient(service).listBranches(data);
+        new GitClient(service, 10000).listBranches(data);
         System.out.println("Branches:");
         for (StringData branch : data.getBranches()) {
             if (branch.getValue().equals(data.getCurrentBranch())) {
