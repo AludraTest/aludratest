@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.TechnicalException;
+import org.aludratest.service.SystemConnector;
 import org.aludratest.service.gui.web.selenium.ConditionCheck;
 import org.aludratest.service.gui.web.selenium.ElementCommand;
 import org.aludratest.service.gui.web.selenium.ProxyPool;
@@ -33,6 +34,7 @@ import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.option.OptionLocator;
 import org.aludratest.service.locator.window.WindowLocator;
+import org.aludratest.service.util.TaskCompletionUtil;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.BinaryAttachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
@@ -68,6 +70,8 @@ public class Selenium2Wrapper {
     private String usedSeleniumHost = null;
 
     private AuthenticatingHttpProxy proxy;
+
+    SystemConnector systemConnector;
 
     public Selenium2Wrapper(SeleniumWrapperConfiguration configuration, SeleniumResourceService resourceService) {
         try {
@@ -195,7 +199,11 @@ public class Selenium2Wrapper {
         return successful;
     }
 
-    private void doBeforeDelegate(GUIElementLocator locator, boolean visible, boolean enabled) {
+    private void doBeforeDelegate(GUIElementLocator locator, boolean visible, boolean enabled, boolean actionPending) {
+        if (actionPending) {
+            waitUntilNotBusy();
+        }
+
         waitForInForeground(locator);
 
         if (visible) {
@@ -210,15 +218,37 @@ public class Selenium2Wrapper {
         highlight(locator);
     }
 
-    private Object callElementCommand(GUIElementLocator locator, ElementCommand<Object> command) {
-        return callElementCommand(locator, command, true, true);
+    private void doAfterDelegate(int taskCompletionTimeout, String failureMessage) {
+        if (taskCompletionTimeout >= 0) {
+            int timeout = (taskCompletionTimeout == 0 ? configuration.getTaskCompletionTimeout() : taskCompletionTimeout);
+            TaskCompletionUtil.waitForActivityAndCompletion(systemConnector, failureMessage, configuration.getTaskStartTimeout(),
+                    timeout, configuration.getTaskPollingInterval());
+        }
+    }
+
+    private void waitUntilNotBusy() {
+        if (this.systemConnector != null) {
+            TaskCompletionUtil.waitUntilNotBusy(this.systemConnector, configuration.getTaskCompletionTimeout(),
+                    configuration.getTaskPollingInterval(), "System not available");
+        }
+    }
+
+    private Object callElementCommand(GUIElementLocator locator, ElementCommand<Object> command, int taskCompletionTimeout) {
+        return callElementCommand(locator, command, true, true, taskCompletionTimeout);
     }
 
     private Object callElementCommand(GUIElementLocator locator, ElementCommand<Object> command, boolean visible, boolean enabled) {
-        doBeforeDelegate(locator, visible, enabled);
+        return callElementCommand(locator, command, visible, enabled, -1);
+    }
+
+
+    private Object callElementCommand(GUIElementLocator locator, ElementCommand<Object> command, boolean visible,
+            boolean enabled, int taskCompletionTimeout) {
+        doBeforeDelegate(locator, visible, enabled, command.isInteraction());
         try {
             final List<Object> returnValues = new ArrayList<Object>();
             Object returnValue = command.call(locator);
+            doAfterDelegate(taskCompletionTimeout, command.toString());
             if (returnValue != null) {
                 returnValues.add(returnValue);
             }
@@ -234,19 +264,28 @@ public class Selenium2Wrapper {
         }
     }
 
-    public void click(GUIElementLocator locator) {
-        doBeforeDelegate(locator, true, true);
+    public void click(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
+        doBeforeDelegate(locator, true, true, true);
         selenium.click(locator);
+        doAfterDelegate(taskCompletionTimeout, operation);
     }
 
-    public void clickNotEditable(GUIElementLocator locator) {
-        doBeforeDelegate(locator, true, false);
+    public void clickNotEditable(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
+        doBeforeDelegate(locator, true, false, true);
         selenium.click(locator);
+        doAfterDelegate(taskCompletionTimeout, operation);
     }
 
-    public void doubleClickNotEditable(GUIElementLocator locator) {
-        doBeforeDelegate(locator, true, false);
+    public void doubleClick(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
+        doBeforeDelegate(locator, true, true, true);
         selenium.doubleClick(locator);
+        doAfterDelegate(taskCompletionTimeout, operation);
+    }
+
+    public void doubleClickNotEditable(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
+        doBeforeDelegate(locator, true, false, true);
+        selenium.doubleClick(locator);
+        doAfterDelegate(taskCompletionTimeout, operation);
     }
 
     public boolean isElementPresent(GUIElementLocator locator) {
@@ -277,7 +316,7 @@ public class Selenium2Wrapper {
         return returnValue.booleanValue();
     }
 
-    public void select(GUIElementLocator locator, final OptionLocator optionLocator) {
+    public void select(GUIElementLocator locator, final OptionLocator optionLocator, int taskCompletionTimeout) {
         callElementCommand(locator, new ElementCommand<Object>("select", true) {
 
             @Override
@@ -286,10 +325,10 @@ public class Selenium2Wrapper {
                 return null;
             }
 
-        });
+        }, taskCompletionTimeout);
     }
 
-    public void type(GUIElementLocator locator, final String value) {
+    public void type(GUIElementLocator locator, final String value, int taskCompletionTimeout) {
         callElementCommand(locator, new ElementCommand<Object>("type", true) {
 
             @Override
@@ -299,10 +338,10 @@ public class Selenium2Wrapper {
                 return null;
             }
 
-        });
+        }, taskCompletionTimeout);
     }
 
-    public void sendKeys(GUIElementLocator locator, final String keys) {
+    public void sendKeys(GUIElementLocator locator, final String keys, int taskCompletionTimeout) {
         callElementCommand(locator, new ElementCommand<Object>("sendKeys", true) {
 
             @Override
@@ -311,7 +350,7 @@ public class Selenium2Wrapper {
                 return null;
             }
 
-        });
+        }, taskCompletionTimeout);
     }
 
     public String getText(GUIElementLocator locator, Boolean visible) {
@@ -504,7 +543,7 @@ public class Selenium2Wrapper {
                 return selenium.hasFocus(locator);
             }
 
-        });
+        }, -1);
         return returnValue;
     }
 
@@ -542,11 +581,6 @@ public class Selenium2Wrapper {
 
     public void keyPress(int keycode) {
         selenium.keyPress(keycode);
-    }
-
-    public void doubleClick(GUIElementLocator locator) {
-        doBeforeDelegate(locator, true, true);
-        selenium.doubleClick(locator);
     }
 
     public void close() {

@@ -33,35 +33,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract parent class which provides common features of all Selenium1 action classes. 
+ * Abstract parent class which provides common features of all Selenium1 action classes.
  * @author Volker Bergmann
  */
 public abstract class AbstractSelenium2Action implements Action {
-    
+
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     /** The wrapper which provides the actual Selenium server access. */
     protected Selenium2Wrapper wrapper;
 
-    /** The {@link SystemConnector} of the SUT. */
-    protected SystemConnector systemConnector;
-    
-    /** Constructor. 
+    /** Constructor.
      *  @param seleniumWrapper */
     public AbstractSelenium2Action(Selenium2Wrapper seleniumWrapper) {
         this.wrapper = seleniumWrapper;
     }
-    
+
     @Override
     public void setSystemConnector(SystemConnector systemConnector) {
-        this.systemConnector = systemConnector;
+        this.wrapper.systemConnector = systemConnector;
     }
-    
+
     @Override
     public List<Attachment> createAttachments(Object object, String label) {
         throw new TechnicalException("Not supported");
     }
-    
+
     /** Takes a screen shot and saves the HTML sources of the current page. */
     @Override
     public List<Attachment> createDebugAttachments() {
@@ -83,7 +80,7 @@ public abstract class AbstractSelenium2Action implements Action {
             throw new TechnicalException("Error taking screenshot. ", e);
         }
     }
-    
+
     /**
      * Saves the HTML sources of the current web page.
      * @return Attachment which contains the source code
@@ -96,7 +93,7 @@ public abstract class AbstractSelenium2Action implements Action {
             throw new TechnicalException("Error saving page source. ", e);
         }
     }
-    
+
     protected static GUIElementLocator getDefaultElementLocator(Object locator) {
         if (locator instanceof String) {
             return new IdLocator((String) locator);
@@ -106,7 +103,7 @@ public abstract class AbstractSelenium2Action implements Action {
             throw ServiceUtil.newUnsupportedLocatorException(locator);
         }
     }
-    
+
     protected static OptionLocator getDefaultOptionLocator(Object locator) {
         if (locator instanceof String) {
             return new LabelLocator((String) locator);
@@ -124,7 +121,7 @@ public abstract class AbstractSelenium2Action implements Action {
         }
         return optionLocators;
     }
-    
+
     protected static WindowLocator getDefaultWindowLocator(Object locator) {
         if (locator instanceof String) {
             return new TitleLocator((String) locator);
@@ -134,7 +131,7 @@ public abstract class AbstractSelenium2Action implements Action {
             throw ServiceUtil.newUnsupportedLocatorException(locator);
         }
     }
-    
+
     protected static WindowLocator[] getDefaultWindowLocators(Object... locators) {
         WindowLocator[] windowLocators = new WindowLocator[locators.length];
         for (int i = 0; i < windowLocators.length; i++) {
@@ -142,5 +139,5 @@ public abstract class AbstractSelenium2Action implements Action {
         }
         return windowLocators;
     }
-    
+
 }

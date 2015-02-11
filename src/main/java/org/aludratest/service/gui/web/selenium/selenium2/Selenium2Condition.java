@@ -196,6 +196,7 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
         final GUIElementLocator elementObject = getDefaultElementLocator(locator);
         try {
             wrapper.waitUntilPresent(elementObject);
+            wrapper.waitForInForeground(elementObject, 10);
             return true;
         }
         catch (AludraTestException e) {
