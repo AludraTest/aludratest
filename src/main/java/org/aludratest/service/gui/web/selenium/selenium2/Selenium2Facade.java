@@ -187,7 +187,7 @@ public class Selenium2Facade {
     private void checkHighlightCss() {
         // check if our hidden element is present
         try {
-            findElement(new IdLocator("__aludra_selenium_hidden"));
+            findElement(new IdLocator("__aludra_selenium_hidden"), 1000);
         }
         catch (Exception e) {
             // add CSS and element
@@ -218,7 +218,13 @@ public class Selenium2Facade {
     }
 
     public void click(GUIElementLocator locator) {
-        findElement(locator).click();
+        WebElement element = findElement(locator);
+        try {
+            element.click();
+        }
+        catch (Exception e) {
+            handleSeleniumException(e);
+        }
     }
 
     public boolean isEditable(GUIElementLocator locator) {
@@ -356,9 +362,14 @@ public class Selenium2Facade {
 
             // iterate all windows and return the one with the desired title
             for (String handle : getWindowHandles()) {
-                String title = driver.switchTo().window(handle).getTitle();
-                if (requestedTitle.equals(title)) {
-                    return;
+                try {
+                    String title = driver.switchTo().window(handle).getTitle();
+                    if (requestedTitle.equals(title)) {
+                        return;
+                    }
+                }
+                catch (NoSuchWindowException e) {
+                    // ignore; window has been removed in the meantime
                 }
             }
 
@@ -393,9 +404,14 @@ public class Selenium2Facade {
         for (String handle : handles) {
             if (!handle.equals(initialWindowHandle)) {
                 LOGGER.debug("Switching to window with handle {}", handle);
-                driver.switchTo().window(handle);
-                currentHandle = handle;
-                handlesAndTitles.put(handle, driver.getTitle());
+                try {
+                    driver.switchTo().window(handle);
+                    currentHandle = handle;
+                    handlesAndTitles.put(handle, driver.getTitle());
+                }
+                catch (NoSuchWindowException e) {
+                    // ignore this window
+                }
                 LOGGER.debug("Window with handle {} has title '{}'", handle, title);
             }
         }
@@ -449,10 +465,11 @@ public class Selenium2Facade {
     public String captureScreenshotToString() {
         // use Selenium1 interface to capture full screen
         String url = seleniumUrl.toString();
-        Pattern p = Pattern.compile("(http://.+)/wd/hub");
+        Pattern p = Pattern.compile("(http(s)?://.+)/wd/hub(/?)");
         Matcher matcher = p.matcher(url);
         if (matcher.matches()) {
-            String screenshotUrl = matcher.group(1) + "/selenium-server/driver/?cmd=captureScreenshotToString";
+            String screenshotUrl = matcher.group(1);
+            screenshotUrl += (screenshotUrl.endsWith("/") ? "" : "/") + "selenium-server/driver/?cmd=captureScreenshotToString";
             InputStream in = null;
             try {
                 in = new URL(screenshotUrl).openStream();
@@ -535,6 +552,31 @@ public class Selenium2Facade {
     }
 
     // private helpers -------------------------------------------------------------------------------------------------
+
+    private void handleSeleniumException(Throwable e) {
+        String message = e.getMessage();
+
+        // check if there is a WebDriverException
+        WebDriverException wde = null;
+        while (e != null) {
+            if (e instanceof WebDriverException) {
+                wde = (WebDriverException) e;
+                break;
+            }
+            e = e.getCause();
+        }
+
+        if (wde != null) {
+            // "not clickable" exception
+            Pattern p = Pattern.compile("(unknown error: )?(.* not clickable .*)");
+            Matcher m;
+            if (message != null && (m = p.matcher(message)).find() && m.start() == 0) {
+                throw new AutomationException(m.group(2), wde);
+            }
+
+            throw wde;
+        }
+    }
 
     private Object executeScript(String script, Object... arguments) {
         return ((JavascriptExecutor) driver).executeScript(script, arguments);
