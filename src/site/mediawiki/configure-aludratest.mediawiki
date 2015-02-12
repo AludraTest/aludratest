@@ -1,4 +1,4 @@
-= Configuring AludraTest =
+== Configuring AludraTest ==
 
 AludraTest has a complex and extensible configuration engine supporting configuration based on environment, service, service instance and any composition of these elements.
 

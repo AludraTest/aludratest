@@ -1,0 +1,47 @@
+== Test Case ==
+
+A test case describes the flow of actions and verifications that shall be performed.
+
+The test case itself is similar to junit.
+
+A test class has to derive from <code>org.aludratest.AludraTestCase</code> and represents the lowest level test suite.
+
+The test case (behavior) is represented by a public method (test method) annotated with <code>@org.aludratest.testcase.Test</code>.
+
+The test method can be annotated with a (data) <code>@Source</code>.
+
+The framework will run each test method as often as the corresponding Source has data sets.
+
+Additional setup and tear-down code can be placed into public methods annotated by <code>@Before</code> respectively <code>@After</code>. 
+
+Example:
+<code>
+ import org.aludratest.testcase.After;
+ import org.aludratest.testcase.AludraTestCase;
+ import org.aludratest.testcase.Before;
+ import org.aludratest.testcase.Test;
+ 
+ public class MyTestClass extends AludraTestCase {
+ 
+   @Before
+   public void setUp() {
+       System.out.println("setUp() runs before every test method...");
+   }
+ 
+   @After
+   public void tearDown() {
+       System.out.println("... tearDown() runs after every test method.");
+   }
+ 
+   @Test
+   public void myTestWithoutData() {
+   	logInfo("myTestMethod was called");
+   }
+   
+   @Test
+   public void myTestWithData() {
+   	logInfo("myTestMethod was called");
+   }
+   
+ }
+</code>

@@ -1,4 +1,6 @@
-== Plugin Mechanism ==
+== Log4Testing Developer Guide ==
+
+=== Plugin Mechanism ===
 
 Log4Testing allows the user to write and plug in custom extensions. Each extension point has a base name (in the following example 'xyz') that identifies which type of extension is to be plugged in. It must have a &lt;class&gt; element as child which specifies the fully qualified name of the class. An optional &lt;properties&gt; child element serves for setting JavaBean properties of the plugin object, similar to the &lt;sysprops&gt; structure described above.
 
@@ -20,7 +22,7 @@ Example:
  </xyz>
 </code>
 
-== Configuring TestObservers ==
+=== Configuring TestObservers ===
 
 TestObservers are plugged in to get notified of test status changes and react according to their purpose. Log4Testing makes use of TestObservers for generating its HTML and XML reports and report the number of tests remaining. Each TestObserver is declared as a single &lt;observer&gt; element inside an &lt;observers&gt; under the XML root node:
 
@@ -43,7 +45,7 @@ TestObservers are plugged in to get notified of test status changes and react ac
  </observers>
 </code>
 
-=== HTMLReportObserver ===
+==== HTMLReportObserver ====
 
 The HTMLReportObserver employs Velocity templates for generating recursive HTML reports of all test suites and test cases. It is plugged in using the following example configuration:
 
@@ -90,15 +92,15 @@ The possible settings are as follows:
 | boolean flag (true/false) to specify if the system's default browser shall be opened with the root suite report. This is done when test execution has finished.
 |}
 
-=== XMLReportObserver ===
+==== XMLReportObserver ====
 
 The XMLReportObserver works similar to the HTMLReportObserver (has the same settings), but renders parseable XML instead of HTML. This can be used for post-processing of the test results. 
 
-=== PendingTestsObserver ===
+==== PendingTestsObserver ====
 
 The PendingTestsObserver prints out the current number of tests pending after each test step that has been finished. 
 
-== Configuration File Example ==
+=== Configuration File Example ===
 
 A typical <code>log4testing.xml</code> looks like this:
 

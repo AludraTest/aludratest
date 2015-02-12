@@ -1,10 +1,10 @@
-= Understand the log =
+== Understand the log ==
 
 AludraTest's component Log4Testing generates customizable user-readable logs. The implementation includes a HTML and a XML generator.
 
 If you like to extend Log4Testing, please refer to [[log4testing developer guide]].
 
-== Colors in Log4Testing Protocol ==
+=== Colors in Log4Testing Protocol ===
 
 ;<span style="background-color: rgb(255, 255, 255)">Pending</span>
 :A test is scheduled for execution but was not started yet
@@ -40,7 +40,7 @@ If you like to extend Log4Testing, please refer to [[log4testing developer guide
 [[Image:AludraTest-Exceptions.png]]
 
 
-== Configuration File Format ==
+=== Configuration File Format ===
 
 Log4Testing is configured from the contents of a file named <code>log4testing.xml</code> on the ''Classpath''. It allows the user to configure the following settings:
 
@@ -51,7 +51,7 @@ Log4Testing is configured from the contents of a file named <code>log4testing.xm
 
 As the file is searched on the Classpath, the best place to store it would be your <code>src/main/resources</code> directory of your project.
 
-== Setting System Variables ==
+=== Setting System Variables ===
 
 A &lt;sysprops&gt; element can be used to define system variable (a.k.a. VM system property). Each child element of a &lt;sysprop&gt; element is mapped to a system variable using the tag name as variable name and the content as value. So, in order to define a system variable 'user' with the value 'Alice', one would write
 

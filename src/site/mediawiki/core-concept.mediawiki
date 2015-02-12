@@ -1,4 +1,4 @@
-= Core Concept =
+== Core Concept ==
 
 AludraTest is build on four core concepts:
 *Test Case

@@ -1,10 +1,10 @@
-= Setup Environment for Development =
+== Setup Environment for developing tests ==
 
-=== Prerequisits ===
-
+=== Prerequisites ===
+You will need:
 *java development kit (JDK) 1.6 or higher
 *apache maven 3
-*your favorite text editor or IDE, we recommend eclipse
+*your favorite text editor or IDE; we recommend eclipse
 
 Additionally we recommend:
 *using a version control system, e.g. git or svn
@@ -17,4 +17,8 @@ Additionally and depending on what you want to automate you will need:
 *for testing ftp file transfer an ftp server
  
 === Setup your test project ===
-#
+
+Create a new java maven project including a project object model file (pom.xml).
+Create a dependency to AludraTest as described in [[dependency-info|Dependency Info]].
+
+Start writing tests...

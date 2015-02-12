@@ -1,7 +1,18 @@
+== Use Excel Data Source ==
 
-== Advanced Topics ==
+AludraTest provides a default implementation of <code>Source</code> using MS Excel, but database, XML or even web service call would be possible implementation.  
 
-=== Excel Collection Mapping ===
+=== Complex Example ===
+
+The following shows an complex example using nested data classes, which can be understood as "maps of maps".
+The steps will be:
+# example model from business point of view
+# nested class model
+# data class to Excel sheet mapping
+# data consumption in a test case
+
+Nested data classes can become complex and resulting Excels will have a huge amount of columns or row.
+The last chapter shows how to '''generate''' blank '''Excel''' files '''from data classes'''.
 
 ==== Example Model ====
 
@@ -164,7 +175,7 @@ Using a filter text, the user can filter the test cases by substring:
 
 <br/>[[Image:Excel-wizard.png]]
 
-<br/>When selecting a test case from the list, the 'Test Method' dropdown box is updated to display all test methods that have @Source annotations.
+<br/>When selecting a test case from the list, the 'Test Method' drop-down box is updated to display all test methods that have <code>@Source</code> annotations.
 
 The user can then select one and click 'Create Excel Sheet'. The wizard will then create an empty Excel sheets that contains a 'config' tab and data tabs that reflect the structure of the annotated method parameters:
 

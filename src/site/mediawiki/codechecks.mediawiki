@@ -1,4 +1,4 @@
-= Code Checks =
+== Code Checks ==
 
 AludraTest enforces some design patterns to be applied by a client project's code. A class has to meet certain requirements to be considered an implementor of a pattern and has to comply to the rules imposed by consequence.
 
@@ -8,7 +8,7 @@ To activate these rules for your project, include the Maven PMD Plugin in your b
 
 This article lists the requirments and may be substituted by the generated report.
 
-== Basic Requirements / Goals for Client code ==
+=== Basic Requirements / Goals for Client code ===
 
 Client code using AludraTest should meet these requirements:
 
@@ -21,31 +21,31 @@ Client code using AludraTest should meet these requirements:
 
 The following coding rules try to ensure that client code will meet these requirements as far as possible.
 
-== Components ==
+=== Components ===
 
-=== GUI Service ===
+==== GUI Service ====
 
 For Web GUIs there exist four major types of dictionary components: Page, UIMap, GUIComponent
 
-==== Page ====
+===== Page =====
 
 A Page is an ActionWordLibrary that represents the page currently focused in the GUI. Each of these classes inherits from the common parent class '''org.aludratest.service.gui.web.Page''' and should have the suffix 'Page'.
 
-==== UIMap ====
+===== UIMap =====
 
 A UIMap provides access to sub components (e.g. HTML elements) of the current Page and allows the invocation of related business operations. UIMaps should be stateless and only contain factory methods to create GUIComponents for the current page, based on a Locator identifying how to find the Component on the current page. UIMaps are separated from Pages to make future auto-generation possible.
 
-==== GUIComponent ====
+===== GUIComponent =====
 
 A GUIComponent encapsulates the interaction with a single GUI element (e.g. HTML element like a Button). GUIComponents must not be implemented outside AludraTest, and may only be instantiated by UIMaps. Every GUIComponent receives a Locator object on instantiation which is stored in the GUIComponent.
 
-=== Data Class ===
+==== Data Class ====
 
 A Data Class is a pure data structure related to a service or interface element. A Data Class may only contain attributes of type String, Data Class, or Collection (type parameter must be a subclass of Data), but no arrays, simple types (Date, Double, Integer etc.) or Class objects.
 
-== Code Rules ==
+=== Code Rules ===
 
-=== Test Case ===
+==== Test Case ====
 
 A test case is a class extending (directly or indirectly) the class '''org.aludratest.AludraTest'''.
 
@@ -72,7 +72,7 @@ These restrictions imply that a test case is not allowed to access UIMap, instan
 | The TestCase class must only import allowed types (see above).
 |}
 
-=== ActionWordLibrary ===
+==== ActionWordLibrary ====
 
 An ActionWordLibrary class is a class that implements the ActionWordLibrary interface.
 
@@ -121,9 +121,9 @@ Each public method of an ActionWordLibrary is assumed to be an Action.
 | Action method parameters must be DataClasses
 |}
 
-=== Web GUI Service ===
+==== Web GUI Service ====
 
-==== Page ====
+===== Page =====
 
 A Page Class is a class which extends (directly or indirectly) '''org.aludratest.service.gui.web.page.Page'''
 
@@ -186,7 +186,7 @@ Please note that ActionWordLibrary rules also apply to Page classes, as Page imp
 | Page classes must only import classes of type UIMap, Page, PageUtility, PageHelper, Data, GUIComponent, and AludraService
 |}
 
-==== UIMap ====
+===== UIMap =====
 
 A UIMap Class is a class which extends (directly or indirectly) '''org.aludratest.service.gui.web.uimap.UIMap'''
 
@@ -242,7 +242,7 @@ A UIMap Utility class is a class which extends (directly or indirectly) '''org.a
 | UIMapHelper and UIMapUtility classes must '''not''' import classes of these types: ActionWordLibrary, PageHelper, PageUtility, AludraTest
 |}
 
-==== GUIComponent ====
+===== GUIComponent =====
 
 GUIComponent classes shall not be implemented outside AludraTest. So there is only a rule for their usage:
 
@@ -259,7 +259,7 @@ GUIComponent classes shall not be implemented outside AludraTest. So there is on
 | Only UIMap classes (including Helper+Utility) are allowed to instantiate GUIComponent objects.
 |}
 
-=== Data Class ===
+==== Data Class ====
 
 A Data class is a class which extends (directly or indirectly) '''org.aludratest.dict.Data'''.
 

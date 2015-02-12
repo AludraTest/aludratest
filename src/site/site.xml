@@ -33,15 +33,19 @@
     	</item>
 		<item name="Services" 					href="aludratest-services.html"	collapse="true">
     		<item name="Service Configuration"	href="service-configuration.html" />
-    		<item name="Web GUI Service"		href="webguiservice.html"/>
-    		<item name="File Service" 			href="fileservice.html" />
-    		<item name="Flat File Service" 		href="flatfileservice.html" />
-    		<item name="Separated File Service" href="separatedfileservice.html" />
+
+    		<item name="Web GUI Service"		href="web-gui-service.html"/>
+    		<item name="Command Line Service"	href="command-line-service.html"/>
+
+    		<item name="File Service" 			href="file-service.html" />
+    		<item name="Flat File Service" 		href="flat-file-service.html" />
+    		<item name="Separated File Service" href="separated-file-service.html" />
+    		<item name="EDIfact File Service"   href="edifact-file-service.html" />
         </item>
 	    <item name="Extend AludraTest" 				 href="aludratest-developer-guide.html" collapse="true">
     		<item name="Developer Guide" 			 href="aludratest-developer-guide.html" />
     		<item name="Develop a Service" 			 href="developing-service.html" />
-	    	<item name="FileService Developer Guide" href="fileservice-developer-guide.html" />
+	    	<item name="FileService Developer Guide" href="file-service-developer-guide.html" />
     		<item name="Log4Testing Developer Guide" href="log4testing-developer-guide.html" />
     	</item>
     </menu>

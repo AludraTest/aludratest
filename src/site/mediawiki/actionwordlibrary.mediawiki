@@ -1,4 +1,4 @@
-= ActionWordLibrary =
+== ActionWordLibrary ==
 
 ActionWordLibrary is one of the core concepts AludraTest is build upon.
 

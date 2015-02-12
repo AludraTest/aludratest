@@ -1,28 +1,29 @@
-= FlatFileService User Guide =
+== FlatFile Service User Guide ==
 
 The FlatFileService supports flat file creation and consumption. Different row types are supported of which each one can have its own format definition.
 
 A "Flat File" is also known as "fixed-width" file, containing multiple columns of data where each value is filled with spaces until the fixed width for this column is reached. 
 
-== Configuration ==
+=== Configuration ===
 
 A flat file service instance can be configured using the standard [[Service Configuration|AludraTest Configuration Mechanism]]. The properties base name is <code>flatfile</code>.
 
 The only configuration element provides a locale definition which must conform the Java locale naming conventions, e.g. en_US or de_DE
 
 Example:
-
+<code>
  locale=en_US
+</code>
 
 The locale is used for basic setups of date and number formatting.
 
 If no such configuration property is set, the framework assumes '''en_US''' by default.
 
-== FlatFile Beans ==
+=== FlatFile Beans ===
 
 The FlatFileService supports the use of so-called 'FlatFile Beans' which carry plain data content as well as a column format specification for their associated flat file type.
 
-=== FlatFile Bean Requirements ===
+==== FlatFile Bean Requirements ====
 
 FlatFile Beans must comply with the following conditions:
 
@@ -31,14 +32,15 @@ FlatFile Beans must comply with the following conditions:
 * Annotate each attribute to be exported / loaded with a <code>FlatFileColumn</code> annotation
 * Have a 'flat' structure; no navigation among bean property graphs is supported
 
-=== FlatFileColumn ===
+==== FlatFileColumn ====
 
 A FlatFileBean's attributes are configured to be formatted/parsed in a specific format by attaching a @FlatFileColumn annotation.
 
 Example:
-
- @FlatFileColumn(startIndex = 21, format="20")
- public String city;
+<code>
+  @FlatFileColumn(startIndex = 21, format="20")
+  public String city;
+</code>
 
 The '''startIndex''' denotes the character offset from the beginning of the row. The first column has the index '''1'''.
 
@@ -59,14 +61,13 @@ Examples are:
 * DyyyyMMdd
 * N0000.00
 
-=== FlatFileBean Example ===
+==== FlatFileBean Example ====
 
 All attributes of a FlatFileBean must be configured to be formatted without gaps and overlaps in the @FlatFileColumn formats. The lowest startIndex must be 1.
 
 An example with a simple Address class:
-
- public class FFAddress {
- 
+<code>
+  public class FFAddress {
     @FlatFileColumn(startIndex = 1, format="20")
     public String street;
  
@@ -85,27 +86,30 @@ An example with a simple Address class:
         this.city = city;
         this.num = num;
     }
- 
- }
+  }
+</code>
 
-=== Writing Flat-File-Beans ===
+==== Writing Flat-File-Beans ====
 
 Flat-File-Beans like the FFAddress above can be written using an appropriate FlatFileWriter, e.g. an FFAddressWriter:
+<code>
+  FlatFileService service = getService(ComponentId.create(FlatFileService.class, "fftest"));
+  FFAddressWriter writer = new FFAddressWriter(service);
+  writer.writeAddress(new FFAddress("MAIN STREET 321", "NEW YORK", 123.45));
+  writer.writeAddress(new FFAddress("2ND STREET 4321", "JERSEY", 3.8));
+  writer.close();
+</code>
 
- FlatFileService service = getService(ComponentId.create(FlatFileService.class, "fftest"));
- FFAddressWriter writer = new FFAddressWriter(service);
- writer.writeAddress(new FFAddress("MAIN STREET 321", "NEW YORK", 123.45));
- writer.writeAddress(new FFAddress("2ND STREET 4321", "JERSEY", 3.8));
- writer.close();
-
-=== Reading Flat Files ===
+==== Reading Flat Files ====
 
 Flat files can only be read using an related reader, e.g. an FFAddressReader:
 
- FlatFileService service = getService(ComponentId.create(FlatFileService.class, "fftest"));
- FFAddressReader reader = new FFAddressReader(service);
- FFAddress address;
- while ((address = reader.readRow()&nbsp;!= null) {
-     System.out.println(address);
- }
- reader.close();
+<code>
+  FlatFileService service = getService(ComponentId.create(FlatFileService.class, "fftest"));
+  FFAddressReader reader = new FFAddressReader(service);
+  FFAddress address;
+  while ((address = reader.readRow()&nbsp;!= null) {
+    System.out.println(address);
+  }
+  reader.close();
+</code>

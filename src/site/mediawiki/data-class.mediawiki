@@ -1,4 +1,4 @@
-= Data Class =
+== Data Class ==
 
 Data class is one of the core elements of AludraTest and provides the starting point for data driven testing.
 
@@ -14,4 +14,4 @@ See [[Codechecks]] for the full list of rules applying to data classes.
 
 See [[data drive a test]] for how to use data classes to parameterize your test case.
 
-See [[use excel data source]] for how to use Excel with data classes. 
+See [[use excel data source]] for how to use data classes with MS Excel. 

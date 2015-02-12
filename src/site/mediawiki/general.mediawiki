@@ -1,4 +1,4 @@
-= General =
+== General ==
 
 AludraTest is an extensible framework for automating functional and integration tests of web applications and other technologies.
 

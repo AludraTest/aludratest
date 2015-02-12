@@ -1,4 +1,4 @@
-=== Create a test method ===
+== Create a test case ==
 
 AludraTest use y syntax similar to junit.
 * a test class shall extend '''org.aludratest.AludraTestCase'''
@@ -31,7 +31,7 @@ Any test class may have several methods marked with @Before or @After, also inhe
 
 If a test class has several test methods, each @Before method is called before each test method and each @After method after each test method.
 
-Example:
+Extended example:
 <code>
  import org.aludratest.testcase.After;
  import org.aludratest.testcase.AludraTestCase;
@@ -42,17 +42,23 @@ Example:
  
    @Before
    public void setUp() {
-       System.out.println("setUp()");
+     System.out.println("setUp()");
    }
  
    @After
    public void tearDown() {
-       System.out.println("tearDown()");
+     System.out.println("tearDown()");
    }
- 
+
    @Test
    public void myTestMethod() {
-   	logInfo("myTestMethod was called");
+     logInfo("myTestMethod was called");
+   }
+   
+   @Parallel // force the data sets to run parallel
+   @Source(uri="testSource.xls", segment="sheet1") 
+   public void testTestWithData(Date date, int value) {
+     System.out.println("testWithData() " + date + ", " + value);
    }
  }
 </code>
