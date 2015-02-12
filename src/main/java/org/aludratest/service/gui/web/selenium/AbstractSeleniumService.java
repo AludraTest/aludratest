@@ -25,7 +25,6 @@ import org.aludratest.service.gui.web.AludraWebGUI;
  * 
  * @author falbrech */
 @ConfigProperties({
-    @ConfigProperty(name = "selenium.port", type = int.class, description = "The TCP port the Selenium server is listening on", defaultValue = "4444"),
     @ConfigProperty(name = "timeout", type = int.class, description="Timeout in milliseconds after which a test step stops retrying doing a action.", defaultValue = "15000"),
     @ConfigProperty(name = "speed", type = int.class, description="Speed in milliseconds. What means that between each Selenium command Selenium waits x milliseconds where x is the speed.", defaultValue="50"),
     @ConfigProperty(name = "browser.log.level", type = String.class, description = "The browser log level. One of debug, info, warn, error.", defaultValue = "error"),

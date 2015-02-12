@@ -69,25 +69,25 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     @Override
     public void click(String elementType, String operation, Locator locator,
             int taskCompletionTimeout) {
-        wrapper.click(getDefaultElementLocator(locator));
+        wrapper.click(getDefaultElementLocator(locator), operation, taskCompletionTimeout);
     }
 
     @Override
     public void clickNotEditable(String elementType, String operation, Locator locator,
             int taskCompletionTimeout) {
-        wrapper.clickNotEditable(getDefaultElementLocator(locator));
+        wrapper.clickNotEditable(getDefaultElementLocator(locator), operation, taskCompletionTimeout);
     }
 
     @Override
     public void doubleClickNotEditable(String elementType, String elementName, Locator locator, int taskCompletionTimeout) {
-        wrapper.doubleClickNotEditable(getDefaultElementLocator(locator));
+        wrapper.doubleClickNotEditable(getDefaultElementLocator(locator), elementName, taskCompletionTimeout);
     }
 
     @Override
     public void doubleClick(String elementType, String operation, Locator locator,
             int taskCompletionTimeout) {
         GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.doubleClick(elementLocator);
+        wrapper.doubleClick(elementLocator, operation, taskCompletionTimeout);
     }
 
     // radio button selection --------------------------------------------------
@@ -96,7 +96,7 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     public void selectRadiobutton(String elementType, String operation, Locator locator,
             int taskCompletionTimeout) {
         GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.click(elementLocator);
+        wrapper.click(elementLocator, operation, taskCompletionTimeout);
     }
 
     // check box selection -----------------------------------------------------
@@ -105,7 +105,7 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     public void changeCheckbox(String elementType, String operation, Locator locator,
             int taskCompletionTimeout) {
         GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.click(elementLocator);
+        wrapper.click(elementLocator, operation, taskCompletionTimeout);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
             int taskCompletionTimeout) {
         GUIElementLocator elementLocator = getDefaultElementLocator(locator);
         if (!wrapper.isChecked(elementLocator)) {
-            wrapper.click(elementLocator);
+            wrapper.click(elementLocator, operation, taskCompletionTimeout);
         }
     }
 
@@ -122,7 +122,7 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
             int taskCompletionTimeout) {
         GUIElementLocator elementLocator = getDefaultElementLocator(locator);
         if (wrapper.isChecked(elementLocator)) {
-            wrapper.click(elementLocator);
+            wrapper.click(elementLocator, operation, taskCompletionTimeout);
         }
     }
 
@@ -135,7 +135,7 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
         GUIElementLocator elementLocator = getDefaultElementLocator(locator);
         wrapper.isElementPresent(elementLocator);
         checkLabels(operation, optionLocator, elementLocator);
-        wrapper.select(elementLocator, optionLocator);
+        wrapper.select(elementLocator, optionLocator, taskCompletionTimeout);
     }
 
     // text operations ---------------------------------------------------------
@@ -144,7 +144,7 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     public void type(String elementType, String operation, Locator locator, String text,
             int taskCompletionTimeout) {
         GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.type(elementLocator, text == null ? "" : text);
+        wrapper.type(elementLocator, text == null ? "" : text, taskCompletionTimeout);
     }
 
     @Override
@@ -210,7 +210,7 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     public void assignFileResource(String elementType, String elementName, Locator locator, String filePath,
             int taskCompletionTimeout) {
         GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.sendKeys(elementLocator, filePath);
+        wrapper.sendKeys(elementLocator, filePath, taskCompletionTimeout);
     }
 
     // window operations -------------------------------------------------------

@@ -57,7 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implements all Action interfaces of the {@link FileService} in a single class: 
+ * Implements all Action interfaces of the {@link FileService} in a single class:
  * {@link FileInteraction}, {@link FileVerification} and {@link FileCondition}.
  * @author Volker Bergmann
  */
@@ -71,7 +71,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     /** A polling service to delegate poll operations to. */
     private PollService pollService;
 
-    /** Constructor taking the configuration. 
+    /** Constructor taking the configuration.
      *  @param configuration */
     public FileActionImpl(FileServiceConfiguration configuration) {
         this.configuration = configuration;
@@ -144,11 +144,11 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         }
     }
 
-    /** Renames or moves a file or folder. 
+    /** Renames or moves a file or folder.
      * @param fromPath the file/folder to rename/move
      * @param toPath the new name/location of the file/folder
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     * @return true if a formerly existing file was overwritten. 
+     * @return true if a formerly existing file was overwritten.
      * @throws FilePresentException if a file was already present and overwriting was disabled. */
     @Override
     public boolean move(String fromPath, String toPath, boolean overwrite) {
@@ -171,7 +171,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
      *  @param fromPath the file/folder to copy
      *  @param toPath the name/location of the copy
      *  @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     *  @return true if a formerly existing file was overwritten. 
+     *  @return true if a formerly existing file was overwritten.
      *  @throws FilePresentException if a file was already present and overwriting was disabled. */
     @Override
     public boolean copy(String fromPath, String toPath, boolean overwrite) {
@@ -208,7 +208,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
      *  @param filePath the path of the file to save
      *  @param content the text to save as file content
      *  @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     *  @return true if a formerly existing file was overwritten. 
+     *  @return true if a formerly existing file was overwritten.
      *  @throws FilePresentException if a file was already present and overwriting was disabled. */
     @Override
     public boolean writeTextFile(String filePath, String content, boolean overwrite) {
@@ -221,7 +221,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
      *  @param filePath the path of the file to save
      *  @param source a {@link Reader} which provides the file content
      *  @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     *  @return true if a formerly existing file was overwritten. 
+     *  @return true if a formerly existing file was overwritten.
      *  @throws FilePresentException if a file was already present and overwriting was disabled. */
     @Override
     public boolean writeTextFile(String filePath, Reader source, boolean overwrite) {
@@ -261,7 +261,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
      *  @param filePath the path of the file to save
      *  @param bytes the file content to write
      *  @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     *  @return true if a formerly existing file was overwritten. 
+     *  @return true if a formerly existing file was overwritten.
      *  @throws FilePresentException if a file was already present and overwriting was disabled. */
     @Override
     public boolean writeBinaryFile(String filePath, byte[] bytes, boolean overwrite) {
@@ -274,7 +274,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
      *  @param filePath the path of the file to save
      *  @param source an {@link InputStream} which provides the content to write to the file
      *  @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     *  @return true if a formerly existing file was overwritten. 
+     *  @return true if a formerly existing file was overwritten.
      *  @throws FilePresentException if a file was already present and overwriting was disabled. */
     @Override
     public boolean writeBinaryFile(String filePath, InputStream source, boolean overwrite) {
@@ -367,8 +367,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     }
 
     /** Polls the file system for a given file until it is found or a timeout is exceeded.
-     *  Timeout and the maximum number of polls are retrieved from the 
-     *  {@link FileServiceConfiguration}. 
+     *  Timeout and the maximum number of polls are retrieved from the
+     *  {@link FileServiceConfiguration}.
      *  @throws FunctionalFailure if the file was not found within the timeout */
     @Override
     public void waitUntilExists(String elementType, String filePath) {
@@ -377,8 +377,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     }
 
     /** Polls the file system for a given file until it has disappeared or a timeout is exceeded.
-     *  Timeout and the maximum number of polls are retrieved from the 
-     *  {@link FileServiceConfiguration}. 
+     *  Timeout and the maximum number of polls are retrieved from the
+     *  {@link FileServiceConfiguration}.
      *  @throws FunctionalFailure if the file was not found within the timeout */
     @Override
     public void waitUntilNotExists(String filePath) {
@@ -387,7 +387,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     }
 
     /** Polls the given directory until the filter finds a match or a timeout is exceeded.
-     *  Timeout and the maximum number of polls are retrieved from the 
+     *  Timeout and the maximum number of polls are retrieved from the
      *  {@link FileServiceConfiguration}.
      *  @throws AutomationException if the file was not found within the timeout */
     @Override
@@ -484,7 +484,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     public List<Attachment> createAttachments(Object object, String label) {
         throw new TechnicalException("Not supported");
     }
-    
+
     @Override
     public List<Attachment> createDebugAttachments() {
         return null;
@@ -535,7 +535,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         }
     }
 
-    private class WaitForFileTask implements PolledTask<String, FunctionalFailure> {
+    private class WaitForFileTask implements PolledTask<String> {
 
         private String filePath;
         private boolean awaitExistence;
@@ -550,12 +550,12 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
             FileObject file = getFileObject(filePath);
             try {
                 if (!awaitExistence) {
-                    // This is a workaround for VFS 2.0's flaws in the 
+                    // This is a workaround for VFS 2.0's flaws in the
                     // handling of attached/detached state and caching:
                     FileObject parent = file.getParent();
                     parent.getType(); // assure that parent folder is attached
-                    parent.refresh(); // detach parent folder and clear child object cache 
-                                      // (works only if attached before)
+                    parent.refresh(); // detach parent folder and clear child object cache
+                    // (works only if attached before)
                     // ...end of workaround
                 }
                 file.refresh();
@@ -572,7 +572,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         }
 
         @Override
-        public FunctionalFailure throwTimeoutException() {
+        public String timedOut() {
             String expectedState = (awaitExistence ? "found" : "removed");
             throw new FunctionalFailure("File not " + expectedState + " within timeout: " + filePath);
         }
@@ -581,19 +581,20 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         public String toString() {
             return getClass().getSimpleName() + "(" + filePath + ")";
         }
+
     }
 
     /**
      * {@link PolledTask} that waits for the first occurrence of a file that matches the filter.
      * @author Volker Bergmann
      */
-    public class WaitForFirstMatchTask implements PolledTask<String, FunctionalFailure> {
+    public class WaitForFirstMatchTask implements PolledTask<String> {
 
         private String parentPath;
         private FileFilter filter;
 
-        /** Constructor 
-         *  @param parentPath the folder in which to search 
+        /** Constructor
+         *  @param parentPath the folder in which to search
          *  @param filter the filter to apply in search */
         public WaitForFirstMatchTask(String parentPath, FileFilter filter) {
             this.parentPath = parentPath;
@@ -614,8 +615,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         }
 
         @Override
-        public FunctionalFailure throwTimeoutException() {
-            return new FunctionalFailure("No match found for filter " + filter);
+        public String timedOut() {
+            throw new FunctionalFailure("No match found for filter " + filter);
         }
 
         @Override

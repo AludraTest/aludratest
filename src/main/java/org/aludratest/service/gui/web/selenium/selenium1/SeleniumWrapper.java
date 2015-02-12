@@ -85,19 +85,10 @@ public class SeleniumWrapper {
     private void init() {
         try {
             usedSeleniumHost = seleniumResourceService.acquire();
-            int seleniumPort = configuration.getDefaultSeleniumPort();
+            // int seleniumPort = configuration.getDefaultSeleniumPort();
             String host = usedSeleniumHost;
 
-            if (usedSeleniumHost.contains(":")) {
-                try {
-                    seleniumPort = Integer.parseInt(usedSeleniumHost.substring(usedSeleniumHost.indexOf(':') + 1).trim());
-                    host = usedSeleniumHost.substring(0, usedSeleniumHost.indexOf(':'));
-                }
-                catch (NumberFormatException e) {
-                    LOGGER.error("Invalid host:port syntax for selenium host: " + usedSeleniumHost);
-                }
-            }
-            selenium = new SeleniumFacade(configuration, host, seleniumPort);
+            selenium = new SeleniumFacade(configuration, host);
             selenium.start();
         } catch (Exception e) {
             if (selenium != null) {

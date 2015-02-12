@@ -67,7 +67,6 @@ import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.ErrorHandler.UnknownServerException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -92,6 +91,23 @@ public class Selenium2Facade {
 
     private static final String HAS_FOCUS_SCRIPT = "return arguments[0] == window.document.activeElement";
 
+    // @formatter:off
+    private static final String FIRE_ONCHANGE_SCRIPT = "var element = arguments[0]; var event; "
+            + "if (document.createEvent) {"
+            + "    event = document.createEvent(\"HTMLEvents\");"
+            + "    event.initEvent(\"change\", true, false);"
+            + "  } else {"
+            + "    event = document.createEventObject();"
+            + "    event.eventType = \"change\";"
+            + "  }"
+            + "  event.eventName = \"change\";"
+            + "  if (document.createEvent) {"
+            + "    element.dispatchEvent(event);"
+            + "  } else {"
+            + "    element.fireEvent(\"on\" + event.eventType, event);"
+            + "  }";
+    // @formatter:on
+
     private static final String DROPDOWN_OPTION_VALUE_PROPERTY = "value";
     private static final String DROPDOWN_OPTION_LABEL_PROPERTY = "text";
 
@@ -111,10 +127,10 @@ public class Selenium2Facade {
 
     // constructor -------------------------------------------------------------
 
-    public Selenium2Facade(SeleniumWrapperConfiguration configuration, String usedSeleniumHost, int usedSeleniumPort)
+    public Selenium2Facade(SeleniumWrapperConfiguration configuration, String seleniumUrl)
             throws MalformedURLException {
         this.configuration = configuration;
-        this.seleniumUrl = new URL("http://" + usedSeleniumHost + ":" + usedSeleniumPort + "/wd/hub");
+        this.seleniumUrl = new URL(seleniumUrl + "/wd/hub");
         this.driver = newDriver();
         this.zIndexSupport = new ZIndexSupport(driver);
     }
@@ -188,7 +204,7 @@ public class Selenium2Facade {
     private void checkHighlightCss() {
         // check if our hidden element is present
         try {
-            findElement(new IdLocator("__aludra_selenium_hidden"));
+            findElement(new IdLocator("__aludra_selenium_hidden"), 1000);
         }
         catch (Exception e) {
             // add CSS and element
@@ -219,7 +235,13 @@ public class Selenium2Facade {
     }
 
     public void click(GUIElementLocator locator) {
-        findElement(locator).click();
+        WebElement element = findElement(locator);
+        try {
+            element.click();
+        }
+        catch (Exception e) {
+            handleSeleniumException(e);
+        }
     }
 
     public boolean isEditable(GUIElementLocator locator) {
@@ -265,6 +287,7 @@ public class Selenium2Facade {
             // validate success
             if (value.equals(element.getAttribute("value"))) {
                 fallback = false;
+                executeScript(FIRE_ONCHANGE_SCRIPT, element);
             }
         }
 
@@ -357,9 +380,14 @@ public class Selenium2Facade {
 
             // iterate all windows and return the one with the desired title
             for (String handle : getWindowHandles()) {
-                String title = driver.switchTo().window(handle).getTitle();
-                if (requestedTitle.equals(title)) {
-                    return;
+                try {
+                    String title = driver.switchTo().window(handle).getTitle();
+                    if (requestedTitle.equals(title)) {
+                        return;
+                    }
+                }
+                catch (NoSuchWindowException e) {
+                    // ignore; window has been removed in the meantime
                 }
             }
 
@@ -394,9 +422,14 @@ public class Selenium2Facade {
         for (String handle : handles) {
             if (!handle.equals(initialWindowHandle)) {
                 LOGGER.debug("Switching to window with handle {}", handle);
-                driver.switchTo().window(handle);
-                currentHandle = handle;
-                handlesAndTitles.put(handle, driver.getTitle());
+                try {
+                    driver.switchTo().window(handle);
+                    currentHandle = handle;
+                    handlesAndTitles.put(handle, driver.getTitle());
+                }
+                catch (NoSuchWindowException e) {
+                    // ignore this window
+                }
                 LOGGER.debug("Window with handle {} has title '{}'", handle, title);
             }
         }
@@ -450,10 +483,11 @@ public class Selenium2Facade {
     public String captureScreenshotToString() {
         // use Selenium1 interface to capture full screen
         String url = seleniumUrl.toString();
-        Pattern p = Pattern.compile("(http://.+)/wd/hub");
+        Pattern p = Pattern.compile("(http(s)?://.+)/wd/hub(/?)");
         Matcher matcher = p.matcher(url);
         if (matcher.matches()) {
-            String screenshotUrl = matcher.group(1) + "/selenium-server/driver/?cmd=captureScreenshotToString";
+            String screenshotUrl = matcher.group(1);
+            screenshotUrl += (screenshotUrl.endsWith("/") ? "" : "/") + "selenium-server/driver/?cmd=captureScreenshotToString";
             InputStream in = null;
             try {
                 in = new URL(screenshotUrl).openStream();
@@ -537,6 +571,31 @@ public class Selenium2Facade {
 
     // private helpers -------------------------------------------------------------------------------------------------
 
+    private void handleSeleniumException(Throwable e) {
+        String message = e.getMessage();
+
+        // check if there is a WebDriverException
+        WebDriverException wde = null;
+        while (e != null) {
+            if (e instanceof WebDriverException) {
+                wde = (WebDriverException) e;
+                break;
+            }
+            e = e.getCause();
+        }
+
+        if (wde != null) {
+            // "not clickable" exception
+            Pattern p = Pattern.compile("(unknown error: )?(.* not clickable .*)");
+            Matcher m;
+            if (message != null && (m = p.matcher(message)).find() && m.start() == 0) {
+                throw new AutomationException(m.group(2), wde);
+            }
+
+            throw wde;
+        }
+    }
+
     private Object executeScript(String script, Object... arguments) {
         return ((JavascriptExecutor) driver).executeScript(script, arguments);
     }
@@ -561,7 +620,9 @@ public class Selenium2Facade {
                 // ignore this and retry in the next loop iteration
             }
         }
-        throw new StaleElementReferenceException(element.toString());
+
+        // assert that it is gone forever. This means "not editable".
+        return false;
     }
 
     private String[] getPropertyValues(GUIElementLocator locator, String propertyName) {
@@ -604,10 +665,10 @@ public class Selenium2Facade {
 
     public void waitUntilNotPresent(GUIElementLocator locator, long timeout) {
         try {
-            waitFor(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(LocatorUtil.by(locator))), timeout);
+            waitFor(AludraTestExpectedConditions.noPresenceOfElementLocated(LocatorUtil.by(locator)), timeout);
         }
         catch (TimeoutException e) {
-            throw new AutomationException("Element still present"); // NOSONAR
+            throw new AutomationException("An element was unexpectedly found"); // NOSONAR
         }
     }
 
@@ -680,6 +741,28 @@ public class Selenium2Facade {
         Set<String> handles = driver.getWindowHandles();
         LOGGER.debug("getWindowHandles() -> {}", handles);
         return handles;
+    }
+
+    private static class AludraTestExpectedConditions {
+
+        private AludraTestExpectedConditions() {
+        }
+
+        private static ExpectedCondition<Boolean> noPresenceOfElementLocated(final By locator) {
+            return new ExpectedCondition<Boolean>() {
+                @Override
+                public Boolean apply(WebDriver input) {
+                    try {
+                        WebElement elem = input.findElement(locator);
+                        return Boolean.valueOf(elem == null);
+                    }
+                    catch (NoSuchElementException e) {
+                        return Boolean.TRUE;
+                    }
+                }
+            };
+        }
+
     }
 
 }

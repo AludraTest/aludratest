@@ -15,28 +15,24 @@
  */
 package org.aludratest.util.poll;
 
-import org.aludratest.exception.AludraTestException;
-
-/**
- * Interface for operations to be invoked repeatedly until they succeed (polling).
- * The task is performed by the {@link #run()} method.
- * If execution fails, this method has to return null, 
- * and the framework reschedules the task for repeated invocation.
- * If the operation is successful, {@link #run()} has to return a non-null value.
+/** Interface for operations to be invoked repeatedly until they succeed (polling). The task is performed by the {@link #run()}
+ * method. If execution fails, this method has to return null, and the framework reschedules the task for repeated invocation. If
+ * the operation is successful, {@link #run()} has to return a non-null value.
  * @author Volker Bergmann
- * @param <R> Type of the value to be returned by the task
- * @param <E> Type of the exception to throw if a timeout occurs
- */
-public interface PolledTask<R, E extends AludraTestException> {
+ * @param <E> Type of the value to be returned by the task */
+public interface PolledTask<E> {
 
     /** The operation to execute.
      *  @return a non-null operation result if successful, otherwise null. */
-    R run();
+    E run();
 
-    /** Creates an exception to describe the meaning of the task failure. 
-     *  @return an exception that describes why the task failed */
-    E throwTimeoutException();
+    /** Called by the framework when a task did not succeed within the timeout period. The implementor may return an appropriate
+     * result value E as fallback or throw an exception to indicate failure
+     * @return an exception that describes why the task failed */
+    E timedOut();
 
     /** Creates a String representation of the task and is used for logging. */
+    @Override
     String toString();
+
 }

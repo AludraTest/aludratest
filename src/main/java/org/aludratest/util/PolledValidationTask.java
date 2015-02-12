@@ -24,7 +24,7 @@ import org.databene.commons.Validator;
  * a value accepted by a {@link Validator} (or a timeout occurs)
  * @author Volker Bergmann
  */
-public class PolledValidationTask implements PolledTask<String, FunctionalFailure> {
+public class PolledValidationTask implements PolledTask<String> {
 
     private Provider<String> provider;
     private Validator<String> validator;
@@ -45,8 +45,8 @@ public class PolledValidationTask implements PolledTask<String, FunctionalFailur
     }
 
     @Override
-    public FunctionalFailure throwTimeoutException() {
-        return new FunctionalFailure(provider.getName() + " '" + actualText + "'" +
+    public String timedOut() {
+        throw new FunctionalFailure(provider.getName() + " '" + actualText + "'" +
                 " does not match the validator " + validator);
     }
 

@@ -37,19 +37,9 @@ public final class SeleniumWrapperConfiguration {
      * @param configuration Preferences object containing required configuration. */
     public SeleniumWrapperConfiguration(Preferences configuration) {
         this.configuration = new ValidatingPreferencesWrapper(configuration);
-
-        // invoke all getters to ensure required properties set
-        // getSeleniumPort();
     }
 
     // properties --------------------------------------------------------------
-
-    /** Default port to use for Selenium RC Servers.
-     * 
-     * @return Default port to use for Selenium RC Servers. */
-    public final int getDefaultSeleniumPort() {
-        return configuration.getRequiredIntValue("selenium.port");
-    }
 
     /**
      * Browser which will be used for testing.

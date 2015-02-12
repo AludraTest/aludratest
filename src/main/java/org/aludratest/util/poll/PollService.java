@@ -15,7 +15,6 @@
  */
 package org.aludratest.util.poll;
 
-import org.aludratest.exception.AludraTestException;
 import org.databene.commons.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,11 +60,11 @@ public class PollService {
      *  @param task
      *  @return a not-null result of type R returned by the task
      *  @throws E if the timeout is exceeded before a task invocation returned a not-null result value */
-    public <R, E extends AludraTestException> R poll(PolledTask<R, E> task) throws E {
+    public <E> E poll(PolledTask<E> task) {
         long startMillis = System.currentTimeMillis();
         boolean errorOccurred = false;
         do {
-            R result = task.run();
+            E result = task.run();
             if (result != null) {
                 LOGGER.debug("Task {} finished successfully, result: {}", task, result);
                 return result;
@@ -80,7 +79,7 @@ public class PollService {
             }
         } while (!errorOccurred && System.currentTimeMillis() - startMillis < timeout);
         LOGGER.debug("Task {} did not succeed within the timeout of {} ms", task, timeout);
-        throw task.throwTimeoutException();
+        return task.timedOut();
     }
 
 }
