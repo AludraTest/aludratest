@@ -1,0 +1,20 @@
+= Setup Environment for Development =
+
+=== Prerequisits ===
+
+*java development kit (JDK) 1.6 or higher
+*apache maven 3
+*your favorite text editor or IDE, we recommend eclipse
+
+Additionally we recommend:
+*using a version control system, e.g. git or svn
+*using a build server for continuous integration (CI), e.g. jenkens
+*using a local artifact repository, e.g. artifactory, archiva 
+*using a code review workflow or tool, e.g. gerrit
+
+Additionally and depending on what you want to automate you will need:
+*for testing web applications to download selenium RC / webdriver
+*for testing ftp file transfer an ftp server
+ 
+=== Setup your test project ===
+#

@@ -1,0 +1,120 @@
+= General =
+
+AludraTest is an extensible framework for automating functional and integration tests of web applications and other technologies.
+
+The framework unites the methodologies, capabilities and best practices of 
+* junit,
+* selenium / webdriver,
+* data driven testing,
+* key word / action word testing,
+* hybrid testing,s 
+* strong refactoring and
+* continuous delivery.
+
+=== Origin and history ===
+AludraTest has been build for automated, continuous testing of an in-house developed web application with many different interfaces for an logistics company.
+Though we had to
+* integrate different technologies
+** web application icluding AJAX,
+** messaging (JMS)
+** file (ftp, sftp, http, nfs)
+** different content formats: XML, EDI, EDIfact, CSV, TSV, custom flat file
+* cope with refactoring of an iterative development approach
+* cope with development of two to three parallel release branches
+
+=== The market and Requirements ===
+
+There many commercial as well open-source testing tools and frameworks in the market.
+
+==== Commercial Tools ====
+Commercial solutions usually have a strong focus on manual testing, test management and reporting. Test automation may be an additional component or even be integrated and often focus on capture-replay. Some tools have some refactoring capabilities. Some tools provide adapters to several technologies for automation.
+
+On the down side they usually bring their own editors and do not treat test automation as software development. In consequence, these tools have limited support for wide spread continuous delivery solution, source code management, refactoring support, branching and merging.
+
+Often you can get very fast and good results but maintenance can be challenging depending on your development model for the main application.
+
+==== Open Source Tools ====
+The open-source tools usually focus on exactly one aspect, like the famous junit does on unit testing of single classes or a bunch of classes and provides a framework to automate any kind of algorithm. 
+
+Selenium does a very good job to remote control a huge amount of web browser - operating system combinations, but does not provide any framework for wrinting tests.
+
+Both have no superior GUI tool and tread test automation as software development. Though all tools for software development like eclipse EDI, git, svn, jenkins/hudson etc. can be applied.  
+
+=== Requirements ===
+AludraTest shall fill the major gaps between commercial and open-source tools by applying methods and tools for software development and build up an integrated tool chain.
+
+Main requirements are listed below. For detailed requirements, please refer to GitHub issues marked as 'feature' and documentation of single services and components.  
+
+{| cellpadding="2" cellspacing="0" border="1"
+!	ID		!!	Criteria		!!	Prio	!!	Name		!!	Description																	!!	Solution
+|-
+|	1		||	Maintainability	||	-/-		||				||	Maintainability and Process Requirements									||				
+|-	
+|	1.1		||	Maintainability	||	1_shall	||	reuse		||	The solution shall support and encourage reuse of modules, behavior, data and configuration.
+||	pattern, Action Word Library, code checks
+|-	
+|	1.2		||	Maintainability	||	1_shall	||	dev-like	||	Test automation shall be treated like software development. Common developement processes shall be applied like branching, merging, review, continuous delivery and (automated) QA 	||	
+|-	
+|	1.2.1	||	Maintainability	||	1_shall	||	IDE	support	||	The test automation language shall be supported by an IDE that provides autocompletion and reafctoing capabilities. Can be a self created plug-in.
+||	JAVA, eclipse
+|-	
+|	1.2.2	||	Maintainability	||	1_shall	||	tool chain	||	The tool chain shall effectively support branching and merging			
+||	eclipse EDI, git and gerrit
+|-	
+|	1.2.3	||	Maintainability	||	1_shall	||	autom. QA	||	The tool chain shall provide capabilities for automated quality checks	
+||	junit, pmd, sonarcube on jenkins
+|-	
+|	1.2.4	||	Maintainability	||	1_shall	||	cont.integr.||	The solution shall integrated with continuous integration solutions		
+||	can be executed from jenkins, surefire-provider
+|-	
+|	2		||	Usability		||	-/-		||				||	Usability and Staff Requirements											||	
+|-	
+|	2.1		||	Usability		||	1_shall	||	any tech	||	The solution shall provide a unified pattern to test any technology		||	see pattern
+|-	
+|	2.2		||	Usability		||	1_shall	||	easy learn	||	The test automation language shall be easy to learn or be known widely	||	JAVA and patterns
+|-	
+|	2.3		||	Usability		||	1_shall	||	young prof.	||	Young professionals and students shall be able to perform basic automation tasks	||	see the patterns
+|-	
+|	2.4		||	Usability		||	1_shall	||	expert extends	||	Experts shall be able to extend the solution and automate any special or complex behavior
+||	see services
+|-
+|	2.5		||	Usability		||	1_shall	||	end user report	||	The solution shall generate test result reports that can be understood by business experts.	||	HTLM test result log		
+|-
+|	2.5.1	||	Usability		||	1_shall	||	test steps	||	A business / domain expert shall be able to identify exactly what happened. The log shall show actions in DSL or key word like manner: <br>"on login page enter into edit field 'user' the value 'Todd'"
+||	action word like test result log					
+|-
+|	2.5.2	||	Usability		||	1_shall	||		||	The solution shall identify the most likely cause for the test result and support routing the results according needed skill to analyze the test.
+||	color coded result log for:<br>passed, functional failed, performance failed, automation issue, framework / environment problem 					
+|-
+|-	
+|	3		||	Functional		||	-/-		||					||	Functional Requirements	||	
+|-	
+|	3.1	||	Functional		||	1_shall	||	ext. config		||	The solution shall provide unified and extensible configuration mechanism for different environments and scenarios	||	ConfigurationService
+|-	
+|	3.2	||	Functional		||	1_shall	||	data driven		||	The solution shall support reuse of test cases (behavior) for different data (data driven testing)	||	see data class, DataProvider
+|-	
+|	3.3	||	Functional		||	1_shall	||	extensible		||	The solution shall support extension points for any technology
+|	see services
+|-	
+|	3.4	||	Functional		||	1_shall	||	web/AJAX		||	The solution shall support automation of web applications using asynchronous transfer with AJAX
+|	WebGuiService with selenium as technical driver 
+|-	
+|	3.5	||	Functional		||	1_shall	||	file			||	The solution shall support interaction with (remote) files
+|	FileService, (s)ftp, http(s), nfs, smb s
+|-	
+|	3.6	||	Functional		||	1_shall	||	EDI, EDIfact	||	The solution shall support EDI, EDIfact
+|	EdiFileServive
+|-	
+|	3.7	||	Functional		||	1-shall	||	custom content	||	The solution shall support custom content
+|	FlatFileService, FileServe + content handler
+|-	
+|	3.8	||	Functional		||	2_should||	cli				||	The solution should support any operation on command line interface							|	
+|-	
+|	3.9	||	Functional		||	-/-		||			||	Portability																					|	
+|-	
+|	3.10||	Portability		||	1_shall	||	Win, Linux, MacOs		||	The solution shall be able to run and be developed on different operating systems
+|	JAVA (Windows, Linux, MacOS)
+|-	
+|	3.11||	Portability		||	1_shall	||	OS:AUT <> OS:TA			||	The solution shall be able to test applications the run on different operation systems
+|	JAVA (Windows, Linux, MacOS), selenium (JAVa with several browser/os configs)
+|}

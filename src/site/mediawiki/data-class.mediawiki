@@ -1,0 +1,17 @@
+= Data Class =
+
+Data class is one of the core elements of AludraTest and provides the starting point for data driven testing.
+
+A data class is an simple Java Beans, extending the abstract base class <code>org.aludratest.dict.Data</code>. 
+
+A data class shall only contain attributes of type <code>String</code>, <code>Data</code>, or a Collection of type Data (e.g. <code>List<MyData></code>, were <code>MyData</code> must be a subclass of <code>Data</code>).
+
+A data class '''must not''' contain '''arrays''', simple types (<code>Date</code>, <code>Double</code>, <code>Integer</code> etc.) or any other '''class objects'''.
+
+In consequence, a data class can be a tree of data classes and Strings. 
+
+See [[Codechecks]] for the full list of rules applying to data classes.
+
+See [[data drive a test]] for how to use data classes to parameterize your test case.
+
+See [[use excel data source]] for how to use Excel with data classes. 
