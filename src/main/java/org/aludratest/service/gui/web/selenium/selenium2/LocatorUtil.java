@@ -15,6 +15,8 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2;
 
+import java.util.List;
+
 import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.element.CSSLocator;
 import org.aludratest.service.locator.element.ElementLocators.ElementLocatorsGUI;
@@ -22,6 +24,7 @@ import org.aludratest.service.locator.element.IdLocator;
 import org.aludratest.service.locator.element.LabelLocator;
 import org.aludratest.service.locator.element.XPathLocator;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -36,7 +39,12 @@ public class LocatorUtil {
     }
 
     public static WebElement findElement(Locator locator, WebDriver driver) {
-        return driver.findElement(by(locator));
+        // according to API, this should be more safe than findElement()
+        List<WebElement> elems = driver.findElements(by(locator));
+        if (elems.isEmpty()) {
+            throw new NoSuchElementException("Element not found");
+        }
+        return elems.get(0);
     }
 
     public static By by(Locator locator) {

@@ -15,6 +15,8 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,7 @@ import org.aludratest.service.locator.window.TitleLocator;
 import org.aludratest.service.locator.window.WindowLocator;
 import org.aludratest.service.util.ServiceUtil;
 import org.aludratest.testcase.event.attachment.Attachment;
+import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +93,13 @@ public abstract class AbstractSelenium2Action implements Action {
             return wrapper.getPageSource();
         }
         catch (Exception e) { // NOSONAR
-            throw new TechnicalException("Error saving page source. ", e);
+            // instead, create an Attachment containing the exception
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            pw.flush();
+
+            return new StringAttachment("Exception on saving source", sw.toString(), "txt");
         }
     }
 

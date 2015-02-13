@@ -468,6 +468,7 @@ public class Selenium2Wrapper {
     }
 
     public Map<String, String> getAllWindowHandlesAndTitles() {
+        waitUntilNotBusy();
         return selenium.getAllWindowHandlesAndTitles();
     }
 
@@ -475,6 +476,7 @@ public class Selenium2Wrapper {
      * @see Selenium#getAllWindowTitles()
      */
     public String[] getAllWindowTitles() {
+        waitUntilNotBusy();
         return selenium.getAllWindowTitles();
     }
 
@@ -482,11 +484,13 @@ public class Selenium2Wrapper {
      * @see Selenium#getAllWindowIds()
      */
     public String[] getAllWindowIDs() {
+        waitUntilNotBusy();
         return selenium.getAllWindowIDs();
     }
 
     /** @see Selenium#getAllWindowNames()  */
     public String[] getAllWindowNames() {
+        waitUntilNotBusy();
         return selenium.getAllWindowNames();
     }
 

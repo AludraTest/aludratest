@@ -26,7 +26,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +69,7 @@ import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.ErrorHandler.UnknownServerException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -84,8 +87,6 @@ public class Selenium2Facade {
     private static final Logger LOGGER = LoggerFactory.getLogger(Selenium2Facade.class);
 
     // constants ---------------------------------------------------------------
-
-    private static final int SECOND_MILLIS = 1000;
 
     private static final int MAX_RETRIES_ON_STALE_ELEMENT = 3;
 
@@ -133,6 +134,9 @@ public class Selenium2Facade {
         this.seleniumUrl = new URL(seleniumUrl + "/wd/hub");
         this.driver = newDriver();
         this.zIndexSupport = new ZIndexSupport(driver);
+
+        // configure Selenium class to not log annoying (expected) exceptions
+        java.util.logging.Logger.getLogger(ExpectedConditions.class.getName()).setLevel(java.util.logging.Level.OFF);
     }
 
     /** Creates an instance of the web driver configured in the configuration file. */
@@ -412,8 +416,20 @@ public class Selenium2Facade {
 
     public Map<String, String> getAllWindowHandlesAndTitles() {
         Map<String, String> handlesAndTitles = new HashMap<String, String>();
-        // store handle and title of current window
-        String initialWindowHandle = driver.getWindowHandle();
+        // store handle and title of current window, if possible
+        String initialWindowHandle;
+        try {
+            initialWindowHandle = driver.getWindowHandle();
+        }
+        catch (NoSuchWindowException e) {
+            // fallback to next best window
+            Set<String> handles = driver.getWindowHandles();
+            if (handles.isEmpty()) {
+                return Collections.emptyMap();
+            }
+            initialWindowHandle = handles.iterator().next();
+            driver.switchTo().window(initialWindowHandle);
+        }
         String title = driver.getTitle();
         handlesAndTitles.put(initialWindowHandle, title);
         // iterate all other windows by handle and get their titles
@@ -656,10 +672,25 @@ public class Selenium2Facade {
     }
 
     public void waitUntilPresent(GUIElementLocator locator, long timeout) {
-        try {
-            waitFor(presenceOfElementLocated(LocatorUtil.by(locator)), timeout);
-        } catch (TimeoutException e) {
-            throw new AutomationException("Element not found"); //NOSONAR
+        // FIXME debug only
+        System.out.println(Arrays.asList(getAllWindowTitles()));
+
+        // optimization: if very small timeout, use findElement
+        if (timeout < 1000) {
+            try {
+                findElement(locator, timeout);
+            }
+            catch (Exception e) {
+                throw new AutomationException("Element not found");
+            }
+        }
+        else {
+            try {
+                waitFor(presenceOfElementLocated(LocatorUtil.by(locator)), timeout);
+            }
+            catch (TimeoutException e) {
+                throw new AutomationException("Element not found"); // NOSONAR
+            }
         }
     }
 
@@ -713,9 +744,9 @@ public class Selenium2Facade {
     }
 
     private void waitFor(ExpectedCondition<?> condition, long timeOutInMillis) {
-        long timeoutInSeconds = (timeOutInMillis + SECOND_MILLIS - 1) / SECOND_MILLIS;
         int sleepInMillis = configuration.getPauseBetweenRetries();
-        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds, sleepInMillis);
+        WebDriverWait wait = new WebDriverWait(driver, 1, sleepInMillis);
+        wait.withTimeout(timeOutInMillis, TimeUnit.MILLISECONDS);
         wait.ignoring(UnknownServerException.class);
         wait.until(condition);
     }
