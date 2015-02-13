@@ -26,7 +26,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -672,9 +671,6 @@ public class Selenium2Facade {
     }
 
     public void waitUntilPresent(GUIElementLocator locator, long timeout) {
-        // FIXME debug only
-        System.out.println(Arrays.asList(getAllWindowTitles()));
-
         // optimization: if very small timeout, use findElement
         if (timeout < 1000) {
             try {
