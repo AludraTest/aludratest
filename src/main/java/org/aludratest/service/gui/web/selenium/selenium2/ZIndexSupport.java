@@ -17,6 +17,7 @@ package org.aludratest.service.gui.web.selenium.selenium2;
 
 import java.text.MessageFormat;
 
+import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
 import org.aludratest.service.locator.element.XPathLocator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidSelectorException;
@@ -50,16 +51,20 @@ public class ZIndexSupport {
         this.driver = driver;
     }
 
-    /** Checks if a element is blocked by a modal dialog. */
+    /** Checks if a element is blocked by a modal dialog.
+     * @param element the element to be checked
+     * @return true if the element is in the foreground, false if the element is in the background or absent */
     public boolean isInForeground(WebElement element) {
         return (getCurrentZIndex(element) >= getMaxZIndex());
     }
 
     /** To get the z-index (defined in the attribute "style") for the operated element. There are 3 possibilities for retrieving
      * z-index: <br/>
-     * 1) If a z-index is defined for this element or its ancestor, then return this value <br/>
-     * 2) If no z-index is defined for this element and its ancestor, then use the base z-index for this page <br/>
-     * 3) For an element of the type "LabelLocator", the base z-index will be returned
+     * <ol>
+     * <li>If a z-index is defined for this element or its ancestor, then return this value</li>
+     * <li>If no z-index is defined for this element and its ancestor, then use the base z-index for this page</li>
+     * <li>For an element of the type "LabelLocator", the base z-index will be returned</li>
+     * </ol>
      * @param element The element to check.
      * @return current z-Index */
     public int getCurrentZIndex(WebElement element) {

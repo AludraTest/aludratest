@@ -18,6 +18,7 @@ package org.aludratest.service.gui.integrationtest.selenium2;
 import org.aludratest.service.gui.component.Element;
 import org.aludratest.service.gui.component.base.AbstractElementTest;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests {@link Element} features with Selenium 2.
@@ -32,4 +33,10 @@ public class Selenium2ElementTest extends AbstractElementTest {
         activateSelenium2();
     }
 
+    @Override
+    @Test
+    public void clickNotEditableOnEditableElement() {
+        // TODO remove
+        super.clickNotEditableOnEditableElement();
+    }
 }

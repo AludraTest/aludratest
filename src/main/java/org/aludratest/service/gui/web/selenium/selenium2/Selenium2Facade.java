@@ -17,7 +17,6 @@ package org.aludratest.service.gui.web.selenium.selenium2;
 
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated;
-import static org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 import java.io.ByteArrayOutputStream;
@@ -31,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -657,7 +655,7 @@ public class Selenium2Facade {
 
     public void waitUntilPresent(GUIElementLocator locator, long timeout) {
         try {
-            waitFor(presenceOfElementLocated(LocatorUtil.by(locator)), timeout);
+            waitFor(AludraTestExpectedConditions.presenceOfElementLocated(locator, timeout), timeout);
         } catch (TimeoutException e) {
             throw new AutomationException("Element not found"); //NOSONAR
         }
@@ -725,16 +723,7 @@ public class Selenium2Facade {
     }
 
     private WebElement findElement(Locator locator, long timeout) {
-        try {
-            this.driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.MILLISECONDS);
-            return LocatorUtil.findElement(locator, driver);
-        }
-        catch (NoSuchElementException e) {
-            throw new AutomationException("Element could not be found.", e);
-        }
-        finally {
-            this.driver.manage().timeouts().implicitlyWait(100, TimeUnit.MILLISECONDS);
-        }
+        return LocatorUtil.findElementWithInternalTimeout(locator, timeout, driver);
     }
 
     private Set<String> getWindowHandles() {
@@ -746,6 +735,21 @@ public class Selenium2Facade {
     private static class AludraTestExpectedConditions {
 
         private AludraTestExpectedConditions() {
+        }
+
+        public static ExpectedCondition<Boolean> presenceOfElementLocated(final Locator locator, final long timeout) {
+            return new ExpectedCondition<Boolean>() {
+                @Override
+                public Boolean apply(WebDriver driver) {
+                    WebElement elem = LocatorUtil.findElementWithExternalTimeout(locator, driver, timeout);
+                    return Boolean.valueOf(elem != null);
+                }
+
+                @Override
+                public String toString() {
+                    return "presence of element located by: " + locator;
+                }
+            };
         }
 
         private static ExpectedCondition<Boolean> noPresenceOfElementLocated(final By locator) {
