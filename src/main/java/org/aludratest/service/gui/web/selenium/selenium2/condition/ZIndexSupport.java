@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.web.selenium.selenium2;
+package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
 import java.text.MessageFormat;
 
-import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
+import org.aludratest.service.gui.web.selenium.selenium2.LocatorUtil;
 import org.aludratest.service.locator.element.XPathLocator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidSelectorException;
@@ -27,36 +27,26 @@ import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Performs z-index calculations with Selenium 2.
- * author Marcel Malitz
- * @author Volker Bergmann
- */
+/** Performs z-index calculations with Selenium 2.
+ * @author Marcel Malitz
+ * @author Volker Bergmann */
 public class ZIndexSupport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZIndexSupport.class);
 
     private static final int DEFAULT_Z_INDEX = 0;
 
-    /*
-    	final static private String zIndexSearch = "this.browserbot.findElement('xpath=(//"
-    			+ "iframe[contains(@style, \"z-index\")])[arguments[0]]')"
-    			+ ".getAttribute('style')";
-     */
     private static final String Z_INDEX_SEARCH_XPATH = "//iframe[contains(@style, ''z-index'')])[{0}]";
-
-    private WebDriver driver;
-
-    public ZIndexSupport(WebDriver driver) {
-        this.driver = driver;
-    }
 
     /** Checks if a element is blocked by a modal dialog.
      * @param element the element to be checked
+     * @param driver the WebDriver instance to use
      * @return true if the element is in the foreground, false if the element is in the background or absent */
-    public boolean isInForeground(WebElement element) {
-        return (getCurrentZIndex(element) >= getMaxZIndex());
+    public static boolean isInForeground(WebElement element, WebDriver driver) {
+        return (getCurrentZIndex(element, driver) >= getMaxZIndex(driver));
     }
+
+    // implementation ----------------------------------------------------------
 
     /** To get the z-index (defined in the attribute "style") for the operated element. There are 3 possibilities for retrieving
      * z-index: <br/>
@@ -66,8 +56,9 @@ public class ZIndexSupport {
      * <li>For an element of the type "LabelLocator", the base z-index will be returned</li>
      * </ol>
      * @param element The element to check.
+     * @param driver the WebDriver instance to use
      * @return current z-Index */
-    public int getCurrentZIndex(WebElement element) {
+    private static int getCurrentZIndex(WebElement element, WebDriver driver) {
         String zIndex = null;
         try {
             do {
@@ -77,65 +68,64 @@ public class ZIndexSupport {
         } catch (InvalidSelectorException e) {
             // this occurs when having reached the root element
         }
-        int value = parseZIndex(zIndex);
+        int value = parseZIndex(zIndex, driver);
         LOGGER.debug("WebElement {} has z index {}", element, value);
         return value;
     }
 
-    /** To get the biggest value of z-index for all of the elements on current page.
-     *  The element with the biggest value of z-index will be shown in foreground.
-     *  The elements with the lower value of z-index will be shown in background.
-     *  @return the biggest value of z-index on current page
-     */
-    public int getMaxZIndex() {
-        int zIndex = getBaseZIndex();
+    /** To get the biggest value of z-index for all of the elements on current page. The element with the biggest value of z-index
+     * will be shown in foreground. The elements with the lower value of z-index will be shown in background.
+     * @param driver the WebDriver instance to use
+     * @return the biggest value of z-index on current page */
+    private static int getMaxZIndex(WebDriver driver) {
+        int zIndex = getBaseZIndex(driver);
         int zIndexCount = 0;
-        zIndexCount = getZIndexCount();
+        zIndexCount = getZIndexCount(driver);
         for (int i = 0; i < zIndexCount; i++) {
-            int tmpzIndex = getzIndex(i + 1);
+            int tmpzIndex = getzIndex(i + 1, driver);
             zIndex = (tmpzIndex > zIndex) ? tmpzIndex : zIndex;
         }
         return zIndex;
     }
 
-    private int getBaseZIndex() {
+    private static int getBaseZIndex(WebDriver driver) {
         // If it has a default z-Index defined in code, then get its value
-        if (getHistoryFrameCount() > 0) {
-            return getzIndex(0);
+        if (getHistoryFrameCount(driver) > 0) {
+            return getzIndex(0, driver);
             // If it has not defined a default z-Index in code, then set it to a default value
         } else {
             return DEFAULT_Z_INDEX;
         }
     }
 
-    private int getZIndexCount() {
-        return getXPathCount("//iframe[contains(@style, \"z-index\")]");
+    private static int getZIndexCount(WebDriver driver) {
+        return getXPathCount("//iframe[contains(@style, \"z-index\")]", driver);
     }
 
-    private int getHistoryFrameCount() {
+    private static int getHistoryFrameCount(WebDriver driver) {
         int historyFrameCount = 0;
-        historyFrameCount = getXPathCount("//iframe[starts-with(@id, \"history-frame\")]");
+        historyFrameCount = getXPathCount("//iframe[starts-with(@id, \"history-frame\")]", driver);
         return historyFrameCount;
     }
 
-    private int getzIndex(int index) {
+    private static int getzIndex(int index, WebDriver driver) {
         int tmpzIndex = DEFAULT_Z_INDEX;
         // If a base value is defined in code, it will overwrite the default value
         try {
             String zIndexSearchXPath = MessageFormat.format(Z_INDEX_SEARCH_XPATH, index);
             WebElement element = LocatorUtil.findElement(new XPathLocator(zIndexSearchXPath), driver);
-            String tmpElement = (String) executeScript(element.getAttribute("style"), index);
-            tmpzIndex = getzIndexFromStyle(tmpElement);
+            String tmpElement = (String) executeScript(element.getAttribute("style"), driver, index);
+            tmpzIndex = getzIndexFromStyle(tmpElement, driver);
         } catch (InvalidSelectorException e) {
             // This may happen for some elements and needs to be ignored
         }
         return tmpzIndex;
     }
 
-    private int getzIndexFromStyle(String style) {
+    private static int getzIndexFromStyle(String style, WebDriver driver) {
         if (style.endsWith("undefined")) {
             // a normal element without z-Index defined
-            return getBaseZIndex();
+            return getBaseZIndex(driver);
         } else {
             // an element with z-Index
             for (String tmp : style.split(";")) {
@@ -144,22 +134,22 @@ public class ZIndexSupport {
                 }
             }
         }
-        return getBaseZIndex();
+        return getBaseZIndex(driver);
     }
 
-    private int parseZIndex(String zIndexString) {
+    private static int parseZIndex(String zIndexString, WebDriver driver) {
         if ("auto".equals(zIndexString)) {
-            return getBaseZIndex();
+            return getBaseZIndex(driver);
         } else {
             return Integer.parseInt(zIndexString.trim());
         }
     }
 
-    private int getXPathCount(String xpath) {
+    private static int getXPathCount(String xpath, WebDriver driver) {
         return driver.findElements(By.xpath(xpath)).size();
     }
 
-    private Object executeScript(String script, Object... arguments) {
+    private static Object executeScript(String script, WebDriver driver, Object... arguments) {
         return ((JavascriptExecutor) driver).executeScript(script, arguments);
     }
 

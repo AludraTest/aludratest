@@ -15,37 +15,71 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.aludratest.exception.AutomationException;
+import org.aludratest.exception.PerformanceFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
-import org.aludratest.service.gui.web.selenium.ConditionCheck;
-import org.aludratest.service.gui.web.selenium.ElementCommand;
 import org.aludratest.service.gui.web.selenium.ProxyPool;
 import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
 import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
-import org.aludratest.service.gui.web.selenium.WindowCommand;
 import org.aludratest.service.gui.web.selenium.httpproxy.AuthenticatingHttpProxy;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownEntryPresence;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementClickable;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementCondition;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementPresenceWithResponseTimeout;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementValuePresence;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.OptionSelected;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.WindowPresence;
 import org.aludratest.service.locator.element.GUIElementLocator;
+import org.aludratest.service.locator.element.IdLocator;
+import org.aludratest.service.locator.option.IndexLocator;
 import org.aludratest.service.locator.option.OptionLocator;
+import org.aludratest.service.locator.window.TitleLocator;
 import org.aludratest.service.locator.window.WindowLocator;
+import org.aludratest.service.util.ServiceUtil;
 import org.aludratest.service.util.TaskCompletionUtil;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.BinaryAttachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
+import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.apache.commons.codec.binary.Base64;
-import org.openqa.selenium.NoSuchElementException;
+import org.apache.commons.io.IOUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchWindowException;
-import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.selenium.Selenium;
+import com.thoughtworks.selenium.SeleniumException;
 
 /**
  * Wraps an instance of the {@link Selenium2Facade} and provides methods
@@ -59,9 +93,41 @@ public class Selenium2Wrapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Selenium2Wrapper.class);
 
+    // constants ---------------------------------------------------------------
+
+    private static final int SECOND_MILLIS = 1000;
+
+    private static final String DROPDOWN_OPTION_VALUE_PROPERTY = "value";
+    private static final String DROPDOWN_OPTION_LABEL_PROPERTY = "text";
+
+    // scripts -----------------------------------------------------------------
+
+    private static final String WINDOW_FOCUS_SCRIPT = "window.focus()";
+
+    private static final String HAS_FOCUS_SCRIPT = "return arguments[0] == window.document.activeElement";
+
+    // @formatter:off
+    private static final String FIRE_ONCHANGE_SCRIPT = "var element = arguments[0]; var event; "
+            + "if (document.createEvent) {"
+            + "    event = document.createEvent(\"HTMLEvents\");"
+            + "    event.initEvent(\"change\", true, false);"
+            + "  } else {"
+            + "    event = document.createEventObject();"
+            + "    event.eventType = \"change\";"
+            + "  }"
+            + "  event.eventName = \"change\";"
+            + "  if (document.createEvent) {"
+            + "    element.dispatchEvent(event);"
+            + "  } else {"
+            + "    element.fireEvent(\"on\" + event.eventType, event);"
+            + "  }";
+    // @formatter:on
+
+    // static attributes -------------------------------------------------------
+
     private static ProxyPool proxyPool = null;
 
-    private Selenium2Facade selenium = null;
+    // attributes --------------------------------------------------------------
 
     private final SeleniumWrapperConfiguration configuration;
 
@@ -73,6 +139,12 @@ public class Selenium2Wrapper {
 
     SystemConnector systemConnector;
 
+    private WebDriver driver;
+
+    private URL seleniumUrl;
+
+    private WebElement highlightedElement;
+
     public Selenium2Wrapper(SeleniumWrapperConfiguration configuration, SeleniumResourceService resourceService) {
         try {
             this.configuration = configuration;
@@ -82,7 +154,8 @@ public class Selenium2Wrapper {
                 this.proxy.start();
             }
             this.usedSeleniumHost = resourceService.acquire();
-            this.selenium = new Selenium2Facade(configuration, usedSeleniumHost);
+            this.seleniumUrl = new URL(usedSeleniumHost + "/wd/hub");
+            this.driver = newDriver();
         } catch (Exception e) {
             LOGGER.error("Error initializing Selenium 2", e);
             String host = usedSeleniumHost;
@@ -98,6 +171,23 @@ public class Selenium2Wrapper {
                     resourceService.getHostCount());
         }
         return proxyPool;
+    }
+
+    private WebDriver newDriver() {
+        try {
+            String driverName = configuration.getDriverName();
+            Selenium2Driver driverEnum = Selenium2Driver.valueOf(driverName);
+
+            if (configuration.isUsingRemoteDriver()) {
+                return driverEnum.newRemoteDriver(seleniumUrl);
+            }
+            else {
+                return driverEnum.newLocalDriver();
+            }
+        }
+        catch (Exception e) {
+            throw new TechnicalException("WebDriver creation failed: ", e);
+        }
     }
 
     /**
@@ -116,10 +206,10 @@ public class Selenium2Wrapper {
             getProxyPool().release(this.proxy);
             this.proxy = null;
         }
-        if (this.selenium != null) {
-            this.selenium.close();
-            this.selenium.quit();
-            this.selenium = null;
+        if (this.driver != null) {
+            close();
+            quit();
+            this.driver = null;
         }
         if (this.usedSeleniumHost != null) {
             resourceService.release(this.usedSeleniumHost);
@@ -134,8 +224,8 @@ public class Selenium2Wrapper {
         closeApplicationUnderTest();
     }
 
-    public void refresh() {
-        selenium.refresh();
+    public SeleniumWrapperConfiguration getConfiguration() {
+        return configuration;
     }
 
     /**
@@ -146,76 +236,24 @@ public class Selenium2Wrapper {
         return usedSeleniumHost;
     }
 
-    /**
-     * If highlighting is activated all HTML elements which are a target of a
-     * action get highlighted (marked yellow).
-     * @param locator of the element to highlight
-     */
-    private void highlight(GUIElementLocator locator) {
-        selenium.highlight(locator);
+    public void refresh() {
+        driver.navigate().refresh();
     }
 
-    /**
-     * Retries to evaluate the condition. If evaluation is successful, the
-     * method will return regularly. If not, this method will retry it with
-     * pauses until a timeout is exceeded.
-     * 
-     * @param condition
-     *            which will be evaluated on each retry
-     * @return true, if the condition could be executed successfully; otherwise
-     *         false will be returned.
-     */
-    public boolean retryUntilTimeout(ConditionCheck condition) {
-        return retryUntilTimeout(condition, configuration.getTimeout());
-    }
-
-    /** Retries to evaluate the condition. If evaluation is successful, the method will return regularly. If not, this method will
-     * retry it with a configured pause between retries until a given timeout is exceeded.
-     * 
-     * @param condition which will be evaluated on each retry
-     * @param timeout how long will be waited
-     * @return <code>true</code> if the condition could be executed successfully; otherwise, <code>false</code> will be returned. */
-    public boolean retryUntilTimeout(ConditionCheck condition, long timeout) {
-        final long time = System.currentTimeMillis() + timeout;
-        boolean successful = false;
-        while (System.currentTimeMillis() < time && !successful) {
-            try {
-                if (condition.eval()) {
-                    successful = true;
-                }
-                else {
-                    try {
-                        Thread.sleep(configuration.getPauseBetweenRetries());
-                    }
-                    catch (InterruptedException e) {
-                        throw new TechnicalException("Interrupted while waiting", e);
-                    }
-                }
-            }
-            catch (StaleElementReferenceException e) {
-                // ignore this exception because can be just a bad timing
-            }
-        }
-        return successful;
-    }
-
-    private void doBeforeDelegate(GUIElementLocator locator, boolean visible, boolean enabled, boolean actionPending) {
+    @SuppressWarnings("unchecked")
+    private WebElement doBeforeDelegate(GUIElementLocator locator, boolean visible, boolean enabled, boolean actionPending) {
         if (actionPending) {
             waitUntilNotBusy();
         }
-
-        waitForInForeground(locator);
-
-        if (visible) {
-            selenium.waitUntilVisible(locator);
+        ElementCondition condition = new ElementCondition(locator, visible, enabled);
+        try {
+            WebElement element = waitFor(condition, configuration.getTimeout());
+            highlight(locator);
+            return element;
         }
-        if (enabled) {
-            selenium.waitUntilClickable(locator); // this fails for non-editable images and labels, ...
-            if (!selenium.isEditable(locator)) { // ...so recheck it explicitly
-                throw new AutomationException("Element not editable.");
-            }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage());
         }
-        highlight(locator);
     }
 
     private void doAfterDelegate(int taskCompletionTimeout, String failureMessage) {
@@ -233,373 +271,424 @@ public class Selenium2Wrapper {
         }
     }
 
-    private Object callElementCommand(GUIElementLocator locator, ElementCommand<Object> command, int taskCompletionTimeout) {
-        return callElementCommand(locator, command, true, true, taskCompletionTimeout);
-    }
-
-    private Object callElementCommand(GUIElementLocator locator, ElementCommand<Object> command, boolean visible, boolean enabled) {
-        return callElementCommand(locator, command, visible, enabled, -1);
-    }
-
-
-    private Object callElementCommand(GUIElementLocator locator, ElementCommand<Object> command, boolean visible,
-            boolean enabled, int taskCompletionTimeout) {
-        doBeforeDelegate(locator, visible, enabled, command.isInteraction());
-        try {
-            final List<Object> returnValues = new ArrayList<Object>();
-            Object returnValue = command.call(locator);
-            doAfterDelegate(taskCompletionTimeout, command.toString());
-            if (returnValue != null) {
-                returnValues.add(returnValue);
-            }
-            if (returnValues.isEmpty()) {
-                return null;
-            }
-            else {
-                return returnValues.get(0);
-            }
-        }
-        catch (NoSuchElementException e) {
-            throw new AutomationException("Element could not be found.", e);
-        }
-    }
-
     public void click(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
-        doBeforeDelegate(locator, true, true, true);
-        selenium.click(locator);
+        WebElement element = doBeforeDelegate(locator, true, true, true);
+        click(element);
         doAfterDelegate(taskCompletionTimeout, operation);
     }
 
     public void clickNotEditable(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
-        doBeforeDelegate(locator, true, false, true);
-        selenium.click(locator);
+        WebElement element = doBeforeDelegate(locator, true, false, true);
+        click(element);
         doAfterDelegate(taskCompletionTimeout, operation);
     }
 
+    private void click(WebElement element) {
+        try {
+            element.click();
+        }
+        catch (Exception e) {
+            handleSeleniumException(e);
+        }
+    }
+
+    public void handleSeleniumException(Throwable e) {
+        String message = e.getMessage();
+
+        // check if there is a WebDriverException
+        WebDriverException wde = null;
+        while (e != null) {
+            if (e instanceof WebDriverException) {
+                wde = (WebDriverException) e;
+                break;
+            }
+            e = e.getCause();
+        }
+
+        if (wde != null) {
+            // "not clickable" exception
+            Pattern p = Pattern.compile("(unknown error: )?(.* not clickable .*)");
+            Matcher m;
+            if (message != null && (m = p.matcher(message)).find() && m.start() == 0) {
+                throw new AutomationException(m.group(2), wde);
+            }
+
+            throw wde;
+        }
+    }
+
     public void doubleClick(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
-        doBeforeDelegate(locator, true, true, true);
-        selenium.doubleClick(locator);
+        WebElement element = doBeforeDelegate(locator, true, true, true);
+        doubleClick(element);
         doAfterDelegate(taskCompletionTimeout, operation);
     }
 
     public void doubleClickNotEditable(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
-        doBeforeDelegate(locator, true, false, true);
-        selenium.doubleClick(locator);
+        WebElement element = doBeforeDelegate(locator, true, false, true);
+        doubleClick(element);
         doAfterDelegate(taskCompletionTimeout, operation);
     }
 
-    public boolean isElementPresent(GUIElementLocator locator) {
-        final Boolean returnValue = (Boolean) callElementCommand(locator,
-                new ElementCommand<Object>("isElementPresent", false) {
-
-            @Override
-            public Object call(GUIElementLocator locator) {
-                // this method will only be called if the element is
-                // present why this method can directly return true
-                return true;
-            }
-
-        }, true, false);
-        return returnValue.booleanValue();
-    }
-
-    public boolean isEditable(GUIElementLocator locator) {
-        final Boolean returnValue = (Boolean) callElementCommand(locator,
-                new ElementCommand<Object>("isEditable", false) {
-
-            @Override
-            public Object call(GUIElementLocator locator) {
-                return selenium.isEditable(locator);
-            }
-
-        }, true, false);
-        return returnValue.booleanValue();
+    private void doubleClick(WebElement element) {
+        element = LocatorUtil.unwrap(element);
+        new Actions(driver).doubleClick(element).build().perform();
     }
 
     public void select(GUIElementLocator locator, final OptionLocator optionLocator, int taskCompletionTimeout) {
-        callElementCommand(locator, new ElementCommand<Object>("select", true) {
-
-            @Override
-            public Object call(GUIElementLocator locator) {
-                selenium.select(locator, optionLocator);
-                return null;
-            }
-
-        }, taskCompletionTimeout);
+        WebElement element = doBeforeDelegate(locator, true, true, true);
+        Select select = new Select(element);
+        if (optionLocator instanceof org.aludratest.service.locator.option.LabelLocator) {
+            select.selectByVisibleText(optionLocator.toString());
+        }
+        else if (optionLocator instanceof IndexLocator) {
+            select.selectByIndex(((IndexLocator) optionLocator).getIndex());
+        }
+        else {
+            throw ServiceUtil.newUnsupportedLocatorException(optionLocator);
+        }
+        doAfterDelegate(taskCompletionTimeout, "select");
     }
 
     public void type(GUIElementLocator locator, final String value, int taskCompletionTimeout) {
-        callElementCommand(locator, new ElementCommand<Object>("type", true) {
-
-            @Override
-            public Object call(GUIElementLocator locator) {
-                // setValue instead of sendKeys to ensure field is reset, and to work with file component
-                selenium.setValue(locator, value);
-                return null;
-            }
-
-        }, taskCompletionTimeout);
+        doBeforeDelegate(locator, true, true, true);
+        // setValue instead of sendKeys to ensure field is reset, and to work with file component
+        setValue(locator, value);
+        doAfterDelegate(taskCompletionTimeout, "type");
     }
 
-    public void sendKeys(GUIElementLocator locator, final String keys, int taskCompletionTimeout) {
-        callElementCommand(locator, new ElementCommand<Object>("sendKeys", true) {
-
-            @Override
-            public Object call(GUIElementLocator locator) {
-                selenium.sendKeys(locator, keys);
-                return null;
+    private void setValue(GUIElementLocator locator, String value) {
+        WebElement element = findElement(locator);
+        String id = element.getAttribute("id");
+        String fieldType = element.getAttribute("type");
+        boolean fallback = true;
+        if (!DataMarkerCheck.isNull(id) || "file".equals(fieldType)) {
+            executeScript("document.getElementById('" + id + "').setAttribute('value', '" + value.replace("'", "\\'")
+                    + "')");
+            // validate success
+            if (value.equals(element.getAttribute("value"))) {
+                fallback = false;
+                executeScript(FIRE_ONCHANGE_SCRIPT, element);
             }
+        }
 
-        }, taskCompletionTimeout);
+        // fallback code
+        if (fallback) {
+            element.sendKeys(Keys.END);
+            String text;
+            while (!DataMarkerCheck.isNull(text = element.getAttribute("value"))) {
+                int length = text.length();
+                String[] arr = new String[length];
+                for (int i = 0; i < length; i++) {
+                    arr[i] = "\b";
+                }
+                element.sendKeys(arr);
+            }
+            element.sendKeys(value);
+        }
+    }
+
+    public void sendKeys(GUIElementLocator locator, String keys, int taskCompletionTimeout) {
+        WebElement element = doBeforeDelegate(locator, true, true, true);
+        element.sendKeys(keys);
+        doAfterDelegate(taskCompletionTimeout, "sendKeys");
     }
 
     public String getText(GUIElementLocator locator, Boolean visible) {
-        final String text = (String) callElementCommand(locator,
-                new ElementCommand<Object>("getText", false) {
-
-            @Override
-            public Object call(GUIElementLocator locator) {
-                return selenium.getText(locator);
-            }
-        }, visible, false);
+        WebElement element = doBeforeDelegate(locator, visible, false, false);
+        String text = element.getText();
+        doAfterDelegate(-1, "getText");
         return text;
     }
 
     public boolean isChecked(GUIElementLocator locator) {
-        final Boolean returnValue = (Boolean) callElementCommand(locator,
-                new ElementCommand<Object>("isChecked", false) {
-
-            @Override
-            public Object call(GUIElementLocator locator) {
-                return selenium.isChecked(locator);
-            }
-        }, true, false);
+        WebElement element = doBeforeDelegate(locator, true, false, false);
+        Boolean returnValue = element.isSelected();
+        doAfterDelegate(-1, "isChecked");
         return returnValue.booleanValue();
     }
 
     public String[] getSelectOptions(GUIElementLocator locator) {
-        final String[] selectedOptions = (String[]) callElementCommand(locator, new ElementCommand<Object>("getSelectOptions",
-                false) {
-
-            @Override
-            public Object call(GUIElementLocator locator) {
-                return selenium.getSelectOptions(locator);
-            }
-        }, true, false);
-        return selectedOptions;
+        WebElement element = doBeforeDelegate(locator, true, false, false);
+        Select select = new Select(element);
+        List<WebElement> options = select.getOptions();
+        String[] labels = new String[options.size()];
+        for (int i = 0; i < options.size(); i++) {
+            labels[i] = options.get(i).getText();
+        }
+        doAfterDelegate(-1, "getSelectOptions");
+        return labels;
     }
 
     public String getSelectedValue(GUIElementLocator locator) {
-        final String selectedValue = (String) callElementCommand(locator,
-                new ElementCommand<Object>("getSelectedValue", false) {
-
-            @Override
-            public Object call(GUIElementLocator locator) {
-                return selenium.getSelectedValue(locator);
-            }
-        }, true, false);
+        WebElement element = doBeforeDelegate(locator, true, false, false);
+        Select select = new Select(element);
+        String selectedValue = select.getFirstSelectedOption().getText();
+        doAfterDelegate(-1, "getSelectedValue");
         return selectedValue;
     }
 
     public String getSelectedLabel(GUIElementLocator locator) {
-        final String selectedLabel = (String) callElementCommand(locator,
-                new ElementCommand<Object>("getSelectedLabel", false) {
-
-            @Override
-            public Object call(GUIElementLocator locator) {
-                return selenium.getSelectedLabel(locator);
-            }
-        }, true, false);
+        WebElement element = doBeforeDelegate(locator, true, false, false);
+        Select select = new Select(element);
+        String selectedLabel = select.getFirstSelectedOption().getText();
+        doAfterDelegate(-1, "getSelectedLabel");
         return selectedLabel;
     }
 
     public String getValue(GUIElementLocator locator) {
-        return selenium.getValue(locator);
+        return findElement(locator).getAttribute("value");
     }
 
-    private void waitForWindow(final WindowLocator windowLocator) {
-        boolean windowIsFound = retryUntilTimeout(new ConditionCheck() {
-            @Override
-            public boolean eval() {
-                final String windowTitle = windowLocator.toString();
-                final String[] titles;
-                try {
-                    titles = getAllWindowTitles();
-                }
-                catch (NoSuchWindowException e) {
-                    // ignore (just closed); try in next scan
-                    return false;
-                }
-                for (String title : titles) {
-                    if (title.equalsIgnoreCase(windowTitle)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-        if (!windowIsFound) {
+    // window operations -------------------------------------------------------
+
+    @SuppressWarnings("unchecked")
+    private void waitForWindow(WindowLocator locator) {
+        try {
+            waitFor(new WindowPresence(locator, this), configuration.getTimeout());
+        }
+        catch (TimeoutException e) {
             throw new AutomationException("Window not found");
         }
     }
 
-    private void callWindowCommand(WindowLocator locator, WindowCommand command) {
+    public void selectWindow(WindowLocator locator) {
         waitForWindow(locator);
-        command.call(locator);
+        selectWindowImmediately(locator);
     }
 
-    public void selectWindow(WindowLocator locator) {
-        callWindowCommand(locator, new WindowCommand() {
+    public void selectWindowImmediately(WindowLocator locator) {
+        if (locator instanceof TitleLocator) {
+            String requestedTitle = locator.toString();
 
-            @Override
-            public void call(WindowLocator locator) {
-                selectWindowDirectly(locator);
+            // performance tweak: if the current window is the requested one, return immediately
+            try {
+                if (requestedTitle.equals(driver.getTitle())) {
+                    return;
+                }
+            }
+            catch (NoSuchWindowException e) {
+                // this happens, when trying to call getTitle()
+                // on a driver which has just close()d the recent window.
+                // In this case, I fall back to iterating all windows below
             }
 
-        });
+            removeHighlight();
+
+            // iterate all windows and return the one with the desired title
+            for (String handle : getWindowHandles()) {
+                try {
+                    String title = driver.switchTo().window(handle).getTitle();
+                    if (requestedTitle.equals(title)) {
+                        return;
+                    }
+                }
+                catch (NoSuchWindowException e) {
+                    // ignore; window has been removed in the meantime
+                }
+            }
+
+            // if the window has not been found, throw an ElementNotFoundException
+            throw new AutomationException("Element not found");
+        }
+        else {
+            throw ServiceUtil.newUnsupportedLocatorException(locator);
+        }
     }
 
-    public void selectWindowDirectly(WindowLocator locator) {
-        selenium.selectWindow(locator);
-    }
-
-    public void selectWindowByTechnicalName(String locator) {
-        selenium.selectWindow(locator);
+    public void selectWindowByTechnicalName(String windowId) {
+        removeHighlight();
+        driver.switchTo().window(windowId);
     }
 
     public Map<String, String> getAllWindowHandlesAndTitles() {
-        return selenium.getAllWindowHandlesAndTitles();
+        Map<String, String> handlesAndTitles = new HashMap<String, String>();
+        // store handle and title of current window
+        String initialWindowHandle = driver.getWindowHandle();
+        String title = driver.getTitle();
+        handlesAndTitles.put(initialWindowHandle, title);
+        // iterate all other windows by handle and get their titles
+        String currentHandle = initialWindowHandle;
+        Set<String> handles = getWindowHandles();
+        for (String handle : handles) {
+            if (!handle.equals(initialWindowHandle)) {
+                LOGGER.debug("Switching to window with handle {}", handle);
+                try {
+                    driver.switchTo().window(handle);
+                    currentHandle = handle;
+                    handlesAndTitles.put(handle, driver.getTitle());
+                }
+                catch (NoSuchWindowException e) {
+                    // ignore this window
+                }
+                LOGGER.debug("Window with handle {} has title '{}'", handle, title);
+            }
+        }
+        // switch back to the original window
+        if (!currentHandle.equals(initialWindowHandle)) {
+            driver.switchTo().window(initialWindowHandle);
+        }
+        return handlesAndTitles;
     }
 
-    /**
-     * @see Selenium#getAllWindowTitles()
-     */
+    /** @see Selenium#getAllWindowTitles() */
     public String[] getAllWindowTitles() {
-        return selenium.getAllWindowTitles();
+        Map<String, String> handlesAndTitles = getAllWindowHandlesAndTitles();
+        Collection<String> titles = handlesAndTitles.values();
+        LOGGER.debug("getAllWindowTitles() -> {}", titles);
+        return titles.toArray(new String[handlesAndTitles.size()]);
     }
 
-    /**
-     * @see Selenium#getAllWindowIds()
-     */
+    /** @see Selenium#getAllWindowIds() */
     public String[] getAllWindowIDs() {
-        return selenium.getAllWindowIDs();
+        Set<String> handles = getWindowHandles();
+        return handles.toArray(new String[handles.size()]);
     }
 
     /** @see Selenium#getAllWindowNames()  */
     public String[] getAllWindowNames() {
-        return selenium.getAllWindowNames();
+        String current = driver.getWindowHandle();
+        List<String> names = new ArrayList<String>();
+        for (String handle : getWindowHandles()) {
+            driver.switchTo().window(handle);
+            names.add(executeScript("return window.name").toString());
+        }
+        driver.switchTo().window(current);
+        return names.toArray(new String[names.size()]);
     }
 
     /** @see Selenium#getTitle() */
     public String getTitle() {
-        return selenium.getTitle();
+        return driver.getTitle();
     }
 
     public String getWindowHandle() {
-        return selenium.getWindowHandle();
+        return driver.getWindowHandle();
     }
 
     /** @see Selenium#windowMaximize() */
     public void windowMaximize() {
-        selenium.windowMaximize();
+        driver.manage().window().maximize();
     }
 
-    /**
-     * @see Selenium#windowFocus()
-     */
+    /** @see Selenium#windowFocus() */
     public void windowFocus() {
-        selenium.windowFocus();
+        executeScript(WINDOW_FOCUS_SCRIPT);
     }
 
-    public void switchToIFrame(Locator iframeLocator) {
-        selenium.switchToIFrame(iframeLocator);
+    private Set<String> getWindowHandles() {
+        Set<String> handles = driver.getWindowHandles();
+        LOGGER.debug("getWindowHandles() -> {}", handles);
+        return handles;
     }
 
-    public Attachment getPageSource() {
-        final String pageSource = selenium.getHtmlSource();
-        final Attachment attachment = new StringAttachment("Source", pageSource, configuration.getPageSourceAttachmentExtension());
-        return attachment;
-    }
+    // iframe operations -------------------------------------------------------
 
-    private Attachment getScreenshotAttachment(String base64Data) {
-        final String title = "Screenshot";
-        final Base64 base64 = new Base64();
-        final byte[] decodedData = base64.decode(base64Data);
-        return new BinaryAttachment(title, decodedData, configuration.getScreenshotAttachmentExtension());
-    }
-
-    public Attachment getScreenshotOfThePage() {
-        final String base64Data = selenium.captureScreenshotToString();
-        final Attachment attachment = getScreenshotAttachment(base64Data);
-        return attachment;
+    public void switchToIFrame(GUIElementLocator iframeLocator) {
+        if (iframeLocator != null) {
+            WebElement element = waitUntilPresent(iframeLocator, configuration.getTimeout());
+            element = LocatorUtil.unwrap(element);
+            driver.switchTo().frame(element);
+        }
+        else {
+            driver.switchTo().defaultContent();
+        }
     }
 
     public boolean hasFocus(final GUIElementLocator locator) {
-        boolean returnValue = (Boolean) callElementCommand(locator,
-                new ElementCommand<Object>("hasFocus", false) {
-
-            @Override
-            public Object call(GUIElementLocator locators) {
-                return selenium.hasFocus(locator);
-            }
-
-        }, -1);
+        WebElement element = doBeforeDelegate(locator, true, true, false);
+        boolean returnValue = (Boolean) executeScript(HAS_FOCUS_SCRIPT, element);
+        doAfterDelegate(-1, "hasFocus");
         return returnValue;
     }
 
     public String[] getLabels(GUIElementLocator locator) {
-        return selenium.getDropDownLabels(locator);
+        return getPropertyValues(locator, DROPDOWN_OPTION_LABEL_PROPERTY);
     }
 
     public String[] getValues(final GUIElementLocator locator) {
-        String[] returnValue = (String[]) callElementCommand(locator,
-                new ElementCommand<Object>("getValues", false) {
-
-            @Override
-            public Object call(GUIElementLocator locators) {
-                return selenium.getDropDownValues(locator);
-            }
-        }, true, false);
+        doBeforeDelegate(locator, true, false, false);
+        String[] returnValue = getPropertyValues(locator, DROPDOWN_OPTION_VALUE_PROPERTY);
+        doAfterDelegate(-1, "getValues");
         return returnValue;
     }
 
-    public void focus(GUIElementLocator locator) {
-        selenium.focus(locator);
+    private String[] getPropertyValues(GUIElementLocator locator, String propertyName) {
+        WebElement element = findElement(locator);
+        Select select = new Select(element);
+        List<WebElement> options = select.getOptions();
+        ArrayList<String> values = new ArrayList<String>();
+        for (WebElement option : options) {
+            String value = option.getAttribute(propertyName);
+            if (value != null) {
+                values.add(value);
+            }
+        }
+        return values.toArray(new String[values.size()]);
     }
 
-    public String getAttributeValue(final GUIElementLocator elementLocator, final String attributeName) {
-        String returnValue = (String) callElementCommand(elementLocator,
-                new ElementCommand<Object>("getAttributeValue", false) {
+    public void focus(GUIElementLocator locator) {
+        WebElement element = findElement(locator);
+        if (!ElementClickable.isClickable(element)) {
+            throw new AutomationException("Element not editable");
+        }
+        executeScript("arguments[0].focus()", element);
+    }
 
-            @Override
-            public Object call(GUIElementLocator locators) {
-                return selenium.getAttributeValue(elementLocator, attributeName);
-            }
-        }, true, false);
+    public String getAttributeValue(final GUIElementLocator locator, final String attributeName) {
+        WebElement element = doBeforeDelegate(locator, true, false, false);
+        String returnValue = element.getAttribute(attributeName);
+        doAfterDelegate(-1, "getAttributeValue");
         return returnValue;
     }
 
     public void keyPress(int keycode) {
-        selenium.keyPress(keycode);
+        driver.switchTo().activeElement().sendKeys(String.valueOf((char) keycode));
     }
 
     public void close() {
-        selenium.close();
+        try {
+            driver.close();
+        }
+        catch (WebDriverException e) {
+            // ignore this
+        }
     }
 
     public void quit() {
-        selenium.quit();
+        driver.quit();
     }
 
     public String getTable(GUIElementLocator locator, int row, int col) {
-        return selenium.getTable(locator, row, col);
+        WebElement table = findElement(locator);
+        List<WebElement> tbodies = table.findElements(By.tagName("tbody"));
+        WebElement rowHolder = (tbodies.size() > 0 ? tbodies.get(0) : table);
+        List<WebElement> trs = rowHolder.findElements(By.tagName("tr"));
+        if (row >= trs.size()) {
+            throw new AutomationException("Table cell not found. " + "Requested row index " + row + " of " + trs.size()
+                    + " rows ");
+        }
+        List<WebElement> tds = trs.get(row).findElements(By.tagName("td"));
+        if (col >= tds.size()) {
+            throw new AutomationException("Table cell not found. " + "Requested column index " + col + " of " + tds.size()
+                    + " cells ");
+        }
+        return tds.get(col).getText();
     }
 
     // features that require intervention for authentication -------------------
 
     public void open(String url) {
-        selenium.open(mapUrl(url));
+        try {
+            driver.get(mapUrl(url));
+        }
+        catch (SeleniumException e) {
+            String message = e.getMessage();
+            if (message != null && message.contains("Timed out")) {
+                throw new PerformanceFailure("Timed out opening '" + url + "': " + e);
+            }
+        }
     }
+
 
     private String mapUrl(String url) {
         return (proxy != null ? proxy.mapTargetToProxyUrl(url) : url);
@@ -613,60 +702,229 @@ public class Selenium2Wrapper {
 
     // wait features -----------------------------------------------------------
 
-    public void waitUntilPresent(GUIElementLocator locator) {
-        waitUntilPresent(locator, configuration.getTimeout());
+    @SuppressWarnings("unchecked")
+    public WebElement waitUntilPresent(GUIElementLocator locator, long timeOutInMillis) {
+        try {
+            return waitFor(new ElementPresenceWithResponseTimeout(locator, 2000), timeOutInMillis);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException("Element not found"); // NOSONAR
+        }
     }
 
-    public void waitUntilPresent(GUIElementLocator locator, long timeOutInMillis) {
-        selenium.waitUntilPresent(locator, timeOutInMillis);
-    }
-
-    public void waitUntilClickable(GUIElementLocator locator) {
-        waitUntilClickable(locator, configuration.getTimeout());
-    }
-
+    @SuppressWarnings("unchecked")
     public void waitUntilClickable(GUIElementLocator locator, long timeOutInMillis) {
-        selenium.waitUntilClickable(locator, timeOutInMillis);
+        try {
+            waitFor(ExpectedConditions.elementToBeClickable(LocatorUtil.by(locator)), timeOutInMillis);
+        } catch (TimeoutException e) {
+            throw new AutomationException("Element not editable"); // NOSONAR
+        }
     }
 
-    public void waitUntilVisible(GUIElementLocator locator) {
-        waitUntilVisible(locator, configuration.getTimeout());
-    }
-
+    @SuppressWarnings("unchecked")
     public void waitUntilVisible(GUIElementLocator locator, long timeOutInMillis) {
-        selenium.waitUntilVisible(locator, timeOutInMillis);
+        try {
+            waitFor(new ElementCondition(locator, true, false), timeOutInMillis);
+        } catch (TimeoutException e) {
+            throw new AutomationException("The element is not visible."); // NOSONAR
+        }
     }
 
-    public void waitUntilInvisible(GUIElementLocator locator) {
-        selenium.waitUntilInvisible(locator);
+    @SuppressWarnings("unchecked")
+    public void waitUntilElementNotPresent(final GUIElementLocator locator, long timeOutInMillis) {
+        try {
+            waitFor(new ElementAbsence(locator), timeOutInMillis);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException("An element was unexpectedly found"); // NOSONAR
+        }
     }
 
-    public void waitForElementNotPresent(GUIElementLocator locator) {
-        waitForElementNotPresent(locator, getTimeout());
+    @SuppressWarnings("unchecked")
+    public void waitUntilInForeground(final GUIElementLocator locator, long timeOutInMillis) {
+        ElementCondition condition = new ElementCondition(locator, false, false);
+        try {
+            waitFor(condition, timeOutInMillis);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage());
+        }
     }
 
-    public void waitForElementNotPresent(final GUIElementLocator locator, long timeout) {
-        selenium.waitUntilNotPresent(locator, timeout);
+    @SuppressWarnings("unchecked")
+    public void waitForDropDownEntry(final OptionLocator entryLocator, final GUIElementLocator dropDownLocator) {
+        try {
+            waitFor(new DropDownEntryPresence(dropDownLocator, entryLocator, this), configuration.getTimeout());
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException("Element not found");
+        }
     }
 
-    public void waitForInForeground(GUIElementLocator locator) {
-        waitForInForeground(locator, getTimeout());
+    @SuppressWarnings("unchecked")
+    public String waitForValue(GUIElementLocator locator) {
+        ElementValuePresence condition = new ElementValuePresence(locator);
+        try {
+            return waitFor(condition, configuration.getTimeout());
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage());
+        }
     }
 
-    public void waitForInForeground(final GUIElementLocator locator, long timeout) {
-        selenium.waitUntilInForeground(locator, timeout);
+    @SuppressWarnings("unchecked")
+    public String waitForSelection(GUIElementLocator locator) {
+        OptionSelected condition = new OptionSelected(locator);
+        try {
+            return waitFor(condition, configuration.getTimeout());
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage());
+        }
     }
 
-    public int getTimeout() {
-        return configuration.getTimeout();
+    private <T> T waitFor(ExpectedCondition<T> condition, long timeOutInMillis, Class<? extends Exception>... exceptionsToIgnore) {
+        long timeoutInSeconds = (timeOutInMillis + SECOND_MILLIS - 1) / SECOND_MILLIS;
+        int sleepInMillis = configuration.getPauseBetweenRetries();
+        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds, sleepInMillis);
+        for (Class<? extends Exception> exceptionToIgnore : exceptionsToIgnore) {
+            wait.ignoring(exceptionToIgnore);
+        }
+        return wait.until(condition);
     }
 
-    public int getPauseBetweenRetries() {
-        return configuration.getPauseBetweenRetries();
+    // HTML source and screenshot provision ------------------------------------
+
+    public Attachment getPageSource() {
+        final String pageSource = driver.getPageSource();
+        final Attachment attachment = new StringAttachment("Source", pageSource, configuration.getPageSourceAttachmentExtension());
+        return attachment;
     }
 
-    public SeleniumWrapperConfiguration getConfiguration() {
-        return configuration;
+    public Attachment getScreenshotOfThePage() {
+        final String base64Data = captureScreenshotToString();
+        final Attachment attachment = getScreenshotAttachment(base64Data);
+        return attachment;
+    }
+
+    public String captureScreenshotToString() {
+        // use Selenium1 interface to capture full screen
+        String url = seleniumUrl.toString();
+        Pattern p = Pattern.compile("(http(s)?://.+)/wd/hub(/?)");
+        Matcher matcher = p.matcher(url);
+        if (matcher.matches()) {
+            String screenshotUrl = matcher.group(1);
+            screenshotUrl += (screenshotUrl.endsWith("/") ? "" : "/") + "selenium-server/driver/?cmd=captureScreenshotToString";
+            InputStream in = null;
+            try {
+                in = new URL(screenshotUrl).openStream();
+                in.read(new byte[3]); // read away "OK,"
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                IOUtils.copy(in, baos);
+                return new String(baos.toByteArray(), "UTF-8");
+            }
+            catch (IOException e) {
+                // OK, fallthrough to Selenium 2 method
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+            }
+        }
+
+        WebDriver screenshotDriver;
+        if (RemoteWebDriver.class.isAssignableFrom(driver.getClass())) {
+            screenshotDriver = new Augmenter().augment(driver);
+        }
+        else {
+            screenshotDriver = driver;
+        }
+        if (screenshotDriver instanceof TakesScreenshot) {
+            TakesScreenshot tsDriver = (TakesScreenshot) screenshotDriver;
+            return tsDriver.getScreenshotAs(OutputType.BASE64);
+        }
+        else {
+            throw new UnsupportedOperationException(driver.getClass() + " does not implement TakeScreenshot");
+        }
+    }
+
+    private Attachment getScreenshotAttachment(String base64Data) {
+        final String title = "Screenshot";
+        final Base64 base64 = new Base64();
+        final byte[] decodedData = base64.decode(base64Data);
+        return new BinaryAttachment(title, decodedData, configuration.getScreenshotAttachmentExtension());
+    }
+
+    // element highlighting ----------------------------------------------------
+
+    void removeHighlight() {
+        if (configuration.getHighlightCommands() && this.highlightedElement != null) {
+            try {
+                executeScript(
+                        "arguments[0].className = arguments[0].className.replace( /(?:^|\\s)selenium-highlight(?!\\S)/g , '' ); return arguments[0].className;",
+                        highlightedElement);
+            }
+            catch (WebDriverException e) {
+                LOGGER.trace("Highlight remove failed. ", e);
+            }
+        }
+    }
+
+    private void checkHighlightCss() {
+        // check if our hidden element is present
+        try {
+            findElement(new IdLocator("__aludra_selenium_hidden"), 1000);
+        }
+        catch (Exception e) {
+            // add CSS and element
+            executeScript("var css = document.createElement('style'); css.setAttribute('id', '__aludra_selenium_css'); css.setAttribute('type', 'text/css'); css.innerHTML = '.selenium-highlight { border: 3px solid red !important; }'; document.getElementsByTagName('head')[0].appendChild(css);");
+            // add hidden element
+            executeScript("var hidden = document.createElement('div'); hidden.setAttribute('id', '__aludra_selenium_hidden'); hidden.setAttribute('style', 'display:none;'); document.getElementsByTagName('body')[0].appendChild(hidden);");
+        }
+    }
+
+    public void highlight(GUIElementLocator locator) {
+        if (configuration.getHighlightCommands()) {
+            try {
+                removeHighlight();
+
+                // ensure that current document has highlight CSS class
+                checkHighlightCss();
+
+                WebElement elementToHighlight = findElement(locator);
+                executeScript("arguments[0].className +=' selenium-highlight'", elementToHighlight);
+                this.highlightedElement = elementToHighlight;
+            }
+            catch (WebDriverException e) {
+                // It does not matter if highlighting works or not, why a
+                // possibly thrown exception must be caught to avoid test
+                // execution termination.
+                LOGGER.trace("Highlighting failed. ", e);
+            }
+        }
+    }
+
+    // script support ----------------------------------------------------------
+
+    private Object executeScript(String script, Object... arguments) {
+        // first unwrap all possibly wrapped arguments of type WebElement, or JavaScript/JSON will fail
+        for (int i = 0; i < arguments.length; i++) {
+            if (arguments[i] instanceof WebElement) {
+                arguments[i] = LocatorUtil.unwrap((WebElement) arguments[i]);
+            }
+        }
+        // then execute the script
+        return ((JavascriptExecutor) driver).executeScript(script, arguments);
+    }
+
+
+    // element lookup ----------------------------------------------------------
+
+    private WebElement findElement(GUIElementLocator locator) {
+        return LocatorUtil.findElementImmediately(locator, driver);
+    }
+
+    private WebElement findElement(GUIElementLocator locator, long timeout) {
+        return LocatorUtil.findElementWithImplicitWait(locator, timeout, driver);
     }
 
 }

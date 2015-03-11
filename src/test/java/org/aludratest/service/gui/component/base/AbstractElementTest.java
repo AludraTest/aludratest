@@ -18,7 +18,7 @@ package org.aludratest.service.gui.component.base;
 import static org.junit.Assert.assertEquals;
 
 import org.aludratest.service.gui.web.AludraWebGUI;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.IdLocator;
 import org.aludratest.testcase.TestStatus;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public abstract class AbstractElementTest extends GUITest {
     public void isEditableOnDisableElement() {
         guiTestUIMap.disabledTextField().assertEditable();
         checkLastStepStatus(TestStatus.FAILED);
-        checkLastStepErrorMessage("Element not editable.");
+        checkLastStepErrorMessage("Element not editable");
     }
 
     /**
@@ -77,7 +77,7 @@ public abstract class AbstractElementTest extends GUITest {
      * <br/> dropdown box is present
      */
     @Test
-    public void isPresentOnPresentElement() {
+    public void assertPresentOnPresentElement() {
         guiTestUIMap.dropDownBox().assertPresent();
         checkLastStepStatus(TestStatus.PASSED);
     }
@@ -87,7 +87,7 @@ public abstract class AbstractElementTest extends GUITest {
      * <br/> a not existing element is not present
      */
     @Test
-    public void isPresentOnNotExistingElement() {
+    public void assertPresentOnNotExistingElement() {
         guiTestUIMap.notExistingButton().assertPresent();
         checkLastStepStatus(TestStatus.FAILED);
         checkLastStepErrorMessageMatches("Element not found.*");
@@ -188,7 +188,7 @@ public abstract class AbstractElementTest extends GUITest {
     public void focusOnDisabledElement() {
         guiTestUIMap.disabledTextField().focus();
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable.");
+        checkLastStepErrorMessage("Element not editable");
     }
 
     /**
@@ -219,7 +219,7 @@ public abstract class AbstractElementTest extends GUITest {
     public void doubleClickOnNotEditableElementButton() {
         guiTestUIMap.disabledButton().doubleClick();
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable.");
+        checkLastStepErrorMessage("Element not editable");
     }
 
     /**
@@ -230,7 +230,7 @@ public abstract class AbstractElementTest extends GUITest {
     public void doubleClickOnNotEditableElementImage() {
         guiTestUIMap.image().doubleClick();
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable.");
+        checkLastStepErrorMessage("Element not editable");
     }
 
     /**
@@ -241,7 +241,7 @@ public abstract class AbstractElementTest extends GUITest {
     public void doubleClickOnNotEditableElementLabel() {
         guiTestUIMap.label().doubleClick();
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable.");
+        checkLastStepErrorMessage("Element not editable");
     }
 
     /**
@@ -274,7 +274,7 @@ public abstract class AbstractElementTest extends GUITest {
     public void clickOnNotEditableElementButton() {
         guiTestUIMap.disabledButton().click();
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable.");
+        checkLastStepErrorMessage("Element not editable");
     }
 
     /**
@@ -285,7 +285,7 @@ public abstract class AbstractElementTest extends GUITest {
     public void clickOnNotEditableElementImage() {
         guiTestUIMap.image().click();
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable.");
+        checkLastStepErrorMessage("Element not editable");
     }
 
     /**
@@ -296,7 +296,7 @@ public abstract class AbstractElementTest extends GUITest {
     public void clickOnNotEditableElementLabel() {
         guiTestUIMap.label().click();
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable.");
+        checkLastStepErrorMessage("Element not editable");
     }
 
     /**
@@ -344,7 +344,7 @@ public abstract class AbstractElementTest extends GUITest {
      * <br/> dropdown box is present
      */
     @Test
-    public void presentOnExistingElement() {
+    public void isPresentOnExistingElement() {
         assertEquals(true, guiTestUIMap.dropDownBox().isPresent());
     }
 
@@ -353,7 +353,7 @@ public abstract class AbstractElementTest extends GUITest {
      * <br/> hidden button is present
      */
     @Test
-    public void presentOnHiddenElement() {
+    public void isPresentOnHiddenElement() {
         assertEquals(true, guiTestUIMap.hiddenButton().isPresent());
     }
 
@@ -362,7 +362,7 @@ public abstract class AbstractElementTest extends GUITest {
      * <br/> hidden button in div is present
      */
     @Test
-    public void presentOnHiddenElementInDiv() {
+    public void isPresentOnHiddenElementInDiv() {
         assertEquals(true, guiTestUIMap.hiddenButton().isPresent());
     }
 
@@ -371,7 +371,7 @@ public abstract class AbstractElementTest extends GUITest {
      * <br/> a not-existing element is not present
      */
     @Test
-    public void presentOnNotExistingElement() {
+    public void isPresentOnNotExistingElement() {
         assertEquals(false, guiTestUIMap.notExistingButton().isPresent());
     }
 
@@ -380,7 +380,7 @@ public abstract class AbstractElementTest extends GUITest {
      * <br/> dropdown box is present (with default timeout)
      */
     @Test
-    public void presentOnExistingElementWithTimeout() {
+    public void isPresentOnExistingElementWithTimeout() {
         assertEquals(true, guiTestUIMap.dropDownBox().isPresent(DEFAULT_TIMEOUT));
     }
 
@@ -389,7 +389,7 @@ public abstract class AbstractElementTest extends GUITest {
      * <br/> hidden button is present (with default timeout)
      */
     @Test
-    public void presentOnHiddenElementWithTimeout() {
+    public void isPresentOnHiddenElementWithTimeout() {
         assertEquals(true, guiTestUIMap.hiddenButton().isPresent(DEFAULT_TIMEOUT));
     }
 
@@ -398,7 +398,7 @@ public abstract class AbstractElementTest extends GUITest {
      * <br/> hidden button in div is present (with default timeout)
      */
     @Test
-    public void presentOnHiddenElementInDivWithTimeout() {
+    public void isPresentOnHiddenElementInDivWithTimeout() {
         assertEquals(true, guiTestUIMap.hiddenButton().isPresent(DEFAULT_TIMEOUT));
     }
 
@@ -407,7 +407,7 @@ public abstract class AbstractElementTest extends GUITest {
      * <br/> a not-existing element is not present (with default timeout)
      */
     @Test
-    public void presentOnNotExistingElementWithTimeout() {
+    public void isPresentOnNotExistingElementWithTimeout() {
         assertEquals(false, guiTestUIMap.notExistingButton().isPresent(DEFAULT_TIMEOUT));
     }
 
@@ -562,7 +562,7 @@ public abstract class AbstractElementTest extends GUITest {
         checkPresentAndInForeground(new IdLocator("lksndofhweoidf"), false, aludraWebGUI);
     }
 
-    private void checkPresentAndInForeground(Locator locator, boolean expectedValue, AludraWebGUI aludraWebGUI) {
+    private void checkPresentAndInForeground(GUIElementLocator locator, boolean expectedValue, AludraWebGUI aludraWebGUI) {
         assertEquals("Element " + locator + " is " + (expectedValue ? "not " : "") + " present and in foreground, ", expectedValue,
                 aludraWebGUI.check().isElementPresentandInForeground("el", "op", locator));
     }

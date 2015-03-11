@@ -18,7 +18,6 @@ package org.aludratest.service.gui.web.selenium.selenium1;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.service.gui.web.WebGUIVerification;
-import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.util.DataUtil;
 import org.aludratest.util.PolledValidationTask;
@@ -41,16 +40,14 @@ public class Selenium1Verification extends AbstractSeleniumAction implements Web
     }
 
     @Override
-    public void assertTextMatches(String elementType, String operation, Locator locator, Validator<String> validator) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        waitForMatch(new TextProvider(elementLocator), validator);
+    public void assertTextMatches(String elementType, String operation, GUIElementLocator locator, Validator<String> validator) {
+        waitForMatch(new TextProvider(locator), validator);
     }
 
     @Override
-    public void assertVisible(String elementType, String operation, Locator locator) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
+    public void assertVisible(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.waitForVisible(elementLocator);
+            wrapper.waitForVisible(locator);
         }
         catch (AutomationException e) {
             // because of ASSERTION, it is a functional failure (expected failure from SUT)
@@ -59,26 +56,23 @@ public class Selenium1Verification extends AbstractSeleniumAction implements Web
     }
 
     @Override
-    public void assertEditable(String elementType, String operation, Locator locator) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        if (!wrapper.isEditable(elementLocator)) {
-            throw new FunctionalFailure("Element not editable.");
+    public void assertEditable(String elementType, String operation, GUIElementLocator locator) {
+        if (!wrapper.isEditable(locator)) {
+            throw new FunctionalFailure("Element not editable");
         }
     }
 
     @Override
-    public void assertNotEditable(String elementType, String operation, Locator locator) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        if (wrapper.isEditable(elementLocator)) {
+    public void assertNotEditable(String elementType, String operation, GUIElementLocator locator) {
+        if (wrapper.isEditable(locator)) {
             throw new FunctionalFailure("Element not expected to be editable");
         }
     }
 
     @Override
-    public void assertElementPresent(String elementType, String operation, Locator locator) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
+    public void assertElementPresent(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.isElementPresent(elementLocator);
+            wrapper.isElementPresent(locator);
         }
         catch (AutomationException e) {
             // because of ASSERTION, it is a functional failure (expected failure from SUT)
@@ -87,31 +81,28 @@ public class Selenium1Verification extends AbstractSeleniumAction implements Web
     }
 
     @Override
-    public void assertChecked(String elementType, String operation, Locator locator) {
+    public void assertChecked(String elementType, String operation, GUIElementLocator locator) {
         assertChecked(elementType, operation, true, locator);
     }
 
     @Override
-    public void assertChecked(String elementType, String operation, boolean expected, Locator locator) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        if (wrapper.isChecked(elementLocator) != expected) {
+    public void assertChecked(String elementType, String operation, boolean expected, GUIElementLocator locator) {
+        if (wrapper.isChecked(locator) != expected) {
             String message = "Checkbox or Radiobutton is " + (expected ? "unchecked" : "checked");
             throw new FunctionalFailure(message);
         }
     }
 
     @Override
-    public void assertHasFocus(String elementType, String operation, Locator locator) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        if (!wrapper.hasFocus(elementLocator)) {
+    public void assertHasFocus(String elementType, String operation, GUIElementLocator locator) {
+        if (!wrapper.hasFocus(locator)) {
             throw new FunctionalFailure("The element does not have the focus.");
         }
     }
 
     @Override
-    public void assertHasValues(String elementType, String operation, Locator locator, String[] expectedValues) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        String[] actualValues = wrapper.getSelectOptions(elementLocator);
+    public void assertHasValues(String elementType, String operation, GUIElementLocator locator, String[] expectedValues) {
+        String[] actualValues = wrapper.getSelectOptions(locator);
         String mismatches = DataUtil.expectEqualArrays(expectedValues, actualValues);
         if (!StringUtil.isEmpty(mismatches)) {
             throw new FunctionalFailure("The actual values are not as expected. " +
@@ -120,28 +111,24 @@ public class Selenium1Verification extends AbstractSeleniumAction implements Web
     }
 
     @Override
-    public void assertHasLabels(String elementType, String operation, Locator locator, String[] expectedLabels) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        checkLabels(expectedLabels, elementLocator, false);
+    public void assertHasLabels(String elementType, String operation, GUIElementLocator locator, String[] expectedLabels) {
+        checkLabels(expectedLabels, locator, false);
     }
 
     @Override
-    public void assertValueMatches(String elementType, String operation, Locator locator, Validator<String> validator) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        waitForMatch(new ValueProvider(elementLocator), validator);
+    public void assertValueMatches(String elementType, String operation, GUIElementLocator locator, Validator<String> validator) {
+        waitForMatch(new ValueProvider(locator), validator);
     }
 
     @Override
-    public void assertContainsLabels(String elementType, String operation, Locator locator, String[] labels) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        checkLabels(labels, elementLocator, true);
+    public void assertContainsLabels(String elementType, String operation, GUIElementLocator locator, String[] labels) {
+        checkLabels(labels, locator, true);
     }
 
     @Override
-    public void assertElementNotPresent(String elementType, String operation, Locator locator) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
+    public void assertElementNotPresent(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.waitForElementNotPresent(elementLocator);
+            wrapper.waitForElementNotPresent(locator);
         }
         catch (AutomationException e) {
             throw new FunctionalFailure(e.getMessage());
@@ -149,9 +136,9 @@ public class Selenium1Verification extends AbstractSeleniumAction implements Web
     }
 
     @Override
-    public void assertDropDownEntrySelectionMatches(String elementType, String operation, Locator locator, Validator<String> validator) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        waitForMatch(new SelectedLabelProvider(elementLocator), validator);
+    public void assertDropDownEntrySelectionMatches(String elementType, String operation, GUIElementLocator locator,
+            Validator<String> validator) {
+        waitForMatch(new SelectedLabelProvider(locator), validator);
     }
 
     // private helper methods --------------------------------------------------

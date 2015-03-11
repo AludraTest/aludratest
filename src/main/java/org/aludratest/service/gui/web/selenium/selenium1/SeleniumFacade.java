@@ -436,6 +436,8 @@ public class SeleniumFacade {
         selenium.windowFocus();
     }
 
+    /** Switches to the requested IFrame.
+     * @param iframeLocator the locator of the IFrame to switch to, or null for the top-level frame */
     public void switchToIFrame(GUIElementLocator iframeLocator) {
         if (iframeLocator == null) {
             selenium.selectFrame("relative=top");

@@ -15,25 +15,27 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2;
 
-import java.util.concurrent.Callable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-import org.aludratest.exception.AludraTestException;
 import org.aludratest.exception.AutomationException;
-import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.element.CSSLocator;
 import org.aludratest.service.locator.element.ElementLocators.ElementLocatorsGUI;
+import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.IdLocator;
 import org.aludratest.service.locator.element.LabelLocator;
 import org.aludratest.service.locator.element.XPathLocator;
-import org.aludratest.util.retry.RetryService;
-import org.aludratest.util.timeout.TimeoutService;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Maps AludraTest {@link Locator}s to Selenium 2 {@link By} objects.
@@ -41,8 +43,18 @@ import org.openqa.selenium.WebElement;
  */
 public class LocatorUtil {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocatorUtil.class);
+
     /** Private constructor of utility class preventing instantiation by other classes */
     private LocatorUtil() {
+    }
+
+    /** Looks up an element immediately without implicit or explicit wait.
+     * @param locator
+     * @param driver
+     * @return */
+    public static WebElement findElementImmediately(GUIElementLocator locator, WebDriver driver) {
+        return findElementWithImplicitWait(locator, 0, driver);
     }
 
     /** Finds an element using Selenium's internal timeout mechanism.
@@ -50,47 +62,17 @@ public class LocatorUtil {
      * @param timeout the maximum time to wait
      * @param driver the WebDriver to use
      * @return */
-    public static WebElement findElementWithInternalTimeout(Locator locator, long timeout, WebDriver driver) {
+    public static WebElement findElementWithImplicitWait(GUIElementLocator locator, long timeout, WebDriver driver) {
+        LOGGER.debug("findElementWithImplicitWait({})", locator);
         try {
             driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.MILLISECONDS);
             return findElement(locator, driver);
         }
         catch (NoSuchElementException e) {
-            throw new AutomationException("Element could not be found.", e);
+            return null;
         }
         finally {
             driver.manage().timeouts().implicitlyWait(100, TimeUnit.MILLISECONDS);
-        }
-    }
-
-    /** Finds an element imposing an external timeout and interrupting the lookup when the timeout is exceeded. This is provided in
-     * order to overcome Selenium issue 402 which makes the ChromeDriver hang on lookups and timeout after 600 seconds. See <a
-     * href="https://code.google.com/p/chromedriver/issues/detail?id=402">code.google.com</a>
-     * @param locator
-     * @param driver
-     * @param timeout
-     * @return */
-    public static WebElement findElementWithExternalTimeout(final Locator locator, final WebDriver driver, long timeout) {
-        try {
-            Callable<WebElement> finder = new Callable<WebElement>() {
-                @Override
-                public WebElement call() throws Exception {
-                    return findElement(locator, driver);
-                }
-            };
-            Callable<WebElement> finderWithTimeout = TimeoutService.createCallableWithTimeout(finder, timeout);
-            return RetryService.call(finderWithTimeout, TimeoutException.class, 1);
-        }
-        catch (NoSuchElementException e) {
-            throw new AutomationException("Element could not be found.", e);
-        }
-        catch (Throwable e) {
-            if (e instanceof AludraTestException) {
-                throw (AludraTestException) e;
-            }
-            else {
-                throw new TechnicalException("Error resolving locator", e);
-            }
         }
     }
 
@@ -98,14 +80,14 @@ public class LocatorUtil {
      * @param locator locator of the element to find
      * @param driver the WebDriver to use
      * @return */
-    public static WebElement findElement(Locator locator, WebDriver driver) {
-        return driver.findElement(by(locator));
+    public static WebElement findElement(GUIElementLocator locator, WebDriver driver) {
+        return wrapElement(locator, driver, driver.findElement(by(locator)));
     }
 
-    /** Implements Selenium 2's {@link By} interface in a way that supports AludraTest's {@link Locator}s
+    /** Implements Selenium 2's {@link By} interface in a way that supports AludraTest's {@link GUIElementLocator}s
      * @param locator the AludraTest locator of the element(s) to look up.
      * @return */
-    public static By by(Locator locator) {
+    public static By by(GUIElementLocator locator) {
         if (locator == null) {
             throw new IllegalArgumentException("Locator is null");
         }
@@ -122,6 +104,74 @@ public class LocatorUtil {
         } else {
             throw new UnsupportedOperationException("Unsupported locator type: " + locator.getClass().getName());
         }
+    }
+
+    /** Unwraps {@link ElementWrapper}s.
+     * @param element
+     * @return */
+    public static WebElement unwrap(WebElement element) {
+        if (element instanceof ElementWrapper) {
+            return ((ElementWrapper) element).getWrappedElement();
+        }
+        else {
+            return element;
+        }
+    }
+
+    // non-public helpers ------------------------------------------------------
+
+    private static WebElement wrapElement(GUIElementLocator locator, WebDriver driver, WebElement element) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        InvocationHandler handler = new WebElementProxyHandler(locator, driver, element);
+        return (WebElement) Proxy.newProxyInstance(classLoader, new Class[] { ElementWrapper.class }, handler);
+    }
+
+    static class WebElementProxyHandler implements InvocationHandler {
+
+        private static final int MAX_RETRIES_ON_STALE_ELEMENT = 3;
+
+        private GUIElementLocator locator;
+        private WebDriver driver;
+        private WebElement realElement;
+
+        public WebElementProxyHandler(GUIElementLocator locator, WebDriver driver, WebElement realElement) {
+            this.locator = locator;
+            this.driver = driver;
+            this.realElement = realElement;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            if ("getWrappedElement".equals(method.getName())) {
+                return realElement;
+            }
+            else {
+                return invokeRealElement(method, args);
+            }
+        }
+
+        private Object invokeRealElement(Method method, Object[] args) throws IllegalAccessException, InvocationTargetException {
+            StaleElementReferenceException exception = null;
+            // try to get z order up to 3 times
+            for (int invocationCount = 0; invocationCount < MAX_RETRIES_ON_STALE_ELEMENT; invocationCount++) {
+                try {
+                    return method.invoke(realElement, args);
+                }
+                catch (StaleElementReferenceException e) {
+                    // ... on failure, catch and store the exception...
+                    exception = e;
+                    // relocate the element
+                    this.realElement = findElementImmediately(locator, driver);
+                    if (this.realElement == null) {
+                        throw new AutomationException("Element disappeared");
+                    }
+                    // and repeat (or finish) the loop
+                }
+            }
+            // code has repeatedly failed, so forward the last exception
+            throw exception;
+        }
+
     }
 
 }

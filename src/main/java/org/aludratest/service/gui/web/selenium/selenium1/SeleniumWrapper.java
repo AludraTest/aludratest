@@ -107,6 +107,7 @@ public class SeleniumWrapper {
         return configuration;
     }
 
+    /** @return the host count of the {@link #seleniumResourceService} */
     public int getHostCount() {
         return seleniumResourceService.getHostCount();
     }
@@ -234,7 +235,7 @@ public class SeleniumWrapper {
                 }
             }, timeout);
             if (!elementIsEnabled) {
-                throw new AutomationException("Element not editable.");
+                throw new AutomationException("Element not editable");
             }
         }
     }
@@ -501,6 +502,8 @@ public class SeleniumWrapper {
         selenium.windowFocus();
     }
 
+    /** Switches to the requested IFrame.
+     * @param locator the locator of the IFrame to switch to, or null for the top-level frame */
     public void switchToIFrame(GUIElementLocator locator) {
         selenium.switchToIFrame(locator);
     }

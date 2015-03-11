@@ -30,11 +30,11 @@ import org.databene.commons.Validator;
  * @author falbrech */
 class ValueComponentHelper implements ValueComponent {
 
-    private GUIComponent component;
+    private Element<?> component;
 
     private boolean value;
 
-    ValueComponentHelper(GUIComponent component, boolean value) {
+    ValueComponentHelper(Element<?> component, boolean value) {
         this.component = component;
         this.value = value;
     }
@@ -42,20 +42,20 @@ class ValueComponentHelper implements ValueComponent {
     @Override
     public String getText() {
         if (value) {
-            return component.perform().getInputFieldValue(component.elementType, component.elementName, component.locator);
+            return component.perform().getInputFieldValue(component.elementType, component.elementName, component.getLocator());
         }
-        return component.perform().getText(component.elementType, component.elementName, component.locator);
+        return component.perform().getText(component.elementType, component.elementName, component.getLocator());
     }
 
     @Override
     public void assertTextEquals(String expectedText) {
         if (!DataMarkerCheck.isNull(expectedText)) {
             if (value) {
-                component.verify().assertValueMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
                         new EqualsValidator(expectedText));
             }
             else {
-                component.verify().assertTextMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
                         new EqualsValidator(expectedText));
             }
         }
@@ -65,11 +65,11 @@ class ValueComponentHelper implements ValueComponent {
     public void assertTextNotEquals(String expectedText) {
         if (!DataMarkerCheck.isNull(expectedText)) {
             if (value) {
-                component.verify().assertValueMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
                         new NotEqualsValidator(expectedText));
             }
             else {
-                component.verify().assertTextMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
                         new NotEqualsValidator(expectedText));
             }
         }
@@ -79,11 +79,11 @@ class ValueComponentHelper implements ValueComponent {
     public void assertTextContains(String expectedText) {
         if (!DataMarkerCheck.isNull(expectedText)) {
             if (value) {
-                component.verify().assertValueMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
                         new ContainsValidator(expectedText));
             }
             else {
-                component.verify().assertTextMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
                         new ContainsValidator(expectedText));
             }
         }
@@ -93,11 +93,11 @@ class ValueComponentHelper implements ValueComponent {
     public void assertTextContainsIgnoreCaseTrimmed(String expectedText) {
         if (!DataMarkerCheck.isNull(expectedText)) {
             if (value) {
-                component.verify().assertValueMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
                         new ContainsIgnoreCaseTrimmedValidator(expectedText));
             }
             else {
-                component.verify().assertTextMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
                         new ContainsIgnoreCaseTrimmedValidator(expectedText));
             }
         }
@@ -107,11 +107,11 @@ class ValueComponentHelper implements ValueComponent {
     public void assertTextEqualsIgnoreCaseTrimmed(String expectedText) {
         if (!DataMarkerCheck.isNull(expectedText)) {
             if (value) {
-                component.verify().assertValueMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
                         new EqualsIgnoreCaseTrimmedValidator(expectedText));
             }
             else {
-                component.verify().assertTextMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
                         new EqualsIgnoreCaseTrimmedValidator(expectedText));
             }
         }
@@ -120,10 +120,11 @@ class ValueComponentHelper implements ValueComponent {
     @Override
     public void assertTextMatches(Validator<String> validator) {
         if (value) {
-            component.verify().assertValueMatches(component.elementType, component.elementName, component.locator, validator);
+            component.verify()
+                    .assertValueMatches(component.elementType, component.elementName, component.getLocator(), validator);
         }
         else {
-            component.verify().assertTextMatches(component.elementType, component.elementName, component.locator, validator);
+            component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(), validator);
         }
     }
 
@@ -131,11 +132,11 @@ class ValueComponentHelper implements ValueComponent {
     public void assertValueGreaterThan(String value) {
         if (!DataMarkerCheck.isNull(value)) {
             if (this.value) {
-                component.verify().assertValueMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
                         new NumberStringGreaterValidator(value, getNumericTolerance()));
             }
             else {
-                component.verify().assertTextMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
                         new NumberStringGreaterValidator(value, getNumericTolerance()));
             }
         }
@@ -145,11 +146,11 @@ class ValueComponentHelper implements ValueComponent {
     public void assertValueLessThan(String value) {
         if (!DataMarkerCheck.isNull(value)) {
             if (this.value) {
-                component.verify().assertValueMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
                         new NumberStringLessValidator(value, getNumericTolerance()));
             }
             else {
-                component.verify().assertTextMatches(component.elementType, component.elementName, component.locator,
+                component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
                         new NumberStringLessValidator(value, getNumericTolerance()));
             }
         }
