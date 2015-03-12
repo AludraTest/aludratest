@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.locator.option;
+package org.aludratest.service.gui.web.selenium.selenium2;
 
-/**
- * Identifies a GUI option by its label text.
- * @author Marcel Malitz
- */
-public class LabelLocator extends OptionLocator {
+import org.openqa.selenium.WebElement;
 
-    /** Constructor.
-     *  @param label text of the option */
-    public LabelLocator(String label) {
-        super(label);
-    }
-
-    /** @return the label */
-    public String getLabel() {
-        return locator;
-    }
-
+/** Interface for {@link WebElement} implementations that wrap other WebElements.
+ * @author Volker Bergmann */
+public interface ElementWrapper extends WebElement {
+    /** Returns the wrapped WebElement.
+     * @return the wrapped WebElement */
+    WebElement getWrappedElement();
 }

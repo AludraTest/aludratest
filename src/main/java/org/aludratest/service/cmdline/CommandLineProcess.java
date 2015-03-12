@@ -21,6 +21,7 @@ import java.io.OutputStream;
 
 import org.aludratest.util.data.IntData;
 import org.aludratest.util.data.StringData;
+import org.databene.commons.ArrayFormat;
 import org.databene.commons.SystemInfo;
 import org.databene.commons.Validator;
 
@@ -32,6 +33,7 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> {
     private final CommandLineService service;
     private final String processType;
     private final String processName;
+    private final String[] commands;
     private final int processId;
 
     /** Creates a {@link CommandLineProcess} instance.
@@ -39,12 +41,13 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> {
      * @param processName the process name
      * @param service the underlying {@link CommandLineService}
      * @param timeout the timeout for wait operations on the process
-     * @param command the commands used to start the process */
-    public CommandLineProcess(String processType, String processName, CommandLineService service, int timeout, String... command) {
+     * @param commands the commands used to start the process */
+    public CommandLineProcess(String processType, String processName, CommandLineService service, int timeout, String... commands) {
         this.processType = processType;
         this.processName = processName;
         this.service = service;
-        this.processId = service.perform().create(processType, processName, timeout, command);
+        this.commands = commands;
+        this.processId = service.perform().create(processType, processName, timeout, commands);
     }
 
     /** Sets the working directory of the process
@@ -169,6 +172,13 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> {
 
     void skipErrOutUntilLineMatches(Validator<String> validator) {
         service.perform().skipErrOutUntilLineMatches(processType, processName, processId, validator);
+    }
+
+    // java.lang.Object overrides ----------------------------------------------
+
+    @Override
+    public String toString() {
+        return ArrayFormat.format(" ", commands);
     }
 
 }

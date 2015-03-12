@@ -23,7 +23,7 @@ import java.io.InputStream;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.databene.commons.IOUtil;
 import org.databene.commons.Validator;
@@ -37,7 +37,7 @@ public class FileField extends InputComponent<InputField> implements ValueCompon
     /** Constructor.
      * @param aludraGui the underlying {@link AludraGUI} service instance
      * @param locator a locator for the referenced input field */
-    public FileField(AludraGUI aludraGui, Locator locator) {
+    public FileField(AludraGUI aludraGui, GUIElementLocator locator) {
         super(aludraGui, locator);
     }
 
@@ -45,7 +45,7 @@ public class FileField extends InputComponent<InputField> implements ValueCompon
      * @param aludraGui the underlying {@link AludraGUI} service instance
      * @param locator a locator for the referenced element
      * @param elementName an explicit name to use for the component */
-    public FileField(AludraGUI aludraGui, Locator locator, String elementName) {
+    public FileField(AludraGUI aludraGui, GUIElementLocator locator, String elementName) {
         super(aludraGui, locator, elementName);
     }
 
@@ -67,7 +67,7 @@ public class FileField extends InputComponent<InputField> implements ValueCompon
 
     @Override
     public String getText() {
-        return perform().getInputFieldValue(elementType, elementName, locator);
+        return perform().getInputFieldValue(elementType, elementName, getLocator());
     }
 
     @Override
@@ -127,7 +127,7 @@ public class FileField extends InputComponent<InputField> implements ValueCompon
     private void assignFileResource(String fileName) {
         if (!DataMarkerCheck.isNull(fileName)) {
             String filePath = getTestResourceFile(fileName).getAbsolutePath();
-            perform().assignFileResource(elementType, elementName, locator, DataMarkerCheck.convertIfEmpty(filePath),
+            perform().assignFileResource(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(filePath),
                     taskCompletionTimeout);
         }
     }

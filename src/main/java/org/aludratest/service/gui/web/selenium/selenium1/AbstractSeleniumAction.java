@@ -21,11 +21,6 @@ import java.util.List;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.Action;
 import org.aludratest.service.SystemConnector;
-import org.aludratest.service.locator.Locator;
-import org.aludratest.service.locator.element.GUIElementLocator;
-import org.aludratest.service.locator.window.TitleLocator;
-import org.aludratest.service.locator.window.WindowLocator;
-import org.aludratest.service.util.ServiceUtil;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Volker Bergmann
  */
 public abstract class AbstractSeleniumAction implements Action {
-    
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /** The wrapper which provides the actual Selenium server access. */
@@ -100,27 +95,6 @@ public abstract class AbstractSeleniumAction implements Action {
             // The method is called when formatting error info, so do not raise additional issues
             logger.error("Error saving the source ", e);
             return null;
-        }
-    }
-
-    protected static GUIElementLocator assertGUIElementLocator(Locator locator) {
-        if (locator instanceof GUIElementLocator) {
-            return (GUIElementLocator) locator;
-        }
-        else {
-            throw ServiceUtil.newUnsupportedLocatorException(locator);
-        }
-    }
-
-    protected static WindowLocator getDefaultWindowLocator(SeleniumWrapper wrapper, Object locator) {
-        if (locator instanceof String) {
-            return new TitleLocator((String) locator);
-        }
-        else if (locator instanceof TitleLocator) {
-            return (TitleLocator) locator;
-        }
-        else {
-            throw ServiceUtil.newUnsupportedLocatorException(locator);
         }
     }
 

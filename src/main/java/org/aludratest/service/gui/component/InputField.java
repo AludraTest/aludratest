@@ -16,7 +16,7 @@
 package org.aludratest.service.gui.component;
 
 import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.databene.commons.Validator;
 
@@ -34,7 +34,7 @@ public class InputField extends InputComponent<InputField> implements ValueCompo
      * @param aludraGui the underlying {@link AludraGUI} service instance
      * @param locator a locator for the referenced input field
      */
-    public InputField(AludraGUI aludraGui, Locator locator) {
+    public InputField(AludraGUI aludraGui, GUIElementLocator locator) {
         super(aludraGui, locator);
     }
 
@@ -42,7 +42,7 @@ public class InputField extends InputComponent<InputField> implements ValueCompo
      *  @param aludraGui the underlying {@link AludraGUI} service instance
      *  @param locator a locator for the referenced element
      *  @param elementName an explicit name to use for the component */
-    public InputField(AludraGUI aludraGui, Locator locator, String elementName) {
+    public InputField(AludraGUI aludraGui, GUIElementLocator locator, String elementName) {
         super(aludraGui, locator, elementName);
     }
 
@@ -54,13 +54,13 @@ public class InputField extends InputComponent<InputField> implements ValueCompo
      */
     public void enter(String text) {
         if (!DataMarkerCheck.isNull(text)) {
-            perform().type(elementType, elementName, locator, DataMarkerCheck.convertIfEmpty(text), taskCompletionTimeout);
+            perform().type(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(text), taskCompletionTimeout);
         }
     }
 
     @Override
     public String getText() {
-        return perform().getInputFieldValue(elementType, elementName, locator);
+        return perform().getInputFieldValue(elementType, elementName, getLocator());
     }
 
     @Override

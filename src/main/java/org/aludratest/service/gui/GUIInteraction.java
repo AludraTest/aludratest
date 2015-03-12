@@ -21,9 +21,10 @@ import org.aludratest.impl.log4testing.TechnicalArgument;
 import org.aludratest.impl.log4testing.TechnicalLocator;
 import org.aludratest.service.Interaction;
 import org.aludratest.service.Verification;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.option.OptionLocator;
 import org.aludratest.service.locator.window.TitleLocator;
+import org.aludratest.service.locator.window.WindowLocator;
 
 /** The interface {@link Interaction} provides several methods to interact with the active screen of the application under test.
  * This means that the application under test can be controlled with the help of these methods. Every class which implements this
@@ -39,7 +40,8 @@ public interface GUIInteraction extends Interaction {
      * @param elementName the name of the related radio button to log
      * @param locator to locate one specific radio button in the SUT
      * @param taskCompletionTimeout */
-    void selectRadiobutton(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
+    void selectRadiobutton(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
     /** Changes the selection state of a checkbox. If this method will be called on a checkbox which is still selected, the
@@ -48,7 +50,8 @@ public interface GUIInteraction extends Interaction {
      * @param elementName the name of the related checkbox to log
      * @param locator to locate one specific checkbox in the application under test
      * @param taskCompletionTimeout */
-    void changeCheckbox(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
+    void changeCheckbox(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
     /** Selects a checkbox. If the checkbox is already selected, this method will do nothing.
@@ -56,7 +59,8 @@ public interface GUIInteraction extends Interaction {
      * @param elementName the name of the related checkbox to log
      * @param locator to locate one specific checkbox in the application under test
      * @param taskCompletionTimeout */
-    void selectCheckbox(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
+    void selectCheckbox(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
     /** Deselects a checkbox. If the checkbox is not selected, this method will do nothing.
@@ -64,7 +68,8 @@ public interface GUIInteraction extends Interaction {
      * @param elementName the name of the related checkbox to log
      * @param locator to locate one specific checkbox in the application under test
      * @param taskCompletionTimeout */
-    void deselectCheckbox(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
+    void deselectCheckbox(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
     /** Selects an entry in a dropdownbox with the help of a <code>OptionLocator</code>. First it locates the element with the help
@@ -74,7 +79,8 @@ public interface GUIInteraction extends Interaction {
      * @param locator to locate one specific dropdownbox in the application under test
      * @param optionLocator defines which entry of the located dropdownbox shall be selected
      * @param taskCompletionTimeout */
-    void selectDropDownEntry(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
+    void selectDropDownEntry(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator,
             OptionLocator optionLocator,
             @TechnicalArgument int taskCompletionTimeout);
 
@@ -86,7 +92,8 @@ public interface GUIInteraction extends Interaction {
      *            accepts user inputs.
      * @param text which shall be typed in without conversion/manipulation
      * @param taskCompletionTimeout */
-    void type(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator, String text,
+    void type(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
+            String text,
             @TechnicalArgument int taskCompletionTimeout);
 
     /** Assigns a file resource of the test project file system to the file chooser specified by the locator.
@@ -95,14 +102,15 @@ public interface GUIInteraction extends Interaction {
      * @param locator to locate the related file selection field in the application under test
      * @param filePath the absolute path of the file to be assigned to the file chooser
      * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of system activities */
-    void assignFileResource(String elementType, String elementName, Locator locator, String filePath, int taskCompletionTimeout);
+    void assignFileResource(String elementType, String elementName, GUIElementLocator locator, String filePath,
+            int taskCompletionTimeout);
 
     /** Clicks with a single click on any kind of element which reacts on click events. A common example are buttons and links.
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator to locate buttons, links or any other elements which react on mouse clicks.
      * @param taskCompletionTimeout */
-    void click(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
+    void click(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
     /** Clicks with a single click on any kind of element which reacts on click events and is not editable. A common example are
@@ -111,7 +119,8 @@ public interface GUIInteraction extends Interaction {
      * @param elementName the name of the related GUI element to log
      * @param locator to locate buttons, links or any other elements which react on mouse clicks.
      * @param taskCompletionTimeout */
-    void clickNotEditable(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
+    void clickNotEditable(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
     /** Clicks with a double click on any kind of element which reacts on click events and is not editable. A common example are
@@ -121,7 +130,7 @@ public interface GUIInteraction extends Interaction {
      * @param locator to locate buttons, links or any other elements which react on mouse clicks.
      * @param taskCompletionTimeout */
     void doubleClickNotEditable(@ElementType String elementType, @ElementName String elementName,
-            @TechnicalLocator Locator locator, @TechnicalArgument int taskCompletionTimeout);
+            @TechnicalLocator GUIElementLocator locator, @TechnicalArgument int taskCompletionTimeout);
 
     /** Reads the value of an inputfield and returns it as a String without conversion/manipulation.
      * @param elementType the type of the related GUI element to log
@@ -130,7 +139,8 @@ public interface GUIInteraction extends Interaction {
      *            inputs. Two examples are single line inputfields and text areas in web applications. This action works also with
      *            disabled inputfields.
      * @return the value of the inputfield. If the inputfield could not be found, <code>null</code> will be returned */
-    String getInputFieldValue(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator);
+    String getInputFieldValue(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator);
 
     /** Reads the selected label of an input field and returns it as a String without conversion/manipulation.
      * @param elementType the type of the related GUI element to log
@@ -140,19 +150,18 @@ public interface GUIInteraction extends Interaction {
      *            input fields.
      * @return the value of the input field. If the input field could not be found, <code>null</code> will be returned */
     String getInputFieldSelectedLabel(@ElementType String elementType, @ElementName String elementName,
-            @TechnicalLocator Locator locator);
+            @TechnicalLocator GUIElementLocator locator);
 
     /** Selects a window using a window locator. Once a window has been selected, all commands go to that window.
-     * 
      * @param locator to locate one specific window of the application under test */
-    void selectWindow(@TechnicalLocator Locator locator);
+    void selectWindow(@TechnicalLocator WindowLocator locator);
 
     /** Gets the text of an element.
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator points to one element
      * @return the unmodified text of an element */
-    String getText(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator);
+    String getText(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator);
 
     /** Gets the text of an element and is adjustable to the check of the visibility of the element
      * @param elementType the type of the related GUI element to log
@@ -160,14 +169,14 @@ public interface GUIInteraction extends Interaction {
      * @param locator points to one element, visible: to check visibility of the element
      * @param checkVisible
      * @return the unmodified text of an element */
-    String getText(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
+    String getText(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
             boolean checkVisible);
 
     /** Gives focus on an element.
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator of the element which shall get the focus */
-    void focus(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator);
+    void focus(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator);
 
     /** Presses a key on the keyboard. Available key codes can be found in {@link java.awt.event.KeyEvent}.
      * @param keycode is the key which shall be pressed.
@@ -179,7 +188,8 @@ public interface GUIInteraction extends Interaction {
      * @param elementName the name of the related GUI element to log
      * @param locator which identifies the element which shall be double clicked
      * @param taskCompletionTimeout */
-    void doubleClick(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
+    void doubleClick(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
     /** Closes all windows identified by their name. That means, that if there are several windows with same name all will be
@@ -194,7 +204,8 @@ public interface GUIInteraction extends Interaction {
      * @param elementName the name of the target windows to log
      * @param locator is a window locator or just a String which will be automatically converted to one of the default locators
      *            depending on the underlying driver and the used default localization mechanism */
-    void closeOtherWindows(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator);
+    void closeOtherWindows(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator TitleLocator locator);
 
     void wrongPageFlow(String message);
 

@@ -26,14 +26,18 @@ import org.aludratest.service.gitclient.data.BranchCreationData;
 import org.aludratest.service.gitclient.data.BranchDeletionData;
 import org.aludratest.service.gitclient.data.BranchListData;
 import org.aludratest.service.gitclient.data.CheckoutData;
-import org.aludratest.service.gitclient.data.CloneData;
+import org.aludratest.service.gitclient.data.CloneRepositoryData;
 import org.aludratest.service.gitclient.data.CommitData;
 import org.aludratest.service.gitclient.data.FetchData;
+import org.aludratest.service.gitclient.data.InvocationData;
+import org.aludratest.service.gitclient.data.LogData;
+import org.aludratest.service.gitclient.data.LogItemData;
 import org.aludratest.service.gitclient.data.MergeData;
 import org.aludratest.service.gitclient.data.MvData;
 import org.aludratest.service.gitclient.data.PullData;
 import org.aludratest.service.gitclient.data.PushData;
 import org.aludratest.service.gitclient.data.RebaseData;
+import org.aludratest.service.gitclient.data.RenamedStatusData;
 import org.aludratest.service.gitclient.data.ResetData;
 import org.aludratest.service.gitclient.data.RmData;
 import org.aludratest.service.gitclient.data.StatusData;
@@ -41,8 +45,11 @@ import org.aludratest.service.gitclient.data.VersionData;
 import org.aludratest.util.data.StringData;
 import org.apache.commons.io.LineIterator;
 import org.databene.commons.ArrayBuilder;
+import org.databene.commons.CollectionUtil;
 import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Provides access to a git command line client using the {@link CommandLineService}.
  * @author Volker Bergmann */
@@ -53,6 +60,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     private static final String GIT_PROCESS_TYPE = "git";
     private static final String GIT_VERSION_PROCESS_NAME = "--version";
     private static final String GIT_STATUS_PROCESS_NAME = "status";
+    private static final String GIT_LOG_PROCESS_NAME = "log";
     private static final String GIT_STASH_SAVE_PROCESS_NAME = "stash save";
     private static final String GIT_STASH_POP_PROCESS_NAME = "stash pop";
     private static final String GIT_ADD_PROCESS_NAME = "add";
@@ -71,6 +79,10 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     private static final String GIT_RESET_SOFT_PROCESS_NAME = "reset --soft";
     private static final String GIT_RESET_MIXED_PROCESS_NAME = "reset --mixed";
     private static final String GIT_RESET_HARD_PROCESS_NAME = "reset --hard";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GitClient.class);
+
+    private static final Object LF = SystemInfo.getLineSeparator();
 
     private final CommandLineService service;
 
@@ -92,13 +104,27 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         version(new VersionData());
     }
 
+    /** Returns the working directory of the process.
+     * @return the working directory of the process */
+    public StringData getWorkingDirectory() {
+        return new StringData(workingDirectory);
+    }
+
+    /** Sets the working directory.
+     * @param workingDirectory the workingDirectory to set.
+     * @return a reference to this */
+    public GitClient setWorkingDirectory(StringData workingDirectory) {
+        this.workingDirectory = workingDirectory.getValue();
+        return this;
+    }
+
     // operational interface ---------------------------------------------------
 
     /** Queries the git client for its version number.
      * @param data an instance of the data class that receives the query result
      * @return a reference to this */
     public GitClient version(VersionData data) {
-        String output = invokeGenerically(GIT_VERSION_PROCESS_NAME, "--version");
+        String output = invokeGenerically(GIT_VERSION_PROCESS_NAME, true, "--version");
         String versionNumber = extractVersionNumber(output);
         data.setVersionNumber(versionNumber);
         return this;
@@ -108,7 +134,19 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient status(StatusData data) {
-        String output = invokeGenerically(GIT_STATUS_PROCESS_NAME, "status", "--short", "--branch");
+
+        // clear status object for supporting data object reuse
+        data.getUntrackedFiles().clear();
+        data.getUnmodifiedFiles().clear();
+        data.getModifiedFiles().clear();
+        data.getAddedFiles().clear();
+        data.getDeletedFiles().clear();
+        data.getRenamedFiles().clear();
+        data.getCopiedFiles().clear();
+        data.getUpdatedFiles().clear();
+
+        // invoke git
+        String output = invokeGenerically(GIT_STATUS_PROCESS_NAME, true, "status", "--short", "--branch");
         LineIterator iterator = new LineIterator(new StringReader(output));
         while (iterator.hasNext()) {
             String line = iterator.next();
@@ -135,7 +173,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
                         data.getDeletedFiles().add(filePath);
                         break;
                     case 'R':
-                        data.getRenamedFiles().add(filePath);
+                        data.getRenamedFiles().add(parseRename(filePath.getValue()));
                         break;
                     case 'C':
                         data.getCopiedFiles().add(filePath);
@@ -151,11 +189,27 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         return this;
     }
 
+    /** Provides the git log.
+     * @param data
+     * @return */
+    public GitClient log(LogData data) {
+        ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class).add("log");
+        if (data.getMaxCount() != null) {
+            builder.add("--max-count=" + data.getMaxCount());
+        }
+        String output = invokeGenerically(GIT_LOG_PROCESS_NAME, true, builder.toArray());
+        LineIterator iterator = new LineIterator(new StringReader(output));
+        while (iterator.hasNext()) {
+            parseLogItem(iterator, data);
+        }
+        return this;
+    }
+
     /** Adds files to the index
      * @param data
      * @return a reference to this */
     public GitClient add(AddData data) {
-        invokeGenerically(GIT_ADD_PROCESS_NAME, "add", data.getFilePattern());
+        invokeGenerically(GIT_ADD_PROCESS_NAME, true, "add", data.getFilePattern());
         return this;
     }
 
@@ -173,7 +227,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient listBranches(BranchListData data) {
-        String output = invokeGenerically(GIT_LIST_BRANCHES_PROCESS_NAME, "branch", "--list");
+        String output = invokeGenerically(GIT_LIST_BRANCHES_PROCESS_NAME, true, "branch", "--list");
         LineIterator iterator = new LineIterator(new StringReader(output));
         while (iterator.hasNext()) {
             String line = iterator.next();
@@ -191,7 +245,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient createBranch(BranchCreationData data) {
-        invokeGenerically(GIT_CREATE_BRANCH_PROCESS_NAME, "branch", data.getBranchName());
+        invokeGenerically(GIT_CREATE_BRANCH_PROCESS_NAME, true, "branch", data.getBranchName());
         return this;
     }
 
@@ -199,7 +253,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient deleteBranch(BranchDeletionData data) {
-        invokeGenerically(GIT_DELETE_BRANCH_PROCESS_NAME, "branch", "--delete", data.getBranchName());
+        invokeGenerically(GIT_DELETE_BRANCH_PROCESS_NAME, true, "branch", "--delete", data.getBranchName());
         return this;
     }
 
@@ -207,15 +261,15 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient checkout(CheckoutData data) {
-        invokeGenerically(GIT_CHECKOUT_PROCESS_NAME, "checkout", data.getBranchName());
+        invokeGenerically(GIT_CHECKOUT_PROCESS_NAME, true, "checkout", data.getBranchName());
         return this;
     }
 
     /** Clones a repository into a new directory.
      * @param data
      * @return a reference to this */
-    public GitClient clone(CloneData data) {
-        invokeGenerically(GIT_CLONE_PROCESS_NAME, "clone", data.getRepository());
+    public GitClient cloneRepository(CloneRepositoryData data) {
+        invokeGenerically(GIT_CLONE_PROCESS_NAME, false, "clone", data.getRepository());
         return this;
     }
 
@@ -228,7 +282,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         if (!StringUtil.isEmpty(data.getMessage())) {
             builder.add("-m").add(escapeArg(data.getMessage()));
         }
-        invokeGenerically(GIT_COMMIT_PROCESS_NAME, builder.toArray());
+        invokeGenerically(GIT_COMMIT_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -236,14 +290,14 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient fetch(FetchData data) {
-        invokeGenerically(GIT_CLONE_PROCESS_NAME, "fetch", data.getRepository());
+        invokeGenerically(GIT_CLONE_PROCESS_NAME, true, "fetch", data.getRepository());
         return this;
     }
 
     /** Creates an empty git repository or reinitializes an existing one.
      * @return a reference to this */
     public GitClient init() {
-        invokeGenerically(GIT_CLONE_PROCESS_NAME, "init");
+        invokeGenerically(GIT_CLONE_PROCESS_NAME, true, "init");
         return this;
     }
 
@@ -259,7 +313,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         for (StringData branch : data.getBranches()) {
             builder.add(branch.getValue());
         }
-        invokeGenerically(GIT_MERGE_PROCESS_NAME, builder.toArray());
+        invokeGenerically(GIT_MERGE_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -267,7 +321,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient mv(MvData data) {
-        invokeGenerically(GIT_MV_PROCESS_NAME, "mv", data.getSource(), data.getDestination());
+        invokeGenerically(GIT_MV_PROCESS_NAME, true, "mv", data.getSource(), data.getDestination());
         return this;
     }
 
@@ -283,7 +337,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
                 builder.add(data.getRefspec());
             }
         }
-        invokeGenerically(GIT_PULL_PROCESS_NAME, builder.toArray());
+        invokeGenerically(GIT_PULL_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -299,7 +353,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
                 builder.add(data.getRefspec());
             }
         }
-        invokeGenerically(GIT_PUSH_PROCESS_NAME, builder.toArray());
+        invokeGenerically(GIT_PUSH_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -318,7 +372,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         for (StringData branch : data.getBranches()) {
             builder.add(branch.getValue());
         }
-        invokeGenerically(GIT_REBASE_PROCESS_NAME, builder.toArray());
+        invokeGenerically(GIT_REBASE_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -328,7 +382,11 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient resetSoft(ResetData data) {
-        invokeGenerically(GIT_RESET_SOFT_PROCESS_NAME, "reset", "--soft", data.getCommit());
+        ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class).add("reset").add("--soft");
+        if (data.getCommit() != null) {
+            builder.add(data.getCommit());
+        }
+        invokeGenerically(GIT_RESET_SOFT_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -337,7 +395,11 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient resetMixed(ResetData data) {
-        invokeGenerically(GIT_RESET_MIXED_PROCESS_NAME, "reset", "--mixed", data.getCommit());
+        ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class).add("reset").add("--mixed");
+        if (data.getCommit() != null) {
+            builder.add(data.getCommit());
+        }
+        invokeGenerically(GIT_RESET_MIXED_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -346,7 +408,11 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient resetHard(ResetData data) {
-        invokeGenerically(GIT_RESET_HARD_PROCESS_NAME, "reset", "--hard", data.getCommit());
+        ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class).add("reset").add("--hard");
+        if (data.getCommit() != null) {
+            builder.add(data.getCommit());
+        }
+        invokeGenerically(GIT_RESET_HARD_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -354,29 +420,41 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient rm(RmData data) {
-        invokeGenerically(GIT_RM_PROCESS_NAME, "rm", data.getFilePattern());
+        invokeGenerically(GIT_RM_PROCESS_NAME, true, "rm", data.getFilePattern());
         return this;
     }
 
     /** Saves the workspace to the stash.
      * @return a reference to this */
     public GitClient stashSave() {
-        invokeGenerically(GIT_STASH_SAVE_PROCESS_NAME, "stash", "save");
+        invokeGenerically(GIT_STASH_SAVE_PROCESS_NAME, true, "stash", "save");
         return this;
     }
 
     /** Puts back previously stashed contents to the workspace.
      * @return a reference to this */
     public GitClient stashPop() {
-        invokeGenerically(GIT_STASH_POP_PROCESS_NAME, "stash", "pop");
+        invokeGenerically(GIT_STASH_POP_PROCESS_NAME, true, "stash", "pop");
         return this;
     }
+
+    /** Provides individually parameterized git invocations.
+     * @param data the invocation data
+     * @return the process' output to stdout */
+    public GitClient invokeGenerically(InvocationData data) {
+        boolean failOnErrOut = Boolean.parseBoolean(data.getFailOnErrOut());
+        String stdOut = invokeGenerically(data.getProcessName(), failOnErrOut, CollectionUtil.toArray(data.getArgs()));
+        data.setStdOut(stdOut);
+        return this;
+    }
+
+    // internal helper methods -------------------------------------------------
 
     /** Provides individually parameterized git invocations.
      * @param processName
      * @param args
      * @return the process' output to stdout */
-    public String invokeGenerically(String processName, String... args) {
+    private String invokeGenerically(String processName, boolean failOnErrOut, String... args) {
         // prepare invocation
         String[] commands = new String[args.length + 1];
         commands[0] = GIT_COMMAND;
@@ -388,13 +466,14 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         }
 
         // invoke and wait until finished
+        LOGGER.debug("Starting command line process: {}", process);
         process.start();
         process.waitUntilFinished();
 
         // check err out
         StringData errorOutput = new StringData();
         process.errOut().redirectTo(errorOutput);
-        if (!StringUtil.isEmpty(errorOutput.getValue())) {
+        if (failOnErrOut && !StringUtil.isEmpty(errorOutput.getValue())) {
             throw new TechnicalException("Error invoking process: " + errorOutput);
         }
 
@@ -403,8 +482,6 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         process.stdOut().redirectTo(textOutput);
         return textOutput.getValue();
     }
-
-    // internal helper methods -------------------------------------------------
 
     private String escapeArg(String arg) {
         return (containsWhitespace(arg) ? '"' + arg + '"' : arg);
@@ -428,6 +505,79 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         String[] tokens = StringUtil.splitOnFirstSeparator(text, ' ');
         String versionNumber = tokens[0];
         return versionNumber;
+    }
+
+    private void parseLogItem(LineIterator iterator, LogData data) {
+        String commit = null;
+        String merge = null;
+        String author = null;
+        String date = null;
+        // parse headers
+        while (iterator.hasNext()) {
+            String line = iterator.next();
+            if (line.startsWith("commit ")) {
+                commit = parseKeyValuePair("commit ", line);
+            }
+            else if (line.startsWith("Merge: ")) {
+                merge = parseKeyValuePair("Merge: ", line);
+            }
+            else if (line.startsWith("Author: ")) {
+                author = parseKeyValuePair("Author: ", line);
+            }
+            else if (line.startsWith("Date: ")) {
+                date = parseKeyValuePair("Date: ", line);
+            }
+            else if (StringUtil.isEmpty(line)) {
+                break;
+            }
+            else {
+                LOGGER.warn("Unrecognized log line: " + line);
+            }
+        }
+        // parse message
+        String message = parseMessage(iterator);
+        // add log item
+        LogItemData item = new LogItemData(commit, merge, author, date, message);
+        data.getItems().add(item);
+    }
+
+    private String parseKeyValuePair(String key, String line) {
+        return line.substring(key.length()).trim();
+    }
+
+    private String parseMessage(LineIterator iterator) {
+        if (!iterator.hasNext()) {
+            throw new TechnicalException("Expected commit message not available");
+        }
+        StringBuilder message = new StringBuilder();
+        while (iterator.hasNext()) {
+            String line = iterator.next();
+            if (!StringUtil.isEmpty(line)) {
+                if (message.length() > 0) {
+                    message.append(LF);
+                }
+                message.append(line.trim());
+            }
+            else {
+                return message.toString();
+            }
+        }
+        return message.toString();
+    }
+
+    /** Parses file status information like <code>file1.txt -> file2.txt</code>.
+     * @param fileInfo
+     * @return */
+    static RenamedStatusData parseRename(String fileInfo) {
+        String separator = " -> ";
+        int sepIndex1 = fileInfo.indexOf(separator);
+        if (sepIndex1 < 0) {
+            throw new TechnicalException("Unsupported change format: " + fileInfo);
+        }
+        int sepIndex2 = sepIndex1 + separator.length();
+        String fromPath = fileInfo.substring(0, sepIndex1);
+        String toPath = fileInfo.substring(sepIndex2);
+        return new RenamedStatusData(fromPath, toPath);
     }
 
     // ActionWordLibrary implementation ----------------------------------------

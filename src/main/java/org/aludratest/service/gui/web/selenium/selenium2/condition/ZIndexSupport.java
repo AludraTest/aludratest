@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.web.selenium.selenium2;
+package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
 import java.text.MessageFormat;
 
+import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.XPathLocator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidSelectorException;
@@ -26,43 +27,51 @@ import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Performs z-index calculations with Selenium 2.
- * author Marcel Malitz
- * @author Volker Bergmann
- */
+/** Performs z-index calculations with Selenium 2.
+ * @author Marcel Malitz
+ * @author Volker Bergmann */
 public class ZIndexSupport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZIndexSupport.class);
 
     private static final int DEFAULT_Z_INDEX = 0;
 
-    /*
-    	final static private String zIndexSearch = "this.browserbot.findElement('xpath=(//"
-    			+ "iframe[contains(@style, \"z-index\")])[arguments[0]]')"
-    			+ ".getAttribute('style')";
-     */
     private static final String Z_INDEX_SEARCH_XPATH = "//iframe[contains(@style, ''z-index'')])[{0}]";
 
-    private WebDriver driver;
+    private final LocatorSupport locatorSupport;
+    private final WebDriver driver;
 
-    public ZIndexSupport(WebDriver driver) {
-        this.driver = driver;
+    /** Constructor.
+     * @param locatorSupport */
+    public ZIndexSupport(LocatorSupport locatorSupport) {
+        this.locatorSupport = locatorSupport;
+        this.driver = locatorSupport.getDriver();
     }
 
-    /** Checks if a element is blocked by a modal dialog. */
+    /** @return the {@link #locatorSupport} */
+    public LocatorSupport getLocatorSupport() {
+        return locatorSupport;
+    }
+
+    /** Checks if a element is blocked by a modal dialog.
+     * @param element the element to be checked
+     * @return true if the element is in the foreground, false if the element is in the background or absent */
     public boolean isInForeground(WebElement element) {
         return (getCurrentZIndex(element) >= getMaxZIndex());
     }
 
+    // implementation ----------------------------------------------------------
+
     /** To get the z-index (defined in the attribute "style") for the operated element. There are 3 possibilities for retrieving
      * z-index: <br/>
-     * 1) If a z-index is defined for this element or its ancestor, then return this value <br/>
-     * 2) If no z-index is defined for this element and its ancestor, then use the base z-index for this page <br/>
-     * 3) For an element of the type "LabelLocator", the base z-index will be returned
+     * <ol>
+     * <li>If a z-index is defined for this element or its ancestor, then return this value</li>
+     * <li>If no z-index is defined for this element and its ancestor, then use the base z-index for this page</li>
+     * <li>For an element of the type "LabelLocator", the base z-index will be returned</li>
+     * </ol>
      * @param element The element to check.
      * @return current z-Index */
-    public int getCurrentZIndex(WebElement element) {
+    private int getCurrentZIndex(WebElement element) {
         String zIndex = null;
         try {
             do {
@@ -77,12 +86,10 @@ public class ZIndexSupport {
         return value;
     }
 
-    /** To get the biggest value of z-index for all of the elements on current page.
-     *  The element with the biggest value of z-index will be shown in foreground.
-     *  The elements with the lower value of z-index will be shown in background.
-     *  @return the biggest value of z-index on current page
-     */
-    public int getMaxZIndex() {
+    /** To get the biggest value of z-index for all of the elements on current page. The element with the biggest value of z-index
+     * will be shown in foreground. The elements with the lower value of z-index will be shown in background.
+     * @return the biggest value of z-index on current page */
+    private int getMaxZIndex() {
         int zIndex = getBaseZIndex();
         int zIndexCount = 0;
         zIndexCount = getZIndexCount();
@@ -118,8 +125,8 @@ public class ZIndexSupport {
         // If a base value is defined in code, it will overwrite the default value
         try {
             String zIndexSearchXPath = MessageFormat.format(Z_INDEX_SEARCH_XPATH, index);
-            WebElement element = LocatorUtil.findElement(new XPathLocator(zIndexSearchXPath), driver);
-            String tmpElement = (String) executeScript(element.getAttribute("style"), index);
+            WebElement element = locatorSupport.findElementImmediately(new XPathLocator(zIndexSearchXPath));
+            String tmpElement = (String) executeScript(element.getAttribute("style"), driver, index);
             tmpzIndex = getzIndexFromStyle(tmpElement);
         } catch (InvalidSelectorException e) {
             // This may happen for some elements and needs to be ignored

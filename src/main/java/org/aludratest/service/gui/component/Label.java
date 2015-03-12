@@ -16,7 +16,7 @@
 package org.aludratest.service.gui.component;
 
 import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.GUIElementLocator;
 import org.databene.commons.Validator;
 
 /**
@@ -33,7 +33,7 @@ public class Label extends Element<Label> implements ValueComponent {
      * @param aludraGui the underlying {@link AludraGUI} service instance
      * @param locator a locator for the referenced label
      */
-    public Label(AludraGUI aludraGui, Locator locator) {
+    public Label(AludraGUI aludraGui, GUIElementLocator locator) {
         super(aludraGui, locator);
     }
 
@@ -41,7 +41,7 @@ public class Label extends Element<Label> implements ValueComponent {
      *  @param aludraGui the underlying {@link AludraGUI} service instance
      *  @param locator a locator for the referenced element
      *  @param elementName an explicit name to use for the component */
-    public Label(AludraGUI aludraGui, Locator locator, String elementName) {
+    public Label(AludraGUI aludraGui, GUIElementLocator locator, String elementName) {
         super(aludraGui, locator, elementName);
     }
 

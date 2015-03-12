@@ -16,7 +16,7 @@
 package org.aludratest.service.gui.component;
 
 import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.window.TitleLocator;
 
 /**
  * Represents a Window/Frame in a GUI.
@@ -25,28 +25,29 @@ import org.aludratest.service.locator.Locator;
  */
 public class Window extends GUIComponent {
 
-    /**
-     * Constructor.
+    /** Constructor.
      * @param aludraGui the underlying {@link AludraGUI} service instance
-     * @param locator a locator for the referenced window
-     */
-    public Window(AludraGUI aludraGui, Locator locator) {
+     * @param locator a locator for the referenced window */
+    public Window(AludraGUI aludraGui, TitleLocator locator) {
         super(aludraGui, locator);
     }
 
     /** Constructor.
-     *  @param aludraGui the underlying {@link AludraGUI} service instance
-     *  @param locator a locator for the referenced element
-     *  @param elementName an explicit name to use for the window */
-    public Window(AludraGUI aludraGui, Locator locator, String elementName) {
+     * @param aludraGui the underlying {@link AludraGUI} service instance
+     * @param locator a locator for the referenced element
+     * @param elementName an explicit name to use for the window */
+    public Window(AludraGUI aludraGui, TitleLocator locator, String elementName) {
         super(aludraGui, locator, elementName);
     }
 
-    /**
-     * Closes all other open windows.
-     */
+    /** @return the locator */
+    public TitleLocator getLocator() {
+        return (TitleLocator) locator;
+    }
+
+    /** Closes all other open windows. */
     public void closeOthers() {
-        perform().closeOtherWindows(elementType, elementName, locator);
+        perform().closeOtherWindows(elementType, elementName, getLocator());
     }
 
 }

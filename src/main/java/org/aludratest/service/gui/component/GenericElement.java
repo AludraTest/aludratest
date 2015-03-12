@@ -16,31 +16,27 @@
 package org.aludratest.service.gui.component;
 
 import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.GUIElementLocator;
 
 /**
  * GUI element without a specific assignment to a certain GUI component type.
  * @author Volker Bergmann
  */
-public class GenericElement extends Element {
+public class GenericElement extends Element<GenericElement> {
 
-    /**
-     * Constructor.
+    /** Constructor.
      * @param aludraGui the underlying AludraGUI instance
-     * @param locator a {@link Locator} for localizing the associated GUI component
-     */
-    public GenericElement(AludraGUI aludraGui, Locator locator) {
+     * @param locator a {@link GUIElementLocator} for localizing the associated GUI component */
+    public GenericElement(AludraGUI aludraGui, GUIElementLocator locator) {
         super(aludraGui, locator);
     }
 
-    /**
-     * Constructor.
+    /** Constructor.
      * @param aludraGui the underlying AludraGUI instance
-     * @param locator a {@link Locator} for localizing the associated GUI component
-     * @param elementName the name by which to log element access
-     */
-    public GenericElement(AludraGUI aludraGui, Locator locator, String elementName) {
+     * @param locator a {@link GUIElementLocator} for localizing the associated GUI component
+     * @param elementName the name by which to log element access */
+    public GenericElement(AludraGUI aludraGui, GUIElementLocator locator, String elementName) {
         super(aludraGui, locator, elementName);
     }
-    
+
 }
