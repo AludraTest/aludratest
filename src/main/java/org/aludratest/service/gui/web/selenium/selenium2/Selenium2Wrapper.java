@@ -40,7 +40,6 @@ import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownEntry
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementClickable;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementCondition;
-import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementPresenceWithResponseTimeout;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementValuePresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.OptionSelected;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.WindowPresence;
@@ -61,8 +60,10 @@ import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
@@ -74,7 +75,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,8 +94,6 @@ public class Selenium2Wrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(Selenium2Wrapper.class);
 
     // constants ---------------------------------------------------------------
-
-    private static final int SECOND_MILLIS = 1000;
 
     private static final String DROPDOWN_OPTION_VALUE_PROPERTY = "value";
     private static final String DROPDOWN_OPTION_LABEL_PROPERTY = "text";
@@ -141,6 +139,8 @@ public class Selenium2Wrapper {
 
     private WebDriver driver;
 
+    private LocatorSupport locatorSupport;
+
     private URL seleniumUrl;
 
     private WebElement highlightedElement;
@@ -156,6 +156,7 @@ public class Selenium2Wrapper {
             this.usedSeleniumHost = resourceService.acquire();
             this.seleniumUrl = new URL(usedSeleniumHost + "/wd/hub");
             this.driver = newDriver();
+            this.locatorSupport = new LocatorSupport(this.driver, configuration);
         } catch (Exception e) {
             LOGGER.error("Error initializing Selenium 2", e);
             String host = usedSeleniumHost;
@@ -245,7 +246,7 @@ public class Selenium2Wrapper {
         if (actionPending) {
             waitUntilNotBusy();
         }
-        ElementCondition condition = new ElementCondition(locator, visible, enabled);
+        ElementCondition condition = new ElementCondition(locator, locatorSupport, visible, enabled);
         try {
             WebElement element = waitFor(condition, configuration.getTimeout());
             highlight(locator);
@@ -330,7 +331,7 @@ public class Selenium2Wrapper {
     }
 
     private void doubleClick(WebElement element) {
-        element = LocatorUtil.unwrap(element);
+        element = LocatorSupport.unwrap(element);
         new Actions(driver).doubleClick(element).build().perform();
     }
 
@@ -357,7 +358,7 @@ public class Selenium2Wrapper {
     }
 
     private void setValue(GUIElementLocator locator, String value) {
-        WebElement element = findElement(locator);
+        WebElement element = findElementImmediately(locator);
         String id = element.getAttribute("id");
         String fieldType = element.getAttribute("type");
         boolean fallback = true;
@@ -436,7 +437,7 @@ public class Selenium2Wrapper {
     }
 
     public String getValue(GUIElementLocator locator) {
-        return findElement(locator).getAttribute("value");
+        return findElementImmediately(locator).getAttribute("value");
     }
 
     // window operations -------------------------------------------------------
@@ -586,7 +587,7 @@ public class Selenium2Wrapper {
     public void switchToIFrame(GUIElementLocator iframeLocator) {
         if (iframeLocator != null) {
             WebElement element = waitUntilPresent(iframeLocator, configuration.getTimeout());
-            element = LocatorUtil.unwrap(element);
+            element = LocatorSupport.unwrap(element);
             driver.switchTo().frame(element);
         }
         else {
@@ -613,7 +614,7 @@ public class Selenium2Wrapper {
     }
 
     private String[] getPropertyValues(GUIElementLocator locator, String propertyName) {
-        WebElement element = findElement(locator);
+        WebElement element = findElementImmediately(locator);
         Select select = new Select(element);
         List<WebElement> options = select.getOptions();
         ArrayList<String> values = new ArrayList<String>();
@@ -627,7 +628,7 @@ public class Selenium2Wrapper {
     }
 
     public void focus(GUIElementLocator locator) {
-        WebElement element = findElement(locator);
+        WebElement element = findElementImmediately(locator);
         if (!ElementClickable.isClickable(element)) {
             throw new AutomationException("Element not editable");
         }
@@ -659,7 +660,7 @@ public class Selenium2Wrapper {
     }
 
     public String getTable(GUIElementLocator locator, int row, int col) {
-        WebElement table = findElement(locator);
+        WebElement table = findElementImmediately(locator);
         List<WebElement> tbodies = table.findElements(By.tagName("tbody"));
         WebElement rowHolder = (tbodies.size() > 0 ? tbodies.get(0) : table);
         List<WebElement> trs = rowHolder.findElements(By.tagName("tr"));
@@ -689,7 +690,6 @@ public class Selenium2Wrapper {
         }
     }
 
-
     private String mapUrl(String url) {
         return (proxy != null ? proxy.mapTargetToProxyUrl(url) : url);
     }
@@ -702,20 +702,15 @@ public class Selenium2Wrapper {
 
     // wait features -----------------------------------------------------------
 
-    @SuppressWarnings("unchecked")
     public WebElement waitUntilPresent(GUIElementLocator locator, long timeOutInMillis) {
-        try {
-            return waitFor(new ElementPresenceWithResponseTimeout(locator, 2000), timeOutInMillis);
-        }
-        catch (TimeoutException e) {
-            throw new AutomationException("Element not found"); // NOSONAR
-        }
+        return locatorSupport.waitUntilPresent(locator, timeOutInMillis);
     }
 
     @SuppressWarnings("unchecked")
     public void waitUntilClickable(GUIElementLocator locator, long timeOutInMillis) {
         try {
-            waitFor(ExpectedConditions.elementToBeClickable(LocatorUtil.by(locator)), timeOutInMillis);
+            waitFor(ExpectedConditions.elementToBeClickable(LocatorSupport.by(locator)), timeOutInMillis,
+                    NoSuchElementException.class);
         } catch (TimeoutException e) {
             throw new AutomationException("Element not editable"); // NOSONAR
         }
@@ -724,7 +719,7 @@ public class Selenium2Wrapper {
     @SuppressWarnings("unchecked")
     public void waitUntilVisible(GUIElementLocator locator, long timeOutInMillis) {
         try {
-            waitFor(new ElementCondition(locator, true, false), timeOutInMillis);
+            waitFor(new ElementCondition(locator, locatorSupport, true, false), timeOutInMillis, NoSuchElementException.class);
         } catch (TimeoutException e) {
             throw new AutomationException("The element is not visible."); // NOSONAR
         }
@@ -733,7 +728,7 @@ public class Selenium2Wrapper {
     @SuppressWarnings("unchecked")
     public void waitUntilElementNotPresent(final GUIElementLocator locator, long timeOutInMillis) {
         try {
-            waitFor(new ElementAbsence(locator), timeOutInMillis);
+            waitFor(new ElementAbsence(locator, locatorSupport), timeOutInMillis, NoSuchElementException.class);
         }
         catch (TimeoutException e) {
             throw new AutomationException("An element was unexpectedly found"); // NOSONAR
@@ -742,9 +737,9 @@ public class Selenium2Wrapper {
 
     @SuppressWarnings("unchecked")
     public void waitUntilInForeground(final GUIElementLocator locator, long timeOutInMillis) {
-        ElementCondition condition = new ElementCondition(locator, false, false);
+        ElementCondition condition = new ElementCondition(locator, locatorSupport, false, false);
         try {
-            waitFor(condition, timeOutInMillis);
+            waitFor(condition, timeOutInMillis, NoSuchElementException.class);
         }
         catch (TimeoutException e) {
             throw new AutomationException(condition.getMessage());
@@ -754,7 +749,8 @@ public class Selenium2Wrapper {
     @SuppressWarnings("unchecked")
     public void waitForDropDownEntry(final OptionLocator entryLocator, final GUIElementLocator dropDownLocator) {
         try {
-            waitFor(new DropDownEntryPresence(dropDownLocator, entryLocator, this), configuration.getTimeout());
+            waitFor(new DropDownEntryPresence(dropDownLocator, entryLocator, this), configuration.getTimeout(),
+                    NoSuchElementException.class, StaleElementReferenceException.class);
         }
         catch (TimeoutException e) {
             throw new AutomationException("Element not found");
@@ -763,9 +759,9 @@ public class Selenium2Wrapper {
 
     @SuppressWarnings("unchecked")
     public String waitForValue(GUIElementLocator locator) {
-        ElementValuePresence condition = new ElementValuePresence(locator);
+        ElementValuePresence condition = new ElementValuePresence(locator, locatorSupport);
         try {
-            return waitFor(condition, configuration.getTimeout());
+            return waitFor(condition, configuration.getTimeout(), NoSuchElementException.class);
         }
         catch (TimeoutException e) {
             throw new AutomationException(condition.getMessage());
@@ -774,9 +770,9 @@ public class Selenium2Wrapper {
 
     @SuppressWarnings("unchecked")
     public String waitForSelection(GUIElementLocator locator) {
-        OptionSelected condition = new OptionSelected(locator);
+        OptionSelected condition = new OptionSelected(locator, locatorSupport);
         try {
-            return waitFor(condition, configuration.getTimeout());
+            return waitFor(condition, configuration.getTimeout(), NoSuchElementException.class);
         }
         catch (TimeoutException e) {
             throw new AutomationException(condition.getMessage());
@@ -784,13 +780,7 @@ public class Selenium2Wrapper {
     }
 
     private <T> T waitFor(ExpectedCondition<T> condition, long timeOutInMillis, Class<? extends Exception>... exceptionsToIgnore) {
-        long timeoutInSeconds = (timeOutInMillis + SECOND_MILLIS - 1) / SECOND_MILLIS;
-        int sleepInMillis = configuration.getPauseBetweenRetries();
-        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds, sleepInMillis);
-        for (Class<? extends Exception> exceptionToIgnore : exceptionsToIgnore) {
-            wait.ignoring(exceptionToIgnore);
-        }
-        return wait.until(condition);
+        return locatorSupport.waitFor(condition, timeOutInMillis, exceptionsToIgnore);
     }
 
     // HTML source and screenshot provision ------------------------------------
@@ -872,7 +862,7 @@ public class Selenium2Wrapper {
     private void checkHighlightCss() {
         // check if our hidden element is present
         try {
-            findElement(new IdLocator("__aludra_selenium_hidden"), 1000);
+            findElementImmediately(new IdLocator("__aludra_selenium_hidden"));
         }
         catch (Exception e) {
             // add CSS and element
@@ -890,7 +880,7 @@ public class Selenium2Wrapper {
                 // ensure that current document has highlight CSS class
                 checkHighlightCss();
 
-                WebElement elementToHighlight = findElement(locator);
+                WebElement elementToHighlight = findElementImmediately(locator);
                 executeScript("arguments[0].className +=' selenium-highlight'", elementToHighlight);
                 this.highlightedElement = elementToHighlight;
             }
@@ -909,7 +899,7 @@ public class Selenium2Wrapper {
         // first unwrap all possibly wrapped arguments of type WebElement, or JavaScript/JSON will fail
         for (int i = 0; i < arguments.length; i++) {
             if (arguments[i] instanceof WebElement) {
-                arguments[i] = LocatorUtil.unwrap((WebElement) arguments[i]);
+                arguments[i] = LocatorSupport.unwrap((WebElement) arguments[i]);
             }
         }
         // then execute the script
@@ -919,12 +909,8 @@ public class Selenium2Wrapper {
 
     // element lookup ----------------------------------------------------------
 
-    private WebElement findElement(GUIElementLocator locator) {
-        return LocatorUtil.findElementImmediately(locator, driver);
-    }
-
-    private WebElement findElement(GUIElementLocator locator, long timeout) {
-        return LocatorUtil.findElementWithImplicitWait(locator, timeout, driver);
+    private WebElement findElementImmediately(GUIElementLocator locator) {
+        return locatorSupport.findElementImmediately(locator);
     }
 
 }

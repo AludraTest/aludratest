@@ -15,28 +15,36 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
-import org.aludratest.service.gui.web.selenium.selenium2.LocatorUtil;
+import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 
 /** Checks the absence of an element.
  * @author Volker Bergmann */
 public class ElementAbsence implements ExpectedCondition<Boolean> {
 
-    final GUIElementLocator locator;
+    private final GUIElementLocator locator;
+    private final LocatorSupport locatorSupport;
 
     /** Constructor.
-     * @param locator the {@link GUIElementLocator} of the related GUI element */
-    public ElementAbsence(GUIElementLocator locator) {
+     * @param locator the {@link GUIElementLocator} of the related GUI element
+     * @param locatorSupport */
+    public ElementAbsence(GUIElementLocator locator, LocatorSupport locatorSupport) {
         this.locator = locator;
+        this.locatorSupport = locatorSupport;
     }
 
     @Override
     public Boolean apply(WebDriver driver) {
-        WebElement elem = LocatorUtil.findElementImmediately(locator, driver);
-        return (elem == null);
+        try {
+            locatorSupport.findElementImmediately(locator);
+        }
+        catch (NoSuchElementException e) {
+            return true;
+        }
+        return false;
     }
 
     @Override

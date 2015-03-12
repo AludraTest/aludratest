@@ -15,6 +15,7 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
+import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -27,12 +28,15 @@ import org.openqa.selenium.support.ui.Select;
 public class OptionSelected implements ExpectedCondition<String> {
 
     private final GUIElementLocator locator;
+    private final LocatorSupport locatorSupport;
     private String message;
 
     /** Constructor.
-     * @param locator */
-    public OptionSelected(GUIElementLocator locator) {
+     * @param locator
+     * @param locatorSupport */
+    public OptionSelected(GUIElementLocator locator, LocatorSupport locatorSupport) {
         this.locator = locator;
+        this.locatorSupport = locatorSupport;
         this.message = null;
     }
 
@@ -44,7 +48,7 @@ public class OptionSelected implements ExpectedCondition<String> {
     @Override
     public String apply(WebDriver driver) {
         this.message = null;
-        WebElement element = ElementPresence.findElementImmediately(locator, driver);
+        WebElement element = ElementPresence.findElementImmediately(locator, locatorSupport);
         if (element == null) {
             this.message = "Element not found";
             return null;

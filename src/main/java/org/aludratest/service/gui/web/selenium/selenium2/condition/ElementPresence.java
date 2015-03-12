@@ -15,7 +15,7 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
-import org.aludratest.service.gui.web.selenium.selenium2.LocatorUtil;
+import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -25,25 +25,28 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
  * @author Volker Bergmann */
 public class ElementPresence implements ExpectedCondition<WebElement> {
 
-    final GUIElementLocator locator;
+    private final GUIElementLocator locator;
+    private final LocatorSupport locatorSupport;
 
     /** Constructor.
-     * @param locator the {@link GUIElementLocator} of the related GUI element */
-    public ElementPresence(GUIElementLocator locator) {
+     * @param locator the {@link GUIElementLocator} of the related GUI element
+     * @param locatorSupport */
+    public ElementPresence(GUIElementLocator locator, LocatorSupport locatorSupport) {
         this.locator = locator;
+        this.locatorSupport = locatorSupport;
     }
 
     @Override
     public WebElement apply(WebDriver driver) {
-        return findElementImmediately(locator, driver);
+        return findElementImmediately(locator, locatorSupport);
     }
 
     /** Provides the evaluation logic as static public method.
      * @param locator
-     * @param driver
+     * @param locatorSupport
      * @return */
-    public static WebElement findElementImmediately(GUIElementLocator locator, WebDriver driver) {
-        return LocatorUtil.findElementImmediately(locator, driver);
+    public static WebElement findElementImmediately(GUIElementLocator locator, LocatorSupport locatorSupport) {
+        return locatorSupport.findElementImmediately(locator);
     }
 
     @Override

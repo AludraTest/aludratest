@@ -15,6 +15,7 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
+import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -27,16 +28,20 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 public class ElementCondition implements ExpectedCondition<WebElement> {
 
     private GUIElementLocator locator;
+    private ZIndexSupport zIndexSupport;
     private boolean visible;
     private boolean enabled;
+
     private String message;
 
     /** Constructor.
      * @param locator a locator for the element to check
+     * @param locatorSupport
      * @param visible specifies if the element shall be checked for visibility
      * @param enabled specifies if the element shall be check if enabled (clickable) */
-    public ElementCondition(GUIElementLocator locator, boolean visible, boolean enabled) {
+    public ElementCondition(GUIElementLocator locator, LocatorSupport locatorSupport, boolean visible, boolean enabled) {
         this.locator = locator;
+        this.zIndexSupport = new ZIndexSupport(locatorSupport);
         this.visible = visible;
         this.enabled = enabled;
         this.message = null;
@@ -51,13 +56,13 @@ public class ElementCondition implements ExpectedCondition<WebElement> {
     public WebElement apply(WebDriver driver) {
         this.message = null;
         // find element
-        WebElement element = ElementPresence.findElementImmediately(locator, driver);
+        WebElement element = ElementPresence.findElementImmediately(locator, zIndexSupport.getLocatorSupport());
         if (element == null) {
             this.message = "Element not found";
             return null;
         }
         // check if it is in foreground
-        if (!ZIndexSupport.isInForeground(element, driver)) {
+        if (!zIndexSupport.isInForeground(element)) {
             this.message = "Element not in foreground";
             return null;
         }

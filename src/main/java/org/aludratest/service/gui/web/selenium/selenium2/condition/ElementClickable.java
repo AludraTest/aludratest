@@ -17,6 +17,7 @@ package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
 import java.util.Set;
 
+import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.databene.commons.CollectionUtil;
 import org.openqa.selenium.WebDriver;
@@ -34,10 +35,14 @@ public class ElementClickable implements ExpectedCondition<WebElement> {
 
     private String message;
 
+    private final LocatorSupport locatorSupport;
+
     /** Constructor.
-     * @param locator the {@link GUIElementLocator} of the related GUI element */
-    public ElementClickable(GUIElementLocator locator) {
+     * @param locator the {@link GUIElementLocator} of the related GUI element
+     * @param locatorSupport */
+    public ElementClickable(GUIElementLocator locator, LocatorSupport locatorSupport) {
         this.locator = locator;
+        this.locatorSupport = locatorSupport;
         this.message = null;
     }
 
@@ -49,7 +54,7 @@ public class ElementClickable implements ExpectedCondition<WebElement> {
     @Override
     public WebElement apply(WebDriver driver) {
         this.message = null;
-        WebElement element = ElementPresence.findElementImmediately(locator, driver);
+        WebElement element = ElementPresence.findElementImmediately(locator, locatorSupport);
         if (element == null) {
             this.message = "Element not found";
             return null;
