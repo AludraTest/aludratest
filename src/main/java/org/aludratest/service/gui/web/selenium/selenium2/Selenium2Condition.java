@@ -20,8 +20,6 @@ import org.aludratest.service.gui.web.WebGUICondition;
 import org.aludratest.service.gui.web.selenium.selenium1.Selenium1Condition;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.window.WindowLocator;
-import org.aludratest.util.DataUtil;
-import org.databene.commons.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,15 +174,13 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
     }
 
     private boolean checkLabels(String[] labels, GUIElementLocator elementLocator, boolean contains) {
-        final String[] actualLabels = wrapper.getLabels(elementLocator);
-        final String mismatches;
-        if (contains) {
-            mismatches = DataUtil.containsStrings(labels, actualLabels);
+        try {
+            wrapper.waitForDropDownEntries(elementLocator, labels, contains);
+            return true;
         }
-        else {
-            mismatches = DataUtil.expectEqualArrays(labels, actualLabels);
+        catch (AssertionError e) {
+            return false;
         }
-        return StringUtil.isEmpty(mismatches);
     }
 
 }

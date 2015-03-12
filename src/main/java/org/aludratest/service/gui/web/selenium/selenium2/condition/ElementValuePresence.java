@@ -17,6 +17,7 @@ package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
 import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -47,8 +48,11 @@ public class ElementValuePresence implements ExpectedCondition<String> {
     @Override
     public String apply(WebDriver driver) {
         this.message = null;
-        WebElement element = ElementPresence.findElementImmediately(locator, locatorSupport);
-        if (element == null) {
+        WebElement element = null;
+        try {
+            element = ElementPresence.findElementImmediately(locator, locatorSupport);
+        }
+        catch (NoSuchElementException e) {
             this.message = "Element not found";
             return null;
         }
