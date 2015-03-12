@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -504,7 +505,20 @@ public class Selenium2Wrapper {
     public Map<String, String> getAllWindowHandlesAndTitles() {
         Map<String, String> handlesAndTitles = new HashMap<String, String>();
         // store handle and title of current window
-        String initialWindowHandle = driver.getWindowHandle();
+        String initialWindowHandle;
+        try {
+            initialWindowHandle = driver.getWindowHandle();
+        }
+        catch (NoSuchWindowException e) {
+            // fallback to next best window - current window has just been closed!
+            Set<String> handles = driver.getWindowHandles();
+            if (handles.isEmpty()) {
+                return Collections.emptyMap();
+            }
+            initialWindowHandle = handles.iterator().next();
+            driver.switchTo().window(initialWindowHandle);
+        }
+
         String title = driver.getTitle();
         handlesAndTitles.put(initialWindowHandle, title);
         // iterate all other windows by handle and get their titles
@@ -786,9 +800,8 @@ public class Selenium2Wrapper {
     // HTML source and screenshot provision ------------------------------------
 
     public Attachment getPageSource() {
-        final String pageSource = driver.getPageSource();
-        final Attachment attachment = new StringAttachment("Source", pageSource, configuration.getPageSourceAttachmentExtension());
-        return attachment;
+        String pageSource = driver.getPageSource();
+        return new StringAttachment("Source", pageSource, configuration.getPageSourceAttachmentExtension());
     }
 
     public Attachment getScreenshotOfThePage() {
