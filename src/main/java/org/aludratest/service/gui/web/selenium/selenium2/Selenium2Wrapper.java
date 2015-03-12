@@ -39,8 +39,8 @@ import org.aludratest.service.gui.web.selenium.ProxyPool;
 import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
 import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
 import org.aludratest.service.gui.web.selenium.httpproxy.AuthenticatingHttpProxy;
-import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownBoxOptionLabelsPresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.AnyDropDownOptions;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownBoxOptionLabelsPresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownOptionLocatable;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementClickable;
@@ -514,12 +514,19 @@ public class Selenium2Wrapper {
             if (handles.isEmpty()) {
                 return Collections.emptyMap();
             }
+
             initialWindowHandle = handles.iterator().next();
             driver.switchTo().window(initialWindowHandle);
         }
 
-        String title = driver.getTitle();
-        handlesAndTitles.put(initialWindowHandle, title);
+        try {
+            String title = driver.getTitle();
+            handlesAndTitles.put(initialWindowHandle, title);
+        }
+        catch (WebDriverException e) {
+            // ignore current window
+        }
+
         // iterate all other windows by handle and get their titles
         String currentHandle = initialWindowHandle;
         Set<String> handles = getWindowHandles();
@@ -529,17 +536,27 @@ public class Selenium2Wrapper {
                 try {
                     driver.switchTo().window(handle);
                     currentHandle = handle;
-                    handlesAndTitles.put(handle, driver.getTitle());
+                    String title;
+                    handlesAndTitles.put(handle, title = driver.getTitle());
+                    LOGGER.debug("Window with handle {} has title '{}'", handle, title);
                 }
                 catch (NoSuchWindowException e) {
                     // ignore this window
                 }
-                LOGGER.debug("Window with handle {} has title '{}'", handle, title);
+                catch (WebDriverException e) {
+                    // ignore this window
+                }
             }
         }
         // switch back to the original window
         if (!currentHandle.equals(initialWindowHandle)) {
-            driver.switchTo().window(initialWindowHandle);
+            try {
+                driver.switchTo().window(initialWindowHandle);
+            }
+            catch (WebDriverException e) {
+                // selenium could now be on an unexpected window
+                LOGGER.warn("Could not switch back to initial window after window iteration. Active window is now unspecified.");
+            }
         }
         return handlesAndTitles;
     }
