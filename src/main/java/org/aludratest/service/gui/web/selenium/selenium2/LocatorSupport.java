@@ -56,7 +56,6 @@ public class LocatorSupport {
 
     private static final int SECOND_MILLIS = 1000;
     private static final int DEFAULT_IMPLICIT_WAIT_MILLIS = 100;
-    private static final int ISSUE_402_HANGING_TIMEOUT = 3000;
 
     private final WebDriver driver;
     private final SeleniumWrapperConfiguration config;
@@ -90,7 +89,7 @@ public class LocatorSupport {
                 return findElementImmediately(locator);
             }
         };
-        Callable<WebElement> finderWithTimeout = TimeoutService.createCallableWithTimeout(finder, ISSUE_402_HANGING_TIMEOUT);
+        Callable<WebElement> finderWithTimeout = TimeoutService.createCallableWithTimeout(finder, config.getTimeout());
         try {
             return RetryService.call(finderWithTimeout, java.util.concurrent.TimeoutException.class, 1);
         }
