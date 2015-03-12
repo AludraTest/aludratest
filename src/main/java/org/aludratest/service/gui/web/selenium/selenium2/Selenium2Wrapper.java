@@ -18,6 +18,8 @@ package org.aludratest.service.gui.web.selenium.selenium2;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -786,8 +788,18 @@ public class Selenium2Wrapper {
     // HTML source and screenshot provision ------------------------------------
 
     public Attachment getPageSource() {
-        final String pageSource = driver.getPageSource();
-        final Attachment attachment = new StringAttachment("Source", pageSource, configuration.getPageSourceAttachmentExtension());
+        Attachment attachment;
+        try {
+            String pageSource = driver.getPageSource();
+            attachment = new StringAttachment("Source", pageSource, configuration.getPageSourceAttachmentExtension());
+        }
+        catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            pw.flush();
+            attachment = new StringAttachment("Page source retrieval error", sw.toString(), "txt");
+        }
         return attachment;
     }
 
