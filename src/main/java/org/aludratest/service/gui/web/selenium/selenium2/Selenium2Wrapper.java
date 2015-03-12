@@ -307,6 +307,9 @@ public class Selenium2Wrapper {
         }
 
         if (wde != null) {
+            if (message == null) {
+                message = wde.getMessage();
+            }
             // "not clickable" exception
             Pattern p = Pattern.compile("(unknown error: )?(.* not clickable .*)");
             Matcher m;
