@@ -21,12 +21,15 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import junit.framework.AssertionFailedError;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.PerformanceFailure;
@@ -36,7 +39,9 @@ import org.aludratest.service.gui.web.selenium.ProxyPool;
 import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
 import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
 import org.aludratest.service.gui.web.selenium.httpproxy.AuthenticatingHttpProxy;
-import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownEntryPresence;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownBoxOptionLabelsPresence;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.AnyDropDownOptions;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownOptionLocatable;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementClickable;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementCondition;
@@ -92,11 +97,6 @@ import com.thoughtworks.selenium.SeleniumException;
 public class Selenium2Wrapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Selenium2Wrapper.class);
-
-    // constants ---------------------------------------------------------------
-
-    private static final String DROPDOWN_OPTION_VALUE_PROPERTY = "value";
-    private static final String DROPDOWN_OPTION_LABEL_PROPERTY = "text";
 
     // scripts -----------------------------------------------------------------
 
@@ -504,7 +504,20 @@ public class Selenium2Wrapper {
     public Map<String, String> getAllWindowHandlesAndTitles() {
         Map<String, String> handlesAndTitles = new HashMap<String, String>();
         // store handle and title of current window
-        String initialWindowHandle = driver.getWindowHandle();
+        String initialWindowHandle;
+        try {
+            initialWindowHandle = driver.getWindowHandle();
+        }
+        catch (NoSuchWindowException e) {
+            // fallback to next best window - current window has just been closed!
+            Set<String> handles = driver.getWindowHandles();
+            if (handles.isEmpty()) {
+                return Collections.emptyMap();
+            }
+            initialWindowHandle = handles.iterator().next();
+            driver.switchTo().window(initialWindowHandle);
+        }
+
         String title = driver.getTitle();
         handlesAndTitles.put(initialWindowHandle, title);
         // iterate all other windows by handle and get their titles
@@ -600,31 +613,6 @@ public class Selenium2Wrapper {
         boolean returnValue = (Boolean) executeScript(HAS_FOCUS_SCRIPT, element);
         doAfterDelegate(-1, "hasFocus");
         return returnValue;
-    }
-
-    public String[] getLabels(GUIElementLocator locator) {
-        return getPropertyValues(locator, DROPDOWN_OPTION_LABEL_PROPERTY);
-    }
-
-    public String[] getValues(final GUIElementLocator locator) {
-        doBeforeDelegate(locator, true, false, false);
-        String[] returnValue = getPropertyValues(locator, DROPDOWN_OPTION_VALUE_PROPERTY);
-        doAfterDelegate(-1, "getValues");
-        return returnValue;
-    }
-
-    private String[] getPropertyValues(GUIElementLocator locator, String propertyName) {
-        WebElement element = findElementImmediately(locator);
-        Select select = new Select(element);
-        List<WebElement> options = select.getOptions();
-        ArrayList<String> values = new ArrayList<String>();
-        for (WebElement option : options) {
-            String value = option.getAttribute(propertyName);
-            if (value != null) {
-                values.add(value);
-            }
-        }
-        return values.toArray(new String[values.size()]);
     }
 
     public void focus(GUIElementLocator locator) {
@@ -747,13 +735,51 @@ public class Selenium2Wrapper {
     }
 
     @SuppressWarnings("unchecked")
-    public void waitForDropDownEntry(final OptionLocator entryLocator, final GUIElementLocator dropDownLocator) {
+    public String[] waitForAnyDropDownOptionLabels(final GUIElementLocator dropDownLocator) {
+        AnyDropDownOptions condition = new AnyDropDownOptions(dropDownLocator, AnyDropDownOptions.DROPDOWN_OPTION_LABEL_PROPERTY,
+                locatorSupport);
         try {
-            waitFor(new DropDownEntryPresence(dropDownLocator, entryLocator, this), configuration.getTimeout(),
-                    NoSuchElementException.class, StaleElementReferenceException.class);
+            return waitFor(condition, configuration.getTimeout(), NoSuchElementException.class,
+                    StaleElementReferenceException.class);
         }
         catch (TimeoutException e) {
-            throw new AutomationException("Element not found");
+            throw new AutomationException(condition.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public String[] waitForAnyDropDownOptionValues(final GUIElementLocator dropDownLocator) {
+        AnyDropDownOptions condition = new AnyDropDownOptions(dropDownLocator, AnyDropDownOptions.DROPDOWN_OPTION_VALUE_PROPERTY,
+                locatorSupport);
+        try {
+            return waitFor(condition, configuration.getTimeout(), NoSuchElementException.class,
+                    StaleElementReferenceException.class);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void waitForDropDownEntryLocatablity(final OptionLocator entryLocator, final GUIElementLocator dropDownLocator) {
+        DropDownOptionLocatable condition = new DropDownOptionLocatable(dropDownLocator, entryLocator, locatorSupport);
+        try {
+            waitFor(condition, configuration.getTimeout(), NoSuchElementException.class, StaleElementReferenceException.class);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void waitForDropDownEntries(GUIElementLocator dropDownLocator, String[] labels, boolean contains) {
+        DropDownBoxOptionLabelsPresence condition = new DropDownBoxOptionLabelsPresence(dropDownLocator, labels, contains,
+                locatorSupport);
+        try {
+            waitFor(condition, configuration.getTimeout(), NoSuchElementException.class, StaleElementReferenceException.class);
+        }
+        catch (TimeoutException e) {
+            throw new AssertionFailedError(condition.getMessage());
         }
     }
 
@@ -786,9 +812,8 @@ public class Selenium2Wrapper {
     // HTML source and screenshot provision ------------------------------------
 
     public Attachment getPageSource() {
-        final String pageSource = driver.getPageSource();
-        final Attachment attachment = new StringAttachment("Source", pageSource, configuration.getPageSourceAttachmentExtension());
-        return attachment;
+        String pageSource = driver.getPageSource();
+        return new StringAttachment("Source", pageSource, configuration.getPageSourceAttachmentExtension());
     }
 
     public Attachment getScreenshotOfThePage() {

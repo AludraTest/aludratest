@@ -22,8 +22,6 @@ import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.service.gui.web.WebGUIInteraction;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.XPathLocator;
-import org.aludratest.service.locator.option.IndexLocator;
-import org.aludratest.service.locator.option.LabelLocator;
 import org.aludratest.service.locator.option.OptionLocator;
 import org.aludratest.service.locator.window.TitleLocator;
 import org.aludratest.service.locator.window.WindowLocator;
@@ -122,7 +120,7 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     public void selectDropDownEntry(String elementType, String operation,
             GUIElementLocator dropDownLocator, OptionLocator entryLocator,
             int taskCompletionTimeout) {
-        checkLabels(entryLocator, dropDownLocator);
+        wrapper.waitForDropDownEntryLocatablity(entryLocator, dropDownLocator);
         wrapper.select(dropDownLocator, entryLocator, taskCompletionTimeout);
     }
 
@@ -282,27 +280,6 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     public String evalXPathAsString(String xpath) {
         String html = new String(wrapper.getPageSource().getFileData(), DataUtil.UTF_8);
         return DataUtil.evalXPathInHTMLAsString(xpath, html);
-    }
-
-    // private methods ---------------------------------------------------------
-
-    private void checkLabels(final OptionLocator entryLocator, final GUIElementLocator dropDownLocator) {
-        wrapper.waitForDropDownEntry(entryLocator, dropDownLocator);
-        String[] actualLabels = wrapper.getLabels(dropDownLocator);
-        if (entryLocator instanceof LabelLocator) {
-            String mismatches = DataUtil.containsString(entryLocator.toString(), actualLabels);
-            if (mismatches.length() > 0) {
-                throw new AutomationException("The expected labels are not contained "
-                        +
-                        "in the actual labels. Following Label(s) is/are missing: " +
-                        mismatches);
-            }
-        } else if (entryLocator instanceof IndexLocator) {
-            IndexLocator iLoc = (IndexLocator) entryLocator;
-            if (iLoc.getIndex() >= actualLabels.length) {
-                throw new AutomationException("The requested index " + iLoc.getIndex() + " does not exist");
-            }
-        }
     }
 
 }

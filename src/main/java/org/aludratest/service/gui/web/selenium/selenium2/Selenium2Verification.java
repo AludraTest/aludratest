@@ -176,23 +176,12 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
         waitForMatch(provider, validator);
     }
 
-    private void checkLabels(String[] labels, GUIElementLocator elementLocator, boolean contains) {
-        final String[] actualLabels = wrapper.getLabels(elementLocator);
-        final String mismatches;
-        if (contains) {
-            mismatches = DataUtil.containsStrings(labels, actualLabels);
-            if (mismatches.length() > 0) {
-                throw new FunctionalFailure("The expected labels are not contained " +
-                        "in the actual labels. Following Label(s) is/are missing: " +
-                        mismatches);
-            }
-        } else {
-            mismatches = DataUtil.expectEqualArrays(labels, actualLabels);
-            if (!StringUtil.isEmpty(mismatches)) {
-                throw new FunctionalFailure("The actual labels are not equal " +
-                        "to the expected ones. As follows the unequal pairs " +
-                        "(expected!=actual): " + mismatches);
-            }
+    private void checkLabels(String[] labels, GUIElementLocator dropDownLocator, boolean contains) {
+        try {
+            wrapper.waitForDropDownEntries(dropDownLocator, labels, contains);
+        }
+        catch (AssertionError e) {
+            throw new FunctionalFailure(e.getMessage());
         }
     }
 
