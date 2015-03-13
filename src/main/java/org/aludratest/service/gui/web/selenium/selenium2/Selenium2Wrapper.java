@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,6 +61,7 @@ import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.BinaryAttachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.aludratest.util.data.helper.DataMarkerCheck;
+import org.aludratest.util.retry.RetryService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.By;
@@ -307,6 +309,9 @@ public class Selenium2Wrapper {
         }
 
         if (wde != null) {
+            if (message == null) {
+                message = wde.getMessage();
+            }
             // "not clickable" exception
             Pattern p = Pattern.compile("(unknown error: )?(.* not clickable .*)");
             Matcher m;
@@ -525,6 +530,7 @@ public class Selenium2Wrapper {
         }
         catch (WebDriverException e) {
             // ignore current window
+            LOGGER.warn("Could not determine title of current window. Assuming window has just been closed.");
         }
 
         // iterate all other windows by handle and get their titles
@@ -545,6 +551,8 @@ public class Selenium2Wrapper {
                 }
                 catch (WebDriverException e) {
                     // ignore this window
+                    LOGGER.warn("WebDriverException when querying window with handle " + handle
+                            + ". Assuming window has just been closed.");
                 }
             }
         }
@@ -607,9 +615,33 @@ public class Selenium2Wrapper {
     }
 
     private Set<String> getWindowHandles() {
-        Set<String> handles = driver.getWindowHandles();
-        LOGGER.debug("getWindowHandles() -> {}", handles);
-        return handles;
+        // try up to three times when getting strange WebDriverExceptions
+        Callable<Set<String>> callable = new Callable<Set<String>>() {
+            @Override
+            public Set<String> call() throws Exception {
+                try {
+                    Set<String> handles = driver.getWindowHandles();
+                    LOGGER.debug("getWindowHandles() -> {}", handles);
+                    return handles;
+                }
+                catch (Exception e) {
+                    // wait a little bit in case of exception, e.g. for browser window to close
+                    try {
+                        Thread.sleep(100);
+                    }
+                    catch (InterruptedException ie) {
+                    }
+                    throw e;
+                }
+            }
+        };
+        try {
+            return RetryService.call(callable, WebDriverException.class, 2);
+        }
+        catch (Throwable t) {
+            LOGGER.error("Could not retrieve window handles", t);
+            return Collections.emptySet();
+        }
     }
 
     // iframe operations -------------------------------------------------------
