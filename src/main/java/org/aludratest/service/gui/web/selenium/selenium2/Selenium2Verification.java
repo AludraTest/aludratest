@@ -60,8 +60,8 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
         try {
             wrapper.waitUntilClickable(locator, getTimeout());
         }
-        catch (Exception e) { // NOSONAR
-            throw new FunctionalFailure("Element not editable");
+        catch (AutomationException e) { // NOSONAR
+            throw new FunctionalFailure(e.getMessage());
         }
     }
 
@@ -74,7 +74,7 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
         catch (FunctionalFailure e) {
             throw e;
         }
-        catch (Exception e) { // NOSONAR
+        catch (AutomationException e) { // NOSONAR
             // this is the desired outcome
         }
     }

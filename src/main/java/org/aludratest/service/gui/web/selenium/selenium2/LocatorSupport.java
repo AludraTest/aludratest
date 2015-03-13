@@ -33,6 +33,7 @@ import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.IdLocator;
 import org.aludratest.service.locator.element.LabelLocator;
 import org.aludratest.service.locator.element.XPathLocator;
+import org.aludratest.util.AludraTestUtil;
 import org.aludratest.util.retry.RetryService;
 import org.aludratest.util.timeout.TimeoutService;
 import org.openqa.selenium.By;
@@ -54,6 +55,7 @@ public class LocatorSupport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocatorSupport.class);
 
+    private static final int MAX_RETRIES_ON_STALE_ELEMENT = 3;
     private static final int SECOND_MILLIS = 1000;
     private static final int DEFAULT_IMPLICIT_WAIT_MILLIS = 100;
 
@@ -234,8 +236,6 @@ public class LocatorSupport {
 
     class WebElementProxyHandler implements InvocationHandler {
 
-        private static final int MAX_RETRIES_ON_STALE_ELEMENT = 3;
-
         private GUIElementLocator locator;
         private WebElement realElement;
         private long timeOutInMillis;
@@ -257,22 +257,25 @@ public class LocatorSupport {
         }
 
         private Object invokeRealElement(Method method, Object[] args) throws IllegalAccessException, InvocationTargetException {
-            StaleElementReferenceException exception = null;
+            StaleElementReferenceException staleEx = null;
             // try to get z order up to 3 times
             for (int invocationCount = 0; invocationCount < MAX_RETRIES_ON_STALE_ELEMENT; invocationCount++) {
                 try {
                     return method.invoke(realElement, args);
                 }
-                catch (StaleElementReferenceException e) {
-                    // ... on failure, catch and store the exception...
-                    exception = e;
-                    // relocate the element
-                    this.realElement = waitUntilPresent(locator, timeOutInMillis);
-                    // and repeat (or finish) the loop
+                catch (InvocationTargetException invocationEx) {
+                    Throwable cause = AludraTestUtil.unwrapInvocationTargetException(invocationEx);
+                    if (cause instanceof StaleElementReferenceException) {
+                        // ... on failure, catch and store the exception...
+                        staleEx = (StaleElementReferenceException) cause;
+                        // relocate the element
+                        this.realElement = waitUntilPresent(locator, timeOutInMillis);
+                        // and repeat (or finish) the loop
+                    }
                 }
             }
             // code has repeatedly failed, so forward the last exception
-            throw exception;
+            throw staleEx;
         }
 
     }
