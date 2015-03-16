@@ -384,7 +384,7 @@ public class Selenium2Wrapper {
             // validate success
             if (value.equals(element.getAttribute("value"))) {
                 fallback = false;
-                executeScript(FIRE_ONCHANGE_SCRIPT, element);
+                LOGGER.debug("setValue with JavaScript successful for " + id);
             }
         }
 
@@ -402,6 +402,7 @@ public class Selenium2Wrapper {
             }
             element.sendKeys(value);
         }
+        executeScript(FIRE_ONCHANGE_SCRIPT, element);
     }
 
     public void sendKeys(GUIElementLocator locator, String keys, int taskCompletionTimeout) {
