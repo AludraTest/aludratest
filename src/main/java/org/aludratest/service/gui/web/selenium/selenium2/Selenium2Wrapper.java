@@ -368,8 +368,21 @@ public class Selenium2Wrapper {
         String fieldType = element.getAttribute("type");
         boolean fallback = true;
         if (!DataMarkerCheck.isNull(id) || "file".equals(fieldType)) {
-            executeScript("document.getElementById('" + id + "').setAttribute('value', '" + value.replace("'", "\\'")
-                    + "')");
+            String script = null;
+            try {
+                executeScript(script = "document.getElementById('" + id + "').setAttribute('value', '"
+                        + value.replace("'", "\\'") + "')");
+            }
+            catch (WebDriverException e) {
+                if (e.getMessage() != null && e.getMessage().contains("Unexpected token")) {
+                    // chain two exceptions to trace failed script as well as value characters
+                    AutomationException scriptFailure = new AutomationException("Failed JavaScript execution for script: "
+                            + script, e);
+                    throw new AutomationException(
+                            "Invalid value for field. Check your input data for illegal characters like e.g. zero-width spaces. Value as character array: "
+                                    + debugCharacters(value), scriptFailure);
+                }
+            }
             // validate success
             if (value.equals(element.getAttribute("value"))) {
                 fallback = false;
@@ -985,6 +998,20 @@ public class Selenium2Wrapper {
 
     private WebElement findElementImmediately(GUIElementLocator locator) {
         return locatorSupport.findElementImmediately(locator);
+    }
+
+    // debugging for invalid input values for setValue -------------------------
+
+    private String debugCharacters(String value) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : value.toCharArray()) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append("0x").append(Integer.toHexString(c));
+        }
+
+        return sb.toString();
     }
 
 }
