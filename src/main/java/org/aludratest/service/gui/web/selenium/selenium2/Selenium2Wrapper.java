@@ -44,7 +44,6 @@ import org.aludratest.service.gui.web.selenium.selenium2.condition.AnyDropDownOp
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownBoxOptionLabelsPresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownOptionLocatable;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
-import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementClickable;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementValuePresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.OptionSelected;
@@ -80,7 +79,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -665,10 +663,7 @@ public class Selenium2Wrapper {
     }
 
     public void focus(GUIElementLocator locator) {
-        WebElement element = findElementImmediately(locator);
-        if (!ElementClickable.isClickable(element)) {
-            throw new AutomationException("Element not editable");
-        }
+        WebElement element = waitUntilClickable(locator, configuration.getTimeout());
         executeScript("arguments[0].focus()", element);
     }
 
@@ -744,12 +739,12 @@ public class Selenium2Wrapper {
     }
 
     @SuppressWarnings("unchecked")
-    public void waitUntilClickable(GUIElementLocator locator, long timeOutInMillis) {
+    public WebElement waitUntilClickable(GUIElementLocator locator, long timeOutInMillis) {
+        ElementCondition condition = new ElementCondition(locator, locatorSupport, true, true);
         try {
-            waitFor(ExpectedConditions.elementToBeClickable(LocatorSupport.by(locator)), timeOutInMillis,
-                    NoSuchElementException.class);
+            return waitFor(condition, timeOutInMillis, NoSuchElementException.class);
         } catch (TimeoutException e) {
-            throw new AutomationException("Element not editable"); // NOSONAR
+            throw new AutomationException(condition.getMessage()); // NOSONAR
         }
     }
 
