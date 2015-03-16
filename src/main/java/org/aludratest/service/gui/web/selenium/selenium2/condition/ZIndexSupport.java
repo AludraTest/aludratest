@@ -41,6 +41,8 @@ public class ZIndexSupport {
     private final LocatorSupport locatorSupport;
     private final WebDriver driver;
 
+    // constructor -------------------------------------------------------------
+
     /** Constructor.
      * @param locatorSupport */
     public ZIndexSupport(LocatorSupport locatorSupport) {
@@ -48,10 +50,14 @@ public class ZIndexSupport {
         this.driver = locatorSupport.getDriver();
     }
 
+    // properties --------------------------------------------------------------
+
     /** @return the {@link #locatorSupport} */
     public LocatorSupport getLocatorSupport() {
         return locatorSupport;
     }
+
+    // operational interface ---------------------------------------------------
 
     /** Checks if a element is blocked by a modal dialog.
      * @param element the element to be checked
@@ -76,7 +82,7 @@ public class ZIndexSupport {
         try {
             do {
                 zIndex = element.getCssValue("z-index");
-                element = element.findElement(By.xpath(".."));
+                element = locatorSupport.getParent(element);
             } while ("auto".equals(zIndex) && element != null);
         } catch (InvalidSelectorException e) {
             // this occurs when having reached the root element
