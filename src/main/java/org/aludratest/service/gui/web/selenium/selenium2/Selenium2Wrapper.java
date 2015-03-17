@@ -293,7 +293,7 @@ public class Selenium2Wrapper {
         }
     }
 
-    public void handleSeleniumException(Throwable e) {
+    private void handleSeleniumException(Throwable e) {
         String message = e.getMessage();
 
         // check if there is a WebDriverException
