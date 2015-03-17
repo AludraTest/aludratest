@@ -1,0 +1,64 @@
+== Web GUI Service ==
+Synonym: <code>AludraWebGUI</code>
+
+The Web GUI Service provides interaction with browsers and web applications.
+
+Currently two implementations exist:
+*<code>AludraSelenium1</code> integrates with selenium 1 / selenium RC
+*<code>AludraSelenium2</code> integrates with selenium 2 / webdriver
+
+Web GUI interacts with <code>Page</code>s, <code>UIMap</code>s and <code>GUIComponent</code>s.
+
+=== Usage ===
+
+==== Get a browser ====
+
+
+==== Create a Page =====
+A <code>Page</code> is an <code>ActionWordLibrary</code> and represents the actions that can be performed on the corresponding screen or web page.
+
+It follows to ''page object principle'' described on selenium web site with the difference, that AludraTest pages must not create <code>GUIComponent</code>s or <code>Locator</code>s. 
+
+===== Check Page Flow =====
+One of the most interesting aspects of the page object principle is verifying current sate of application under test.
+
+AludraTest will execute <code>checkCorrectPage()</code> on every creation of a page. The method is expected to check, if the correct page is shown, e.g. by searching for specific <code>GUICompoent</code>s.
+
+To insure pages are created at the right time, every action as to return a new instance of the page it expects to be as post condition.
+
+===== Reuse =====
+
+The public methods of a page are the actions. Actions differ from each other by subsequent steps they perform or the post condition.
+
+The ''find'' actions may fill in exactly the same search fields, but the application may behave different depending on search result:
+*<code>findZero(SearchData data)</code> will show a pop-up and stay on search page
+*<code>findOne(SearchData data)</code> will show the single matching record on the records page directly
+*<code>findMany(SearchData data)</code> will show a result set page with two or more result sets
+
+To leverage reuse, we recommend to extract the ''fill the fields work'' to private working method <code>void fillSerachFields(SearchData data)</code>. 
+
+==== Create an UIMap ====
+UIMaps provide a business or domain abstraction layer to the technical representation for the page.
+
+They factories that create <code>GUICompoent</code>s.
+
+They do not hold any state.
+
+The only logic they shall provide are calculation of locators for tables and cells in the meaning of jump distance of the second row is represented by the 4th table row tag.
+
+==== Create a UIComponent ====
+Create one factory method per GUICompoent visible on a screen within the corresponding UIMap.
+
+<code>
+  public Button ok() {
+    return new Button(myGuiServiceInstance, new IDLocator(":bt_ok"));
+  }
+</code>
+
+==== Locators ====
+Locators provide the technical access to specific GUICompoenent. Several locator for different technologies are provided, e.g. ID, Name, CSS, XPath.
+
+Please refer to JavaDoc <code>org.aludratest.service.locator</code> and sub packages.
+
+=== Links ===
+*[[AludraTest Services]]

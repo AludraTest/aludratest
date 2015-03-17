@@ -1,0 +1,9 @@
+== Command Line Service ==
+
+The service provide interaction with the command line interface:
+*Windows -> cmd
+*Linux -> shell / bash
+*MacOS -> terminal
+
+=== Links ===
+*see JavaDoc <code>org.aludratest.service.cmdline</code>

@@ -97,7 +97,7 @@ After a test is finished, the AludraTest framework closes all services by callin
 
 Complex services often require the possibility to configure the service, in many cases it is even required to use different configurations for different tests. AludraTest has a complex Configuration Component which can be used by services just by extending '''AbstractConfigurableAludraService''' instead of '''AbstractAludraService'''. Please refer to [[Service Configuration]] on information how you can configure your service, and refer to the Javadoc of the interface '''Configurable''' to learn how your service instance will receive the configuration.
 
-== Accessing the new service ==
+=== Accessing the new service ===
 
 In order to access the service in a test run, one has to assign the service implementation to the service interface in the configuration file <code>aludraservice.properties</code>, e.g.
 

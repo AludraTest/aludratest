@@ -1,0 +1,64 @@
+== Create a test case ==
+
+AludraTest use y syntax similar to junit.
+* a test class shall extend '''org.aludratest.AludraTestCase'''
+* a test method has to be annotated with '''org.aludratest.testcase.Test'''
+
+A minimal test case would be:
+<code>
+  import org.aludratest.AludraTestCase;
+  import org.aludratest.testcase.Test;
+ 
+  public class MyTestClass extends AludraTestCase {
+ 
+    @Test
+    public void myTestMethod() {
+      logInfo("myTestMethod was called");
+    }
+  }
+</code>
+
+=== Set-up and tear-down methods ===
+
+Often, certain functionality has to be invoked before (set-up) or after (tear-down) test execution. This can be achieved by putting relevant code into particular methods. Such methods have the following requirements:
+
+* be '''public'''
+* do not be '''static'''
+* have return type '''void'''
+* have a '''@Before''' (set-up) or '''@After''' (tear-down) annotation
+
+Any test class may have several methods marked with @Before or @After, also inherited methods are executed.
+
+If a test class has several test methods, each @Before method is called before each test method and each @After method after each test method.
+
+Extended example:
+<code>
+ import org.aludratest.testcase.After;
+ import org.aludratest.testcase.AludraTestCase;
+ import org.aludratest.testcase.Before;
+ import org.aludratest.testcase.Test;
+ 
+ public class MyTestClass extends AludraTestCase {
+ 
+   @Before
+   public void setUp() {
+     System.out.println("setUp()");
+   }
+ 
+   @After
+   public void tearDown() {
+     System.out.println("tearDown()");
+   }
+
+   @Test
+   public void myTestMethod() {
+     logInfo("myTestMethod was called");
+   }
+   
+   @Parallel // force the data sets to run parallel
+   @Source(uri="testSource.xls", segment="sheet1") 
+   public void testTestWithData(Date date, int value) {
+     System.out.println("testWithData() " + date + ", " + value);
+   }
+ }
+</code>

@@ -1,0 +1,96 @@
+== Data Drive a test ==
+
+Test cases (methods) define an expected behavior. Especially when performing negative tests, e.g. input validation, the behavior is always the same, but input data and the expected error message differ.
+
+AludraTest offers a possibility to reuse test cases with different data by annotating the test method with a data source provider (<code>@Source</code>). 
+
+Test methods can have parameters to receive test data from data sources, e.g. an Excel sheet. For this purpose the annotation '''org.aludratest.testcase.data.Source''' can be used. There are two different ways: to apply the annotation:
+# '''method''' data source or 
+# '''parameter''' data source
+
+The parameters have to comply with JavaBean convention
+* Have a public default constructor (or none at all)
+* Provide getter and setter methods for each property
+
+Best compatibility and additional features are given if your data class complies with AludraTest's [[Data Class]].
+
+=== Method Data Source ===
+
+When applied to a method, each column of the data source is mapped to the primitive-typed method parameter of the same index:
+<code>
+ import org.aludratest.testcase.AludraTestCase;
+ import org.aludratest.testcase.data.Source;
+ import org.aludratest.testcase.Test;
+ 
+ @Parallel
+ public class MyTestClass extends AludraTestCase {
+ 	
+   @Test
+   @Source(uri="testSource.xls", segment="sheet1")
+   public void testActivityLogic(Date date, int value) {
+   	logInfo("test data: " + date + ", " + value);
+   }
+ }
+</code>
+
+
+==== Parameter Data Source ====
+Alternatively a data dource can be applied to a method parameter of JavaBean type. Then, data source column names are mapped to JavaBean properties. Even recursive JavaBean graphs can be constructed from a data source like an Excel sheet:
+<code>
+ import org.aludratest.testcase.AludraTestCase;
+ import org.aludratest.testcase.data.Source;
+ import org.aludratest.testcase.Test;
+ 
+ @Parallel
+ public class MyTestClass extends AludraTestCase {
+ 	
+   @Test
+   public void testActivityLogic(@Source(uri="testSource.xls", segment="sheet1") TestData data) {
+   	logInfo("test data: " + data);
+   }
+ }
+</code>
+A sample Excel sheet content:
+
+ name   child.name
+ parent child1
+ parent child2
+
+The TestData class may be defined like this:
+<code>
+ public class TestData {
+    private String name;
+    private Child child;
+    
+    public String getName() {
+        return this.name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public Child getChild() {
+        return this.child;
+    }
+    
+    public void setChild(Child child) {
+        this.child = child;
+    }
+ }
+</code>
+with the Child class:
+<code>
+ public class Child {
+    private String name;
+    
+    public String getName() {
+        return this.name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+ }
+</code>
+

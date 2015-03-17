@@ -1,7 +1,8 @@
-= ActionWordLibrary =
+== ActionWordLibrary ==
 
-For simplifying the implementation of tests, a special type of dictionary approach is used. Each component of a specific application interface (e.g. a page of a Web Application) is represented by a dedicated class which has the following requirements to meet the ActionWordLibrary approach:
+ActionWordLibrary is one of the core concepts AludraTest is build upon.
 
+For simplifying the implementation of tests, a special type of dictionary approach is used. Each component of a specific application interface (e.g. a page of a web application or a special file type) is represented by a dedicated class which has the following requirements to meet the ActionWordLibrary approach:
 * Test code may only interact with ActionWordLibraries (calling their methods)
 * An ActionWordLibrary is a class that implements the interface '''org.aludratest.dict.ActionWordLibrary'''
 * An instance of an ActionWordLibrary represents the current state of the interface (e.g. the web page currently visible in the user's browser, including the current state of the page, e.g. field values)
@@ -14,9 +15,3 @@ For simplifying the implementation of tests, a special type of dictionary approa
 
 Most of these rules are enforced via the AludraTest [[Codechecks]], which use PMD rules to check for potential violations.
 
-== Data classes ==
-
-Data classes are extremely simple Java Beans, extending the abstract base class '''org.aludratest.dict.Data'''. 
-A Data Class is a pure data structure related to a service or interface element. A Data Class may only contain attributes of type String, Data Class, or Collection (type parameter must be a subclass of Data), but no arrays, simple types (Date, Double, Integer etc.) or Class objects.
-
-See [[Codechecks]] for the full list of rules applying to Data classes.

@@ -1,0 +1,145 @@
+== Run parallel - or steer concurrency ==
+
+AludraTest supports definition of concurrency characteristic on every test run node by annotation.
+
+Test run nodes are:
+*''test method''
+*''test suite''
+*''test class''
+
+Annotations for concurrency characteristic are:
+*<code>@org.aludratest.testcase.Parallel</code> defines parallel execution
+*<code>@org.aludratest.testcase.Sequential</code> defines sequential execution
+
+This gives the freedom, to execute e.g. health check or smoke test suites first and afterwards all other tests. It also allows to define an explicit sequence of name tests, if necessary. 
+
+=== Behavior and Inheritance ===
+AludraTest will use the parse the test execution tree and use the most narrow definition of execution order:
+#If a '''method''' is annotated, this is used in any case.
+#If a method is ''not'' annotated, order is derived from '''class'''
+#If the method is ''not'' annotated and also the class is ''not'' annotated, the '''suite''' is used
+#If neither the method, the class nor the suite is annotated, the '''nearest suite''' in the test suite hierarchy above is used
+#If there is no annotation in the test suite hierarchy, the '''configuration value''' is used
+#Configuration '''default''' value is ''parallel'' execution
+
+=== Test Method ===
+A test method may be parameterized with test data and data source. AludraTest will call the test method for each data set the data source provides exactly one time. If there are ten data sets, the method is called ten times with the ten unique data sets.
+
+By adding the annotation <code>@Parallel</code> to the method's definition, AldraTest will run the ten combinations of method and data set parallel.   
+Example:
+
+<code>
+ import org.aludratest.testcase.AludraTestCase;
+ import org.aludratest.testcase.Parallel;
+ import org.aludratest.testcase.Sewuential;
+ import org.aludratest.testcase.data.Source;
+ import org.aludratest.testcase.Test;
+ 
+ public class MyTestClass extends AludraTestCase {
+ 
+   // this test derives concurrency from class and test suite hierarchy
+   @Test
+   @Source(uri="ExcelFileWith10Lines.xls", segment="sheet1")
+   public void derivedTest(TestData data) {
+   	logInfo("test data: " + data);
+   }
+ 
+   // this test runs parallel
+   @Test
+   @Parallel
+   @Source(uri="ExcelFileWith10Lines.xls", segment="sheet1")
+   public void parallelTest(TestData data) {
+   	logInfo("test data: " + data);
+   }
+   
+   // this test runs sequential
+   @Test
+   @Sequential
+   @Source(uri="ExcelFileWith10Lines.xls", segment="sheet1")
+   public void sequentialTest(TestData data) {
+   	logInfo("test data: " + data);
+   }
+ }
+</code> 
+
+=== Test Class ===
+Test classes can be annotated with concurrency characteristics. This will be applied:
+#to execution order of different test methods
+#to execution order of single test methods
+
+
+==== Parallel Test Class====
+The following parallel class will try to assign the runs to all three test methods parallel. Additionally  the method <code>derivedTest()</code> will run it's data sets parallel. According available threads, all three will start parallel, but <code>sequntialTest()</code> will finish last, as their data sets are executed sequentially.
+
+<code>
+ import org.aludratest.testcase.AludraTestCase;
+ import org.aludratest.testcase.Parallel;
+ import org.aludratest.testcase.Sewuential;
+ import org.aludratest.testcase.data.Source;
+ import org.aludratest.testcase.Test;
+ 
+ @Parallel
+ public class ParallelClass extends AludraTestCase {
+ 
+   @Test
+   @Source(uri="ExcelFileWith10Lines.xls", segment="sheet1")
+   public void '''derivedTest'''(TestData data) { logInfo("test data: " + data); }
+ 
+   @Test
+   @Parallel
+   @Source(uri="ExcelFileWith10Lines.xls", segment="sheet1")
+   public void '''parallelTest'''(TestData data) { logInfo("test data: " + data); }
+   
+   @Test
+   @Sequential
+   @Source(uri="ExcelFileWith10Lines.xls", segment="sheet1")
+   public void '''sequentialTest'''(TestData data) { logInfo("test data: " + data); }
+ }
+</code> 
+
+==== Sequential Test Class ====
+The <code>SequntialClass{}</code> will run the test methods in fixed sequence:
+#All data sets of <code>derivedTest()</code> sequentially, then
+#All data sets of <code>parallelTest()</code> parallel, as force by method annotation. Then
+#All data sets of <code>sequentialTest()</code> sequentially
+
+<code>
+ import org.aludratest.testcase.AludraTestCase;
+ import org.aludratest.testcase.Parallel;
+ import org.aludratest.testcase.Sewuential;
+ import org.aludratest.testcase.data.Source;
+ import org.aludratest.testcase.Test;
+ 
+ @Sequential
+ public class SequentialClass extends AludraTestCase {
+ 
+   @Test
+   @Source(uri="ExcelFileWith10Lines.xls", segment="sheet1")
+   public void '''derivedTest'''(TestData data) { logInfo("test data: " + data); }
+ 
+   @Test
+   @Parallel
+   @Source(uri="ExcelFileWith10Lines.xls", segment="sheet1")
+   public void '''parallelTest'''(TestData data) { logInfo("test data: " + data); }
+   
+   @Test
+   @Sequential
+   @Source(uri="ExcelFileWith10Lines.xls", segment="sheet1")
+   public void '''sequentialTest'''(TestData data) { logInfo("test data: " + data); }
+ }
+</code> 
+
+=== Test Suite ===
+Test Suites annotated with <code>@Parallel</code> or <code>@Sequential</code> behave the same like classes, but apply the mechanism to test classes and test suites.
+
+<code>
+ import org.aludratest.Suite;
+ 
+ @Parallel
+ @Suite({
+   MyTestClass1.class,
+   MyTestClass2.class,
+   NestedTestSuite.class
+ })
+ public class MyTestSuite {}
+</code>

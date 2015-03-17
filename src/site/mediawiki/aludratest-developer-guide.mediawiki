@@ -1,8 +1,8 @@
-= AludraTest Developer Guide =
+== AludraTest Developer Guide ==
 
 This document describes the internal concepts of the framework and is intended for developers that maintain and evolve the AludraTest Framework. Test coders do not need to know this for their work and should refer to the [[User Guide]].
 
-== Purpose ==
+=== Purpose ===
 
 AludraTest is a Framework for
 
@@ -14,9 +14,9 @@ AludraTest is a Framework for
 
 <br/>[[Image:AludraTest2_Component_Types.png]]
 
-== Stakeholders ==
+=== Stakeholders ===
 
-=== Test Manager ===
+==== Test Manager ====
 
 The manager in charge for testing the System (Application) Under Test (SUT). He manages the '''Functional Testers''' and '''Test Programmers'''.
 
@@ -25,7 +25,7 @@ The manager in charge for testing the System (Application) Under Test (SUT). He 
 * Low maintenance effort for test code
 * Efficient use of the framework by programmers and testers
 
-=== Functional Tester ===
+==== Functional Tester ====
 
 The tester which requests test implementation from the '''Test programmer''', performs the tests, evaluates test reports and tracks bugs.
 
@@ -34,7 +34,7 @@ The tester which requests test implementation from the '''Test programmer''', pe
 * Fast test execution
 * Easy error analysis
 
-=== Test Automation Engineer (Test Programmer) ===
+==== Test Automation Engineer (Test Programmer) ====
 
 The programmer which receives test implementation requests from the '''Functional Tester'''. He implements the test code using features of the AludraTest Framework and, if necessary, requests additional ones. The [[User Guide]] was written from him.
 
@@ -44,7 +44,7 @@ The programmer which receives test implementation requests from the '''Functiona
 * No need of subcomponent knowledge
 * Framework should prevent him from making faults
 
-=== Framework Developer ===
+==== Framework Developer ====
 
 The programmer that maintains and evolves the AludraTest framework. This guide was made for him.
 
@@ -56,9 +56,9 @@ The programmer that maintains and evolves the AludraTest framework. This guide w
 [[Image:AludraTest2_Stakeholders_Interactions.png]]
 
 
-== Architecture ==
+=== Architecture ===
 
-=== Main Components ===
+==== Main Components ====
 
 AludraTest consists of the following main '''component types''':
 
@@ -82,7 +82,7 @@ AludraTest consists of the following main '''component types''':
 '''TODO Update image'''
 [[Image:AludraTest2_Main_Components.png]]
 
-== Configuration Engine (org.aludratest.config) ==
+=== Configuration Engine (org.aludratest.config) ===
 
 AludraTest contains a dynamic configuration engine which defines several configuration scopes. Please refer to [[Service Configuration]] for details on how the configuration can be used.
 
@@ -99,7 +99,7 @@ annotations can be added to classes and interfaces, and documentation can be aut
 
 Finally, '''AludraTestConfig''' is such an internal component interface, providing the configuration of AludraTest. Its implementation is populated with the configuration read from <code>aludratest.properties</code> (see [[User Guide]] for details).
 
-=== Config Internals ===
+==== Config Internals ====
 
 As soon as an object is looked up via the internal IoC container (Plexus; see [[#Service_Lookup]]) which implements the <code>Configurable</code> interface, a <code>Configurator</code> is looked up from the IoC container. The default implementation is <code>DefaultConfigurator</code>. It will perform the following tasks:
 
@@ -111,7 +111,7 @@ As soon as an object is looked up via the internal IoC container (Plexus; see [[
 
 The ''instance name'' of the Configurable is taken from the Plexus ''Role hint'', if any is set. Setting this is performed in <code>AludraServiceManager</code>.
 
-== Scheduler (org.aludratest.scheduler) ==
+=== Scheduler (org.aludratest.scheduler) ===
 
 Test suites and test cases form a hierarchical (tree) structure. A test case tree consists of different types of nodes:
 
@@ -140,13 +140,13 @@ Since a test class method can be called several times, Java class elements map t
 
 Any element which has a concurrency annotation propagates this configuration as default to all sub elements. If a sub element should be executed with different concurrency settings, then it has to be annotated accordingly.
 
-=== Java's Executor mechanism ===
+==== Java's Executor mechanism ====
 
 RunnerTree uses Java’s <code>ExecutorService</code> mechanism for scheduling and executing Runnables which invoke the test cases. So let’s first have a look at its basics. The core concept is the idea of having an abstract service definition ('''ExecutorService''') for executing tasks ('''Runnable''' or '''Callable''') asynchronously and getting an object handle (Future) to query execution status, fetch execution results, wait for termination or cancel execution. 
 
 For more information on Java's ExecutorService and the associated concepts, please see e.g. http://tutorials.jenkov.com/java-util-concurrent/executorservice.html.
 
-=== Tree execution ===
+==== Tree execution ====
 
 The RunnerTree class makes use of two thread pools for controlling execution:
 
@@ -160,7 +160,7 @@ The '''sequentialExecutorService''' is a pool which may become arbitrarily large
 [[Image:AludraTest2_RunnerTree_Execution.png]]
 
 The ExecutorServices are initialized as follows:
-
+<code>
  public RunnerTree(int parallelThreadPoolSize, ...) {
   ...
   this.parallelExecutorService = Executors.newFixedThreadPool(
@@ -169,60 +169,63 @@ The ExecutorServices are initialized as follows:
   this.sequentialExecutorService = Executors.newCachedThreadPool(new PoolThreadFactory("SerEx"));
   this.sequentialTasks = new LinkedList<Future<Void>>();
 }
+</code>
 
 Tree execution is started when the run() method is called:
-
+<code>
  public void performAllTestsAndWait() {
   runGroup(root);
   waitForCompletion();
-
 }
+</code>
 
 Evidently it is a good choice to apply recursive invocation for executing a tree's child nodes:
-
+<code>
  private List<Future<Void>> runGroup(RunnerGroup group) {
   if (group.isParallel())
       return runParallelGroup(group);
   else
       return runSequentialGroup(group);
-
 }
+</code>
 
 Let's first examine how to execute tests concurrently:
-
- private List<Future<Void>> runParallelGroup(RunnerGroup group) {
-  ArrayList<Future<Void>> futures = new ArrayList<Future<Void>>();
-  for (RunnerNode childNode&nbsp;: group.getChildren()) {
+<code>
+  private List<Future<Void>> runParallelGroup(RunnerGroup group) {
+    ArrayList<Future<Void>> futures = new ArrayList<Future<Void>>();
+    for (RunnerNode childNode&nbsp;: group.getChildren()) {
       if (childNode instanceof RunnerGroup)
-          futures.addAll(runGroup((RunnerGroup) childNode));
+        futures.addAll(runGroup((RunnerGroup) childNode));
       else if (childNode instanceof RunnerLeaf)
-          futures.add(submitParallelLeaf((RunnerLeaf) childNode));
-          ...
+        futures.add(submitParallelLeaf((RunnerLeaf) childNode));
+        ...
+      }
+    return futures;
   }
-  return futures;
-
-}
+</code>
 
 When executing a parallel group, each child node is iterated: Child groups are executed by recurring to the runGroup() method above, child leafs are submitted to the parallel thread pool calling submitParallelLeaf() and stored in the parallelTasks list:
 
- private Future<Void> submitParallelLeaf(final RunnerLeaf leaf) {
-  Future<Void> future = parallelCompletionService.submit(leaf, null);
-  parallelTasks.offer(future);
-  return future;
-
-}
+<code>
+  private Future<Void> submitParallelLeaf(final RunnerLeaf leaf) {
+    Future<Void> future = parallelCompletionService.submit(leaf, null);
+    parallelTasks.offer(future);
+    return future;
+  }
+</code>
 
 That was plain and simple. Now for the sequential groups: Special care must be taken that a sequential group may contain parallel groups and has to assure that all contained parallel sub tasks are finished before the next sequential node is executed:
 
- private List<Future<Void>> runSequentialGroup(RunnerGroup group) {
-  ArrayList<Future<Void>> futures = new ArrayList<Future<Void>>();
-  Runnable groupRunnable = new SequentialGroupRunnable(group);
-  Future<Void> future = submitSequentialNode(groupRunnable);
-  futures.add(future);
-  sequentialTasks.add(future);
-  return futures;
-
-}
+<code>
+  private List<Future<Void>> runSequentialGroup(RunnerGroup group) {
+    ArrayList<Future<Void>> futures = new ArrayList<Future<Void>>();
+    Runnable groupRunnable = new SequentialGroupRunnable(group);
+    Future<Void> future = submitSequentialNode(groupRunnable);
+    futures.add(future);
+    sequentialTasks.add(future);
+    return futures;
+  }
+</code>
 
 A SequentialGroupRunnable wraps the code for executing a sequential groups child nodes sequentially.
 
@@ -230,39 +233,41 @@ Note: This group must not be sent to the parallel thread pool, since that one is
 
 The submitSequentialNode() method is as primitive as it can be:
 
- private Future<Void> submitSequentialNode(Runnable runnable) {
-  return sequentialExecutorService.submit(runnable, null);
-
-}
+<code>
+  private Future<Void> submitSequentialNode(Runnable runnable) {
+    return sequentialExecutorService.submit(runnable, null);
+  }
+</code>
 
 The SequentialGroupRunnable holds the execution logic:
 
- public class SequentialGroupRunnable implements Runnable {
-  private RunnerGroup group;
-  ...
-  public void run() {
+<code>
+  public class SequentialGroupRunnable implements Runnable {
+    private RunnerGroup group;
+    ...
+    public void run() {
       ...
       for (RunnerNode childNode&nbsp;: group.getChildren()) {
-          if (childNode instanceof RunnerGroup) {
-              // run all child groups...
-              List<Future<Void>> futures = runGroup((RunnerGroup) childNode);
-              // ...and wait until each one has completed
-              for (Future<Void> future&nbsp;: futures) {
-                  future.get();
-              }
-          } else if (childNode instanceof RunnerLeaf) {
-              // send the leaf to a thread of the parallel pool...
-              Future<Void> future = submitParallelLeaf((RunnerLeaf) childNode);
-              // ...and wait until it is finished
-              future.get();
+        if (childNode instanceof RunnerGroup) {
+          // run all child groups...
+          List<Future<Void>> futures = runGroup((RunnerGroup) childNode);
+          // ...and wait until each one has completed
+          for (Future<Void> future&nbsp;: futures) {
+            future.get();
           }
-          ...
+        } else if (childNode instanceof RunnerLeaf) {
+          // send the leaf to a thread of the parallel pool...
+          Future<Void> future = submitParallelLeaf((RunnerLeaf) childNode);
+          // ...and wait until it is finished
+          future.get();
+        }
+        ...
       }
       ...
+    }
+    ...
   }
-  ...
-
-}
+</code>
 
 In the run() method it iterates through the child nodes:
 
@@ -271,69 +276,66 @@ In the run() method it iterates through the child nodes:
 
 After all tests have been scheduled, the run() methods waits for them to finish by calling the method waitForCompletion():
 
- private void waitForCompletion() {
-  try {
+<code>
+  private void waitForCompletion() {
+    try {
       while (!sequentialTasks.isEmpty()) {
-          waitForCompletionAndRemoveFromQueue(sequentialTasks.getLast(), sequentialTasks);
+        waitForCompletionAndRemoveFromQueue(sequentialTasks.getLast(), sequentialTasks);
       } 
       while (!parallelTasks.isEmpty()) {
-          waitForCompletionAndRemoveFromQueue(parallelTasks.getFirst(), parallelTasks);
+        waitForCompletionAndRemoveFromQueue(parallelTasks.getFirst(), parallelTasks);
       }
       ...
-  } catch (InterruptedException e) {
+    } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-  } finally {
+    } finally {
       ...
       cancelAll(parallelTasks);
       cancelAll(sequentialTasks);
       shutDown(parallelExecutorService);
       shutDown(sequentialExecutorService);
+    }
   }
-
-}
+</code>
 
 First it waits until all sequential and parallel tasks have completed. In case a critical error has occurred, the 'finally' clause takes care of cancel()ling all tasks before shutting down the thread pools. The respective methods are implemented as follows:
 
- private void waitForCompletionAndRemoveFromQueue(Future<Void> task, LinkedList<Future<Void>> queue) throws InterruptedException {
-  ...
-  try {
+<code>
+  private void waitForCompletionAndRemoveFromQueue(Future<Void> task, LinkedList<Future<Void>> queue) throws InterruptedException {
+    ...
+    try {
       task.get();
-  } catch (ExecutionException e) {
+    } catch (ExecutionException e) {
       LOGGER.error("Error executing sequential task", e);
-  }
-  synchronized (queue) {
+    }
+    synchronized (queue) {
       ...
       queue.remove(task);
+    }
   }
 
-}
-
-private void cancelAll(LinkedList&lt;Future<Void&gt;> queue) {
-
+  private void cancelAll(LinkedList&lt;Future<Void&gt;> queue) {
     ...
-  while (!queue.isEmpty()) {
+    while (!queue.isEmpty()) {
       synchronized (queue) {
-          if (!queue.isEmpty()) {
-              Future<Void> task = queue.poll();
-              ...
-              task.cancel(true);
-          }
+        if (!queue.isEmpty()) {
+          Future<Void> task = queue.poll();
+          ...
+          task.cancel(true);
+        }
       }
+    }
   }
 
-}
-
-private void shutDown(ExecutorService executor) {
-
+  private void shutDown(ExecutorService executor) {
     ...
-  executor.shutdownNow();
+    executor.shutdownNow();
+  }
+</code>
 
-}
+=== Service Management ===
 
-
-== Service Management ==
-
-=== Service Scope & Life Cycle ===
+==== Service Scope & Life Cycle ====
 
 Test classes inherit service access features from their parent class '''AludraTestCase'''.
 
@@ -343,7 +345,7 @@ All services requested in a test method are closed by the framework when the met
 
 <br/>[[Image:AludraTest2_Service_Management.png]]
 
-=== Service Lookup ===
+==== Service Lookup ====
 
 Services are managed by the class '''AludraServiceManager'''. The class '''ComponentId''' defines the identity of a requested service object (instance) and is used by the class '''AludraTestContext''' as key in a map structure that stores the services as map values.
 
@@ -357,7 +359,7 @@ To find the implementing class for a given service interface, the AludraServiceM
  
 Please note that internally the [http://plexus.codehaus.org/ Plexus] IoC container is used for component lookup and instantiation. This container is configured by the <code>AludraServiceManager</code> class, which means that once a service has been looked up, further modifications of the System properties as shown above will have '''no effect'''.
 
-=== Service Requirements ===
+==== Service Requirements ====
 
 As Plexus is used for component and service lookup, services can make use of the Plexus <code>@Requirement</code> annotation to easily retrieve other components of AludraTest. If a service needs access to the AludraTest configuration, for example, it can declare a private field this way:
 
@@ -370,7 +372,7 @@ For now, Requirements are always configured with the ''global'' configuration fo
 
 Services still can ask their ''Service Context'' object for other services and components; these are configured for the current Instance Name of the service object.
 
-=== Service Operations ===
+==== Service Operations ====
 
 Each service provides operations of different type indirectly through three '''Action''' interfaces:
 
@@ -385,12 +387,14 @@ Each service provides operations of different type indirectly through three '''A
 
 Each service declares and implements specific child interfaces of these. For example, a SwingGUI service (which would be named '''SwingGUIService''') could declare an interface '''SwingGUIInteraction''' with a '''typeKey(char)''' method. A client would access it calling:
 
- ComponentId<SwingGUIService> serviceId = ComponentId.create(SwingGUIService.class);
- SwingGUIService gui = getService(serviceId); 
- gui.perform().typeKey('c'); 
- gui.perform().typeKey('x');
+<code>
+  ComponentId<SwingGUIService> serviceId = ComponentId.create(SwingGUIService.class);
+  SwingGUIService gui = getService(serviceId); 
+  gui.perform().typeKey('c'); 
+  gui.perform().typeKey('x');
+</code>
 
-=== Exceptions ===
+==== Exceptions ====
 
 All exceptions thrown in AludraTest inherit from AludraTestException, which is an unchecked exception (inheriting from RuntimeException).
 
@@ -400,7 +404,7 @@ All exceptions thrown in AludraTest inherit from AludraTestException, which is a
 
 See [[Log4Testing User Guide]] for more information on the different exception types and their effects.
 
-=== Service Proxy Injection ===
+==== Service Proxy Injection ====
 
 There is common functionality applicable to services in an orthogonal manner to the service semantics. It is injected wrapping the Action objects with specific proxies:
 
@@ -411,21 +415,21 @@ There is common functionality applicable to services in an orthogonal manner to 
 
 <br/>Since the Action objects are retrieved by invoking the associated service, the service has the responsibility of creating the Action proxies. Since this is generic functionality, it can also be injected by a proxy.
 
-=== Java Dynamic Proxy API ===
+==== Java Dynamic Proxy API ====
 
 The Java runtime provides a utility to create classes dynamically and instantiate them, making them implement a list of given interfaces: The class '''java.lang.reflect.Proxy''' with its static method '''newProxyInstance()'''. The actual code to be executed must be provided by the caller by an implementation of the interface '''java.lang.reflect.InvocationHandler'''.
 
 In AludraTest, this feature is implemented in the method '''AludraTestUtil.wrapWithInvocationHandler()''':
 
- public static <T, U extends T> U wrapWithInvocationHandler(Class<T> interfaceType, InvocationHandler invocationHandler) {
-  ...
-  ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-  return (U) Proxy.newProxyInstance(classLoader, new Class [] { interfaceType }, invocationHandler);
-  ...
+<code>
+  public static <T, U extends T> U wrapWithInvocationHandler(Class<T> interfaceType, InvocationHandler invocationHandler) {
+    ...
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    return (U) Proxy.newProxyInstance(classLoader, new Class [] { interfaceType }, invocationHandler);
+  }
+</code>
 
-}
-
-=== Transparent Service Logging ===
+==== Transparent Service Logging ====
 
 Logging of service invocations is performed by the class '''LoggingInvocationHandler''' which is used by a dynamically generated proxy to perform transparent logging on each Action method invocation. In order to do so, it holds a reference to the current Log4testing Test Case Log as the target of logging operations and to the real service implementor which has to perform the logic requested by the caller.
 
@@ -435,7 +439,7 @@ If the called method returns normally and was no Condition method, then its retu
 
 Annotations can control the logging of method parameters etc. One of these Annotations is, for example, the '''TechnicalLocator'''. A method parameter can be annotated to indicate that its value shall be logged as "technical locator" (which is a special column in the Log4testing log). Non-annotated arguments are logged as "usedParameters". 
 
-=== Control Flow ===
+==== Control Flow ====
 
 AludraTest's control flow facility provides the following features to handle exceptions:
 
@@ -444,21 +448,23 @@ AludraTest's control flow facility provides the following features to handle exc
 
 The ControlFlowHandler implementation checks if test case exceution has been cancelled before. If yes, the requested Action method is logged as IGNORED and swallowed, if no, it is executed in the forward() method:
 
- public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-   if (!shallContinueTestCaseExecution(method)) {
-     LogUtil.log(testCase, method, TestStatus.IGNORED, null, args);
-     return AludraTestUtil.nullOrPrimitiveDefault(method.getReturnType());
-   } else {
-     return forward(method, args);
-   }
- }
+<code>
+  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    if (!shallContinueTestCaseExecution(method)) {
+      LogUtil.log(testCase, method, TestStatus.IGNORED, null, args);
+      return AludraTestUtil.nullOrPrimitiveDefault(method.getReturnType());
+    } else {
+      return forward(method, args);
+    }
+  }
+</code>
 
 The forward() method executes the requested method and returns its return value. If it encounters an exception and a SystemConnector was set, the handler requests error information and logs it. If the handler is configured to stop test case execution on exceptions (stopOnException == true), then it calls '''FlowController.stopTestCaseExecution()''' to do so.
 
 '''TODO update image'''
 [[Image:AludraTest2_Handling_Inherited_Errors.png]]
 
-=== Putting the proxies together ===
+==== Putting the proxies together ====
 
 As shown above, the proxies' InvocationHandlers need configuration provided in their constructors. Since the information is generic, it can be managed uniformly, independent of the specific used Action super interface. This is what the InvocationHandler '''AludraServiceProxyHandler''' is for. It is used by a dynamic proxy which wraps an AludraService object and holds the log4testing TestCase Log.
 
@@ -466,7 +472,7 @@ The '''invoke()''' method forwards all calls to the real service object but has 
 
 On calls to the methods perform(), verify() and check(), the resulting objects are wrapped with a logging proxy and a control flow proxy working as described above.
 
-=== Handling unstable Services (auto-retry mechanism) ===
+==== Handling unstable Services (auto-retry mechanism) ====
 
 AludraTest provides a mechanism for handling unstable services by automatically retrying failed operations a limited number of times. The conditions under which to retry an operation are specified by a combination of
 
@@ -478,15 +484,17 @@ When such a condition is encountered, the ControlFlowHandler catches the excepti
 
 The configuration of this auto-retry mechanism is done in a file '''retry.xml''':
 
- <retries>
-  <retry>
+<code>
+  <retries>
+    <retry>
       <maxCount>2</maxCount>
       <exception>org.aludratest.exception.PerformanceFailure</exception> 
       <interface>org.aludratest.service.gui.web.WebGUIInteraction</interface> 
       <method>open</method> 
-  </retry>
-  ...
- </retries>
+    </retry>
+    ...
+  </retries>
+</code>
 
 ;maxCount
 :The maximum number of times an operation is retried after having failed. Thus the maximum number of invocations is '''maxCount + 1'''.
@@ -501,9 +509,9 @@ The configuration of this auto-retry mechanism is done in a file '''retry.xml'''
 :The name of the method on which the exception occured. If the interface has several methods with the same name and different signatures, any of them is matched.
 
 
-== Special Topics ==
+=== Special Topics ===
 
-=== Enabling Selenium Unit Tests ===
+==== Enabling Selenium Unit Tests ====
 
 Since the Continous Integration server does not provide a browser which we can make use of (headless mode), the execution of Selenium Unit tests is disabled by default. Due to JUnit conventions, the disabled tests are reported as being successful.
 

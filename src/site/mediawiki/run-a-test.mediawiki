@@ -1,0 +1,82 @@
+== Run a Test ==
+
+=== General ===
+AludraTest can be used either by
+* call main class <code>org.aludratest.AludraTest</code>
+** with one ''test class'' as attribute
+** with one ''test suite class'' as attribute
+* using Java API
+*# call <code>org.aludratest.AludraTest.startFramework()</code> followed by
+*# call <code>AludraTest.run(<class>)</code>
+*# call <code>AludraTest.stopFramework()</code>
+
+Please note, you will need all maven dependencies on your class path.
+
+=== Run from command line ===
+Run <code>java org.aludratest.AludraTest <your test/suite class></code>.
+
+Please note:
+All dependencies have be on the class path or bind your tests and all dependencies into one jar
+
+=== Run a tests in Eclipse ===
+Eclipse support developing and executing tests with AludraTest very well by utilization of "run configurations" and "variables".
+
+You can either use
+* an application run configuration working similar to command line, or
+* a jUnit run configuration giving nice integration and runtime feedback like jUnit
+
+Both solutions are leveraged by program or VM argument <code>${java_type_name}</code>, pointing AludraTest to execute the test class currently opened in '''active editor'''.
+
+==== Create an ''Application Run Configuration'' in Eclipse ====
+
+# Open the Eclipse Run Configurations dialog
+# Create a new "Java Application" run configuration 
+## Change the name to "<your project> App"
+## As project, select your client project which contains the test class(es)
+## As '''"Main class"''', select <code>org.aludratest.AludraTest</code>
+## Select the "Arguments" tab
+## Set '''"Program arguments"''' to <code>${java_type_name}</code>
+## Click "Apply" to save the run configuration
+# Click "Run" to run the class in '''active editor'''
+
+Now you can run any individual '''test class''' or '''test suite''' in '''active editor''':
+# Select the test class in the Package Explorer, then
+# Click the triangle on the right of the "Run" button and
+# click "<your project> App" in the appearing list.
+
+=== Create a ''jUnit Run Configuration'' in Eclipse ===
+
+AludraTest integrates very well with eclipse jUnit plug-in giving nested test suites and runtime feedback.
+
+# Create a class '''AludraJUnitTest.java''' in your project
+<code>
+ package com.acme.mytests.junit;
+ 
+ import org.aludratest.junit.AludraTestJUnitSuite;
+ import org.junit.runner.RunWith;
+ 
+ @RunWith(AludraTestJUnitSuite.class)
+ public class AludraJUnitTest {
+ }
+</code>
+# Create a '''JUnit''' run configuration
+## Open the Eclipse Run Configurations dialog
+## Create a new "JUnit" run configuration 
+### Change the name to "<your project> JUnit"
+### As project, select your client project which contains the test class(es)
+### As '''"Test class"''' select your '''AludraJUintTest''' class
+### Select the "Arguments" tab
+### Set '''VM argument''' to <code>-Dsuite=${java_type_name}</code> 
+### Click "Apply" to save the run configuration
+## Click "Run" to run the class in '''active editor'''
+
+Now you can run any individual '''test class''' or '''test suite''' in '''active editor''':
+# Select the test class in the Package Explorer, then
+# Click the triangle on the right of the "Run" button and
+# click "<your project> JUnit" in the appearing list.
+
+=== Run tests with Maven ===
+
+ TODO
+
+

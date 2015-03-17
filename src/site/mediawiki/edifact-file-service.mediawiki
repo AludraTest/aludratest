@@ -1,0 +1,5 @@
+== EDIfact File Service ==
+
+Please refer to
+* [[AludraTest Services]]
+*JavaDoc <code>org.aludratest.service.edifactfile.EdifactFileService</code>.

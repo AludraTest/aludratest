@@ -1,0 +1,65 @@
+== Understand the log ==
+
+AludraTest's component Log4Testing generates customizable user-readable logs. The implementation includes a HTML and a XML generator.
+
+If you like to extend Log4Testing, please refer to [[log4testing developer guide]].
+
+=== Colors in Log4Testing Protocol ===
+
+;<span style="background-color: rgb(255, 255, 255)">Pending</span>
+:A test is scheduled for execution but was not started yet
+
+;<span style="background-color: rgb(255, 165, 0);">Running</span>
+:A test is currently running
+
+;<span style="background-color: rgb(153, 255, 170);">Passed</span>
+:A test was executed and no errors occured
+
+;<span style="background-color: rgb(187, 187, 187);">Ignored</span>
+:A test was ignored. For different types of test objects, this is the result of different causes:
+:*For '''TestSuites''' and '''TestCases''' this signals that a test data set was marked to be ignored by the user, the test is executed, but the result code is not propagated to the suite.
+:*For a '''TestStep''' it signals that
+:**either a previous step was erroneous and therefore this TestStep was skipped.
+:**or a test step was erroneous but configured to be retried, ignoring an initial failure
+
+;<span style="background-color: rgb(255, 170, 170);">Failed</span>
+:A test failed due to an functional error e.g. incorrect value. This has to be examined by a '''Functional Tester'''.
+
+;<span style="background-color: rgb(221, 170, 255);">Failed Performance</span>
+:A test failed due an error which should be addressed a '''Functional Tester'''. Usually this indicates that the SUT is hanging or takes an intolerable timespan to respond to a user activity.
+
+;<span style="background-color: rgb(238, 136, 255);">Failed Access</span>
+:A test failed due a failed system access which should be addressed by a '''Test Developer'''. Most likely a required system is offline or access configuration is wrong.
+
+;<span style="background-color: rgb(255, 255, 170);">Failed Automation</span>
+:A test failed due an error which could be fixed a '''Test Developer'''. Mostly these are technical errors like a changed technical identifier.
+
+;<span style="background-color: rgb(46, 154, 254);">Inconclusive</span>
+:A test failed due to an error which has to be examined by an '''AludraTest Developer'''.
+
+[[Image:AludraTest-Exceptions.png]]
+
+
+=== Configuration File Format ===
+
+Log4Testing is configured from the contents of a file named <code>log4testing.xml</code> on the ''Classpath''. It allows the user to configure the following settings:
+
+* Setting system variables
+* Plugging in report generators and other observer classes
+* Configuring Velocity-template-based report file exporters
+* Defining replace mechanism for Attachments. For example a website which calls of external scripts, which are not included in the saved html could be replaced with an regular expression.
+
+As the file is searched on the Classpath, the best place to store it would be your <code>src/main/resources</code> directory of your project.
+
+=== Setting System Variables ===
+
+A &lt;sysprops&gt; element can be used to define system variable (a.k.a. VM system property). Each child element of a &lt;sysprop&gt; element is mapped to a system variable using the tag name as variable name and the content as value. So, in order to define a system variable 'user' with the value 'Alice', one would write
+
+<code>
+ <sysprops>
+    <user>Alice</user>
+ </sysprops>
+</code>
+
+In test code, these system properties could be queried using System.getProperty("user").
+
