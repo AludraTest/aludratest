@@ -188,8 +188,13 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
         for (String windowTitle : windowTitles) {
             WindowLocator locatorOfCurrentWindow = new TitleLocator(windowTitle);
             if (!locatorOfCurrentWindow.equals(locatorOfRemainingWindow)) {
-                wrapper.selectWindowImmediately(locatorOfCurrentWindow);
-                wrapper.close();
+                try {
+                    wrapper.selectWindowImmediately(locatorOfCurrentWindow);
+                    wrapper.close();
+                }
+                catch (AutomationException e) {
+                    // ignore; window has been closed in the meantime
+                }
             }
         }
         wrapper.selectWindowImmediately(locatorOfRemainingWindow);
