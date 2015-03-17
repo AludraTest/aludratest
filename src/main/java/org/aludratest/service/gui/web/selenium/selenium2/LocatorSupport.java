@@ -185,12 +185,10 @@ public class LocatorSupport {
      * @param element
      * @return */
     public static WebElement unwrap(WebElement element) {
-        if (element instanceof ElementWrapper) {
-            return ((ElementWrapper) element).getWrappedElement();
+        while (element instanceof ElementWrapper) {
+            element = ((ElementWrapper) element).getWrappedElement();
         }
-        else {
-            return element;
-        }
+        return element;
     }
 
     // wait features -----------------------------------------------------------
