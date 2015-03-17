@@ -49,14 +49,14 @@ public class ByElementLocators extends By {
         // ByElementLocators object by the LocatorUtil class.
         GUIElementLocator usedOption = elementLocators.getUsedOption();
         if (usedOption != null) {
-            result.add(context.findElement(LocatorUtil.by(usedOption)));
+            result.add(context.findElement(LocatorSupport.by(usedOption)));
             return result;
         }
 
         // ... and try all alternatives
         for (GUIElementLocator alternative : elementLocators) {
             try {
-                WebElement element = context.findElement(LocatorUtil.by(alternative));
+                WebElement element = context.findElement(LocatorSupport.by(alternative));
                 // if the element is found, update the pointer and return the element to the caller
                 elementLocators.setUsedOption(alternative);
                 result.add(element);

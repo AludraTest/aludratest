@@ -16,7 +16,7 @@
 package org.aludratest.service.gui.component;
 
 import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 
 /**
@@ -31,7 +31,7 @@ public class RadioButton extends InputComponent<RadioButton> {
      * @param aludraGui the underlying {@link AludraGUI} service instance
      * @param locator a locator for the referenced radio button
      */
-    public RadioButton(AludraGUI aludraGui, Locator locator) {
+    public RadioButton(AludraGUI aludraGui, GUIElementLocator locator) {
         super(aludraGui, locator);
     }
 
@@ -39,13 +39,13 @@ public class RadioButton extends InputComponent<RadioButton> {
      *  @param aludraGui the underlying {@link AludraGUI} service instance
      *  @param locator a locator for the referenced element
      *  @param elementName an explicit name to use for the component */
-    public RadioButton(AludraGUI aludraGui, Locator locator, String elementName) {
+    public RadioButton(AludraGUI aludraGui, GUIElementLocator locator, String elementName) {
         super(aludraGui, locator, elementName);
     }
-    
+
     /** Selects this radio button. */
     public void select() {
-        perform().selectRadiobutton(elementType, elementName, locator, taskCompletionTimeout);
+        perform().selectRadiobutton(elementType, elementName, getLocator(), taskCompletionTimeout);
     }
 
     /** Selects this radio button if and only if the passed string parameter has the value <code>"true"</code>. In every other
@@ -62,7 +62,7 @@ public class RadioButton extends InputComponent<RadioButton> {
 
     /** Asserts that the radio button is checked */
     public void assertChecked() {
-        verify().assertChecked(elementType, elementName, locator);
+        verify().assertChecked(elementType, elementName, getLocator());
     }
 
     /** Asserts that this Radio button is in the expected state, passed by expected string. If the expected string is null or
@@ -72,7 +72,7 @@ public class RadioButton extends InputComponent<RadioButton> {
      *            assertion. */
     public void assertChecked(String expected) {
         if (!DataMarkerCheck.isNull(expected)) {
-            verify().assertChecked(elementType, elementName, Boolean.parseBoolean(expected), locator);
+            verify().assertChecked(elementType, elementName, Boolean.parseBoolean(expected), getLocator());
         }
     }
 

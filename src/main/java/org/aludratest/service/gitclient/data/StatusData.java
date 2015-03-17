@@ -20,11 +20,15 @@ import java.util.List;
 
 import org.aludratest.service.gitclient.GitClient;
 import org.aludratest.util.data.StringData;
+import org.databene.commons.CollectionUtil;
+import org.databene.commons.SystemInfo;
 
 /** Wraps data for the invocation of the {@link GitClient}'s status method.
  * @see GitClient#status
  * @author Volker Bergmann */
 public class StatusData extends AbstractGitData {
+
+    private static final Object LF = SystemInfo.getLineSeparator();
 
     private String currentBranch;
     private List<StringData> untrackedFiles;
@@ -32,7 +36,7 @@ public class StatusData extends AbstractGitData {
     private List<StringData> modifiedFiles;
     private List<StringData> addedFiles;
     private List<StringData> deletedFiles;
-    private List<StringData> renamedFiles;
+    private List<RenamedStatusData> renamedFiles;
     private List<StringData> copiedFiles;
     private List<StringData> updatedFiles;
 
@@ -44,7 +48,7 @@ public class StatusData extends AbstractGitData {
         this.modifiedFiles = new ArrayList<StringData>();
         this.addedFiles = new ArrayList<StringData>();
         this.deletedFiles = new ArrayList<StringData>();
-        this.renamedFiles = new ArrayList<StringData>();
+        this.renamedFiles = new ArrayList<RenamedStatusData>();
         this.copiedFiles = new ArrayList<StringData>();
         this.updatedFiles = new ArrayList<StringData>();
     }
@@ -116,13 +120,13 @@ public class StatusData extends AbstractGitData {
     }
 
     /** @return the list of renamed files */
-    public List<StringData> getRenamedFiles() {
+    public List<RenamedStatusData> getRenamedFiles() {
         return renamedFiles;
     }
 
     /** Sets the list of renamed files
      * @param renamedFiles the list of renamed files to set */
-    public void setRenamedFiles(List<StringData> renamedFiles) {
+    public void setRenamedFiles(List<RenamedStatusData> renamedFiles) {
         this.renamedFiles = renamedFiles;
     }
 
@@ -146,6 +150,41 @@ public class StatusData extends AbstractGitData {
      * @param updatedFiles the list of updated files to set */
     public void setUpdatedFiles(List<StringData> updatedFiles) {
         this.updatedFiles = updatedFiles;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        if (currentBranch != null) {
+            builder.append("Branch: ").append(currentBranch).append(LF);
+        }
+        appendFileList("Untracked files", untrackedFiles, builder);
+        appendFileList("Unmodified files", unmodifiedFiles, builder);
+        appendFileList("Modified files", modifiedFiles, builder);
+        appendFileList("Added files", addedFiles, builder);
+        appendFileList("Deleted files", deletedFiles, builder);
+        appendRenamedList("Renamed files", renamedFiles, builder);
+        appendFileList("Copied files", copiedFiles, builder);
+        appendFileList("Updated files", updatedFiles, builder);
+        return builder.toString();
+    }
+
+    private void appendFileList(String title, List<StringData> files, StringBuilder builder) {
+        if (!CollectionUtil.isEmpty(files)) {
+            builder.append(title).append(':').append(LF);
+            for (StringData file : files) {
+                builder.append('\t').append(file).append(LF);
+            }
+        }
+    }
+
+    private void appendRenamedList(String title, List<RenamedStatusData> renames, StringBuilder builder) {
+        if (!CollectionUtil.isEmpty(renames)) {
+            builder.append(title).append(':').append(LF);
+            for (RenamedStatusData rename : renames) {
+                builder.append('\t').append(rename).append(LF);
+            }
+        }
     }
 
 }

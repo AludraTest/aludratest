@@ -16,7 +16,7 @@
 package org.aludratest.service.gui.component;
 
 import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.option.IndexLocator;
 import org.aludratest.service.locator.option.LabelLocator;
 import org.aludratest.service.locator.option.OptionLocator;
@@ -35,7 +35,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
     /** Constructor.
      * @param aludraGui the underlying {@link AludraGUI} service instance
      * @param locator a locator for the referenced dropdown box */
-    public Dropdownbox(AludraGUI aludraGui, Locator locator) {
+    public Dropdownbox(AludraGUI aludraGui, GUIElementLocator locator) {
         super(aludraGui, locator);
     }
 
@@ -43,7 +43,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      * @param aludraGui the underlying {@link AludraGUI} service instance
      * @param locator a locator for the referenced element
      * @param elementName an explicit name to use for the component */
-    public Dropdownbox(AludraGUI aludraGui, Locator locator, String elementName) {
+    public Dropdownbox(AludraGUI aludraGui, GUIElementLocator locator, String elementName) {
         super(aludraGui, locator, elementName);
     }
 
@@ -63,7 +63,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      *            is performed. */
     public void selectEntry(OptionLocator optionLocator) {
         if (optionLocator != null) {
-            perform().selectDropDownEntry(elementType, elementName, locator, optionLocator, taskCompletionTimeout);
+            perform().selectDropDownEntry(elementType, elementName, getLocator(), optionLocator, taskCompletionTimeout);
         }
     }
 
@@ -71,14 +71,14 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      * 
      * @return the <b>value</b> of the selected entry */
     public String getSelectedEntry() {
-        return perform().getInputFieldValue(elementType, elementName, locator);
+        return perform().getInputFieldValue(elementType, elementName, getLocator());
     }
 
     /** Reads the selected label and returns it as a String.
      * 
      * @return the <b>label</b> of the selected entry */
     public String getSelectedLabel() {
-        return perform().getInputFieldSelectedLabel(elementType, elementName, locator);
+        return perform().getInputFieldSelectedLabel(elementType, elementName, getLocator());
     }
 
     /** Verifies that the passed label is selected in this Dropdownbox. If the label is null or marked as null the operation is not
@@ -87,7 +87,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      * @param label Label to check the currently selected label against. */
     public void assertIsSelected(String label) {
         if (!DataMarkerCheck.isNull(label)) {
-            verify().assertDropDownEntrySelectionMatches(elementType, elementName, locator,
+            verify().assertDropDownEntrySelectionMatches(elementType, elementName, getLocator(),
                     new EqualsValidator(DataMarkerCheck.convertIfEmpty(label)));
         }
     }
@@ -98,7 +98,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      * @param label Label to check the currently selected label against. */
     public void assertTextNotEquals(String label) {
         if (!DataMarkerCheck.isNull(label)) {
-            verify().assertDropDownEntrySelectionMatches(elementType, elementName, locator,
+            verify().assertDropDownEntrySelectionMatches(elementType, elementName, getLocator(),
                     new NotEqualsValidator(DataMarkerCheck.convertIfEmpty(label)));
         }
     }
@@ -109,7 +109,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      * @param label Label to check the currently selected label against. */
     public void assertSelectedContains(String label) {
         if (!DataMarkerCheck.isNull(label)) {
-            verify().assertDropDownEntrySelectionMatches(elementType, elementName, locator, new ContainsValidator(label));
+            verify().assertDropDownEntrySelectionMatches(elementType, elementName, getLocator(), new ContainsValidator(label));
         }
     }
 
@@ -120,7 +120,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      * @param label Label to check the currently selected label against. */
     public void assertSelectedIgnoreCaseTrimmed(String label) {
         if (!DataMarkerCheck.isNull(label)) {
-            verify().assertDropDownEntrySelectionMatches(elementType, elementName, locator,
+            verify().assertDropDownEntrySelectionMatches(elementType, elementName, getLocator(),
                     new EqualsIgnoreCaseTrimmedValidator(DataMarkerCheck.convertIfEmpty(label)));
         }
     }
@@ -128,7 +128,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
     /** Asserts that the selection matches the provided {@link Validator}.
      * @param validator the validator to apply for verification */
     public void assertSelectionMatches(Validator<String> validator) {
-        verify().assertDropDownEntrySelectionMatches(elementType, elementName, locator, validator);
+        verify().assertDropDownEntrySelectionMatches(elementType, elementName, getLocator(), validator);
     }
 
     /** Verifies that this Dropdownbox has the passed through values (and only these). If only one value is passed and it is
@@ -139,12 +139,12 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
         if (values.length == 1) {
             String value1 = values[0];
             if (!DataMarkerCheck.isNull(value1)) {
-                verify().assertHasValues(elementType, elementName, locator,
+                verify().assertHasValues(elementType, elementName, getLocator(),
                         new String[] { DataMarkerCheck.convertIfEmpty(value1) });
             }
         }
         else {
-            verify().assertHasValues(elementType, elementName, locator, DataMarkerCheck.convertIfEmpty(values));
+            verify().assertHasValues(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(values));
         }
     }
 
@@ -162,12 +162,12 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
         if (labels.length == 1) {
             String value1 = labels[0];
             if (!DataMarkerCheck.isNull(value1)) {
-                verify().assertHasLabels(elementType, elementName, locator,
+                verify().assertHasLabels(elementType, elementName, getLocator(),
                         new String[] { DataMarkerCheck.convertIfEmpty(value1) });
             }
         }
         else {
-            verify().assertHasLabels(elementType, elementName, locator, DataMarkerCheck.convertIfEmpty(labels));
+            verify().assertHasLabels(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(labels));
         }
     }
 
@@ -179,12 +179,12 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
         if (labels.length == 1) {
             String value1 = labels[0];
             if (!DataMarkerCheck.isNull(value1)) {
-                verify().assertHasLabels(elementType, elementName, locator,
+                verify().assertHasLabels(elementType, elementName, getLocator(),
                         new String[] { DataMarkerCheck.convertIfEmpty(value1) });
             }
         }
         else {
-            verify().assertContainsLabels(elementType, elementName, locator, DataMarkerCheck.convertIfEmpty(labels));
+            verify().assertContainsLabels(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(labels));
         }
     }
 
@@ -194,7 +194,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      * 
      * @return <code>true</code> if the checkbox contains the given labels, <code>false</code> otherwise. */
     public boolean checkContainsLabels(String... labels) {
-        return check().containsLabels(elementType, elementName, locator, DataMarkerCheck.convertIfEmpty(labels));
+        return check().containsLabels(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(labels));
     }
 
     /** Checks if this Dropdownbox has ONLY the given labels - in the order as speficied.
@@ -203,7 +203,7 @@ public class Dropdownbox extends InputComponent<Dropdownbox> {
      * 
      * @return <code>true</code> if the checkbox only contains the given labels, <code>false</code> otherwise. */
     public boolean checkEqualsLabels(String... labels) {
-        return check().equalsLabels(elementType, elementName, locator, DataMarkerCheck.convertIfEmpty(labels));
+        return check().equalsLabels(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(labels));
     }
 
 }

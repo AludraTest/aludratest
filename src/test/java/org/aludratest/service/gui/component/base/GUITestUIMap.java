@@ -25,7 +25,7 @@ import org.aludratest.service.gui.component.Link;
 import org.aludratest.service.gui.component.RadioButton;
 import org.aludratest.service.gui.web.AludraWebGUI;
 import org.aludratest.service.gui.web.uimap.UIMap;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.IdLocator;
 import org.aludratest.service.locator.element.XPathLocator;
 import org.aludratest.service.locator.window.TitleLocator;
@@ -40,42 +40,42 @@ public class GUITestUIMap extends UIMap {
     public final static TitleLocator TEST_PAGE_TITLE = new TitleLocator("Testwebsite");
     public final static TitleLocator LINKED_PAGE_TITLE = new TitleLocator("Beschreibung der Seite");
 
-    public final static Locator DROPDOWNBOX_ID = new IdLocator("DropDown:after");
-    public final static Locator DISABLED_DROPDOWNBOX_ID = new IdLocator("DisabledDropDown:after");
+    public final static GUIElementLocator DROPDOWNBOX_ID = new IdLocator("DropDown:after");
+    public final static GUIElementLocator DISABLED_DROPDOWNBOX_ID = new IdLocator("DisabledDropDown:after");
 
-    public final static Locator TEXT_FIELD_ID = new IdLocator("TextField:after");
+    public final static GUIElementLocator TEXT_FIELD_ID = new IdLocator("TextField:after");
 
     // contains() because highlight changes CSS class of component
-    public final static Locator NOID_TEXT_FIELD = new XPathLocator("//input[contains(@class, 'myclass')]");
+    public final static GUIElementLocator NOID_TEXT_FIELD = new XPathLocator("//input[contains(@class, 'myclass')]");
 
-    public final static Locator DISABLED_TEXT_FIELD_ID = new IdLocator("disabled_TextField:after");
+    public final static GUIElementLocator DISABLED_TEXT_FIELD_ID = new IdLocator("disabled_TextField:after");
 
-    public final static Locator RADIO_BUTTON_AND = new IdLocator("RadioAnd:after");
-    public final static Locator RADIO_BUTTON_OR = new IdLocator("RadioOR:after");
+    public final static GUIElementLocator RADIO_BUTTON_AND = new IdLocator("RadioAnd:after");
+    public final static GUIElementLocator RADIO_BUTTON_OR = new IdLocator("RadioOR:after");
 
-    public final static Locator FIRST_CHECKBOX_ID = new IdLocator("FirstCheckBox:after");
-    public final static Locator SECOND_CHECKBOX_ID = new IdLocator("SecondCheckBox:after");
-    public final static Locator DISABLED_CHECKBOX_ID = new IdLocator("DisabledCheckBox:after");
+    public final static GUIElementLocator FIRST_CHECKBOX_ID = new IdLocator("FirstCheckBox:after");
+    public final static GUIElementLocator SECOND_CHECKBOX_ID = new IdLocator("SecondCheckBox:after");
+    public final static GUIElementLocator DISABLED_CHECKBOX_ID = new IdLocator("DisabledCheckBox:after");
 
-    public final static Locator TEST_LINK_ID = new IdLocator("LinktoTThis:after");
+    public final static GUIElementLocator TEST_LINK_ID = new IdLocator("LinktoTThis:after");
 
-    public final static Locator FIND_BUTTON_ID = new IdLocator("FindButton:after");
-    public final static Locator DISABLED_BUTTON_ID = new IdLocator("DisabledButton:after");
-    public final static Locator HIDDEN_BUTTON_ID = new IdLocator("InvisibleButton:after");
-    public final static Locator HIDDEN_DIV_BUTTON_ID = new IdLocator("InvisibleDIVButton:after");
+    public final static GUIElementLocator FIND_BUTTON_ID = new IdLocator("FindButton:after");
+    public final static GUIElementLocator DISABLED_BUTTON_ID = new IdLocator("DisabledButton:after");
+    public final static GUIElementLocator HIDDEN_BUTTON_ID = new IdLocator("InvisibleButton:after");
+    public final static GUIElementLocator HIDDEN_DIV_BUTTON_ID = new IdLocator("InvisibleDIVButton:after");
 
-    public final static Locator IMAGE_ID = new IdLocator("PictureLogo:after");
-    public final static Locator IMAGE_BUTTON_ID = new IdLocator("gF:msgimg");
+    public final static GUIElementLocator IMAGE_ID = new IdLocator("PictureLogo:after");
+    public final static GUIElementLocator IMAGE_BUTTON_ID = new IdLocator("gF:msgimg");
 
-    public final static Locator LABEL_ID = new IdLocator("LabelTest:after");
+    public final static GUIElementLocator LABEL_ID = new IdLocator("LabelTest:after");
 
-    public final static Locator FILE_FIELD_ID = new IdLocator("FileField:after");
-    public final static Locator SUBMIT_FILE_ID = new IdLocator("SubmitFile");
-    public final static Locator FILE_NAME_ID = new IdLocator("FileName");
-    public final static Locator FILE_CONTENT_ID = new IdLocator("FileContent");
+    public final static GUIElementLocator FILE_FIELD_ID = new IdLocator("FileField:after");
+    public final static GUIElementLocator SUBMIT_FILE_ID = new IdLocator("SubmitFile");
+    public final static GUIElementLocator FILE_NAME_ID = new IdLocator("FileName");
+    public final static GUIElementLocator FILE_CONTENT_ID = new IdLocator("FileContent");
 
     // There is no element defined on test web page with this ID
-    public final static Locator NOT_EXISTING_BUTTON_ID = new IdLocator("test:test:test");
+    public final static GUIElementLocator NOT_EXISTING_BUTTON_ID = new IdLocator("test:test:test");
 
     public GUITestUIMap(AludraWebGUI aludraGUI) {
         super(aludraGUI);

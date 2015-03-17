@@ -18,7 +18,6 @@ package org.aludratest.service.gui.component.base;
 import static org.junit.Assert.assertEquals;
 
 import org.aludratest.service.gui.web.AludraWebGUI;
-import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.window.TitleLocator;
 import org.aludratest.testcase.TestStatus;
 import org.junit.Test;
@@ -96,7 +95,7 @@ public abstract class AbstractLinkAndWindowTest extends GUITest {
         checkOpen(new TitleLocator("lwdncnclknwd"), false);
     }
 
-    private void checkOpen(Locator title, boolean expectedValue) {
+    private void checkOpen(TitleLocator title, boolean expectedValue) {
         boolean open = aludraWebGUI.check().isWindowOpen("el", "op", title);
         assertEquals("Window " + title + " is " + (expectedValue ? "" : "not ") + " expected to be open", expectedValue, open);
     }

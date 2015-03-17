@@ -16,7 +16,7 @@
 package org.aludratest.service.gui.component;
 
 import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.GUIElementLocator;
 import org.databene.commons.Validator;
 
 /**
@@ -33,7 +33,7 @@ public class Link extends Element<Link> implements ValueComponent {
      * @param aludraGui the underlying {@link AludraGUI} service instance
      * @param locator a locator for the referenced link
      */
-    public Link(AludraGUI aludraGui, Locator locator) {
+    public Link(AludraGUI aludraGui, GUIElementLocator locator) {
         super(aludraGui, locator);
     }
 
@@ -41,14 +41,14 @@ public class Link extends Element<Link> implements ValueComponent {
      *  @param aludraGui the underlying {@link AludraGUI} service instance
      *  @param locator a locator for the referenced element
      *  @param elementName an explicit name to use for the component */
-    public Link(AludraGUI aludraGui, Locator locator, String elementName) {
+    public Link(AludraGUI aludraGui, GUIElementLocator locator, String elementName) {
         super(aludraGui, locator, elementName);
     }
-    
+
     /** Clicks the link. */
     @Override
-	public void click() {
-        perform().click(elementType, elementName, locator, taskCompletionTimeout);
+    public void click() {
+        perform().click(elementType, elementName, getLocator(), taskCompletionTimeout);
     }
 
     @Override

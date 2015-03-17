@@ -27,22 +27,22 @@ import org.aludratest.service.locator.Locator;
  * @author Volker Bergmann
  */
 public abstract class GUIComponent {
-    
+
     protected AludraGUI aludraGui;
     protected Locator locator;
     protected String elementType;
     protected String elementName;
-    
-    
+
+
     // constructors ------------------------------------------------------------
-    
+
     /** Constructor using the default component naming scheme.
      *  @param aludraGui the {@link AludraGUI} instance this GUI component is connected to
      *  @param locator the {@link Locator} by which the {@link AludraGUI} can query the component */
     protected GUIComponent(AludraGUI aludraGui, Locator locator) {
         this(aludraGui, locator, null);
     }
-    
+
     /**
      * Constructor applying a custom component name.
      * 
@@ -72,31 +72,31 @@ public abstract class GUIComponent {
         this.elementType = getClass().getSimpleName();
         this.elementName = (elementName != null ? elementName : defaultElementName());
     }
-    
-    
+
+
     // utility methods for child classes ---------------------------------------
-    
+
     protected GUIInteraction perform() {
         return aludraGui.perform();
     }
-    
+
     protected GUIVerification verify() {
         return aludraGui.verify();
     }
-    
+
     protected GUICondition check() {
         return aludraGui.check();
     }
-    
-    
+
+
     // private helpers ---------------------------------------------------------
-    
+
     private String defaultElementName() {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         int i = indexOfConstructorCall(stackTraceElements);
         return stackTraceElements[i + 1].getMethodName();
     }
-    
+
     private int indexOfConstructorCall(StackTraceElement[] stackTraceElements) {
         String className = getClass().getName();
         for (int i = 0; i < stackTraceElements.length; i++) {
@@ -107,5 +107,5 @@ public abstract class GUIComponent {
         }
         return -1;
     }
-    
+
 }

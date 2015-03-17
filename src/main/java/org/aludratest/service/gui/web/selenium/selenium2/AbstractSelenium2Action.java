@@ -15,20 +15,17 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.Action;
 import org.aludratest.service.SystemConnector;
-import org.aludratest.service.locator.element.GUIElementLocator;
-import org.aludratest.service.locator.element.IdLocator;
-import org.aludratest.service.locator.option.LabelLocator;
-import org.aludratest.service.locator.option.OptionLocator;
-import org.aludratest.service.locator.window.TitleLocator;
-import org.aludratest.service.locator.window.WindowLocator;
-import org.aludratest.service.util.ServiceUtil;
+import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
 import org.aludratest.testcase.event.attachment.Attachment;
+import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +49,15 @@ public abstract class AbstractSelenium2Action implements Action {
     @Override
     public void setSystemConnector(SystemConnector systemConnector) {
         this.wrapper.systemConnector = systemConnector;
+    }
+
+    /** @return the {@link SeleniumWrapperConfiguration} */
+    protected SeleniumWrapperConfiguration getConfiguration() {
+        return wrapper.getConfiguration();
+    }
+
+    protected long getTimeout() {
+        return getConfiguration().getTimeout();
     }
 
     @Override
@@ -90,54 +96,14 @@ public abstract class AbstractSelenium2Action implements Action {
             return wrapper.getPageSource();
         }
         catch (Exception e) { // NOSONAR
-            throw new TechnicalException("Error saving page source. ", e);
-        }
-    }
+            // instead, create an Attachment containing the exception
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            pw.flush();
 
-    protected static GUIElementLocator getDefaultElementLocator(Object locator) {
-        if (locator instanceof String) {
-            return new IdLocator((String) locator);
-        } else if (locator instanceof GUIElementLocator) {
-            return (GUIElementLocator) locator;
-        } else {
-            throw ServiceUtil.newUnsupportedLocatorException(locator);
+            return new StringAttachment("Exception on saving source", sw.toString(), "txt");
         }
-    }
-
-    protected static OptionLocator getDefaultOptionLocator(Object locator) {
-        if (locator instanceof String) {
-            return new LabelLocator((String) locator);
-        } else if (locator instanceof OptionLocator) {
-            return (OptionLocator) locator;
-        } else {
-            throw ServiceUtil.newUnsupportedLocatorException(locator);
-        }
-    }
-
-    protected static OptionLocator[] getDefaultOptionLocators(Object... locators) {
-        OptionLocator[] optionLocators = new OptionLocator[locators.length];
-        for (int i = 0; i < optionLocators.length; i++) {
-            optionLocators[i] = getDefaultOptionLocator(locators[i]);
-        }
-        return optionLocators;
-    }
-
-    protected static WindowLocator getDefaultWindowLocator(Object locator) {
-        if (locator instanceof String) {
-            return new TitleLocator((String) locator);
-        } else if (locator instanceof TitleLocator) {
-            return (TitleLocator) locator;
-        } else {
-            throw ServiceUtil.newUnsupportedLocatorException(locator);
-        }
-    }
-
-    protected static WindowLocator[] getDefaultWindowLocators(Object... locators) {
-        WindowLocator[] windowLocators = new WindowLocator[locators.length];
-        for (int i = 0; i < windowLocators.length; i++) {
-            windowLocators[i] = getDefaultWindowLocator(locators[i]);
-        }
-        return windowLocators;
     }
 
 }

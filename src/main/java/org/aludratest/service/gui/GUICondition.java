@@ -20,7 +20,8 @@ import org.aludratest.impl.log4testing.ElementType;
 import org.aludratest.impl.log4testing.TechnicalArgument;
 import org.aludratest.impl.log4testing.TechnicalLocator;
 import org.aludratest.service.Condition;
-import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.GUIElementLocator;
+import org.aludratest.service.locator.window.WindowLocator;
 
 /**
  * Extends the {@link Condition} interface providing
@@ -35,7 +36,7 @@ public interface GUICondition extends Condition {
     boolean isElementPresent(
             @ElementType String elementType,
             @ElementName String elementName,
-            @TechnicalLocator Locator locator);
+            @TechnicalLocator GUIElementLocator locator);
 
     /**
      * Determines if the specified element is visible.
@@ -43,7 +44,7 @@ public interface GUICondition extends Condition {
     boolean isElementVisible(
             @ElementType String elementType,
             @ElementName String elementName,
-            @TechnicalLocator Locator locator);
+            @TechnicalLocator GUIElementLocator locator);
 
     /**
      * Determines whether the specified input element is editable, ie hasn't been disabled.
@@ -51,7 +52,7 @@ public interface GUICondition extends Condition {
     boolean isElementEnabled(
             @ElementType String elementType,
             @ElementName String elementName,
-            @TechnicalLocator Locator locator);
+            @TechnicalLocator GUIElementLocator locator);
 
     /**
      * Determines that the specified element is not on the page
@@ -59,7 +60,7 @@ public interface GUICondition extends Condition {
     boolean isElementNotPresent(
             @ElementType String elementType,
             @ElementName String elementName,
-            @TechnicalLocator Locator locator);
+            @TechnicalLocator GUIElementLocator locator);
 
     /**
      * Determines that the specified element is somewhere on the page in a given timeout
@@ -67,7 +68,7 @@ public interface GUICondition extends Condition {
     boolean isElementPresent(
             @ElementType String elementType,
             @ElementName String elementName,
-            @TechnicalLocator Locator locator,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument long timeout);
 
     /**
@@ -76,7 +77,7 @@ public interface GUICondition extends Condition {
     boolean isElementVisible(
             @ElementType String elementType,
             @ElementName String elementName,
-            @TechnicalLocator Locator locator,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument long timeout);
 
     /**
@@ -85,7 +86,7 @@ public interface GUICondition extends Condition {
     boolean isElementEnabled(
             @ElementType String elementType,
             @ElementName String elementName,
-            @TechnicalLocator Locator locator,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument long timeout);
 
     /**
@@ -94,16 +95,13 @@ public interface GUICondition extends Condition {
     boolean isElementNotPresent(
             @ElementType String elementType,
             @ElementName String elementName,
-            @TechnicalLocator Locator locator,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument long timeout);
 
     /**
      * Determines if a specified window is open
      */
-    boolean isWindowOpen(
-            @ElementType String elementType,
-            @ElementName String elementName,
-            @TechnicalLocator Locator locator);
+    boolean isWindowOpen(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator WindowLocator locator);
 
     /**
      * Determines that the specified element is somewhere on the page and in foreground
@@ -111,7 +109,7 @@ public interface GUICondition extends Condition {
     boolean isElementPresentandInForeground(
             @ElementType String elementType,
             @ElementName String elementName,
-            @TechnicalLocator Locator locator);
+            @TechnicalLocator GUIElementLocator locator);
 
     /** Determines if the specified element is checked. This normally only applies to checkboxes.
      * 
@@ -120,7 +118,8 @@ public interface GUICondition extends Condition {
      * @param locator Locator of the element.
      * 
      * @return <code>true</code> if the element is checked, <code>false</code> otherwise. */
-    boolean isElementChecked(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator);
+    boolean isElementChecked(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator);
 
     /**
      * Determines if the speficied element contains the given labels (and possibly more).
@@ -132,7 +131,8 @@ public interface GUICondition extends Condition {
      * 
      * @return <code>true</code> if the labels were found in the element, <code>false</code> otherwise.
      */
-    boolean containsLabels(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
+    boolean containsLabels(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument String... labels);
 
     /** Determines if the speficied element contains the given labels (and only these), in the same order as specified.
@@ -143,7 +143,8 @@ public interface GUICondition extends Condition {
      * @param labels Labels which are expected in the element.
      * 
      * @return <code>true</code> if the labels equal all labels found in the element, <code>false</code> otherwise. */
-    boolean equalsLabels(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator Locator locator,
+    boolean equalsLabels(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument String... labels);
 
 }
