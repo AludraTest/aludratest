@@ -293,7 +293,7 @@ public class Selenium2Wrapper {
         }
     }
 
-    public void handleSeleniumException(Throwable e) {
+    private void handleSeleniumException(Throwable e) {
         String message = e.getMessage();
 
         // check if there is a WebDriverException
@@ -317,8 +317,16 @@ public class Selenium2Wrapper {
                 throw new AutomationException(m.group(2), wde);
             }
 
+            // NoSuchElementException
+            if (wde instanceof NoSuchElementException) {
+                throw new AutomationException("Element not found", wde);
+            }
+
             throw wde;
         }
+
+        // otherwise, throw a technical exception
+        throw new TechnicalException("Unknown exception when clicking element", e);
     }
 
     public void doubleClick(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
@@ -369,7 +377,7 @@ public class Selenium2Wrapper {
             String script = null;
             try {
                 executeScript(script = "document.getElementById('" + id + "').setAttribute('value', '"
-                        + value.replace("'", "\\'") + "')");
+                        + value.replace("'", "\\'").replace("\n", "\\n").replace("\r", "\\r") + "')");
             }
             catch (WebDriverException e) {
                 if (e.getMessage() != null && e.getMessage().contains("Unexpected token")) {
@@ -454,7 +462,13 @@ public class Selenium2Wrapper {
     }
 
     public String getValue(GUIElementLocator locator) {
-        return findElementImmediately(locator).getAttribute("value");
+        try {
+            return findElementImmediately(locator).getAttribute("value");
+        }
+        catch (Exception e) {
+            handleSeleniumException(e);
+            return null; // never called, as handle always throws
+        }
     }
 
     // window operations -------------------------------------------------------
