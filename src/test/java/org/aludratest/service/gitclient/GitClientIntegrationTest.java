@@ -411,6 +411,9 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     }
 
     private void createTestFilesForReset(GitClient gitClient) throws IOException {
+        // give git-reset a target commit
+        InvocationData data = new InvocationData("git", "commit", "--allow-empty", "-m", "Initial commit.");
+        gitClient.invokeGenerically(data);
         // create the files
         createFile(UNTRACKED_FILE, "untracked", false, gitClient);
         createFile(ADDED_FILE, "added", true, gitClient);
