@@ -410,7 +410,14 @@ public class Selenium2Wrapper {
             }
             element.sendKeys(value);
         }
-        executeScript(FIRE_ONCHANGE_SCRIPT, element);
+
+        try {
+            executeScript(FIRE_ONCHANGE_SCRIPT, element);
+        }
+        catch (StaleElementReferenceException e) {
+            // ignore; key could have caused page change
+            LOGGER.debug("Could not fire change event for element because element is now stale.");
+        }
     }
 
     public void sendKeys(GUIElementLocator locator, String keys, int taskCompletionTimeout) {
