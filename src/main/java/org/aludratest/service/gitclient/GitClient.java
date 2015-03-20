@@ -131,7 +131,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         if (!StringUtil.isEmpty(data.getKey())) {
             builder.add(data.getKey());
             if (!StringUtil.isEmpty(data.getValue())) {
-                builder.add(data.getValue());
+                builder.add('"' + data.getValue() + '"');
                 if (!StringUtil.isEmpty(data.getValueRegex())) {
                     builder.add(data.getValueRegex());
                 }
