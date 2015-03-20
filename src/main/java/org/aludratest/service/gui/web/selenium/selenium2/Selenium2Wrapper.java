@@ -377,7 +377,7 @@ public class Selenium2Wrapper {
             String script = null;
             try {
                 executeScript(script = "document.getElementById('" + id + "').setAttribute('value', '"
-                        + value.replace("'", "\\'") + "')");
+                        + value.replace("'", "\\'").replace("\n", "\\n").replace("\r", "\\r") + "')");
             }
             catch (WebDriverException e) {
                 if (e.getMessage() != null && e.getMessage().contains("Unexpected token")) {
