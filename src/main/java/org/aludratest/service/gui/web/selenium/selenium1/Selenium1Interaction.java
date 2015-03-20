@@ -248,7 +248,7 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     private void checkLabels(final OptionLocator optLocator, final GUIElementLocator elementLocator) {
-        boolean found = wrapper.retryUntilTimeout(new ConditionCheck() {
+        wrapper.retryUntilTimeout(new ConditionCheck() {
             @Override
             public boolean eval() {
                 String[] actualLabels = wrapper.getLabels(elementLocator);
@@ -261,9 +261,6 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
                 }
             }
         });
-        if (!found) {
-            throw new AutomationException("Element not found");
-        }
         String[] actualLabels = wrapper.getLabels(elementLocator);
         if (optLocator instanceof LabelLocator) {
             String mismatches = DataUtil.containsString(optLocator.toString(), actualLabels);

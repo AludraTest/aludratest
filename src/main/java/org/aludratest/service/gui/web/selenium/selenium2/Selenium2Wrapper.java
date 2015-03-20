@@ -26,8 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import junit.framework.AssertionFailedError;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.PerformanceFailure;
@@ -37,9 +40,10 @@ import org.aludratest.service.gui.web.selenium.ProxyPool;
 import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
 import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
 import org.aludratest.service.gui.web.selenium.httpproxy.AuthenticatingHttpProxy;
-import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownEntryPresence;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.AnyDropDownOptions;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownBoxOptionLabelsPresence;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownOptionLocatable;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
-import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementClickable;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementValuePresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.OptionSelected;
@@ -56,6 +60,7 @@ import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.BinaryAttachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.aludratest.util.data.helper.DataMarkerCheck;
+import org.aludratest.util.retry.RetryService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.By;
@@ -74,7 +79,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,11 +97,6 @@ import com.thoughtworks.selenium.SeleniumException;
 public class Selenium2Wrapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Selenium2Wrapper.class);
-
-    // constants ---------------------------------------------------------------
-
-    private static final String DROPDOWN_OPTION_VALUE_PROPERTY = "value";
-    private static final String DROPDOWN_OPTION_LABEL_PROPERTY = "text";
 
     // scripts -----------------------------------------------------------------
 
@@ -308,6 +307,9 @@ public class Selenium2Wrapper {
         }
 
         if (wde != null) {
+            if (message == null) {
+                message = wde.getMessage();
+            }
             // "not clickable" exception
             Pattern p = Pattern.compile("(unknown error: )?(.* not clickable .*)");
             Matcher m;
@@ -364,12 +366,25 @@ public class Selenium2Wrapper {
         String fieldType = element.getAttribute("type");
         boolean fallback = true;
         if (!DataMarkerCheck.isNull(id) || "file".equals(fieldType)) {
-            executeScript("document.getElementById('" + id + "').setAttribute('value', '" + value.replace("'", "\\'")
-                    + "')");
+            String script = null;
+            try {
+                executeScript(script = "document.getElementById('" + id + "').setAttribute('value', '"
+                        + value.replace("'", "\\'") + "')");
+            }
+            catch (WebDriverException e) {
+                if (e.getMessage() != null && e.getMessage().contains("Unexpected token")) {
+                    // chain two exceptions to trace failed script as well as value characters
+                    AutomationException scriptFailure = new AutomationException("Failed JavaScript execution for script: "
+                            + script, e);
+                    throw new AutomationException(
+                            "Invalid value for field. Check your input data for illegal characters like e.g. zero-width spaces. Value as character array: "
+                                    + debugCharacters(value), scriptFailure);
+                }
+            }
             // validate success
             if (value.equals(element.getAttribute("value"))) {
                 fallback = false;
-                executeScript(FIRE_ONCHANGE_SCRIPT, element);
+                LOGGER.debug("setValue with JavaScript successful for " + id);
             }
         }
 
@@ -387,6 +402,7 @@ public class Selenium2Wrapper {
             }
             element.sendKeys(value);
         }
+        executeScript(FIRE_ONCHANGE_SCRIPT, element);
     }
 
     public void sendKeys(GUIElementLocator locator, String keys, int taskCompletionTimeout) {
@@ -515,12 +531,20 @@ public class Selenium2Wrapper {
             if (handles.isEmpty()) {
                 return Collections.emptyMap();
             }
+
             initialWindowHandle = handles.iterator().next();
             driver.switchTo().window(initialWindowHandle);
         }
 
-        String title = driver.getTitle();
-        handlesAndTitles.put(initialWindowHandle, title);
+        try {
+            String title = driver.getTitle();
+            handlesAndTitles.put(initialWindowHandle, title);
+        }
+        catch (WebDriverException e) {
+            // ignore current window
+            LOGGER.warn("Could not determine title of current window. Assuming window has just been closed.");
+        }
+
         // iterate all other windows by handle and get their titles
         String currentHandle = initialWindowHandle;
         Set<String> handles = getWindowHandles();
@@ -530,17 +554,29 @@ public class Selenium2Wrapper {
                 try {
                     driver.switchTo().window(handle);
                     currentHandle = handle;
-                    handlesAndTitles.put(handle, driver.getTitle());
+                    String title;
+                    handlesAndTitles.put(handle, title = driver.getTitle());
+                    LOGGER.debug("Window with handle {} has title '{}'", handle, title);
                 }
                 catch (NoSuchWindowException e) {
                     // ignore this window
                 }
-                LOGGER.debug("Window with handle {} has title '{}'", handle, title);
+                catch (WebDriverException e) {
+                    // ignore this window
+                    LOGGER.warn("WebDriverException when querying window with handle " + handle
+                            + ". Assuming window has just been closed.");
+                }
             }
         }
         // switch back to the original window
         if (!currentHandle.equals(initialWindowHandle)) {
-            driver.switchTo().window(initialWindowHandle);
+            try {
+                driver.switchTo().window(initialWindowHandle);
+            }
+            catch (WebDriverException e) {
+                // selenium could now be on an unexpected window
+                LOGGER.warn("Could not switch back to initial window after window iteration. Active window is now unspecified.");
+            }
         }
         return handlesAndTitles;
     }
@@ -591,9 +627,33 @@ public class Selenium2Wrapper {
     }
 
     private Set<String> getWindowHandles() {
-        Set<String> handles = driver.getWindowHandles();
-        LOGGER.debug("getWindowHandles() -> {}", handles);
-        return handles;
+        // try up to three times when getting strange WebDriverExceptions
+        Callable<Set<String>> callable = new Callable<Set<String>>() {
+            @Override
+            public Set<String> call() throws Exception {
+                try {
+                    Set<String> handles = driver.getWindowHandles();
+                    LOGGER.debug("getWindowHandles() -> {}", handles);
+                    return handles;
+                }
+                catch (Exception e) {
+                    // wait a little bit in case of exception, e.g. for browser window to close
+                    try {
+                        Thread.sleep(100);
+                    }
+                    catch (InterruptedException ie) {
+                    }
+                    throw e;
+                }
+            }
+        };
+        try {
+            return RetryService.call(callable, WebDriverException.class, 2);
+        }
+        catch (Throwable t) {
+            LOGGER.error("Could not retrieve window handles", t);
+            return Collections.emptySet();
+        }
     }
 
     // iframe operations -------------------------------------------------------
@@ -616,36 +676,8 @@ public class Selenium2Wrapper {
         return returnValue;
     }
 
-    public String[] getLabels(GUIElementLocator locator) {
-        return getPropertyValues(locator, DROPDOWN_OPTION_LABEL_PROPERTY);
-    }
-
-    public String[] getValues(final GUIElementLocator locator) {
-        doBeforeDelegate(locator, true, false, false);
-        String[] returnValue = getPropertyValues(locator, DROPDOWN_OPTION_VALUE_PROPERTY);
-        doAfterDelegate(-1, "getValues");
-        return returnValue;
-    }
-
-    private String[] getPropertyValues(GUIElementLocator locator, String propertyName) {
-        WebElement element = findElementImmediately(locator);
-        Select select = new Select(element);
-        List<WebElement> options = select.getOptions();
-        ArrayList<String> values = new ArrayList<String>();
-        for (WebElement option : options) {
-            String value = option.getAttribute(propertyName);
-            if (value != null) {
-                values.add(value);
-            }
-        }
-        return values.toArray(new String[values.size()]);
-    }
-
     public void focus(GUIElementLocator locator) {
-        WebElement element = findElementImmediately(locator);
-        if (!ElementClickable.isClickable(element)) {
-            throw new AutomationException("Element not editable");
-        }
+        WebElement element = waitUntilClickable(locator, configuration.getTimeout());
         executeScript("arguments[0].focus()", element);
     }
 
@@ -721,12 +753,12 @@ public class Selenium2Wrapper {
     }
 
     @SuppressWarnings("unchecked")
-    public void waitUntilClickable(GUIElementLocator locator, long timeOutInMillis) {
+    public WebElement waitUntilClickable(GUIElementLocator locator, long timeOutInMillis) {
+        ElementCondition condition = new ElementCondition(locator, locatorSupport, true, true);
         try {
-            waitFor(ExpectedConditions.elementToBeClickable(LocatorSupport.by(locator)), timeOutInMillis,
-                    NoSuchElementException.class);
+            return waitFor(condition, timeOutInMillis, NoSuchElementException.class);
         } catch (TimeoutException e) {
-            throw new AutomationException("Element not editable"); // NOSONAR
+            throw new AutomationException(condition.getMessage()); // NOSONAR
         }
     }
 
@@ -761,13 +793,51 @@ public class Selenium2Wrapper {
     }
 
     @SuppressWarnings("unchecked")
-    public void waitForDropDownEntry(final OptionLocator entryLocator, final GUIElementLocator dropDownLocator) {
+    public String[] waitForAnyDropDownOptionLabels(final GUIElementLocator dropDownLocator) {
+        AnyDropDownOptions condition = new AnyDropDownOptions(dropDownLocator, AnyDropDownOptions.DROPDOWN_OPTION_LABEL_PROPERTY,
+                locatorSupport);
         try {
-            waitFor(new DropDownEntryPresence(dropDownLocator, entryLocator, this), configuration.getTimeout(),
-                    NoSuchElementException.class, StaleElementReferenceException.class);
+            return waitFor(condition, configuration.getTimeout(), NoSuchElementException.class,
+                    StaleElementReferenceException.class);
         }
         catch (TimeoutException e) {
-            throw new AutomationException("Element not found");
+            throw new AutomationException(condition.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public String[] waitForAnyDropDownOptionValues(final GUIElementLocator dropDownLocator) {
+        AnyDropDownOptions condition = new AnyDropDownOptions(dropDownLocator, AnyDropDownOptions.DROPDOWN_OPTION_VALUE_PROPERTY,
+                locatorSupport);
+        try {
+            return waitFor(condition, configuration.getTimeout(), NoSuchElementException.class,
+                    StaleElementReferenceException.class);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void waitForDropDownEntryLocatablity(final OptionLocator entryLocator, final GUIElementLocator dropDownLocator) {
+        DropDownOptionLocatable condition = new DropDownOptionLocatable(dropDownLocator, entryLocator, locatorSupport);
+        try {
+            waitFor(condition, configuration.getTimeout(), NoSuchElementException.class, StaleElementReferenceException.class);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void waitForDropDownEntries(GUIElementLocator dropDownLocator, String[] labels, boolean contains) {
+        DropDownBoxOptionLabelsPresence condition = new DropDownBoxOptionLabelsPresence(dropDownLocator, labels, contains,
+                locatorSupport);
+        try {
+            waitFor(condition, configuration.getTimeout(), NoSuchElementException.class, StaleElementReferenceException.class);
+        }
+        catch (TimeoutException e) {
+            throw new AssertionFailedError(condition.getMessage());
         }
     }
 
@@ -924,6 +994,20 @@ public class Selenium2Wrapper {
 
     private WebElement findElementImmediately(GUIElementLocator locator) {
         return locatorSupport.findElementImmediately(locator);
+    }
+
+    // debugging for invalid input values for setValue -------------------------
+
+    private String debugCharacters(String value) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : value.toCharArray()) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append("0x").append(Integer.toHexString(c));
+        }
+
+        return sb.toString();
     }
 
 }

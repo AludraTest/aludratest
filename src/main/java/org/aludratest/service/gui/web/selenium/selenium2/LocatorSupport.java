@@ -33,6 +33,7 @@ import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.IdLocator;
 import org.aludratest.service.locator.element.LabelLocator;
 import org.aludratest.service.locator.element.XPathLocator;
+import org.aludratest.util.AludraTestUtil;
 import org.aludratest.util.retry.RetryService;
 import org.aludratest.util.timeout.TimeoutService;
 import org.openqa.selenium.By;
@@ -54,9 +55,9 @@ public class LocatorSupport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocatorSupport.class);
 
+    private static final int MAX_RETRIES_ON_STALE_ELEMENT = 3;
     private static final int SECOND_MILLIS = 1000;
     private static final int DEFAULT_IMPLICIT_WAIT_MILLIS = 100;
-    private static final int ISSUE_402_HANGING_TIMEOUT = 3000;
 
     private final WebDriver driver;
     private final SeleniumWrapperConfiguration config;
@@ -90,7 +91,7 @@ public class LocatorSupport {
                 return findElementImmediately(locator);
             }
         };
-        Callable<WebElement> finderWithTimeout = TimeoutService.createCallableWithTimeout(finder, ISSUE_402_HANGING_TIMEOUT);
+        Callable<WebElement> finderWithTimeout = TimeoutService.createCallableWithTimeout(finder, config.getTimeout());
         try {
             return RetryService.call(finderWithTimeout, java.util.concurrent.TimeoutException.class, 1);
         }
@@ -136,12 +137,23 @@ public class LocatorSupport {
             driver.manage().timeouts().implicitlyWait(timeOutInMillis, TimeUnit.MILLISECONDS);
             return findElement(locator, timeOutInMillis);
         }
-        catch (NoSuchElementException e) {
-            return null;
-        }
         finally {
             driver.manage().timeouts().implicitlyWait(DEFAULT_IMPLICIT_WAIT_MILLIS, TimeUnit.MILLISECONDS);
         }
+    }
+
+    /** Provides the parent of a given {@link WebElement}.
+     * @param child
+     * @return */
+    public WebElement getParent(final WebElement child) {
+        WebElement parent = child.findElement(By.xpath(".."));
+        return wrapElement(parent, new ElementLookup() {
+            @Override
+            public WebElement perform() {
+                return child.findElement(By.xpath(".."));
+            }
+        });
+
     }
 
     /** Implements Selenium 2's {@link By} interface in a way that supports AludraTest's {@link GUIElementLocator}s
@@ -223,28 +235,34 @@ public class LocatorSupport {
      *            the element lookup is repeated
      * @return the element if it is found
      * @throws NoSuchElementException if no matching element is found */
-    private WebElement findElement(GUIElementLocator locator, long relocationTimeout) {
-        return wrapElement(locator, driver.findElement(by(locator)), relocationTimeout);
+    private WebElement findElement(final GUIElementLocator locator, final long relocationTimeout) {
+        WebElement element = driver.findElement(by(locator));
+        return wrapElement(element, new ElementLookup() {
+            @Override
+            public WebElement perform() {
+                return waitUntilPresent(locator, relocationTimeout);
+            }
+        });
     }
 
-    private WebElement wrapElement(GUIElementLocator locator, WebElement element, long timeOutInMillis) {
+    private WebElement wrapElement(WebElement element, ElementLookup lookup) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        InvocationHandler handler = new WebElementProxyHandler(locator, element, timeOutInMillis);
+        InvocationHandler handler = new WebElementProxyHandler(element, lookup);
         return (WebElement) Proxy.newProxyInstance(classLoader, new Class[] { ElementWrapper.class }, handler);
+    }
+
+    interface ElementLookup {
+        WebElement perform();
     }
 
     class WebElementProxyHandler implements InvocationHandler {
 
-        private static final int MAX_RETRIES_ON_STALE_ELEMENT = 3;
-
-        private GUIElementLocator locator;
         private WebElement realElement;
-        private long timeOutInMillis;
+        private ElementLookup lookup;
 
-        public WebElementProxyHandler(GUIElementLocator locator, WebElement realElement, long timeOutInMillis) {
-            this.locator = locator;
+        public WebElementProxyHandler(WebElement realElement, ElementLookup lookup) {
             this.realElement = realElement;
-            this.timeOutInMillis = timeOutInMillis;
+            this.lookup = lookup;
         }
 
         @Override
@@ -257,23 +275,30 @@ public class LocatorSupport {
             }
         }
 
-        private Object invokeRealElement(Method method, Object[] args) throws IllegalAccessException, InvocationTargetException {
-            StaleElementReferenceException exception = null;
+        private Object invokeRealElement(Method method, Object[] args) throws Throwable {
+            StaleElementReferenceException staleEx = null;
             // try to get z order up to 3 times
             for (int invocationCount = 0; invocationCount < MAX_RETRIES_ON_STALE_ELEMENT; invocationCount++) {
                 try {
                     return method.invoke(realElement, args);
                 }
-                catch (StaleElementReferenceException e) {
-                    // ... on failure, catch and store the exception...
-                    exception = e;
-                    // relocate the element
-                    this.realElement = waitUntilPresent(locator, timeOutInMillis);
-                    // and repeat (or finish) the loop
+                catch (InvocationTargetException invocationEx) {
+                    Throwable cause = AludraTestUtil.unwrapInvocationTargetException(invocationEx);
+                    if (cause instanceof StaleElementReferenceException) {
+                        // ... on stale refs, catch and store the exception...
+                        staleEx = (StaleElementReferenceException) cause;
+                        // relocate the element
+                        this.realElement = lookup.perform();
+                        // and repeat (or finish) the loop
+                    }
+                    else {
+                        // in case of another failure, provide it to the caller immediately
+                        throw cause;
+                    }
                 }
             }
             // code has repeatedly failed, so forward the last exception
-            throw exception;
+            throw staleEx;
         }
 
     }
