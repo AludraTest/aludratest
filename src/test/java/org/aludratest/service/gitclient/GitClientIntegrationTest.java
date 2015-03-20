@@ -33,6 +33,7 @@ import org.aludratest.service.gitclient.data.BranchDeletionData;
 import org.aludratest.service.gitclient.data.BranchListData;
 import org.aludratest.service.gitclient.data.CloneRepositoryData;
 import org.aludratest.service.gitclient.data.CommitData;
+import org.aludratest.service.gitclient.data.ConfigData;
 import org.aludratest.service.gitclient.data.InvocationData;
 import org.aludratest.service.gitclient.data.LogData;
 import org.aludratest.service.gitclient.data.LogItemData;
@@ -76,7 +77,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     @Test
     public void testVersion() throws Exception {
         VersionData data = new VersionData();
-        new GitClient(service, 10000).version(data);
+        createGitClient().version(data);
         System.out.println(data);
         assertFalse("git version number is empty", StringUtil.isEmpty(data.getVersionNumber()));
     }
@@ -84,7 +85,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     @Test
     public void testStatus() throws Exception {
         StatusData data = new StatusData();
-        new GitClient(service, 10000).status(data);
+        createGitClient().status(data);
         System.out.println("Status: On branch " + data.getCurrentBranch());
         assertFalse("Branch name is empty", StringUtil.isEmpty(data.getCurrentBranch()));
     }
@@ -92,7 +93,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     @Test
     public void testLog() throws Exception {
         LogData data = LogData.createWithMaxCount(5);
-        new GitClient(service, 10000).log(data);
+        createGitClient().log(data);
         for (LogItemData entry : data.getItems()) {
             System.out.println(entry);
             System.out.println();
@@ -116,14 +117,14 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     @Test
     public void testGetCurrentBranch() throws Exception {
         StringData branchData = new StringData();
-        new GitClient(service, 10000).getCurrentBranch(branchData);
+        createGitClient().getCurrentBranch(branchData);
         assertNotNull(branchData.getValue());
     }
 
     @Test
     public void testListBranches() throws Exception {
         BranchListData data = new BranchListData();
-        new GitClient(service, 10000).listBranches(data);
+        createGitClient().listBranches(data);
         System.out.println("Branches:");
         for (StringData branch : data.getBranches()) {
             if (branch.getValue().equals(data.getCurrentBranch())) {
@@ -313,8 +314,8 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
             GitClient gitClient1 = new GitClient(service, 60000).setWorkingDirectory(new StringData(tempDir.getAbsolutePath()));
             gitClient1.cloneRepository(new CloneRepositoryData("https://github.com/AludraTest/aludratest.git"));
             File projectDir = new File(tempDir, "aludratest");
-            GitClient gitClient2 = new GitClient(service, 10000)
-            .setWorkingDirectory(new StringData(projectDir.getAbsolutePath()));
+            GitClient gitClient2 = createGitClient();
+            gitClient2.setWorkingDirectory(new StringData(projectDir.getAbsolutePath()));
             getStatus(gitClient2);
         }
         finally {
@@ -355,7 +356,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     @Test
     public void testInvokeGenerically() throws Exception {
         InvocationData data = new InvocationData("git", "--version");
-        new GitClient(service, 10000).invokeGenerically(data);
+        createGitClient().invokeGenerically(data);
         String stdOut = data.getStdOut();
         System.out.println(stdOut);
         assertTrue("Version info does not start with 'git version '", stdOut.startsWith("git version "));
@@ -363,12 +364,20 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
 
     // private methods ---------------------------------------------------------
 
+    private GitClient createGitClient() {
+        return new GitClient(service, 10000);
+    }
+
     private void runInNewRepo(GitTest test) throws Exception {
         File tempDir = createTempDirectory();
         try {
-            GitClient gitClient = new GitClient(service, 10000).setWorkingDirectory(new StringData(tempDir.getAbsolutePath()));
-            gitClient.init();
-            test.run(gitClient);
+            GitClient git = createGitClient().setWorkingDirectory(new StringData(tempDir.getAbsolutePath()));
+            git.init();
+            // git config user.email "you@example.com"
+            git.config(new ConfigData("user.email", "you@example.com"));
+            // git config user.name "you"
+            git.config(new ConfigData("user.name", "you"));
+            test.run(git);
         }
         finally {
             FileUtil.deleteDirectory(tempDir);
