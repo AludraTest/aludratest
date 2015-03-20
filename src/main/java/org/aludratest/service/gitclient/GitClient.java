@@ -28,6 +28,7 @@ import org.aludratest.service.gitclient.data.BranchListData;
 import org.aludratest.service.gitclient.data.CheckoutData;
 import org.aludratest.service.gitclient.data.CloneRepositoryData;
 import org.aludratest.service.gitclient.data.CommitData;
+import org.aludratest.service.gitclient.data.ConfigData;
 import org.aludratest.service.gitclient.data.FetchData;
 import org.aludratest.service.gitclient.data.InvocationData;
 import org.aludratest.service.gitclient.data.LogData;
@@ -58,6 +59,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     private static final String GIT_COMMAND = "git";
 
     private static final String GIT_PROCESS_TYPE = "git";
+
+    private static final String GIT_CONFIG_PROCESS_NAME = "config";
     private static final String GIT_VERSION_PROCESS_NAME = "--version";
     private static final String GIT_STATUS_PROCESS_NAME = "status";
     private static final String GIT_LOG_PROCESS_NAME = "log";
@@ -119,6 +122,24 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     // operational interface ---------------------------------------------------
+
+    /** Calls git's config feature.
+     * @param data the settings to apply
+     * @return a reference to this */
+    public GitClient config(ConfigData data) {
+        ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class).add("config");
+        if (!StringUtil.isEmpty(data.getKey())) {
+            builder.add(data.getKey());
+            if (!StringUtil.isEmpty(data.getValue())) {
+                builder.add(data.getValue());
+                if (!StringUtil.isEmpty(data.getValueRegex())) {
+                    builder.add(data.getValueRegex());
+                }
+            }
+        }
+        invokeGenerically(GIT_CONFIG_PROCESS_NAME, true, builder.toArray());
+        return this;
+    }
 
     /** Queries the git client for its version number.
      * @param data an instance of the data class that receives the query result
