@@ -137,9 +137,6 @@ public class LocatorSupport {
             driver.manage().timeouts().implicitlyWait(timeOutInMillis, TimeUnit.MILLISECONDS);
             return findElement(locator, timeOutInMillis);
         }
-        catch (NoSuchElementException e) {
-            return null;
-        }
         finally {
             driver.manage().timeouts().implicitlyWait(DEFAULT_IMPLICIT_WAIT_MILLIS, TimeUnit.MILLISECONDS);
         }
