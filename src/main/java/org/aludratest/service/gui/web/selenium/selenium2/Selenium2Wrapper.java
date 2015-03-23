@@ -104,23 +104,6 @@ public class Selenium2Wrapper {
 
     private static final String HAS_FOCUS_SCRIPT = "return arguments[0] == window.document.activeElement";
 
-    // @formatter:off
-    private static final String FIRE_ONCHANGE_SCRIPT = "var element = arguments[0]; var event; "
-            + "if (document.createEvent) {"
-            + "    event = document.createEvent(\"HTMLEvents\");"
-            + "    event.initEvent(\"change\", true, false);"
-            + "  } else {"
-            + "    event = document.createEventObject();"
-            + "    event.eventType = \"change\";"
-            + "  }"
-            + "  event.eventName = \"change\";"
-            + "  if (document.createEvent) {"
-            + "    element.dispatchEvent(event);"
-            + "  } else {"
-            + "    element.fireEvent(\"on\" + event.eventType, event);"
-            + "  }";
-    // @formatter:on
-
     // static attributes -------------------------------------------------------
 
     private static ProxyPool proxyPool = null;
@@ -412,7 +395,7 @@ public class Selenium2Wrapper {
         }
 
         try {
-            executeScript(FIRE_ONCHANGE_SCRIPT, element);
+            element.sendKeys(Keys.TAB);
         }
         catch (StaleElementReferenceException e) {
             // ignore; key could have caused page change
