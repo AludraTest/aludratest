@@ -20,49 +20,24 @@ import java.util.Set;
 import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.databene.commons.CollectionUtil;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 
 /** Checks if a web GUI element exists and is clickable (editable). If one of these checks fails, the failure message is reported
  * in the {@link #message} property.
  * @author Volker Bergmann */
-public class ElementClickable implements ExpectedCondition<WebElement> {
+public class ElementClickable extends WebElementCondition {
 
     private static final Set<String> EDITABLE_ELEMENTS = CollectionUtil.toSet("input", "textarea", "select", "a");
-
-    private final GUIElementLocator locator;
-
-    private String message;
-
-    private final LocatorSupport locatorSupport;
 
     /** Constructor.
      * @param locator the {@link GUIElementLocator} of the related GUI element
      * @param locatorSupport */
     public ElementClickable(GUIElementLocator locator, LocatorSupport locatorSupport) {
-        this.locator = locator;
-        this.locatorSupport = locatorSupport;
-        this.message = null;
-    }
-
-    /** @return the {@link #message} which has been set if the condition did not match */
-    public String getMessage() {
-        return message;
+        super(locator, locatorSupport);
     }
 
     @Override
-    public WebElement apply(WebDriver driver) {
-        this.message = null;
-        WebElement element = null;
-        try {
-            element = ElementPresence.findElementImmediately(locator, locatorSupport);
-        }
-        catch (NoSuchElementException e) {
-            this.message = "Element not found";
-            return null;
-        }
+    protected WebElement applyOnElement(WebElement element) {
         if (!isClickable(element)) {
             this.message = "Element not clickable";
             return null;

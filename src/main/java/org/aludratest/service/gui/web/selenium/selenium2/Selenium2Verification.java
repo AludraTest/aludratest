@@ -18,12 +18,8 @@ package org.aludratest.service.gui.web.selenium.selenium2;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.service.gui.web.WebGUIVerification;
-import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.util.DataUtil;
-import org.aludratest.util.PolledValidationTask;
-import org.aludratest.util.Provider;
-import org.aludratest.util.poll.PollService;
 import org.databene.commons.StringUtil;
 import org.databene.commons.Validator;
 
@@ -35,14 +31,13 @@ import org.databene.commons.Validator;
  */
 public class Selenium2Verification extends AbstractSelenium2Action implements WebGUIVerification {
 
-    Selenium2Verification(Selenium2Wrapper seleniumWrapper) {
-        super(seleniumWrapper);
+    Selenium2Verification(Selenium2Wrapper wrapper) {
+        super(wrapper);
     }
 
     @Override
     public void assertTextMatches(String elementType, String operation, GUIElementLocator locator, Validator<String> validator) {
-        Provider<String> provider = new TextProvider(locator);
-        waitForMatch(provider, validator);
+        wrapper.waitForTextValidity(locator, validator);
     }
 
     @Override
@@ -130,23 +125,12 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
     @Override
     public void assertValueMatches(String elementType, String operation, final GUIElementLocator locator,
             Validator<String> validator) {
-        Provider<String> provider = new Provider<String>() {
-            @Override
-            public String getName() {
-                return "Value";
-            }
-            @Override
-            public String getValue() {
-                return wrapper.getValue(locator);
-            }
-        };
-        waitForMatch(provider, validator);
+        wrapper.waitForValueValidity(locator, validator);
     }
 
     @Override
     public void assertContainsLabels(String elementType, String operation, GUIElementLocator locator, String[] labels) {
         checkLabels(labels, locator, true);
-
     }
 
     @Override
@@ -163,17 +147,7 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
     @Override
     public void assertDropDownEntrySelectionMatches(String elementType, String operation, final GUIElementLocator locator,
             Validator<String> validator) {
-        Provider<String> provider = new Provider<String>() {
-            @Override
-            public String getName() {
-                return "Label";
-            }
-            @Override
-            public String getValue() {
-                return wrapper.getSelectedLabel(locator);
-            }
-        };
-        waitForMatch(provider, validator);
+        wrapper.waitForSelectedLabelValidity(locator, validator);
     }
 
     private void checkLabels(String[] labels, GUIElementLocator dropDownLocator, boolean contains) {
@@ -183,72 +157,6 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
         catch (AssertionError e) {
             throw new FunctionalFailure(e.getMessage());
         }
-    }
-
-    private void waitForMatch(Provider<String> provider, Validator<String> validator) {
-        SeleniumWrapperConfiguration config = wrapper.getConfiguration();
-        PollService pollService = new PollService(config.getTimeout(), config.getPauseBetweenRetries());
-        pollService.poll(new PolledValidationTask(provider, validator));
-    }
-
-    class TextProvider implements Provider<String> {
-
-        private GUIElementLocator elementLocator;
-
-        public TextProvider(GUIElementLocator elementLocator) {
-            this.elementLocator = elementLocator;
-        }
-
-        @Override
-        public String getName() {
-            return "Text";
-        }
-
-        @Override
-        public String getValue() {
-            return wrapper.getText(elementLocator, true);
-        }
-
-    }
-
-    class ValueProvider implements Provider<String> {
-
-        private GUIElementLocator elementLocator;
-
-        public ValueProvider(GUIElementLocator elementLocator) {
-            this.elementLocator = elementLocator;
-        }
-
-        @Override
-        public String getName() {
-            return "Value";
-        }
-
-        @Override
-        public String getValue() {
-            return wrapper.getValue(elementLocator);
-        }
-
-    }
-
-    class SelectedLabelProvider implements Provider<String> {
-
-        private GUIElementLocator elementLocator;
-
-        public SelectedLabelProvider(GUIElementLocator elementLocator) {
-            this.elementLocator = elementLocator;
-        }
-
-        @Override
-        public String getName() {
-            return "Label";
-        }
-
-        @Override
-        public String getValue() {
-            return wrapper.getSelectedLabel(elementLocator);
-        }
-
     }
 
 }
