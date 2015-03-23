@@ -17,54 +17,33 @@ package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
 import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 
 /** Performs a combination of checks on a web GUI element: It always checks for presence and if it is in foreground and can be
  * configured to check for visibility and/or clickability additionally. If one of the internal checks fails, the failure message
  * is reported in the {@link #message} property.
  * @author Volker Bergmann */
-public class ElementCondition implements ExpectedCondition<WebElement> {
+public class MixedElementCondition extends WebElementCondition {
 
-    private GUIElementLocator locator;
     private ZIndexSupport zIndexSupport;
     private boolean visible;
     private boolean enabled;
-
-    private String message;
 
     /** Constructor.
      * @param locator a locator for the element to check
      * @param locatorSupport
      * @param visible specifies if the element shall be checked for visibility
      * @param enabled specifies if the element shall be check if enabled (clickable) */
-    public ElementCondition(GUIElementLocator locator, LocatorSupport locatorSupport, boolean visible, boolean enabled) {
-        this.locator = locator;
+    public MixedElementCondition(GUIElementLocator locator, LocatorSupport locatorSupport, boolean visible, boolean enabled) {
+        super(locator, locatorSupport);
         this.zIndexSupport = new ZIndexSupport(locatorSupport);
         this.visible = visible;
         this.enabled = enabled;
         this.message = null;
     }
 
-    /** @return the {@link #message} which has been set if the condition did not match */
-    public String getMessage() {
-        return message;
-    }
-
     @Override
-    public WebElement apply(WebDriver driver) {
-        this.message = null;
-        // find element
-        WebElement element = null;
-        try {
-            element = ElementPresence.findElementImmediately(locator, zIndexSupport.getLocatorSupport());
-        }
-        catch (NoSuchElementException e) {
-            this.message = "Element not found";
-            return null;
-        }
+    protected WebElement applyOnElement(WebElement element) {
         // check if it is in foreground
         if (!zIndexSupport.isInForeground(element)) {
             this.message = "Element not in foreground";

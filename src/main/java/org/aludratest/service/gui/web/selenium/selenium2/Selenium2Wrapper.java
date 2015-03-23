@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import junit.framework.AssertionFailedError;
 
 import org.aludratest.exception.AutomationException;
+import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.PerformanceFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
@@ -44,9 +45,10 @@ import org.aludratest.service.gui.web.selenium.selenium2.condition.AnyDropDownOp
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownBoxOptionLabelsPresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownOptionLocatable;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
-import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementValuePresence;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.MixedElementCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.OptionSelected;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.ValidatingCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.WindowPresence;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.IdLocator;
@@ -63,6 +65,7 @@ import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.aludratest.util.retry.RetryService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.databene.commons.Validator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -229,7 +232,7 @@ public class Selenium2Wrapper {
         if (actionPending) {
             waitUntilNotBusy();
         }
-        ElementCondition condition = new ElementCondition(locator, locatorSupport, visible, enabled);
+        MixedElementCondition condition = new MixedElementCondition(locator, locatorSupport, visible, enabled);
         try {
             WebElement element = waitFor(condition, configuration.getTimeout());
             highlight(locator);
@@ -373,7 +376,7 @@ public class Selenium2Wrapper {
                 }
             }
             // validate success
-            if (value.equals(element.getAttribute("value"))) {
+            if (value.equals(getValue(element))) {
                 fallback = false;
                 LOGGER.debug("setValue with JavaScript successful for " + id);
             }
@@ -383,7 +386,7 @@ public class Selenium2Wrapper {
         if (fallback) {
             element.sendKeys(Keys.END);
             String text;
-            while (!DataMarkerCheck.isNull(text = element.getAttribute("value"))) {
+            while (!DataMarkerCheck.isNull(text = getValue(element))) {
                 int length = text.length();
                 String[] arr = new String[length];
                 for (int i = 0; i < length; i++) {
@@ -411,7 +414,7 @@ public class Selenium2Wrapper {
 
     public String getText(GUIElementLocator locator, Boolean visible) {
         WebElement element = doBeforeDelegate(locator, visible, false, false);
-        String text = element.getText();
+        String text = getText(element);
         doAfterDelegate(-1, "getText");
         return text;
     }
@@ -437,28 +440,20 @@ public class Selenium2Wrapper {
 
     public String getSelectedValue(GUIElementLocator locator) {
         WebElement element = doBeforeDelegate(locator, true, false, false);
-        Select select = new Select(element);
-        String selectedValue = select.getFirstSelectedOption().getText();
+        String selectedValue = getSelectedLabel(element);
         doAfterDelegate(-1, "getSelectedValue");
         return selectedValue;
     }
 
     public String getSelectedLabel(GUIElementLocator locator) {
         WebElement element = doBeforeDelegate(locator, true, false, false);
-        Select select = new Select(element);
-        String selectedLabel = select.getFirstSelectedOption().getText();
+        String selectedLabel = getSelectedLabel(element);
         doAfterDelegate(-1, "getSelectedLabel");
         return selectedLabel;
     }
 
     public String getValue(GUIElementLocator locator) {
-        try {
-            return findElementImmediately(locator).getAttribute("value");
-        }
-        catch (Exception e) {
-            handleSeleniumException(e);
-            return null; // never called, as handle always throws
-        }
+        return getValue(findElementImmediately(locator));
     }
 
     // window operations -------------------------------------------------------
@@ -758,7 +753,7 @@ public class Selenium2Wrapper {
 
     @SuppressWarnings("unchecked")
     public WebElement waitUntilClickable(GUIElementLocator locator, long timeOutInMillis) {
-        ElementCondition condition = new ElementCondition(locator, locatorSupport, true, true);
+        MixedElementCondition condition = new MixedElementCondition(locator, locatorSupport, true, true);
         try {
             return waitFor(condition, timeOutInMillis, NoSuchElementException.class);
         } catch (TimeoutException e) {
@@ -769,7 +764,7 @@ public class Selenium2Wrapper {
     @SuppressWarnings("unchecked")
     public void waitUntilVisible(GUIElementLocator locator, long timeOutInMillis) {
         try {
-            waitFor(new ElementCondition(locator, locatorSupport, true, false), timeOutInMillis, NoSuchElementException.class);
+            waitFor(new MixedElementCondition(locator, locatorSupport, true, false), timeOutInMillis, NoSuchElementException.class);
         } catch (TimeoutException e) {
             throw new AutomationException("The element is not visible."); // NOSONAR
         }
@@ -787,7 +782,7 @@ public class Selenium2Wrapper {
 
     @SuppressWarnings("unchecked")
     public void waitUntilInForeground(final GUIElementLocator locator, long timeOutInMillis) {
-        ElementCondition condition = new ElementCondition(locator, locatorSupport, false, false);
+        MixedElementCondition condition = new MixedElementCondition(locator, locatorSupport, false, false);
         try {
             waitFor(condition, timeOutInMillis, NoSuchElementException.class);
         }
@@ -864,6 +859,43 @@ public class Selenium2Wrapper {
         }
         catch (TimeoutException e) {
             throw new AutomationException(condition.getMessage());
+        }
+    }
+
+    public void waitForTextValidity(GUIElementLocator locator, Validator<String> validator) {
+        waitForValidity(new ValidatingCondition(locator, locatorSupport, validator, "Text") {
+            @Override
+            protected String getTextToValidate(WebElement element) {
+                return getText(element);
+            }
+        });
+    }
+
+    public void waitForValueValidity(GUIElementLocator locator, Validator<String> validator) {
+        waitForValidity(new ValidatingCondition(locator, locatorSupport, validator, "Value") {
+            @Override
+            protected String getTextToValidate(WebElement element) {
+                return getValue(element);
+            }
+        });
+    }
+
+    public void waitForSelectedLabelValidity(GUIElementLocator locator, Validator<String> validator) {
+        waitForValidity(new ValidatingCondition(locator, locatorSupport, validator, "Label") {
+            @Override
+            protected String getTextToValidate(WebElement element) {
+                return getSelectedLabel(element);
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+    public void waitForValidity(ValidatingCondition condition) {
+        try {
+            waitFor(condition, configuration.getTimeout());
+        }
+        catch (TimeoutException e) {
+            throw new FunctionalFailure(condition.getMessage());
         }
     }
 
@@ -994,7 +1026,7 @@ public class Selenium2Wrapper {
     }
 
 
-    // element lookup ----------------------------------------------------------
+    // element lookup and access -----------------------------------------------
 
     private WebElement findElementImmediately(GUIElementLocator locator) {
         return locatorSupport.findElementImmediately(locator);
@@ -1012,6 +1044,19 @@ public class Selenium2Wrapper {
         }
 
         return sb.toString();
+    }
+
+    private String getText(WebElement element) {
+        return element.getText();
+    }
+
+    private String getValue(WebElement element) {
+        return element.getAttribute("value");
+    }
+
+    private String getSelectedLabel(WebElement element) {
+        Select select = new Select(element);
+        return select.getFirstSelectedOption().getText();
     }
 
 }

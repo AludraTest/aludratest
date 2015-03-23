@@ -17,28 +17,32 @@ package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
 import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
-/** Checks an element for the presence of a 'value' attribute. If one of the internal checks fails, the failure message is reported
- * in the {@link #message} property.
+/** Parent class for {@link ExpectedCondition} implementations that rely on the presence of a {@link WebElement} and return a
+ * WebElement value. If one of the internal checks fails, the failure message is reported in the {@link #message} property.
  * @author Volker Bergmann */
-public class ElementValuePresence extends StringCondition {
+public abstract class WebElementCondition extends AbstractElementCondition<WebElement> {
 
-    /** Constructor.
-     * @param locator a locator of the element to be examined
+    /** Full constructor.
+     * @param locator
      * @param locatorSupport */
-    public ElementValuePresence(GUIElementLocator locator, LocatorSupport locatorSupport) {
+    public WebElementCondition(GUIElementLocator locator, LocatorSupport locatorSupport) {
         super(locator, locatorSupport);
     }
 
     @Override
-    protected String applyOnElement(WebElement element) {
-        String value = element.getAttribute("value");
-        if (value == null) {
-            this.message = "Value not set";
+    public final WebElement apply(WebDriver driver) {
+        this.message = null;
+        WebElement element = findElementImmediately();
+        if (element == null) {
             return null;
         }
-        return value;
+        return applyOnElement(element);
     }
+
+    protected abstract WebElement applyOnElement(WebElement element);
 
 }
