@@ -138,6 +138,19 @@
 			<groupId>jaxen</groupId>
 			<artifactId>jaxen</artifactId>
 			<version>1.1.1</version>
+			<exclusions>
+				<!-- exclude XOM because XOM 1.0 has a dependency to bad ICU version -->
+				<exclusion>
+					<groupId>xom</groupId>
+					<artifactId>xom</artifactId>					
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>xom</groupId>
+			<artifactId>xom</artifactId>
+			<version>1.1</version>
 		</dependency>
 
 		<!-- The IoC container -->
