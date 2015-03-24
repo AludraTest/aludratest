@@ -356,46 +356,17 @@ public class Selenium2Wrapper {
 
     private void setValue(GUIElementLocator locator, String value) {
         WebElement element = findElementImmediately(locator);
-        String id = element.getAttribute("id");
-        String fieldType = element.getAttribute("type");
-        boolean fallback = true;
-        if (!DataMarkerCheck.isNull(id) || "file".equals(fieldType)) {
-            String script = null;
-            try {
-                executeScript(script = "document.getElementById('" + id + "').setAttribute('value', '"
-                        + value.replace("'", "\\'").replace("\n", "\\n").replace("\r", "\\r") + "')");
+        element.sendKeys(Keys.END);
+        String text;
+        while (!DataMarkerCheck.isNull(text = getValue(element))) {
+            int length = text.length();
+            String[] arr = new String[length];
+            for (int i = 0; i < length; i++) {
+                arr[i] = "\b";
             }
-            catch (WebDriverException e) {
-                if (e.getMessage() != null && e.getMessage().contains("Unexpected token")) {
-                    // chain two exceptions to trace failed script as well as value characters
-                    AutomationException scriptFailure = new AutomationException("Failed JavaScript execution for script: "
-                            + script, e);
-                    throw new AutomationException(
-                            "Invalid value for field. Check your input data for illegal characters like e.g. zero-width spaces. Value as character array: "
-                                    + debugCharacters(value), scriptFailure);
-                }
-            }
-            // validate success
-            if (value.equals(getValue(element))) {
-                fallback = false;
-                LOGGER.debug("setValue with JavaScript successful for " + id);
-            }
+            element.sendKeys(arr);
         }
-
-        // fallback code
-        if (fallback) {
-            element.sendKeys(Keys.END);
-            String text;
-            while (!DataMarkerCheck.isNull(text = getValue(element))) {
-                int length = text.length();
-                String[] arr = new String[length];
-                for (int i = 0; i < length; i++) {
-                    arr[i] = "\b";
-                }
-                element.sendKeys(arr);
-            }
-            element.sendKeys(value);
-        }
+        element.sendKeys(value);
 
         try {
             element.sendKeys(Keys.TAB);
@@ -1030,20 +1001,6 @@ public class Selenium2Wrapper {
 
     private WebElement findElementImmediately(GUIElementLocator locator) {
         return locatorSupport.findElementImmediately(locator);
-    }
-
-    // debugging for invalid input values for setValue -------------------------
-
-    private String debugCharacters(String value) {
-        StringBuilder sb = new StringBuilder();
-        for (char c : value.toCharArray()) {
-            if (sb.length() > 0) {
-                sb.append(", ");
-            }
-            sb.append("0x").append(Integer.toHexString(c));
-        }
-
-        return sb.toString();
     }
 
     private String getText(WebElement element) {
