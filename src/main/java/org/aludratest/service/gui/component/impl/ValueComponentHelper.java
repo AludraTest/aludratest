@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component;
+package org.aludratest.service.gui.component.impl;
 
 import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.aludratest.util.validator.ContainsIgnoreCaseTrimmedValidator;
@@ -30,11 +30,11 @@ import org.databene.commons.Validator;
  * @author falbrech */
 class ValueComponentHelper implements ValueComponent {
 
-    private Element<?> component;
-
     private boolean value;
 
-    ValueComponentHelper(Element<?> component, boolean value) {
+    private AbstractElement<?> component;
+
+    ValueComponentHelper(AbstractElement<?> component, boolean value) {
         this.component = component;
         this.value = value;
     }
@@ -121,7 +121,7 @@ class ValueComponentHelper implements ValueComponent {
     public void assertTextMatches(Validator<String> validator) {
         if (value) {
             component.verify()
-                    .assertValueMatches(component.elementType, component.elementName, component.getLocator(), validator);
+            .assertValueMatches(component.elementType, component.elementName, component.getLocator(), validator);
         }
         else {
             component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(), validator);

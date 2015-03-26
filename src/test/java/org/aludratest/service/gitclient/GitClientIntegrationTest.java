@@ -50,12 +50,14 @@ import org.databene.commons.IOUtil;
 import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.internal.AssumptionViolatedException;
 
 /** Tests the {@link GitClient} against an installation of git.
  * @author Volker Bergmann */
 @SuppressWarnings("javadoc")
+@Ignore
 public class GitClientIntegrationTest extends AbstractAludraServiceTest {
 
     private static final String ADDED_FILE = "added.txt";

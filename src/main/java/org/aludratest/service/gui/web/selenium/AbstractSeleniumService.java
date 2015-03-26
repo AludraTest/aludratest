@@ -19,7 +19,9 @@ import org.aludratest.config.ConfigProperties;
 import org.aludratest.config.ConfigProperty;
 import org.aludratest.config.Preferences;
 import org.aludratest.service.AbstractConfigurableAludraService;
+import org.aludratest.service.gui.component.GUIComponentFactory;
 import org.aludratest.service.gui.web.AludraWebGUI;
+import org.codehaus.plexus.component.annotations.Requirement;
 
 /** Common base class for Selenium based implementations of the AludraWebGUI interface.
  * 
@@ -42,6 +44,9 @@ public abstract class AbstractSeleniumService extends AbstractConfigurableAludra
 
     protected SeleniumWrapperConfiguration configuration;
 
+    @Requirement(hint = "default")
+    private GUIComponentFactory componentFactory;
+
     @Override
     public final String getPropertiesBaseName() {
         return "seleniumWrapper";
@@ -50,6 +55,11 @@ public abstract class AbstractSeleniumService extends AbstractConfigurableAludra
     @Override
     public final void configure(Preferences preferences) {
         configuration = new SeleniumWrapperConfiguration(preferences);
+    }
+
+    @Override
+    public GUIComponentFactory getComponentFactory() {
+        return componentFactory;
     }
 
 }

@@ -51,7 +51,7 @@ public abstract class AbstractIFrameTest extends GUITest {
         }
 
         public Button findButton() {
-            return new Button(aludraGUI, new IdLocator("findbutton"));
+            return aludraGUI.getComponentFactory().createButton(new IdLocator("findbutton"));
         }
 
     }
