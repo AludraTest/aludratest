@@ -15,75 +15,34 @@
  */
 package org.aludratest.service.gui.component;
 
-import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.element.GUIElementLocator;
-import org.aludratest.util.data.helper.DataMarkerCheck;
 
 /** Represents a checkbox in a GUI.
  * @author Joerg Langnickel
  * @author Volker Bergmann */
-public class Checkbox extends InputComponent<Checkbox> {
-
-    /** Constructor.
-     * @param aludraGui the underlying {@link AludraGUI} service instance
-     * @param locator a locator for the referenced checkbox */
-    public Checkbox(AludraGUI aludraGui, GUIElementLocator locator) {
-        super(aludraGui, locator);
-    }
-
-    /** Constructor.
-     * @param aludraGui the underlying {@link AludraGUI} service instance
-     * @param locator a locator for the referenced element
-     * @param elementName an explicit name to use for the component */
-    public Checkbox(AludraGUI aludraGui, GUIElementLocator locator, String elementName) {
-        super(aludraGui, locator, elementName);
-    }
+public interface Checkbox extends InputComponent<Checkbox> {
 
     /** Selects or deselects a Checkbox due to overgiven String If the text is null or marked as null the operation is not
      * executed.
      * @param selectString */
-    public void select(String selectString) {
-        if (!DataMarkerCheck.isNull(selectString)) {
-            Boolean select = Boolean.parseBoolean(selectString);
-            if (select) {
-                select();
-            }
-            else {
-                deselect();
-            }
-        }
-    }
+    public void select(String selectString);
 
     /** Selects the checkbox. */
-    public void select() {
-        perform().selectCheckbox(elementType, elementName, getLocator(), taskCompletionTimeout);
-    }
+    public void select();
 
     /** Unselects the checkbox. */
-    public void deselect() {
-        perform().deselectCheckbox(elementType, elementName, getLocator(), taskCompletionTimeout);
-    }
+    public void deselect();
 
     /** Asserts that the checkbox is checked. */
-    public void assertChecked() {
-        verify().assertChecked(elementType, elementName, getLocator());
-    }
+    public void assertChecked();
 
     /** Asserts that the checkbox is in the in the state expected by the passed text If the text is null or marked as null the
      * operation is not executed.
      * @param text <code>"true"</code> or <code>"false"</code>. Anything else (non-null) will be interpreted as <code>false</code> */
-    public void assertChecked(String text) {
-        if (!DataMarkerCheck.isNull(text)) {
-            Boolean expected = Boolean.parseBoolean(text);
-            verify().assertChecked(elementType, elementName, expected, getLocator());
-        }
-    }
+    public void assertChecked(String text);
 
     /** Returns if the checkbox is currently checked or not.
      * 
      * @return <code>true</code> if the checkbox is currently checked (has a checkmark in its box), <code>false</code> otherwise. */
-    public boolean isChecked() {
-        return check().isElementChecked(elementType, elementName, getLocator());
-    }
+    public boolean isChecked();
 
 }

@@ -31,7 +31,7 @@ public class ConstructingUIMap extends UIMap {
     public Button giveMeAButton() {
         ValidUIMapHelper.class.getName();
         ValidUIMapUtility.class.getName();
-        return new Button(aludraGUI, new XPathLocator("/"));
+        return aludraGUI.getComponentFactory().createButton(new XPathLocator("/"));
     }
 
 }

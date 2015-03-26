@@ -15,7 +15,7 @@
  */
 package org.test.testclasses.page;
 
-import org.aludratest.service.gui.component.Button;
+import org.aludratest.service.gui.AludraGUI;
 import org.aludratest.service.gui.web.page.PageUtility;
 
 public class InvalidPageUtility extends PageUtility {
@@ -29,9 +29,9 @@ public class InvalidPageUtility extends PageUtility {
     }
 
     public static String validPublicMethod() {
-        // but an invalid construction of a button
-        new Button(null, null);
-
+        // but invalid use of GUIComponentFactory
+        AludraGUI gui = null;
+        gui.getComponentFactory().createButton(null);
         return null;
     }
 

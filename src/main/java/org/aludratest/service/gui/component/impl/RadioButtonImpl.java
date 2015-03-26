@@ -13,33 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component;
+package org.aludratest.service.gui.component.impl;
 
+import org.aludratest.service.gui.component.RadioButton;
+import org.aludratest.util.data.helper.DataMarkerCheck;
 
-/**
- * Represents a radio button on a GUI.
- * @author Joerg Langnickel
- * @author Volker Bergmann
- */
-public interface RadioButton extends InputComponent<RadioButton> {
+/** Default implementation of the RadioButton interface. */
+public class RadioButtonImpl extends AbstractInputComponent<RadioButton> implements RadioButton {
 
     /** Selects this radio button. */
-    public void select();
+    @Override
+    public void select() {
+        perform().selectRadiobutton(elementType, elementName, getLocator(), taskCompletionTimeout);
+    }
 
     /** Selects this radio button if and only if the passed string parameter has the value <code>"true"</code>. In every other
      * case, no action is performed.
      * 
      * @param value String parameter to indicate if a select operation shall be performed on this radio button. */
-    public void select(String value);
+    @Override
+    public void select(String value) {
+        if (!DataMarkerCheck.isNull(value)) {
+            if (Boolean.parseBoolean(value)) {
+                select();
+            }
+        }
+    }
 
     /** Asserts that the radio button is checked */
-    public void assertChecked();
+    @Override
+    public void assertChecked() {
+        verify().assertChecked(elementType, elementName, getLocator());
+    }
 
     /** Asserts that this Radio button is in the expected state, passed by expected string. If the expected string is null or
      * marked as null, no operation will be executed.
      * 
      * @param expected <code>"true"</code> or <code>"false"</code>, or <code>null</code> or marked as null to not perform any
      *            assertion. */
-    public void assertChecked(String expected);
+    @Override
+    public void assertChecked(String expected) {
+        if (!DataMarkerCheck.isNull(expected)) {
+            verify().assertChecked(elementType, elementName, Boolean.parseBoolean(expected), getLocator());
+        }
+    }
 
 }
