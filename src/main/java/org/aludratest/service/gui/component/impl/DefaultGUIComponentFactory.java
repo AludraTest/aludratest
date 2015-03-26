@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.aludratest.exception.TechnicalException;
+import org.aludratest.service.AludraContext;
+import org.aludratest.service.ComponentId;
 import org.aludratest.service.gui.AludraGUI;
 import org.aludratest.service.gui.component.Button;
 import org.aludratest.service.gui.component.Checkbox;
@@ -66,16 +68,18 @@ public class DefaultGUIComponentFactory implements GUIComponentFactory {
         componentImplClasses.put(Window.class, WindowImpl.class);
     }
 
-    private AludraGUI aludraGUI;
-
     @Requirement
     private PlexusContainer plexusContainer;
 
-    /** Sets the AludraGUI service to use for this component factory.
+    private AludraGUI aludraGUI;
+
+    /** Configures this component factory. It requires an AludraContext and a component ID to query the context for to get the
+     * AludraGUI service to use. This is required to get the dynamic proxy for the service, not the service itself.
      * 
-     * @param aludraGUI AludraGUI service to use. */
-    public void setAludraGUI(AludraGUI aludraGUI) {
-        this.aludraGUI = aludraGUI;
+     * @param context Aludra context to use.
+     * @param guiComponentId Component ID to query the context for to get an AludraGUI implementation. */
+    public void configureForGUIService(AludraContext context, ComponentId<? extends AludraGUI> guiComponentId) {
+        this.aludraGUI = context.getService(guiComponentId);
     }
 
     @Override
