@@ -15,79 +15,13 @@
  */
 package org.aludratest.service.gui.component;
 
-import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.element.GUIElementLocator;
-import org.databene.commons.Validator;
+import org.aludratest.service.gui.component.impl.ValueComponent;
 
 /**
  * Represents a button in a GUI.
  * @author Joerg Langnickel
  * @author Volker Bergmann
  */
-public class Button extends InputComponent<Button> implements ValueComponent {
-
-    private ValueComponentHelper helper = new ValueComponentHelper(this, true);
-
-    /**
-     * Constructor.
-     * @param aludraGui the underlying {@link AludraGUI} service instance
-     * @param locator a locator for the referenced button
-     */
-    public Button(AludraGUI aludraGui, GUIElementLocator locator) {
-        super(aludraGui, locator);
-    }
-
-    /** Constructor.
-     *  @param aludraGui the underlying {@link AludraGUI} service instance
-     *  @param locator a locator for the referenced element
-     *  @param elementName an explicit name to use for the component */
-    public Button(AludraGUI aludraGui, GUIElementLocator locator, String elementName) {
-        super(aludraGui, locator, elementName);
-    }
-
-    @Override
-    public String getText() {
-        return helper.getText();
-    }
-
-    @Override
-    public void assertTextEquals(String expectedText) {
-        helper.assertTextEquals(expectedText);
-    }
-
-    @Override
-    public void assertTextNotEquals(String expectedText) {
-        helper.assertTextNotEquals(expectedText);
-    }
-
-    @Override
-    public void assertTextContains(String expectedText) {
-        helper.assertTextContains(expectedText);
-    }
-
-    @Override
-    public void assertTextContainsIgnoreCaseTrimmed(String expectedText) {
-        helper.assertTextContainsIgnoreCaseTrimmed(expectedText);
-    }
-
-    @Override
-    public void assertTextEqualsIgnoreCaseTrimmed(String expectedText) {
-        helper.assertTextEqualsIgnoreCaseTrimmed(expectedText);
-    }
-
-    @Override
-    public void assertTextMatches(Validator<String> validator) {
-        helper.assertTextMatches(validator);
-    }
-
-    @Override
-    public void assertValueGreaterThan(String value) {
-        helper.assertValueGreaterThan(value);
-    }
-
-    @Override
-    public void assertValueLessThan(String value) {
-        helper.assertValueLessThan(value);
-    }
+public interface Button extends InputComponent<Button>, ValueComponent {
 
 }

@@ -76,13 +76,16 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
         cd.setInstantiationStrategy(isSingleton(iface) ? "singleton" : "per-lookup");
         cd.setRealm(realm);
 
-        // lookup Requirements in class
-        Class<?> implClassClass = realm.loadClass(implClass);
-        for (Field f : implClassClass.getDeclaredFields()) {
-            Requirement req = f.getAnnotation(Requirement.class);
-            if (req != null) {
-                cd.addRequirement(createComponentRequirement(f, req));
+        // lookup Requirements in class and parent classes
+        Class<?> clazz = realm.loadClass(implClass);
+        while (clazz != null && clazz != Object.class) {
+            for (Field f : clazz.getDeclaredFields()) {
+                Requirement req = f.getAnnotation(Requirement.class);
+                if (req != null) {
+                    cd.addRequirement(createComponentRequirement(f, req));
+                }
             }
+            clazz = clazz.getSuperclass();
         }
 
         return cd;

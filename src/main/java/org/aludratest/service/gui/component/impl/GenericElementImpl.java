@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component;
+package org.aludratest.service.gui.component.impl;
 
-import java.io.InputStream;
+import org.aludratest.service.gui.component.GenericElement;
 
-import org.aludratest.service.gui.component.impl.ValueComponent;
-
-/** Represents a file field in a GUI.
- * @author Volker Bergmann */
-public interface FileField extends InputComponent<FileField>, ValueComponent {
-
-    /** Saves the {@link InputStream}'s content in a new file with the given name.
-     * @param fileName the name by which to save the file
-     * @param in the provider of the file content to save */
-    public void setResourceNameAndContent(String fileName, InputStream in);
+/** Default implementation of the GenericElement interface. */
+public class GenericElementImpl extends AbstractElement<GenericElement> implements GenericElement {
 
 }

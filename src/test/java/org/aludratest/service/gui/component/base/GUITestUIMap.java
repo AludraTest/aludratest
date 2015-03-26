@@ -82,99 +82,99 @@ public class GUITestUIMap extends UIMap {
     }
 
     public Dropdownbox dropDownBox() {
-        return new Dropdownbox(aludraGUI, DROPDOWNBOX_ID);
+        return aludraGUI.getComponentFactory().createDropdownbox(DROPDOWNBOX_ID);
     }
 
     public Dropdownbox disabledDropDownBox() {
-        return new Dropdownbox(aludraGUI, DISABLED_DROPDOWNBOX_ID);
+        return aludraGUI.getComponentFactory().createDropdownbox(DISABLED_DROPDOWNBOX_ID);
     }
 
     public InputField textField() {
-        return new InputField(aludraGUI, TEXT_FIELD_ID);
+        return aludraGUI.getComponentFactory().createInputField(TEXT_FIELD_ID);
     }
 
     public InputField noidTextField() {
-        return new InputField(aludraGUI, NOID_TEXT_FIELD);
+        return aludraGUI.getComponentFactory().createInputField(NOID_TEXT_FIELD);
     }
 
     public InputField disabledTextField() {
-        return new InputField(aludraGUI, DISABLED_TEXT_FIELD_ID);
+        return aludraGUI.getComponentFactory().createInputField(DISABLED_TEXT_FIELD_ID);
     }
 
     public Button findButton() {
-        return new Button(aludraGUI, FIND_BUTTON_ID);
+        return aludraGUI.getComponentFactory().createButton(FIND_BUTTON_ID);
     }
 
     public Button findButtonWithTimeout() {
-        return new Button(aludraGUI, FIND_BUTTON_ID).waitingUntilTaskCompletion();
+        return aludraGUI.getComponentFactory().createButton(FIND_BUTTON_ID).waitingUntilTaskCompletion();
     }
 
     public Button disabledButton() {
-        return new Button(aludraGUI, DISABLED_BUTTON_ID);
+        return aludraGUI.getComponentFactory().createButton(DISABLED_BUTTON_ID);
     }
 
     public Button hiddenButton() {
-        return new Button(aludraGUI, HIDDEN_BUTTON_ID);
+        return aludraGUI.getComponentFactory().createButton(HIDDEN_BUTTON_ID);
     }
 
     public Button hiddenDivButton() {
-        return new Button(aludraGUI, HIDDEN_DIV_BUTTON_ID);
+        return aludraGUI.getComponentFactory().createButton(HIDDEN_DIV_BUTTON_ID);
     }
 
     public Button notExistingButton() {
-        return new Button(aludraGUI, NOT_EXISTING_BUTTON_ID);
+        return aludraGUI.getComponentFactory().createButton(NOT_EXISTING_BUTTON_ID);
     }
 
     public Checkbox firstCheckBox() {
-        return new Checkbox(aludraGUI, FIRST_CHECKBOX_ID);
+        return aludraGUI.getComponentFactory().createCheckbox(FIRST_CHECKBOX_ID);
     }
 
     public Checkbox secondCheckBox() {
-        return new Checkbox(aludraGUI, SECOND_CHECKBOX_ID);
+        return aludraGUI.getComponentFactory().createCheckbox(SECOND_CHECKBOX_ID);
     }
 
     public Checkbox disabledCheckBox() {
-        return new Checkbox(aludraGUI, DISABLED_CHECKBOX_ID);
+        return aludraGUI.getComponentFactory().createCheckbox(DISABLED_CHECKBOX_ID);
     }
 
     public RadioButton andRadioButton() {
-        return new RadioButton(aludraGUI, RADIO_BUTTON_AND);
+        return aludraGUI.getComponentFactory().createRadioButton(RADIO_BUTTON_AND);
     }
 
     public RadioButton orRadioButton() {
-        return new RadioButton(aludraGUI, RADIO_BUTTON_OR);
+        return aludraGUI.getComponentFactory().createRadioButton(RADIO_BUTTON_OR);
     }
 
     public Link testLink() {
-        return new Link(aludraGUI, TEST_LINK_ID);
+        return aludraGUI.getComponentFactory().createLink(TEST_LINK_ID);
     }
 
     public Label image() {
-        return new Label(aludraGUI, IMAGE_ID);
+        return aludraGUI.getComponentFactory().createLabel(IMAGE_ID);
     }
 
     public Button imageButton() {
-        return new Button(aludraGUI, IMAGE_BUTTON_ID);
+        return aludraGUI.getComponentFactory().createButton(IMAGE_BUTTON_ID);
     }
 
     public Label label() {
-        return new Label(aludraGUI, LABEL_ID);
+        return aludraGUI.getComponentFactory().createLabel(LABEL_ID);
     }
 
     public FileField fileField() {
-        return new FileField(aludraGUI, FILE_FIELD_ID);
+        return aludraGUI.getComponentFactory().createFileField(FILE_FIELD_ID);
     }
 
     public Button fileSubmitButton() {
-        return new Button(aludraGUI, SUBMIT_FILE_ID);
+        return aludraGUI.getComponentFactory().createButton(SUBMIT_FILE_ID);
     }
 
     public Label fileNameLabel() {
-        return new Label(aludraGUI, FILE_NAME_ID);
+        return aludraGUI.getComponentFactory().createLabel(FILE_NAME_ID);
     }
 
     public Label fileContentLabel() {
-        return new Label(aludraGUI, FILE_CONTENT_ID);
+        return aludraGUI.getComponentFactory().createLabel(FILE_CONTENT_ID);
     }
 
 }

@@ -33,7 +33,8 @@ public class InvalidNoTestCaseClass {
         // cause some bad imports
         Date dt = new Date(1);
         UIMap uiMap = new ConstructingUIMap(null);
-        GUIComponent component = new Button(null, null);
+        GUIComponent component = null;
+        Button button = null;
 
         Page pg = new InvalidPage();
     }

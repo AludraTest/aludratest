@@ -19,7 +19,7 @@ import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
-import org.aludratest.service.gui.component.Link;
+import org.aludratest.service.gui.component.impl.LinkImpl;
 import org.aludratest.service.gui.web.selenium.ConditionCheck;
 import org.aludratest.service.gui.web.selenium.ElementCommand;
 import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
@@ -773,7 +773,7 @@ public class SeleniumWrapper {
     }
 
     private boolean isCalledByLink() {
-        return isCalledBy(Link.class);
+        return isCalledBy(LinkImpl.class);
     }
 
     private void waitForWindow(final WindowLocator windowLocator) {

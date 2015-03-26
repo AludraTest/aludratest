@@ -15,11 +15,11 @@
  */
 package org.aludratest.codecheck.rule.pmd.guicomponent;
 
-import org.aludratest.codecheck.rule.pmd.AbstractAludraTestRule;
-import org.aludratest.service.gui.component.GUIComponent;
+import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
+import net.sourceforge.pmd.lang.java.ast.ASTName;
+import net.sourceforge.pmd.lang.java.ast.ASTPrimaryPrefix;
 
-import net.sourceforge.pmd.lang.java.ast.ASTAllocationExpression;
-import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceType;
+import org.aludratest.codecheck.rule.pmd.AbstractAludraTestRule;
 
 /**
  * See <code>src/main/resources/pmd-rules-aludra.xml</code> or the project Site
@@ -31,15 +31,21 @@ import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceType;
 public class OnlyUIMapsConstructGUIComponent extends AbstractAludraTestRule {
 
     @Override
-    public Object visit(ASTAllocationExpression node, Object data) {
+    public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
         if (isUIMapClass(node) || isUIMapHelperClass(node) || isUIMapUtilityClass(node)) {
-            return super.visit(node, data);
+            return null;
         }
 
-        // check if somebody else tries to allocate a GUIComponent
-        Class<?> allocClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class).getType();
-        if (allocClass != null && GUIComponent.class.isAssignableFrom(allocClass)) {
-            addViolationWithMessage(data, node, "Only UIMap related classes are allowed to create GUIComponent objects");
+        return super.visit(node, data);
+    }
+
+    @Override
+    public Object visit(ASTName node, Object data) {
+        if (node.jjtGetParent() instanceof ASTPrimaryPrefix) {
+            String image = node.getImage();
+            if (image != null && image.endsWith(".getComponentFactory")) {
+                addViolationWithMessage(data, node, "Only UIMap related classes are allowed to access a GUI Component Factory");
+            }
         }
 
         return super.visit(node, data);
