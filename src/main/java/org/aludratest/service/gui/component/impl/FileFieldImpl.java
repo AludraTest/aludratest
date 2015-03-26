@@ -28,13 +28,14 @@ import org.databene.commons.IOUtil;
 import org.databene.commons.Validator;
 
 /** Default implementation of the FileField interface. */
-public class FileFieldImpl extends AbstractInputComponent<FileField> implements ValueComponent {
+public class FileFieldImpl extends AbstractInputComponent<FileField> implements ValueComponent, FileField {
 
     private ValueComponentHelper helper = new ValueComponentHelper(this, true);
 
     /** Saves the {@link InputStream}'s content in a new file with the given name.
      * @param fileName the name by which to save the file
      * @param in the provider of the file content to save */
+    @Override
     public void setResourceNameAndContent(String fileName, InputStream in) {
         if (!DataMarkerCheck.isNull(fileName)) {
             File tempFile = getTestResourceFile(fileName);

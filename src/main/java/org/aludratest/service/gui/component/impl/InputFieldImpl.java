@@ -20,7 +20,7 @@ import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.databene.commons.Validator;
 
 /** Default implementation of the InputField interface. */
-public class InputFieldImpl extends AbstractInputComponent<InputField> implements ValueComponent {
+public class InputFieldImpl extends AbstractInputComponent<InputField> implements ValueComponent, InputField {
 
     private ValueComponentHelper helper = new ValueComponentHelper(this, true);
 
@@ -30,6 +30,7 @@ public class InputFieldImpl extends AbstractInputComponent<InputField> implement
      * If the text is marked as empty it will be replaced with ""
      * @param text the text to enter in the input field
      */
+    @Override
     public void enter(String text) {
         if (!DataMarkerCheck.isNull(text)) {
             perform().type(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(text), taskCompletionTimeout);

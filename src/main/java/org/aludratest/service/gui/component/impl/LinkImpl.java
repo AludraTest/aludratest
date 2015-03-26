@@ -19,7 +19,7 @@ import org.aludratest.service.gui.component.Link;
 import org.databene.commons.Validator;
 
 /** Default implementation of the Link interface. */
-public class LinkImpl extends AbstractElement<Link> implements ValueComponent {
+public class LinkImpl extends AbstractElement<Link> implements ValueComponent, Link {
 
     private ValueComponentHelper helper = new ValueComponentHelper(this, false);
 

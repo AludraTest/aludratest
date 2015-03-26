@@ -18,6 +18,6 @@ package org.aludratest.service.gui.component.impl;
 import org.aludratest.service.gui.component.GenericElement;
 
 /** Default implementation of the GenericElement interface. */
-public class GenericElementImpl extends AbstractElement<GenericElement> {
+public class GenericElementImpl extends AbstractElement<GenericElement> implements GenericElement {
 
 }

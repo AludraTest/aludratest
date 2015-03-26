@@ -15,6 +15,7 @@
  */
 package org.aludratest.service.gui.component.impl;
 
+import org.aludratest.service.gui.component.Dropdownbox;
 import org.aludratest.service.locator.option.IndexLocator;
 import org.aludratest.service.locator.option.LabelLocator;
 import org.aludratest.service.locator.option.OptionLocator;
@@ -26,12 +27,13 @@ import org.aludratest.util.validator.NotEqualsValidator;
 import org.databene.commons.Validator;
 
 /** Default implementation of the Dropdownbox interface. */
-public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
+public class DropdownboxImpl extends AbstractInputComponent<Dropdownbox> implements Dropdownbox {
 
     /** Selects an entry of this Dropdownbox by its label. If the label is <code>null</code> or marked as null, the operation is
      * not executed. It the label is marked as empty, it will be replaced with "".
      * 
      * @param label Label of the entry to select. */
+    @Override
     public void selectEntry(String label) {
         if (!DataMarkerCheck.isNull(label)) {
             selectEntry(new LabelLocator(DataMarkerCheck.convertIfEmpty(label)));
@@ -42,6 +44,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
      * 
      * @param optionLocator is a LabelLocator or IndexLocator for identifying the entry to select. If <code>null</code>, no action
      *            is performed. */
+    @Override
     public void selectEntry(OptionLocator optionLocator) {
         if (optionLocator != null) {
             perform().selectDropDownEntry(elementType, elementName, getLocator(), optionLocator, taskCompletionTimeout);
@@ -51,6 +54,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
     /** Reads the selected value and returns it as a String.
      * 
      * @return the <b>value</b> of the selected entry */
+    @Override
     public String getSelectedEntry() {
         return perform().getInputFieldValue(elementType, elementName, getLocator());
     }
@@ -58,6 +62,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
     /** Reads the selected label and returns it as a String.
      * 
      * @return the <b>label</b> of the selected entry */
+    @Override
     public String getSelectedLabel() {
         return perform().getInputFieldSelectedLabel(elementType, elementName, getLocator());
     }
@@ -66,6 +71,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
      * executed. If the label is marked as empty it will be replaced with ""
      * 
      * @param label Label to check the currently selected label against. */
+    @Override
     public void assertIsSelected(String label) {
         if (!DataMarkerCheck.isNull(label)) {
             verify().assertDropDownEntrySelectionMatches(elementType, elementName, getLocator(),
@@ -77,6 +83,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
      * operation is not executed. If the label is marked as empty it will be replaced with ""
      * 
      * @param label Label to check the currently selected label against. */
+    @Override
     public void assertTextNotEquals(String label) {
         if (!DataMarkerCheck.isNull(label)) {
             verify().assertDropDownEntrySelectionMatches(elementType, elementName, getLocator(),
@@ -88,6 +95,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
      * as null the operation is not executed.
      * 
      * @param label Label to check the currently selected label against. */
+    @Override
     public void assertSelectedContains(String label) {
         if (!DataMarkerCheck.isNull(label)) {
             verify().assertDropDownEntrySelectionMatches(elementType, elementName, getLocator(), new ContainsValidator(label));
@@ -99,6 +107,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
      * are ignored.
      * 
      * @param label Label to check the currently selected label against. */
+    @Override
     public void assertSelectedIgnoreCaseTrimmed(String label) {
         if (!DataMarkerCheck.isNull(label)) {
             verify().assertDropDownEntrySelectionMatches(elementType, elementName, getLocator(),
@@ -108,6 +117,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
 
     /** Asserts that the selection matches the provided {@link Validator}.
      * @param validator the validator to apply for verification */
+    @Override
     public void assertSelectionMatches(Validator<String> validator) {
         verify().assertDropDownEntrySelectionMatches(elementType, elementName, getLocator(), validator);
     }
@@ -116,6 +126,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
      * <code>null</code> or marked as <code>null</code>, the operation will not be executed.
      * 
      * @param values Values to check the values of this Dropdownbox against. */
+    @Override
     public void assertHasValues(String... values) {
         if (values.length == 1) {
             String value1 = values[0];
@@ -139,6 +150,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
      * </ul>
      * If only one label is passed and it is <code>null</code> or marked as <code>null</code>, the operation will not be executed.
      * @param labels which should be checked */
+    @Override
     public void assertHasLabels(String... labels) {
         if (labels.length == 1) {
             String value1 = labels[0];
@@ -156,6 +168,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
      * <code>null</code> or marked as <code>null</code>, the operation will not be executed.
      * 
      * @param labels Labels to check the labels of this Dropdownbox against. */
+    @Override
     public void assertContainsLabels(String... labels) {
         if (labels.length == 1) {
             String value1 = labels[0];
@@ -174,6 +187,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
      * @param labels Labels to check the labels of this Dropdownbox against.
      * 
      * @return <code>true</code> if the checkbox contains the given labels, <code>false</code> otherwise. */
+    @Override
     public boolean checkContainsLabels(String... labels) {
         return check().containsLabels(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(labels));
     }
@@ -183,6 +197,7 @@ public class DropdownboxImpl extends AbstractInputComponent<DropdownboxImpl> {
      * @param labels Labels to check the labels of this Dropdownbox against.
      * 
      * @return <code>true</code> if the checkbox only contains the given labels, <code>false</code> otherwise. */
+    @Override
     public boolean checkEqualsLabels(String... labels) {
         return check().equalsLabels(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(labels));
     }

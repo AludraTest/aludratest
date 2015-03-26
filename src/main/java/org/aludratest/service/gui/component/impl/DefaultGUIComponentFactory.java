@@ -244,6 +244,11 @@ public class DefaultGUIComponentFactory implements GUIComponentFactory {
 
     private <T> void registerComponentDescriptor(Class<T> componentClass, Class<? extends T> implClass)
             throws CycleDetectedInComponentGraphException {
+        if (!componentClass.isAssignableFrom(implClass)) {
+            throw new RuntimeException("Class " + implClass.getName() + " does not implement interface "
+                    + componentClass.getName());
+        }
+
         ComponentDescriptor<T> desc = new ComponentDescriptor<T>();
         desc.setRole(componentClass.getName());
         desc.setRoleClass(componentClass);
@@ -258,12 +263,17 @@ public class DefaultGUIComponentFactory implements GUIComponentFactory {
         }
         desc.setRealm(realm);
 
-        // lookup Requirements in class
-        for (Field f : implClass.getDeclaredFields()) {
-            Requirement req = f.getAnnotation(Requirement.class);
-            if (req != null) {
-                desc.addRequirement(createComponentRequirement(f, req));
+        // lookup Requirements in class and parent classes
+        Class<?> clazz = implClass;
+        while (clazz != null && clazz != Object.class) {
+            for (Field f : implClass.getDeclaredFields()) {
+                Requirement req = f.getAnnotation(Requirement.class);
+                if (req != null) {
+                    desc.addRequirement(createComponentRequirement(f, req));
+                }
+
             }
+            clazz = clazz.getSuperclass();
         }
 
         plexusContainer.addComponentDescriptor(desc);

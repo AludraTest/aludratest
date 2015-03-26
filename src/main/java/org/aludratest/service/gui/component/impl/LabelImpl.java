@@ -19,7 +19,7 @@ import org.aludratest.service.gui.component.Label;
 import org.databene.commons.Validator;
 
 /** Default implementation of the Label interface. */
-public class LabelImpl extends AbstractElement<Label> implements ValueComponent {
+public class LabelImpl extends AbstractElement<Label> implements ValueComponent, Label {
 
     private ValueComponentHelper helper = new ValueComponentHelper(this, false);
 

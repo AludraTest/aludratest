@@ -20,6 +20,7 @@ import org.aludratest.config.ConfigProperty;
 import org.aludratest.config.Preferences;
 import org.aludratest.service.AbstractConfigurableAludraService;
 import org.aludratest.service.gui.component.GUIComponentFactory;
+import org.aludratest.service.gui.component.impl.DefaultGUIComponentFactory;
 import org.aludratest.service.gui.web.AludraWebGUI;
 import org.codehaus.plexus.component.annotations.Requirement;
 
@@ -55,6 +56,7 @@ public abstract class AbstractSeleniumService extends AbstractConfigurableAludra
     @Override
     public final void configure(Preferences preferences) {
         configuration = new SeleniumWrapperConfiguration(preferences);
+        ((DefaultGUIComponentFactory) componentFactory).setAludraGUI(this);
     }
 
     @Override
