@@ -41,4 +41,9 @@ public class ElementValuePresence extends StringCondition {
         return value;
     }
 
+    @Override
+    public String toString() {
+        return "presence of a value attribute in the element located by " + locator;
+    }
+
 }

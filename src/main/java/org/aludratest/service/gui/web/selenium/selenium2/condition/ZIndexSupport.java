@@ -88,7 +88,7 @@ public class ZIndexSupport {
             // this occurs when having reached the root element
         }
         int value = parseZIndex(zIndex);
-        LOGGER.debug("WebElement {} has z index {}", element, value);
+        LOGGER.trace("WebElement {} has z index {}", element, value);
         return value;
     }
 

@@ -15,6 +15,8 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
+import java.util.Arrays;
+
 import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.util.DataUtil;
@@ -83,6 +85,12 @@ public class DropDownBoxOptionLabelsPresence implements ExpectedCondition<Boolea
                 return false;
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "presence of the expected labels [" + Arrays.toString(expectedLabels) + "] in the drop down box located by "
+                + dropDownBoxOptions.getDropDownLocator();
     }
 
 }

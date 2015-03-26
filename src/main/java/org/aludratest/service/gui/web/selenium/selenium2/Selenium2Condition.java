@@ -17,19 +17,14 @@ package org.aludratest.service.gui.web.selenium.selenium2;
 
 import org.aludratest.exception.AludraTestException;
 import org.aludratest.service.gui.web.WebGUICondition;
-import org.aludratest.service.gui.web.selenium.selenium1.Selenium1Condition;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.window.WindowLocator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Provides the {@link WebGUICondition} feature set using Selenium 2.
  * @author Marcel Malitz
  * @author Joerg Langnickel
  * @author Volker Bergmann */
 public class Selenium2Condition extends AbstractSelenium2Action implements WebGUICondition {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(Selenium1Condition.class);
 
     /** Constructor.
      * @param seleniumWrapper the Selenium2Wrapper to use */
@@ -52,7 +47,7 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
             return false;
         }
         catch (Exception e) { // NOSONAR
-            LOGGER.error("Unexpected exception during check which will be ignored", e);
+            logger.error("Unexpected exception during check which will be ignored", e);
             return false;
         }
     }
@@ -72,7 +67,7 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
             return false;
         }
         catch (Exception e) { // NOSONAR
-            LOGGER.error("Unexpected exception during check which will be ignored", e);
+            logger.error("Unexpected exception during check which will be ignored", e);
             return false;
         }
     }
@@ -92,7 +87,7 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
             return false;
         }
         catch (Exception e) { // NOSONAR
-            LOGGER.error("Unexpected exception during check which will be ignored", e);
+            logger.error("Unexpected exception during check which will be ignored", e);
             return false;
         }
     }
@@ -112,7 +107,7 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
             return false;
         }
         catch (Exception e) { // NOSONAR
-            LOGGER.error("Unexpected exception during check which will be ignored", e);
+            logger.error("Unexpected exception during check which will be ignored", e);
             return false;
         }
     }
@@ -127,7 +122,7 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
             return false;
         }
         catch (Exception e) { // NOSONAR
-            LOGGER.error("Unexpected exception during check which will be ignored", e);
+            logger.error("Unexpected exception during check which will be ignored", e);
             return false;
         }
     }
@@ -143,7 +138,7 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
             return false;
         }
         catch (Exception e) { // NOSONAR
-            LOGGER.error("Unexpected exception during check which will be ignored", e);
+            logger.error("Unexpected exception during check which will be ignored", e);
             return false;
         }
     }
@@ -158,7 +153,7 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
             return false;
         }
         catch (Exception e) { // NOSONAR
-            LOGGER.error("Unexpected exception during check which will be ignored", e);
+            logger.error("Unexpected exception during check which will be ignored", e);
             return false;
         }
     }

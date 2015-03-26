@@ -59,4 +59,9 @@ public class WindowPresence implements ExpectedCondition<Boolean> {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return "presence of the window located by " + locator;
+    }
+
 }

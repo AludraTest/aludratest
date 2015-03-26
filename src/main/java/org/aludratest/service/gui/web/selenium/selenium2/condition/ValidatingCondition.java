@@ -54,4 +54,9 @@ public abstract class ValidatingCondition extends BooleanCondition {
 
     protected abstract String getTextToValidate(WebElement element);
 
+    @Override
+    public String toString() {
+        return checkedType + " located by " + locator + " matches the validator " + validator;
+    }
+
 }

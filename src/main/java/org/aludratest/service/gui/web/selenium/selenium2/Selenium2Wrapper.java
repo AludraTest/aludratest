@@ -89,13 +89,10 @@ import org.slf4j.LoggerFactory;
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
 
-/**
- * Wraps an instance of the {@link Selenium2Facade} and provides methods
- * for accessing UI elements and timing.
- * @author Marcel Malitz
- * @author Joerg Langnickel
+/** Wraps an instance of the {@link Selenium2Facade} and provides methods for accessing UI elements and timing.
  * @author Volker Bergmann
- */
+ * @author Marcel Malitz
+ * @author Joerg Langnickel */
 @SuppressWarnings("javadoc")
 public class Selenium2Wrapper {
 
@@ -270,51 +267,6 @@ public class Selenium2Wrapper {
         doAfterDelegate(taskCompletionTimeout, operation);
     }
 
-    private void click(WebElement element) {
-        try {
-            element.click();
-        }
-        catch (Exception e) {
-            handleSeleniumException(e);
-        }
-    }
-
-    private void handleSeleniumException(Throwable e) {
-        String message = e.getMessage();
-
-        // check if there is a WebDriverException
-        WebDriverException wde = null;
-        while (e != null) {
-            if (e instanceof WebDriverException) {
-                wde = (WebDriverException) e;
-                break;
-            }
-            e = e.getCause();
-        }
-
-        if (wde != null) {
-            if (message == null) {
-                message = wde.getMessage();
-            }
-            // "not clickable" exception
-            Pattern p = Pattern.compile("(unknown error: )?(.* not clickable .*)");
-            Matcher m;
-            if (message != null && (m = p.matcher(message)).find() && m.start() == 0) {
-                throw new AutomationException(m.group(2), wde);
-            }
-
-            // NoSuchElementException
-            if (wde instanceof NoSuchElementException) {
-                throw new AutomationException("Element not found", wde);
-            }
-
-            throw wde;
-        }
-
-        // otherwise, throw a technical exception
-        throw new TechnicalException("Unknown exception when clicking element", e);
-    }
-
     public void doubleClick(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
         WebElement element = doBeforeDelegate(locator, true, true, true);
         doubleClick(element);
@@ -327,59 +279,22 @@ public class Selenium2Wrapper {
         doAfterDelegate(taskCompletionTimeout, operation);
     }
 
-    private void doubleClick(WebElement element) {
-        element = LocatorSupport.unwrap(element);
-        new Actions(driver).doubleClick(element).build().perform();
-    }
-
     public void select(GUIElementLocator locator, final OptionLocator optionLocator, int taskCompletionTimeout) {
         WebElement element = doBeforeDelegate(locator, true, true, true);
-        Select select = new Select(element);
-        if (optionLocator instanceof org.aludratest.service.locator.option.LabelLocator) {
-            select.selectByVisibleText(optionLocator.toString());
-        }
-        else if (optionLocator instanceof IndexLocator) {
-            select.selectByIndex(((IndexLocator) optionLocator).getIndex());
-        }
-        else {
-            throw ServiceUtil.newUnsupportedLocatorException(optionLocator);
-        }
+        select(optionLocator, element);
         doAfterDelegate(taskCompletionTimeout, "select");
     }
 
     public void type(GUIElementLocator locator, final String value, int taskCompletionTimeout) {
-        doBeforeDelegate(locator, true, true, true);
+        WebElement element = doBeforeDelegate(locator, true, true, true);
         // setValue instead of sendKeys to ensure field is reset, and to work with file component
-        setValue(locator, value);
+        setValue(element, value);
         doAfterDelegate(taskCompletionTimeout, "type");
-    }
-
-    private void setValue(GUIElementLocator locator, String value) {
-        WebElement element = findElementImmediately(locator);
-        element.sendKeys(Keys.END);
-        String text;
-        while (!DataMarkerCheck.isNull(text = getValue(element))) {
-            int length = text.length();
-            String[] arr = new String[length];
-            for (int i = 0; i < length; i++) {
-                arr[i] = "\b";
-            }
-            element.sendKeys(arr);
-        }
-        element.sendKeys(value);
-
-        try {
-            element.sendKeys(Keys.TAB);
-        }
-        catch (StaleElementReferenceException e) {
-            // ignore; key could have caused page change
-            LOGGER.debug("Could not fire change event for element because element is now stale.");
-        }
     }
 
     public void sendKeys(GUIElementLocator locator, String keys, int taskCompletionTimeout) {
         WebElement element = doBeforeDelegate(locator, true, true, true);
-        element.sendKeys(keys);
+        sendKeys(element, keys);
         doAfterDelegate(taskCompletionTimeout, "sendKeys");
     }
 
@@ -392,6 +307,7 @@ public class Selenium2Wrapper {
 
     public boolean isChecked(GUIElementLocator locator) {
         WebElement element = doBeforeDelegate(locator, true, false, false);
+        LOGGER.debug("isChecked({})", locator);
         Boolean returnValue = element.isSelected();
         doAfterDelegate(-1, "isChecked");
         return returnValue.booleanValue();
@@ -399,6 +315,7 @@ public class Selenium2Wrapper {
 
     public String[] getSelectOptions(GUIElementLocator locator) {
         WebElement element = doBeforeDelegate(locator, true, false, false);
+        LOGGER.debug("getSelectOptions({})", locator);
         Select select = new Select(element);
         List<WebElement> options = select.getOptions();
         String[] labels = new String[options.size()];
@@ -424,6 +341,7 @@ public class Selenium2Wrapper {
     }
 
     public String getValue(GUIElementLocator locator) {
+        LOGGER.debug("getValue({})", locator);
         return getValue(findElementImmediately(locator));
     }
 
@@ -431,6 +349,7 @@ public class Selenium2Wrapper {
 
     @SuppressWarnings("unchecked")
     private void waitForWindow(WindowLocator locator) {
+        LOGGER.debug("waitForWindow({})", locator);
         try {
             waitFor(new WindowPresence(locator, this), configuration.getTimeout());
         }
@@ -440,16 +359,19 @@ public class Selenium2Wrapper {
     }
 
     public void selectWindow(WindowLocator locator) {
+        LOGGER.debug("selectWindow({})", locator);
         waitForWindow(locator);
         selectWindowImmediately(locator);
     }
 
     public void selectWindowImmediately(WindowLocator locator) {
+        LOGGER.debug("selectWindowImmediately({})", locator);
         if (locator instanceof TitleLocator) {
             String requestedTitle = locator.toString();
 
             // performance tweak: if the current window is the requested one, return immediately
             try {
+                LOGGER.debug("driver.getTitle()");
                 if (requestedTitle.equals(driver.getTitle())) {
                     return;
                 }
@@ -465,6 +387,7 @@ public class Selenium2Wrapper {
             // iterate all windows and return the one with the desired title
             for (String handle : getWindowHandles()) {
                 try {
+                    LOGGER.debug("driver.switchTo().window()", locator);
                     String title = driver.switchTo().window(handle).getTitle();
                     if (requestedTitle.equals(title)) {
                         return;
@@ -484,29 +407,36 @@ public class Selenium2Wrapper {
     }
 
     public void selectWindowByTechnicalName(String windowId) {
+        LOGGER.debug("selectWindowByTechnicalName({})", windowId);
         removeHighlight();
+        LOGGER.debug("driver.switchTo().window()", windowId);
         driver.switchTo().window(windowId);
     }
 
     public Map<String, String> getAllWindowHandlesAndTitles() {
+        LOGGER.debug("getAllWindowHandlesAndTitles()");
         Map<String, String> handlesAndTitles = new HashMap<String, String>();
         // store handle and title of current window
         String initialWindowHandle;
         try {
+            LOGGER.debug("driver.getWindowHandle()");
             initialWindowHandle = driver.getWindowHandle();
         }
         catch (NoSuchWindowException e) {
             // fallback to next best window - current window has just been closed!
+            LOGGER.debug("driver.getWindowHandles()");
             Set<String> handles = driver.getWindowHandles();
             if (handles.isEmpty()) {
                 return Collections.emptyMap();
             }
 
             initialWindowHandle = handles.iterator().next();
+            LOGGER.debug("driver.switchTo().window(initialWindowHandle)");
             driver.switchTo().window(initialWindowHandle);
         }
 
         try {
+            LOGGER.debug("driver.getTitle()");
             String title = driver.getTitle();
             handlesAndTitles.put(initialWindowHandle, title);
         }
@@ -522,6 +452,7 @@ public class Selenium2Wrapper {
             if (!handle.equals(initialWindowHandle)) {
                 LOGGER.debug("Switching to window with handle {}", handle);
                 try {
+                    LOGGER.debug("driver.switchTo().window(handle)");
                     driver.switchTo().window(handle);
                     currentHandle = handle;
                     String title;
@@ -541,6 +472,7 @@ public class Selenium2Wrapper {
         // switch back to the original window
         if (!currentHandle.equals(initialWindowHandle)) {
             try {
+                LOGGER.debug("driver.switchTo().window(initialWindowHandle)");
                 driver.switchTo().window(initialWindowHandle);
             }
             catch (WebDriverException e) {
@@ -553,6 +485,7 @@ public class Selenium2Wrapper {
 
     /** @see Selenium#getAllWindowTitles() */
     public String[] getAllWindowTitles() {
+        LOGGER.debug("getAllWindowTitles()");
         Map<String, String> handlesAndTitles = getAllWindowHandlesAndTitles();
         Collection<String> titles = handlesAndTitles.values();
         LOGGER.debug("getAllWindowTitles() -> {}", titles);
@@ -561,42 +494,51 @@ public class Selenium2Wrapper {
 
     /** @see Selenium#getAllWindowIds() */
     public String[] getAllWindowIDs() {
+        LOGGER.debug("getWindowHandles()");
         Set<String> handles = getWindowHandles();
         return handles.toArray(new String[handles.size()]);
     }
 
     /** @see Selenium#getAllWindowNames()  */
     public String[] getAllWindowNames() {
+        LOGGER.debug("getAllWindowNames()");
         String current = driver.getWindowHandle();
         List<String> names = new ArrayList<String>();
         for (String handle : getWindowHandles()) {
+            LOGGER.debug("driver.switchTo().window(handle)");
             driver.switchTo().window(handle);
             names.add(executeScript("return window.name").toString());
         }
+        LOGGER.debug("driver.switchTo().window(current)");
         driver.switchTo().window(current);
         return names.toArray(new String[names.size()]);
     }
 
     /** @see Selenium#getTitle() */
     public String getTitle() {
+        LOGGER.debug("getTitle()");
         return driver.getTitle();
     }
 
     public String getWindowHandle() {
+        LOGGER.debug("getWindowHandle()");
         return driver.getWindowHandle();
     }
 
     /** @see Selenium#windowMaximize() */
     public void windowMaximize() {
+        LOGGER.debug("windowMaximize()");
         driver.manage().window().maximize();
     }
 
     /** @see Selenium#windowFocus() */
     public void windowFocus() {
+        LOGGER.debug("windowFocus()");
         executeScript(WINDOW_FOCUS_SCRIPT);
     }
 
     private Set<String> getWindowHandles() {
+        LOGGER.debug("getWindowHandles()");
         // try up to three times when getting strange WebDriverExceptions
         Callable<Set<String>> callable = new Callable<Set<String>>() {
             @Override
@@ -629,6 +571,7 @@ public class Selenium2Wrapper {
     // iframe operations -------------------------------------------------------
 
     public void switchToIFrame(GUIElementLocator iframeLocator) {
+        LOGGER.debug("switchToIFrame({})", iframeLocator);
         if (iframeLocator != null) {
             WebElement element = waitUntilPresent(iframeLocator, configuration.getTimeout());
             element = LocatorSupport.unwrap(element);
@@ -639,30 +582,35 @@ public class Selenium2Wrapper {
         }
     }
 
-    public boolean hasFocus(final GUIElementLocator locator) {
+    public boolean hasFocus(GUIElementLocator locator) {
         WebElement element = doBeforeDelegate(locator, true, true, false);
+        LOGGER.debug("hasFocus({})", locator);
         boolean returnValue = (Boolean) executeScript(HAS_FOCUS_SCRIPT, element);
         doAfterDelegate(-1, "hasFocus");
         return returnValue;
     }
 
     public void focus(GUIElementLocator locator) {
+        LOGGER.debug("focus({})", locator);
         WebElement element = waitUntilClickable(locator, configuration.getTimeout());
         executeScript("arguments[0].focus()", element);
     }
 
-    public String getAttributeValue(final GUIElementLocator locator, final String attributeName) {
+    public String getAttributeValue(final GUIElementLocator locator, String attributeName) {
         WebElement element = doBeforeDelegate(locator, true, false, false);
+        LOGGER.debug("WebElement.getAttributeValue({})", attributeName);
         String returnValue = element.getAttribute(attributeName);
         doAfterDelegate(-1, "getAttributeValue");
         return returnValue;
     }
 
     public void keyPress(int keycode) {
-        driver.switchTo().activeElement().sendKeys(String.valueOf((char) keycode));
+        LOGGER.debug("keyPress({})", keycode);
+        sendKeys(driver.switchTo().activeElement(), String.valueOf((char) keycode));
     }
 
     public void close() {
+        LOGGER.debug("close()");
         try {
             driver.close();
         }
@@ -672,10 +620,12 @@ public class Selenium2Wrapper {
     }
 
     public void quit() {
+        LOGGER.debug("quit()");
         driver.quit();
     }
 
     public String getTable(GUIElementLocator locator, int row, int col) {
+        LOGGER.debug("getTable({})", locator);
         WebElement table = findElementImmediately(locator);
         List<WebElement> tbodies = table.findElements(By.tagName("tbody"));
         WebElement rowHolder = (tbodies.size() > 0 ? tbodies.get(0) : table);
@@ -695,6 +645,7 @@ public class Selenium2Wrapper {
     // features that require intervention for authentication -------------------
 
     public void open(String url) {
+        LOGGER.debug("open({})", url);
         try {
             driver.get(mapUrl(url));
         }
@@ -707,10 +658,13 @@ public class Selenium2Wrapper {
     }
 
     private String mapUrl(String url) {
-        return (proxy != null ? proxy.mapTargetToProxyUrl(url) : url);
+        String mappedUrl = proxy != null ? proxy.mapTargetToProxyUrl(url) : url;
+        LOGGER.debug("mapUrl({}) -> {}", url, mappedUrl);
+        return mappedUrl;
     }
 
     public void addCustomRequestHeader(String key, String value) {
+        LOGGER.debug("addCustomRequestHeader({})", key, value);
         if (proxy != null) {
             proxy.setCustomRequestHeader(key, value);
         }
@@ -877,17 +831,19 @@ public class Selenium2Wrapper {
     // HTML source and screenshot provision ------------------------------------
 
     public Attachment getPageSource() {
+        LOGGER.debug("getPageSource()");
         String pageSource = driver.getPageSource();
         return new StringAttachment("Source", pageSource, configuration.getPageSourceAttachmentExtension());
     }
 
     public Attachment getScreenshotOfThePage() {
+        LOGGER.debug("getScreenshotOfThePage()");
         final String base64Data = captureScreenshotToString();
         final Attachment attachment = getScreenshotAttachment(base64Data);
         return attachment;
     }
 
-    public String captureScreenshotToString() {
+    private String captureScreenshotToString() {
         // use Selenium1 interface to capture full screen
         String url = seleniumUrl.toString();
         Pattern p = Pattern.compile("(http(s)?://.+)/wd/hub(/?)");
@@ -937,14 +893,17 @@ public class Selenium2Wrapper {
     // element highlighting ----------------------------------------------------
 
     void removeHighlight() {
-        if (configuration.getHighlightCommands() && this.highlightedElement != null) {
-            try {
-                executeScript(
-                        "arguments[0].className = arguments[0].className.replace( /(?:^|\\s)selenium-highlight(?!\\S)/g , '' ); return arguments[0].className;",
-                        highlightedElement);
-            }
-            catch (WebDriverException e) {
-                LOGGER.trace("Highlight remove failed. ", e);
+        if (configuration.getHighlightCommands()) {
+            LOGGER.debug("removeHighlight()");
+            if (configuration.getHighlightCommands() && this.highlightedElement != null) {
+                try {
+                    executeScript(
+                            "arguments[0].className = arguments[0].className.replace( /(?:^|\\s)selenium-highlight(?!\\S)/g , '' ); return arguments[0].className;",
+                            highlightedElement);
+                }
+                catch (WebDriverException e) {
+                    LOGGER.trace("Highlight remove failed. ", e);
+                }
             }
         }
     }
@@ -964,6 +923,7 @@ public class Selenium2Wrapper {
 
     public void highlight(GUIElementLocator locator) {
         if (configuration.getHighlightCommands()) {
+            LOGGER.debug("highlight()");
             try {
                 removeHighlight();
 
@@ -986,6 +946,7 @@ public class Selenium2Wrapper {
     // script support ----------------------------------------------------------
 
     private Object executeScript(String script, Object... arguments) {
+        LOGGER.debug("executeScript({})", script);
         // first unwrap all possibly wrapped arguments of type WebElement, or JavaScript/JSON will fail
         for (int i = 0; i < arguments.length; i++) {
             if (arguments[i] instanceof WebElement) {
@@ -1004,16 +965,115 @@ public class Selenium2Wrapper {
     }
 
     private String getText(WebElement element) {
+        LOGGER.debug("getText(WebElement)");
         return element.getText();
     }
 
+    private void sendKeys(WebElement element, CharSequence... keys) {
+        LOGGER.debug("sendKeys({}, WebElement)", keys);
+        element.sendKeys(keys);
+    }
+
     private String getValue(WebElement element) {
+        LOGGER.debug("getValue(WebElement)");
         return element.getAttribute("value");
     }
 
+    private void setValue(WebElement element, String value) {
+        LOGGER.debug("setValue(WebElement, {})", value);
+        sendKeys(element, Keys.END);
+        String text;
+        while (!DataMarkerCheck.isNull(text = getValue(element))) {
+            int length = text.length();
+            String[] arr = new String[length];
+            for (int i = 0; i < length; i++) {
+                arr[i] = "\b";
+            }
+            sendKeys(element, arr);
+        }
+        sendKeys(element, value);
+
+        try {
+            sendKeys(element, Keys.TAB);
+        }
+        catch (StaleElementReferenceException e) {
+            // ignore; key could have caused page change
+            LOGGER.debug("Could not fire change event for element because element is now stale.");
+        }
+    }
+
     private String getSelectedLabel(WebElement element) {
+        LOGGER.debug("getSelectedLabel(WebElement)");
         Select select = new Select(element);
         return select.getFirstSelectedOption().getText();
+    }
+
+    private void select(final OptionLocator optionLocator, WebElement element) {
+        LOGGER.debug("select({}, WebElement)", optionLocator);
+        Select select = new Select(element);
+        if (optionLocator instanceof org.aludratest.service.locator.option.LabelLocator) {
+            select.selectByVisibleText(((org.aludratest.service.locator.option.LabelLocator) optionLocator).getLabel());
+        }
+        else if (optionLocator instanceof IndexLocator) {
+            select.selectByIndex(((IndexLocator) optionLocator).getIndex());
+        }
+        else {
+            throw ServiceUtil.newUnsupportedLocatorException(optionLocator);
+        }
+    }
+
+    private void click(WebElement element) {
+        LOGGER.debug("click(WebElement)");
+        try {
+            element.click();
+        }
+        catch (Exception e) {
+            handleSeleniumException(e);
+        }
+    }
+
+    private void doubleClick(WebElement element) {
+        LOGGER.debug("doubleClick(WebElement)");
+        element = LocatorSupport.unwrap(element);
+        new Actions(driver).doubleClick(element).build().perform();
+    }
+
+    // special handling of some Selenium exceptions ----------------------------
+
+    private void handleSeleniumException(Throwable e) {
+        String message = e.getMessage();
+
+        // check if there is a WebDriverException
+        WebDriverException wde = null;
+        while (e != null) {
+            if (e instanceof WebDriverException) {
+                wde = (WebDriverException) e;
+                break;
+            }
+            e = e.getCause();
+        }
+
+        if (wde != null) {
+            if (message == null) {
+                message = wde.getMessage();
+            }
+            // "not clickable" exception
+            Pattern p = Pattern.compile("(unknown error: )?(.* not clickable .*)");
+            Matcher m;
+            if (message != null && (m = p.matcher(message)).find() && m.start() == 0) {
+                throw new AutomationException(m.group(2), wde);
+            }
+
+            // NoSuchElementException
+            if (wde instanceof NoSuchElementException) {
+                throw new AutomationException("Element not found", wde);
+            }
+
+            throw wde;
+        }
+
+        // otherwise, throw a technical exception
+        throw new TechnicalException("Unknown exception when clicking element", e);
     }
 
 }
