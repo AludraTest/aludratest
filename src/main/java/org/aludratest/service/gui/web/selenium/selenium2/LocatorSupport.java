@@ -217,12 +217,15 @@ public class LocatorSupport {
      * @param exceptionsToIgnore
      * @return */
     public <T> T waitFor(ExpectedCondition<T> condition, long timeOutInMillis, Class<? extends Exception>... exceptionsToIgnore) {
+        LOGGER.debug("waitFor({})", condition);
         long timeoutInSeconds = (timeOutInMillis + SECOND_MILLIS - 1) / SECOND_MILLIS;
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds, config.getPauseBetweenRetries());
         for (Class<? extends Exception> exceptionToIgnore : exceptionsToIgnore) {
             wait.ignoring(exceptionToIgnore);
         }
-        return wait.until(condition);
+        T result = wait.until(condition);
+        LOGGER.debug("waitFor({}) returns {}", condition, result);
+        return result;
     }
 
     // non-public helpers ------------------------------------------------------

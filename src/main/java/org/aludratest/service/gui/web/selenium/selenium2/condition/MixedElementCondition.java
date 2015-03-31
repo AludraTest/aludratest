@@ -62,4 +62,10 @@ public class MixedElementCondition extends WebElementCondition {
         return element;
     }
 
+    @Override
+    public String toString() {
+        return "Foreground position " + (visible ? "and visibility " : "") + (enabled ? "and clickability " : "")
+                + " of the element located by " + locator;
+    }
+
 }

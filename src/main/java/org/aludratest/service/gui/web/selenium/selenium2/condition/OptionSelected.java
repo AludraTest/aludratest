@@ -43,4 +43,9 @@ public class OptionSelected extends StringCondition {
         return text;
     }
 
+    @Override
+    public String toString() {
+        return "first selected option of the drow down list located by " + locator;
+    }
+
 }

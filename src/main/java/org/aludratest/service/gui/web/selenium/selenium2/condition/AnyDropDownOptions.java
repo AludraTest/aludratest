@@ -98,4 +98,9 @@ public class AnyDropDownOptions implements ExpectedCondition<String[]> {
         return new AnyDropDownOptions(dropDownLocator, DROPDOWN_OPTION_VALUE_PROPERTY, locatorSupport);
     }
 
+    @Override
+    public String toString() {
+        return "Availability of " + propertyName + " values for the options of the drop down box located by " + dropDownLocator;
+    }
+
 }

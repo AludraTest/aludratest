@@ -28,6 +28,7 @@ public class TaskCompletionUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskCompletionUtil.class);
 
+    /** Private constructor for preventing instantiation of utility class. */
     private TaskCompletionUtil() { }
 
     /**
@@ -63,22 +64,15 @@ public class TaskCompletionUtil {
         return true;
     }
 
-    /**
-     * Repeats a delayed loop until the provided {@link SystemConnector} reports
-     * false on invocation of {@link SystemConnector#isBusy()}
+    /** Repeats a delayed loop until the provided {@link SystemConnector} reports false on invocation of
+     * {@link SystemConnector#isBusy()}.
      * 
-     * @param connector
-     *            the {@link SystemConnector} to query if the system is busy
-     * @param timeout
-     *            the maximum number of milliseconds to wait
-     * @param pollingInterval
-     *            the number of milliseconds to wait between system state
-     *            queries
-     * @param failureMessage
-     *            The failure message to emit if the system is still busy after
-     *            timeout
-     */
+     * @param connector the {@link SystemConnector} to query if the system is busy
+     * @param timeout the maximum number of milliseconds to wait
+     * @param pollingInterval the number of milliseconds to wait between system state queries
+     * @param failureMessage The failure message to emit if the system is still busy after timeout */
     public static void waitUntilNotBusy(SystemConnector connector, int timeout, int pollingInterval, String failureMessage) {
+        LOGGER.debug("waitUntilNotBusy({})", connector);
         long timeoutTime = System.currentTimeMillis() + timeout;
         boolean busy;
         long time;
@@ -93,13 +87,18 @@ public class TaskCompletionUtil {
         if (busy) {
             // timeout is exceeded and the task is still busy,
             // so I throw an appropriate exception
-            LOGGER.error("{} did not finish its activities within the completionTimeout period", connector);
+            LOGGER.error("waitUntilNotBusy({}) gave up waiting after the completionTimeout period of {} ms", connector, timeout);
             throw new PerformanceFailure(failureMessage);
+        }
+        else {
+            LOGGER.debug("waitUntilNotBusy({}) finished successfully", connector);
         }
     }
 
+    // implementation ----------------------------------------------------------
+
     private static boolean waitUntilBusy(SystemConnector connector, long timeoutTime, int timeoutInterval, int pollingInterval) {
-        LOGGER.debug("Waiting for activity on {}", connector);
+        LOGGER.debug("waitUntilBusy({})", connector);
         long time;
         boolean busy;
         do {
@@ -112,9 +111,10 @@ public class TaskCompletionUtil {
         } while (!busy && time < timeoutTime);
         if (!busy) {
             // I probably missed the task execution and better stop here
-            LOGGER.debug("No activity observed within the timeout of {} ms", timeoutInterval);
+            LOGGER.debug("waitUntilBusy({}) gave up after the timeout of {} ms", timeoutInterval);
             return false;
         }
+        LOGGER.debug("waitUntilBusy({}) finished successfully", connector);
         return true;
     }
 
