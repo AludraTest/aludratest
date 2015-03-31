@@ -51,7 +51,7 @@ import org.codehaus.plexus.component.repository.exception.ComponentLookupExcepti
  * implementors can subclass this class to provide own component implementor classes or additional component configuration.
  * 
  * @author falbrech */
-@Component(role = GUIComponentFactory.class, hint = "default")
+@Component(role = GUIComponentFactory.class, hint = "default", instantiationStrategy = "per-lookup")
 public class DefaultGUIComponentFactory implements GUIComponentFactory {
 
     private static final Map<Class<? extends GUIComponent>, Class<? extends GUIComponent>> componentImplClasses = new HashMap<Class<? extends GUIComponent>, Class<? extends GUIComponent>>();
@@ -228,12 +228,15 @@ public class DefaultGUIComponentFactory implements GUIComponentFactory {
         }
 
         try {
-            // check if Plexus container already "knows" this component class
-            if (plexusContainer.getComponentDescriptor(componentClass.getName(), getRoleHint()) == null) {
-                registerComponentDescriptor(componentClass, implClass);
-            }
+            T component;
+            synchronized (plexusContainer) {
+                // check if Plexus container already "knows" this component class
+                if (plexusContainer.getComponentDescriptor(componentClass.getName(), getRoleHint()) == null) {
+                    registerComponentDescriptor(componentClass, implClass);
+                }
 
-            T component = plexusContainer.lookup(componentClass, getRoleHint());
+                component = plexusContainer.lookup(componentClass, getRoleHint());
+            }
             configureComponent(component, locator, componentClass, elementName);
             return component;
         }

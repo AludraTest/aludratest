@@ -24,6 +24,7 @@ import org.aludratest.service.gui.web.WebGUIInteraction;
 import org.aludratest.service.gui.web.WebGUIVerification;
 import org.aludratest.service.gui.web.selenium.AbstractSeleniumService;
 import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements the interface {@link AludraWebGUI} using Selenium 2 functionality
@@ -82,7 +83,12 @@ public class AludraSelenium2 extends AbstractSeleniumService implements AludraWe
 
     @Override
     public void close() {
-        seleniumWrapper.tearDown();
+        try {
+            seleniumWrapper.tearDown();
+        }
+        catch (Exception e) {
+            LoggerFactory.getLogger(AludraSelenium2.class).warn("Exception when closing Selenium service", e);
+        }
     }
 
 }

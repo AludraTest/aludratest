@@ -4,6 +4,8 @@
 # Exceptions from the rule
 linefeed-rn.txt text eol=crlf
 *.bat text eol=crlf
+*.csv text eol=crlf
+*.flat text eol=crlf
 
 # Binary files
 *.png binary

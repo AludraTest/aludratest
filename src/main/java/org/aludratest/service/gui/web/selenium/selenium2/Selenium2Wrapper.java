@@ -385,10 +385,15 @@ public class Selenium2Wrapper {
             removeHighlight();
 
             // iterate all windows and return the one with the desired title
+            StringBuilder sb = new StringBuilder();
             for (String handle : getWindowHandles()) {
                 try {
                     LOGGER.debug("driver.switchTo().window()", locator);
                     String title = driver.switchTo().window(handle).getTitle();
+                    if (sb.length() > 0) {
+                        sb.append(", ");
+                    }
+                    sb.append("\"").append(title).append("\"");
                     if (requestedTitle.equals(title)) {
                         return;
                     }
@@ -399,7 +404,7 @@ public class Selenium2Wrapper {
             }
 
             // if the window has not been found, throw an ElementNotFoundException
-            throw new AutomationException("Element not found");
+            throw new AutomationException("Element not found. Available window titles are: " + sb.toString());
         }
         else {
             throw ServiceUtil.newUnsupportedLocatorException(locator);
@@ -892,20 +897,27 @@ public class Selenium2Wrapper {
 
     // element highlighting ----------------------------------------------------
 
-    void removeHighlight() {
-        if (configuration.getHighlightCommands()) {
-            LOGGER.debug("removeHighlight()");
-            if (configuration.getHighlightCommands() && this.highlightedElement != null) {
-                try {
+    private void removeHighlight() {
+        if (configuration.getHighlightCommands() && this.highlightedElement != null) {
+            try {
+                // first try via ID
+                String id = highlightedElement.getAttribute("id");
+                if (id != null) {
+                    executeScript("document.getElementById('" + id + "').className = document.getElementById('" + id
+                            + "').className.replace( /(?:^|\\s)selenium-highlight(?!\\S)/g , '' );");
+                }
+                else {
+                    // fallback via Selenium arguments infrastructure
                     executeScript(
-                            "arguments[0].className = arguments[0].className.replace( /(?:^|\\s)selenium-highlight(?!\\S)/g , '' ); return arguments[0].className;",
+                            "arguments[0].className = arguments[0].className.replace( /(?:^|\\s)selenium-highlight(?!\\S)/g , '' );",
                             highlightedElement);
                 }
-                catch (WebDriverException e) {
-                    LOGGER.trace("Highlight remove failed. ", e);
-                }
+            }
+            catch (WebDriverException e) {
+                LOGGER.trace("Highlight remove failed. ", e);
             }
         }
+        highlightedElement = null;
     }
 
     private void checkHighlightCss() {
