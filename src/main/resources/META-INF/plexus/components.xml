@@ -70,6 +70,7 @@
       <role>org.aludratest.service.gui.component.GUIComponentFactory</role>
       <role-hint>default</role-hint>
       <implementation>org.aludratest.service.gui.component.impl.DefaultGUIComponentFactory</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
       <description></description>
       <isolated-realm>false</isolated-realm>
       <requirements>
