@@ -15,6 +15,8 @@
  */
 package org.aludratest.service.cmdline.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,10 +27,11 @@ import org.aludratest.util.poll.PollService;
 import org.aludratest.util.poll.PolledTask;
 import org.databene.commons.IOUtil;
 import org.databene.commons.SystemInfo;
+import org.databene.commons.array.ByteArray;
 
 /** Reader class for accessing standard or error output of a process.
  * @author Volker Bergmann */
-class ProcessOutputReader {
+class ProcessOutputReader implements Closeable {
 
     private static final int DEFAULT_POLLING_INTERVAL = 300;
 
@@ -36,30 +39,33 @@ class ProcessOutputReader {
 
     private ProcessWrapper process;
     private final String name;
-    private final InputStream in;
-    private String buffer;
-    private boolean timedOut;
+    private InputStreamWatchDog watchdog;
 
+    private String pushedBackLine;
+
+
+    // constructor -------------------------------------------------------------
 
     /** @param in the source
      * @param err */
     ProcessOutputReader(InputStream in, ProcessWrapper process, String name) {
-        this.in = in;
         this.process = process;
         this.name = name;
-        this.buffer = null;
-        this.timedOut = false;
+        this.pushedBackLine = null;
+        this.watchdog = new InputStreamWatchDog(in);
+        this.watchdog.start();
     }
 
+    // interface ---------------------------------------------------------------
+
     public String readLine() throws IOException {
-        if (buffer != null) {
-            String result = this.buffer;
-            this.buffer = null;
+        if (pushedBackLine != null) {
+            String result = this.pushedBackLine;
+            this.pushedBackLine = null;
             return result;
         }
         else {
-            waitUntilAvailable();
-            return readLineFromInputStream();
+            return watchdog.nextLine();
         }
     }
 
@@ -71,35 +77,20 @@ class ProcessOutputReader {
         if (line != null) {
             throw new IllegalStateException("Tried multiple push backs");
         }
-        this.buffer = line;
+        this.pushedBackLine = line;
     }
 
     public void redirectTo(OutputStream out) throws IOException {
-        IOUtil.transfer(this.in, out);
-        out.flush();
-    }
-
-    public boolean waitUntilAvailable() {
-        if (!availableWithinTimeout()) {
-            throw new PerformanceFailure("Process '" + process + "' did not provide expected output within the timeout of "
-                    + process.getTimeout() + " ms");
-        }
-        return true;
+        this.watchdog.redirectTo(out);
     }
 
     public boolean availableWithinTimeout() {
-        PollService poller = new PollService(process.getTimeout(), DEFAULT_POLLING_INTERVAL);
-        WaitUntilReadyTask task = new WaitUntilReadyTask();
-        return poller.poll(task);
+        return this.watchdog.availableWithinResponseTimeout();
     }
 
-    public boolean availableImmediately() {
-        try {
-            return (!timedOut && (this.buffer != null || this.in.available() > 0));
-        }
-        catch (IOException e) {
-            throw new TechnicalException("Error checking if " + this + " is available", e);
-        }
+    @Override
+    public void close() throws IOException {
+        watchdog.close();
     }
 
     // java.lang.Object overrides ----------------------------------------------
@@ -111,34 +102,134 @@ class ProcessOutputReader {
 
     // private helpers ---------------------------------------------------------
 
-    private String readLineFromInputStream() throws IOException {
-        StringBuilder builder = new StringBuilder();
-        // read chars until the first character of the line separator
-        int c;
-        while ((c = in.read()) != -1 && c != LF.charAt(0)) {
-            builder.append((char) c);
+    public class InputStreamWatchDog extends Thread {
+
+        InputStream in;
+        ByteArray buffer;
+        int pos;
+        boolean timedOut;
+
+        InputStreamWatchDog(InputStream in) {
+            this.in = in;
+            this.buffer = new ByteArray(5000);
+            this.pos = 0;
+            this.timedOut = false;
+            setDaemon(true);
+            setPriority(MIN_PRIORITY);
         }
-        if (c != -1) {
-            // if the line separator consists of multiple characters, assume the following characters match and skip them
-            for (int i = 1; i < LF.length(); i++) {
-                c = in.read();
+
+        public String nextLine() throws IOException {
+            if (!bufferedTextAvailable()) {
+                if (process.isRunning()) {
+                    waitUntilAvailable();
+                }
+                else {
+                    return null;
+                }
+            }
+            return readLineFromBuffer();
+        }
+
+        public boolean waitUntilAvailable() {
+            if (!availableWithinResponseTimeout()) {
+                throw new PerformanceFailure("Process '" + process
+                        + "' did not provide expected output within the response timeout of " + process.getResponseTimeout()
+                        + " ms");
+            }
+            return true;
+        }
+
+        public boolean availableWithinResponseTimeout() {
+            PollService poller = new PollService(process.getResponseTimeout(), DEFAULT_POLLING_INTERVAL);
+            WaitUntilTextAvailable task = new WaitUntilTextAvailable();
+            return poller.poll(task);
+        }
+
+        private boolean bufferedTextAvailable() {
+            synchronized (buffer) {
+                return (!timedOut && pos < buffer.length());
             }
         }
-        return builder.toString();
-    }
-
-
-    public class WaitUntilReadyTask implements PolledTask<Boolean> {
-        @Override
-        public Boolean run() {
-            return (availableImmediately() ? true : null);
-        }
 
         @Override
-        public Boolean timedOut() {
-            timedOut = true;
-            return false;
+        public void run() {
+            try {
+                int c;
+                while ((c = in.read()) >= 0) {
+                    synchronized (buffer) {
+                        buffer.add((byte) c);
+                    }
+                }
+            }
+            catch (IOException e) {
+                throw new TechnicalException("Error reading " + name + " stream of process " + process, e);
+            }
         }
+
+        public void redirectTo(OutputStream out) throws IOException {
+            if (!bufferedTextAvailable()) {
+                if (process.isRunning()) {
+                    waitUntilAvailable();
+                }
+                else {
+                    return;
+                }
+            }
+            InputStream bufferStream;
+            synchronized (buffer) {
+                bufferStream = new ByteArrayInputStream(this.buffer.getBytes(), this.pos, this.buffer.length() - this.pos);
+            }
+            IOUtil.transfer(bufferStream, out);
+            out.flush();
+        }
+
+        private String readLineFromBuffer() throws IOException {
+            synchronized (buffer) {
+                StringBuilder builder = new StringBuilder();
+                // read chars until the first character of the line separator
+                int c = -1;
+                while (pos < buffer.length()) {
+                    c = buffer.get(pos++);
+                    if (c != LF.charAt(0)) {
+                        builder.append((char) c);
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if (c != -1) {
+                    // if the line separator consists of multiple characters, assume the following characters match and skip them
+                    for (int i = 1; i < LF.length(); i++) {
+                        c = in.read();
+                        pos++;
+                    }
+                }
+                return builder.toString();
+            }
+        }
+
+        public void close() {
+            IOUtil.close(this.in); // this also cancels in.read() in the run method's loop
+        }
+
+        public class WaitUntilTextAvailable implements PolledTask<Boolean> {
+            @Override
+            public Boolean run() {
+                return (pushedBackLine != null || bufferedTextAvailable() ? true : null);
+            }
+
+            @Override
+            public Boolean timedOut() {
+                timedOut = true;
+                return false;
+            }
+
+            @Override
+            public String toString() {
+                return getClass().getSimpleName() + "[" + process + "]";
+            }
+        }
+
     }
 
 }

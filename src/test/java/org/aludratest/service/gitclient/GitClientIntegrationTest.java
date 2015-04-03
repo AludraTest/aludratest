@@ -31,13 +31,18 @@ import org.aludratest.service.gitclient.data.AddData;
 import org.aludratest.service.gitclient.data.BranchCreationData;
 import org.aludratest.service.gitclient.data.BranchDeletionData;
 import org.aludratest.service.gitclient.data.BranchListData;
+import org.aludratest.service.gitclient.data.CheckoutData;
 import org.aludratest.service.gitclient.data.CloneRepositoryData;
 import org.aludratest.service.gitclient.data.CommitData;
 import org.aludratest.service.gitclient.data.ConfigData;
+import org.aludratest.service.gitclient.data.FetchData;
 import org.aludratest.service.gitclient.data.InvocationData;
 import org.aludratest.service.gitclient.data.LogData;
 import org.aludratest.service.gitclient.data.LogItemData;
+import org.aludratest.service.gitclient.data.MergeData;
 import org.aludratest.service.gitclient.data.MvData;
+import org.aludratest.service.gitclient.data.PushData;
+import org.aludratest.service.gitclient.data.RebaseData;
 import org.aludratest.service.gitclient.data.RenamedStatusData;
 import org.aludratest.service.gitclient.data.ResetData;
 import org.aludratest.service.gitclient.data.RmData;
@@ -50,14 +55,12 @@ import org.databene.commons.IOUtil;
 import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.internal.AssumptionViolatedException;
 
 /** Tests the {@link GitClient} against an installation of git.
  * @author Volker Bergmann */
 @SuppressWarnings("javadoc")
-@Ignore
 public class GitClientIntegrationTest extends AbstractAludraServiceTest {
 
     private static final String ADDED_FILE = "added.txt";
@@ -107,7 +110,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
         runInNewRepo(new GitTest() {
             @Override
             public void run(GitClient gitClient) throws Exception {
-                createFile("some_file.txt", "some content", true, gitClient);
+                createOrOverwriteFile("some_file.txt", "some content", true, gitClient);
                 StatusData status = getStatus(gitClient);
                 List<StringData> addedFiles = status.getAddedFiles();
                 assertEquals(1, addedFiles.size());
@@ -146,7 +149,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
             public void run(GitClient gitClient) throws Exception {
                 final String branchName = "branch2";
                 // there must be a committed file before a branch can be created
-                createFile("file1.txt", "content1", true, gitClient);
+                createOrOverwriteFile("file1.txt", "content1", true, gitClient);
                 gitClient.commit(new CommitData("commit1"));
                 // create the branch
                 gitClient.createBranch(new BranchCreationData(branchName));
@@ -169,7 +172,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
             public void run(GitClient gitClient) throws Exception {
                 String fileName = "file1.txt";
                 // first create and commit a file
-                createFile(fileName, "content", true, gitClient);
+                createOrOverwriteFile(fileName, "content", true, gitClient);
                 // verify its presence
                 StatusData status = getStatus(gitClient);
                 assertTrue(containsFile(fileName, status.getAddedFiles()));
@@ -190,7 +193,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
                 final String fileName1 = "file1.txt";
                 final String fileName2 = "file2.txt";
                 // first create and commit a file
-                createFile(fileName1, "content1", true, gitClient);
+                createOrOverwriteFile(fileName1, "content1", true, gitClient);
                 // verify its presence
                 StatusData status = getStatus(gitClient);
                 assertTrue(containsFile(fileName1, status.getAddedFiles()));
@@ -212,7 +215,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
             public void run(GitClient gitClient) throws Exception {
                 // first create and commit a file
                 final String fileName = "file1.txt";
-                createFile(fileName, "content1", true, gitClient);
+                createOrOverwriteFile(fileName, "content1", true, gitClient);
                 // verify its presence
                 StatusData status = getStatus(gitClient);
                 assertTrue(containsFile(fileName, status.getAddedFiles()));
@@ -278,8 +281,8 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
 
     @Test
     public void testStashSaveAndPop() throws Exception {
-        // Skip the test on Mac OSX Yosemite there is a known issue
-        if ("Mac OS X".equals(SystemInfo.getOsName()) && SystemInfo.getOsVersion().startsWith("10.10.")) {
+        // Skip the test on Mac OSX Yosemite since there is a known issue
+        if (runningOnYosemite()) {
             // for the description of the issue see
             // https://stackoverflow.com/questions/24022582/osx-10-10-yosemite-beta-on-git-pull-git-sh-setup-no-such-file-or-directory
             throw new AssumptionViolatedException("Skipping testStashSaveAndPop() due to known git issue on Mac OSX Yosemite.");
@@ -288,7 +291,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
             @Override
             public void run(GitClient gitClient) throws Exception {
                 // create a first commit
-                createFile("test.txt", "content", true, gitClient);
+                createOrOverwriteFile("test.txt", "content", true, gitClient);
                 gitClient.commit(new CommitData("initial commit"));
                 // create test files
                 createTestFilesForReset(gitClient);
@@ -310,49 +313,153 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     }
 
     @Test
-    public void testCloneRepository() throws Exception {
-        File tempDir = createTempDirectory();
-        try {
-            GitClient gitClient1 = new GitClient(service, 60000).setWorkingDirectory(new StringData(tempDir.getAbsolutePath()));
-            gitClient1.cloneRepository(new CloneRepositoryData("https://github.com/AludraTest/aludratest.git"));
-            File projectDir = new File(tempDir, "aludratest");
-            GitClient gitClient2 = createGitClient();
-            gitClient2.setWorkingDirectory(new StringData(projectDir.getAbsolutePath()));
-            getStatus(gitClient2);
-        }
-        finally {
-            FileUtil.deleteDirectory(tempDir);
-        }
-    }
-
-    @Test
     public void testCheckout() throws Exception {
-        // throw new UnsupportedOperationException("Not implemented"); // TODO implement test
-    }
-
-    @Test
-    public void testFetch() throws Exception {
-        // throw new UnsupportedOperationException("Not implemented"); // TODO implement test
-    }
-
-    @Test
-    public void testMerge() throws Exception {
-        // throw new UnsupportedOperationException("Not implemented"); // TODO implement test
-    }
-
-    @Test
-    public void testPull() throws Exception {
-        // throw new UnsupportedOperationException("Not implemented"); // TODO implement test
-    }
-
-    @Test
-    public void testPush() throws Exception {
-        // throw new UnsupportedOperationException("Not implemented"); // TODO implement test
+        runInNewRepo(new GitTest() {
+            @Override
+            public void run(GitClient gitClient) throws Exception {
+                // create a first commit on master
+                createOrOverwriteFile("file.txt", "master_content", true, gitClient);
+                gitClient.commit(new CommitData("initial commit"));
+                // create a branch 'branch2', switch to it, overwrite the file and commit
+                gitClient.createBranch(new BranchCreationData("branch2"));
+                gitClient.checkout(new CheckoutData("branch2"));
+                createOrOverwriteFile("file.txt", "branch_content", true, gitClient);
+                gitClient.commit(new CommitData("created branch #2"));
+                assertFileContent("branch_content", "file.txt", gitClient);
+                // check out master and verify its content
+                gitClient.checkout(new CheckoutData("master"));
+                assertFileContent("master_content", "file.txt", gitClient);
+                // check out branch2 and verify its content
+                gitClient.checkout(new CheckoutData("branch2"));
+                assertFileContent("branch_content", "file.txt", gitClient);
+            }
+        });
     }
 
     @Test
     public void testRebase() throws Exception {
-        // throw new UnsupportedOperationException("Not implemented"); // TODO implement test
+        // Skip the test on Mac OSX Yosemite since there is a known issue
+        if (runningOnYosemite()) {
+            // for the description of the issue see
+            // https://stackoverflow.com/questions/24022582/osx-10-10-yosemite-beta-on-git-pull-git-sh-setup-no-such-file-or-directory
+            throw new AssumptionViolatedException("Skipping testRebase() due to known git issue on Mac OSX Yosemite.");
+        }
+        runInNewRepo(new GitTest() {
+            @Override
+            public void run(GitClient git) throws Exception {
+                // create a file "m.txt" and commit master
+                createOrOverwriteFile("m.txt", "m_content", true, git);
+                git.commit(new CommitData("initial commit"));
+                // create a branch 'experiment', switch to it, create a file 'e.txt' and commit
+                git.createBranch(new BranchCreationData("experiment"));
+                git.checkout(new CheckoutData("experiment"));
+                createOrOverwriteFile("e.txt", "e_content", true, git);
+                git.commit(new CommitData("created experiment"));
+                // check out master, modify the file and commit
+                git.checkout(new CheckoutData("master"));
+                assertFileContent("m_content", "m.txt", git);
+                createOrOverwriteFile("m2.txt", "m2_content", true, git);
+                git.commit(new CommitData("modified master"));
+                // check out experiment and rebase it on master
+                git.checkout(new CheckoutData("experiment"));
+                assertFileNotFound("m2.txt", git);
+                assertFileContent("e_content", "e.txt", git);
+                git.rebase(new RebaseData(null, null, "master"));
+                assertFileContent("m2_content", "m2.txt", git);
+            }
+        });
+    }
+
+    @Test
+    public void testMerge() throws Exception {
+        runInNewRepo(new GitTest() {
+            @Override
+            public void run(GitClient git) throws Exception {
+                // create a file "m.txt" and commit master
+                createOrOverwriteFile("m.txt", "m_content", true, git);
+                git.commit(new CommitData("initial commit"));
+                // create a branch 'experiment', switch to it, create a file 'e.txt' and commit
+                git.createBranch(new BranchCreationData("experiment"));
+                git.checkout(new CheckoutData("experiment"));
+                createOrOverwriteFile("e.txt", "e_content", true, git);
+                git.commit(new CommitData("created experiment"));
+                // check out master, modify the file and commit
+                git.checkout(new CheckoutData("master"));
+                assertFileContent("m_content", "m.txt", git);
+                createOrOverwriteFile("m2.txt", "m2_content", true, git);
+                git.commit(new CommitData("modified master"));
+                // check out experiment and merge it with master
+                git.checkout(new CheckoutData("experiment"));
+                assertFileNotFound("m2.txt", git);
+                assertFileContent("e_content", "e.txt", git);
+                git.merge(new MergeData("merging experiment and master", "master"));
+                assertFileContent("m2_content", "m2.txt", git);
+            }
+        });
+    }
+
+    @Test
+    public void testCloneRepository() throws Exception {
+        GitClient origin = null;
+        GitClient local = null;
+        try {
+            origin = createGitRepository();
+            local = createAndCloneRepository(origin, new File("target/gittest/testClone"));
+            // verify the clone
+            assertFileContent("m_content", "m.txt", local);
+        }
+        finally {
+            deleteGitRepository(local);
+            deleteGitRepository(origin);
+        }
+    }
+
+    @Test
+    public void testFetchAndMerge() throws Exception {
+        GitClient origin = null;
+        GitClient local = null;
+        try {
+            origin = createGitRepository();
+            local = createAndCloneRepository(origin, new File("target/gittest/testFetchAndMerge"));
+            assertFileContent("m_content", "m.txt", local);
+            createOrOverwriteFile("newfile.txt", "new content", true, origin);
+            origin.commit(new CommitData("added newfile.txt"));
+            assertFileNotFound("newfile.txt", local);
+            local.fetch(new FetchData("origin"));
+            assertFileNotFound("newfile.txt", local);
+            local.merge(new MergeData("merged", "origin/master"));
+            assertFileContent("new content", "newfile.txt", local);
+        }
+        finally {
+            deleteGitRepository(local);
+            deleteGitRepository(origin);
+        }
+    }
+
+    @Test
+    public void testPush() throws Exception {
+        GitClient origin = null;
+        GitClient local = null;
+        try {
+            origin = createGitRepository();
+            local = createAndCloneRepository(origin, new File("target/gittest/testPush"));
+            assertFileContent("m_content", "m.txt", local);
+            // create a local branch 'experiment' and add a file
+            local.createBranch(new BranchCreationData("experiment"));
+            local.checkout(new CheckoutData("experiment"));
+            createOrOverwriteFile("newfile.txt", "new content", true, local);
+            local.commit(new CommitData("added newfile.txt"));
+            assertFileNotFound("newfile.txt", origin);
+            // push the local changes
+            local.push(new PushData("origin", "experiment"));
+            // verify origin
+            origin.checkout(new CheckoutData("experiment"));
+            assertFileContent("new content", "newfile.txt", origin);
+        }
+        finally {
+            deleteGitRepository(local);
+            deleteGitRepository(origin);
+        }
     }
 
     @Test
@@ -367,23 +474,43 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     // private methods ---------------------------------------------------------
 
     private GitClient createGitClient() {
-        return new GitClient(service, 10000);
+        return new GitClient(service, 10000, 1500);
     }
 
     private void runInNewRepo(GitTest test) throws Exception {
-        File tempDir = createTempDirectory();
+        GitClient git = null;
         try {
-            GitClient git = createGitClient().setWorkingDirectory(new StringData(tempDir.getAbsolutePath()));
-            git.init();
-            // git config user.email "you@example.com"
-            git.config(new ConfigData("user.email", "you@example.com"));
-            // git config user.name "you"
-            git.config(new ConfigData("user.name", "you"));
+            git = createGitRepository();
             test.run(git);
         }
         finally {
-            FileUtil.deleteDirectory(tempDir);
+            deleteGitRepository(git);
         }
+    }
+
+    private GitClient createGitRepository() {
+        File tempDir = createTempDirectory();
+        GitClient git = createGitClient().setWorkingDirectory(new StringData(tempDir.getAbsolutePath()));
+        git.init();
+        // git config user.email "you@example.com"
+        git.config(new ConfigData("user.email", "you@example.com"));
+        // git config user.name "you"
+        git.config(new ConfigData("user.name", "you"));
+        return git;
+    }
+
+    private GitClient createAndCloneRepository(GitClient origin, File localDir) throws IOException {
+        GitClient local;
+        // create a file "m.txt" and commit master on origin
+        createOrOverwriteFile("m.txt", "m_content", true, origin);
+        origin.commit(new CommitData("initial commit"));
+
+        // clone origin on local git
+        String originPath = origin.getWorkingDirectory().getValue();
+        localDir.mkdirs();
+        local = createGitClient().setWorkingDirectory(new StringData(localDir.getAbsolutePath()));
+        local.cloneRepository(new CloneRepositoryData(originPath, "."));
+        return local;
     }
 
     private File createTempDirectory() {
@@ -393,14 +520,38 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
         return tempDir;
     }
 
-    private static File createFile(String name, String content, boolean add, GitClient gitClient) throws IOException {
-        String tempDir = gitClient.getWorkingDirectory().getValue();
-        File file = new File(tempDir, name);
+    private void deleteGitRepository(GitClient git) {
+        FileUtil.deleteDirectory(new File(git.getWorkingDirectory().getValue()));
+    }
+
+    private static File createOrOverwriteFile(String name, String content, boolean add, GitClient gitClient) throws IOException {
+        File file = file(name, gitClient);
         IOUtil.writeTextFile(file.getAbsolutePath(), content);
         if (add) {
             gitClient.add(new AddData(name));
         }
         return file;
+    }
+
+    private static File file(String name, GitClient gitClient) {
+        String tempDir = gitClient.getWorkingDirectory().getValue();
+        return new File(tempDir, name);
+    }
+
+    private void assertFileNotFound(String localFilePath, GitClient git) throws IOException {
+        File file = file(localFilePath, git);
+        assertFalse("Unexpected file: " + localFilePath, file.exists());
+    }
+
+    private void assertFileContent(String expectedContent, String localFilePath, GitClient git) throws IOException {
+        String actualContent = getFileContent(localFilePath, git);
+        assertEquals(expectedContent, actualContent);
+    }
+
+    private String getFileContent(String localFilePath, GitClient git) throws IOException {
+        File file = file(localFilePath, git);
+        String actualContent = IOUtil.getContentOfURI(file.getAbsolutePath());
+        return actualContent;
     }
 
     private static StatusData getStatus(GitClient gitClient) {
@@ -426,8 +577,8 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
         InvocationData data = new InvocationData("git", "commit", "--allow-empty", "-m", "Initial commit.");
         gitClient.invokeGenerically(data);
         // create the files
-        createFile(UNTRACKED_FILE, "untracked", false, gitClient);
-        createFile(ADDED_FILE, "added", true, gitClient);
+        createOrOverwriteFile(UNTRACKED_FILE, "untracked", false, gitClient);
+        createOrOverwriteFile(ADDED_FILE, "added", true, gitClient);
         // verify their presence
         StatusData status = getStatus(gitClient);
         assertTrue(containsFile(UNTRACKED_FILE, status.getUntrackedFiles()));
@@ -441,6 +592,10 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
             }
         }
         return false;
+    }
+
+    private boolean runningOnYosemite() {
+        return "Mac OS X".equals(SystemInfo.getOsName()) && SystemInfo.getOsVersion().startsWith("10.10.");
     }
 
     public static abstract class GitTest {

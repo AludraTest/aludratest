@@ -59,9 +59,9 @@ public class CommandLineActionImpl implements CommandLineInteraction, CommandLin
     // functional interface ----------------------------------------------------
 
     @Override
-    public int create(String processType, String processName, int timeout, String... command) {
+    public int create(String processType, String processName, int processTimeout, int responseTimeout, String... command) {
         int processId = ++lastProcessId;
-        ProcessWrapper process = new ProcessWrapper(processId, timeout, command);
+        ProcessWrapper process = new ProcessWrapper(processId, processTimeout, responseTimeout, command);
         processes.put(processId, process);
         return processId;
     }

@@ -23,16 +23,25 @@ import org.aludratest.service.gitclient.GitClient;
 public class CommitData extends AbstractGitData {
 
     private String message;
+    private String allowEmpty;
 
     /** Public default constructor. */
     public CommitData() {
         this(null);
     }
 
-    /** Fully parameterized constructor.
+    /** Convenience constructor.
      * @param message the commit message */
     public CommitData(String message) {
+        this(message, null);
+    }
+
+    /** Fully parameterized constructor.
+     * @param message the commit message
+     * @param allowEmpty flag indicating whether git shall accept empty commits */
+    public CommitData(String message, Boolean allowEmpty) {
         setMessage(message);
+        this.allowEmpty = (allowEmpty != null ? allowEmpty.toString() : null);
     }
 
     /** Returns the commit message.
@@ -45,6 +54,18 @@ public class CommitData extends AbstractGitData {
      * @param message the commit message to set */
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    /** Tells if the git shall allow empty commits. If not set to "true", git refused empty commits.
+     * @return true if git shall allow empty commits, otherwise false. */
+    public String getAllowEmpty() {
+        return allowEmpty;
+    }
+
+    /** Configures git whether to allow empty commits or not. If not set to "true", git refused empty commits.
+     * @param allowEmpty the flag value to set */
+    public void setAllowEmpty(String allowEmpty) {
+        this.allowEmpty = allowEmpty;
     }
 
 }

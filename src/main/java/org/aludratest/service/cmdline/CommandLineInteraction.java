@@ -33,11 +33,12 @@ public interface CommandLineInteraction extends Interaction {
     /** Creates a process.
      * @param processType the process type
      * @param processName the process name
-     * @param timeout
+     * @param processTimeout the maximum time to wait for process termination
+     * @param responseTimeout the maximum time to wait for process response
      * @param command
      * @return the processId */
-    int create(@ElementType String processType, @ElementName String processName, @TechnicalArgument int timeout,
-            String... command);
+    int create(@ElementType String processType, @ElementName String processName, @TechnicalArgument int processTimeout,
+            @TechnicalArgument int responseTimeout, String... command);
 
     /** Sets the working directory of the specified process.
      * @param processType the process type

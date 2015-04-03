@@ -23,16 +23,25 @@ import org.aludratest.service.gitclient.GitClient;
 public class CloneRepositoryData extends AbstractGitData {
 
     private String repository;
+    private String directory;
 
     /** Public default constructor. */
     public CloneRepositoryData() {
         this(null);
     }
 
-    /** Fully parameterized constructor.
+    /** Convenience constructor.
      * @param repository */
     public CloneRepositoryData(String repository) {
+        this(repository, null);
+    }
+
+    /** Fully parameterized constructor.
+     * @param repository the source repository to clone
+     * @param directory the target directory in which to store the clone */
+    public CloneRepositoryData(String repository, String directory) {
         setRepository(repository);
+        setDirectory(directory);
     }
 
     /** Returns the repository.
@@ -45,6 +54,18 @@ public class CloneRepositoryData extends AbstractGitData {
      * @param repository the repository to set */
     public void setRepository(String repository) {
         this.repository = repository;
+    }
+
+    /** Returns the target directory in which to store the clone.
+     * @return the target directory in which to store the clone */
+    public String getDirectory() {
+        return directory;
+    }
+
+    /** Sets the target directory in which to store the clone.
+     * @param directory the target directory in which to store the clone */
+    public void setDirectory(String directory) {
+        this.directory = directory;
     }
 
 }
