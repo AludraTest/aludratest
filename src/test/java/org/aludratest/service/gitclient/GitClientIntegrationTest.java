@@ -443,6 +443,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
         try {
             origin = createGitRepository();
             local = createAndCloneRepository(origin, new File("target/gittest/testPush"));
+            configureUserAndMail(local);
             assertFileContent("m_content", "m.txt", local);
             // create a local branch 'experiment' and add a file
             local.createBranch(new BranchCreationData("experiment"));
@@ -492,10 +493,14 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
         File tempDir = createTempDirectory();
         GitClient git = createGitClient().setWorkingDirectory(new StringData(tempDir.getAbsolutePath()));
         git.init();
-        // git config user.email "you@example.com"
-        git.config(new ConfigData("user.email", "you@example.com"));
+        return configureUserAndMail(git);
+    }
+
+    private GitClient configureUserAndMail(GitClient git) {
         // git config user.name "you"
         git.config(new ConfigData("user.name", "you"));
+        // git config user.email "you@example.com"
+        git.config(new ConfigData("user.email", "you@example.com"));
         return git;
     }
 
