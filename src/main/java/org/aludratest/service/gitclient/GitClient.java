@@ -46,6 +46,7 @@ import org.aludratest.service.gitclient.data.VersionData;
 import org.aludratest.util.data.StringData;
 import org.apache.commons.io.LineIterator;
 import org.databene.commons.ArrayBuilder;
+import org.databene.commons.Assert;
 import org.databene.commons.CollectionUtil;
 import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
@@ -70,6 +71,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     private static final String GIT_RM_PROCESS_NAME = "rm";
     private static final String GIT_MV_PROCESS_NAME = "mv";
     private static final String GIT_CLONE_PROCESS_NAME = "clone";
+    private static final String GIT_FETCH_PROCESS_NAME = "fetch";
+    private static final String GIT_INIT_PROCESS_NAME = "init";
     private static final String GIT_LIST_BRANCHES_PROCESS_NAME = "branch --list";
     private static final String GIT_CREATE_BRANCH_PROCESS_NAME = "branch (create)";
     private static final String GIT_DELETE_BRANCH_PROCESS_NAME = "branch --delete";
@@ -90,17 +93,20 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     private final CommandLineService service;
 
     private String workingDirectory;
-    private int timeout;
+    private int processTimeout;
+    private int responseTimeout;
 
     /** @param service */
     public GitClient(CommandLineService service) {
-        this(service, 3000);
+        this(service, 10000, 3000);
     }
 
     /** @param service
-     * @param timeout */
-    public GitClient(CommandLineService service, int timeout) {
-        this.timeout = timeout;
+     * @param processTimeout
+     * @param responseTimeout */
+    public GitClient(CommandLineService service, int processTimeout, int responseTimeout) {
+        this.processTimeout = processTimeout;
+        this.responseTimeout = responseTimeout;
         this.service = service;
         this.workingDirectory = SystemInfo.getCurrentDir();
         // try to call the git client in order to prove its availability
@@ -282,7 +288,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient checkout(CheckoutData data) {
-        invokeGenerically(GIT_CHECKOUT_PROCESS_NAME, true, "checkout", data.getBranchName());
+        invokeGenerically(GIT_CHECKOUT_PROCESS_NAME, false, "checkout", data.getBranchName());
+        // TODO Verify that the err out say "Switched to '<branch_name>'"
         return this;
     }
 
@@ -290,7 +297,13 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient cloneRepository(CloneRepositoryData data) {
-        invokeGenerically(GIT_CLONE_PROCESS_NAME, false, "clone", data.getRepository());
+        ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class);
+        builder.add("clone");
+        builder.add(Assert.notNull(data.getRepository(), "repository"));
+        if (!StringUtil.isEmpty(data.getDirectory())) {
+            builder.add(data.getDirectory());
+        }
+        invokeGenerically(GIT_CLONE_PROCESS_NAME, false, builder.toArray());
         return this;
     }
 
@@ -300,8 +313,11 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     public GitClient commit(CommitData data) {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class);
         builder.add("commit");
+        if (Boolean.parseBoolean(data.getAllowEmpty())) {
+            builder.add("--allow-empty");
+        }
         if (!StringUtil.isEmpty(data.getMessage())) {
-            builder.add("-m").add(escapeArg(data.getMessage()));
+            builder.add("-m").add(quoteArg(data.getMessage()));
         }
         invokeGenerically(GIT_COMMIT_PROCESS_NAME, true, builder.toArray());
         return this;
@@ -311,14 +327,14 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient fetch(FetchData data) {
-        invokeGenerically(GIT_CLONE_PROCESS_NAME, true, "fetch", data.getRepository());
+        invokeGenerically(GIT_FETCH_PROCESS_NAME, false, "fetch", data.getRepository()); // TODO check err out explicitly
         return this;
     }
 
     /** Creates an empty git repository or reinitializes an existing one.
      * @return a reference to this */
     public GitClient init() {
-        invokeGenerically(GIT_CLONE_PROCESS_NAME, true, "init");
+        invokeGenerically(GIT_INIT_PROCESS_NAME, true, "init");
         return this;
     }
 
@@ -329,7 +345,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class);
         builder.add("merge");
         if (!StringUtil.isEmpty(data.getMessage())) {
-            builder.add("-m").add(escapeArg(data.getMessage()));
+            builder.add("-m").add(quoteArg(data.getMessage()));
         }
         for (StringData branch : data.getBranches()) {
             builder.add(branch.getValue());
@@ -374,7 +390,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
                 builder.add(data.getRefspec());
             }
         }
-        invokeGenerically(GIT_PUSH_PROCESS_NAME, true, builder.toArray());
+        invokeGenerically(GIT_PUSH_PROCESS_NAME, false, builder.toArray()); // TODO check err out explicitly
         return this;
     }
 
@@ -481,7 +497,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         commands[0] = GIT_COMMAND;
         System.arraycopy(args, 0, commands, 1, args.length);
         @SuppressWarnings("rawtypes")
-        CommandLineProcess<?> process = new CommandLineProcess(GIT_PROCESS_TYPE, processName, service, timeout, commands);
+        CommandLineProcess<?> process = new CommandLineProcess(GIT_PROCESS_TYPE, processName, service, processTimeout,
+                responseTimeout, commands);
         if (!StringUtil.isEmpty(workingDirectory)) {
             process.setWorkingDirectory(workingDirectory);
         }
@@ -504,17 +521,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         return textOutput.getValue();
     }
 
-    private String escapeArg(String arg) {
-        return (containsWhitespace(arg) ? '"' + arg + '"' : arg);
-    }
-
-    private boolean containsWhitespace(String text) {
-        for (int i = 0; i < text.length(); i++) {
-            if (Character.isWhitespace(text.charAt(i))) {
-                return true;
-            }
-        }
-        return false;
+    private String quoteArg(String arg) {
+        return '"' + arg + '"';
     }
 
     static String extractVersionNumber(String text) {

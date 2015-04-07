@@ -50,17 +50,18 @@ public class CommandLineActionImplTest {
     public void testSimpleCommandLineInvocation() {
         CommandLineService service = getCommandLineService();
         @SuppressWarnings("rawtypes")
-        CommandLineProcess<?> process = new CommandLineProcess("java", "versiontest", service, 3000, "java", "-version");
+        CommandLineProcess<?> process = new CommandLineProcess("java", "versiontest", service, 3000, 2000, "java", "-version");
         process.start();
         process.waitUntilFinished();
         process.errOut().nextLine().assertPrefix(new StringData("java version "));
+        process.destroy();
     }
 
     @Test
     public void testLineIteration() {
         CommandLineService service = getCommandLineService();
         @SuppressWarnings("rawtypes")
-        CommandLineProcess<?> process = new CommandLineProcess("batch", "listpersons", service, 3000,
+        CommandLineProcess<?> process = new CommandLineProcess("batch", "listpersons", service, 3000, 2000,
                 testBatchPath("listpersons"));
         process.start();
         process.stdOut().nextLine().assertEquals(new StringData("Alice"));
@@ -68,6 +69,7 @@ public class CommandLineActionImplTest {
         process.stdOut().nextLine().assertEquals(new StringData("Charly"));
         process.stdOut().assertEmpty();
         process.waitUntilFinished();
+        process.destroy();
     }
 
     @Test
@@ -78,7 +80,7 @@ public class CommandLineActionImplTest {
         // WHEN running it without the variable being set
         CommandLineService service = getCommandLineService();
         @SuppressWarnings("rawtypes")
-        CommandLineProcess<?> process1 = new CommandLineProcess("shell", "envtest-neg", service, 3000, command);
+        CommandLineProcess<?> process1 = new CommandLineProcess("shell", "envtest-neg", service, 3000, 2000, command);
         process1.start();
         process1.waitUntilFinished();
 
@@ -87,46 +89,52 @@ public class CommandLineActionImplTest {
 
         // WHEN running it with the variable set to 'test_val'
         @SuppressWarnings("rawtypes")
-        CommandLineProcess<?> process2 = new CommandLineProcess("shell", "envtest-pos", service, 3000, command);
+        CommandLineProcess<?> process2 = new CommandLineProcess("shell", "envtest-pos", service, 3000, 2000, command);
         process2.setEnvironmentVariable("TEST_ENV", "test_val");
         process2.start();
         process2.waitUntilFinished();
 
         // THEN the output shall be 'test_val'
         process2.stdOut().nextLine().assertEquals(new StringData("test_val"));
+        process1.destroy();
+        process2.destroy();
     }
 
     @Test
     public void testInteractiveCommandLineInvocation() {
         CommandLineService service = getCommandLineService();
         @SuppressWarnings("rawtypes")
-        CommandLineProcess<?> process = new CommandLineProcess("batch", "interaction", service, 3000, testBatchPath("input"));
+        CommandLineProcess<?> process = new CommandLineProcess("batch", "interaction", service, 3000, 2000,
+                testBatchPath("input"));
         process.start();
         process.stdOut().nextLine().assertPrefix(new StringData("Please enter name"));
         process.enterLine("Tester");
         process.stdOut().nextLine().assertEquals(new StringData("Hello Tester"));
         process.assertExitValue(new IntData(0));
         process.errOut().assertEmpty();
+        process.destroy();
     }
 
     @Test
     public void testRedirectStdIn() throws Exception {
         CommandLineService service = getCommandLineService();
         @SuppressWarnings("rawtypes")
-        CommandLineProcess<?> process = new CommandLineProcess("batch", "interaction2", service, 3000, testBatchPath("input"));
+        CommandLineProcess<?> process = new CommandLineProcess("batch", "interaction2", service, 3000, 3000,
+                testBatchPath("input"));
         process.start();
         process.stdOut().nextLine().assertPrefix(new StringData("Please enter name"));
         process.stdIn().redirectFrom(new StringData("Tester" + LF));
         process.stdOut().nextLine().assertEquals(new StringData("Hello Tester"));
         process.assertExitValue(new IntData(0));
         process.errOut().assertEmpty();
+        process.destroy();
     }
 
     @Test
     public void testRedirectStdOut() {
         CommandLineService service = getCommandLineService();
         @SuppressWarnings("rawtypes")
-        CommandLineProcess<?> process = new CommandLineProcess("batch", "redir-stdout", service, 3000,
+        CommandLineProcess<?> process = new CommandLineProcess("batch", "redir-stdout", service, 3000, 2000,
                 testBatchPath("commandline"), "Tester");
         process.start();
         StringData out = new StringData();
@@ -134,18 +142,21 @@ public class CommandLineActionImplTest {
         assertEquals("Hello Tester", out.getValue().trim());
         process.assertExitValue(new IntData(0));
         process.errOut().assertEmpty();
+        process.destroy();
     }
 
     @Test
     public void testRedirectErrOut() {
         CommandLineService service = getCommandLineService();
         @SuppressWarnings("rawtypes")
-        CommandLineProcess<?> process = new CommandLineProcess("batch", "redir-errout", service, 3000, testBatchPath("errout"));
+        CommandLineProcess<?> process = new CommandLineProcess("batch", "redir-errout", service, 3000, 2000,
+                testBatchPath("errout"));
         process.start();
         StringData out = new StringData();
         process.errOut().redirectTo(out);
         assertEquals("some error", out.getValue().trim());
         process.assertExitValue(new IntData(0));
+        process.destroy();
     }
 
     // private helper ----------------------------------------------------------

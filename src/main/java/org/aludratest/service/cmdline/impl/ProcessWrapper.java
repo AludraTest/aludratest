@@ -26,6 +26,7 @@ import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.PerformanceFailure;
 import org.aludratest.util.poll.PollService;
 import org.aludratest.util.poll.PolledTask;
+import org.databene.commons.IOUtil;
 import org.databene.commons.SystemInfo;
 
 /** Wraps a Java {@link ProcessBuilder}, uses it to configure and create a {@link Process} instance and gives the user control of
@@ -35,10 +36,11 @@ public class ProcessWrapper {
 
     private static final String LINEFEED = SystemInfo.getLineSeparator();
 
-    private static final int DEFAULT_POLLING_INTERVAL = 1000;
+    private static final int DEFAULT_PROCESS_TERMINATION_POLLING_INTERVAL = 300;
 
     private final int processId;
-    private final int timeout;
+    private final int processTimeout;
+    private final int responseTimeout;
 
     private ProcessBuilder builder;
     private Process process;
@@ -52,11 +54,13 @@ public class ProcessWrapper {
 
     /** Creates a {@link ProcessWrapper} instance.
      * @param processId the process id to assign
-     * @param timeout the maximum time to wait for process termination
+     * @param processTimeout the maximum time to wait for process termination
+     * @param responseTimeout the maximum time to wait for process response
      * @param command the command tokens to send to the shell */
-    public ProcessWrapper(int processId, int timeout, String... command) {
+    public ProcessWrapper(int processId, int processTimeout, int responseTimeout, String... command) {
         this.processId = processId;
-        this.timeout = timeout;
+        this.processTimeout = processTimeout;
+        this.responseTimeout = responseTimeout;
         this.builder = new ProcessBuilder(command);
         this.process = null;
         this.stdIn = null;
@@ -77,9 +81,14 @@ public class ProcessWrapper {
         return builder.command();
     }
 
-    /** @return the {@link #timeout} */
-    public int getTimeout() {
-        return timeout;
+    /** @return the {@link #processTimeout} */
+    public int getProcessTimeout() {
+        return processTimeout;
+    }
+
+    /** @return the {@link #processTimeout} */
+    public int getResponseTimeout() {
+        return responseTimeout;
     }
 
     /** Sets an environment variable of the process. This has to happen before invocation of the {@link #start()} method.
@@ -162,7 +171,7 @@ public class ProcessWrapper {
      * @throws PerformanceException if the timeout is exceeded before the process has finished
      * @return the process' exit value */
     public int waitUntilFinished() {
-        PollService poller = new PollService(timeout, DEFAULT_POLLING_INTERVAL);
+        PollService poller = new PollService(processTimeout, DEFAULT_PROCESS_TERMINATION_POLLING_INTERVAL);
         return poller.poll(new WaitUntilFinishedTask());
     }
 
@@ -182,6 +191,9 @@ public class ProcessWrapper {
 
     /** Kills the process. */
     public void destroy() {
+        IOUtil.close(this.errOut);
+        IOUtil.close(this.stdOut);
+        IOUtil.close(this.stdIn);
         process.destroy();
     }
 
@@ -235,10 +247,14 @@ public class ProcessWrapper {
 
         @Override
         public Integer timedOut() {
-            throw new PerformanceFailure("Process did not finish within the timeout of " + timeout + " ms: "
+            throw new PerformanceFailure("Process did not finish within the timeout of " + processTimeout + " ms: "
                     + ProcessWrapper.this.toString());
         }
 
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "[" + ProcessWrapper.this + "]";
+        }
     }
 
 }

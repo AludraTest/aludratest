@@ -40,14 +40,16 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> {
      * @param processType the process type
      * @param processName the process name
      * @param service the underlying {@link CommandLineService}
-     * @param timeout the timeout for wait operations on the process
+     * @param processTimeout the maximum time to wait for process termination
+     * @param responseTimeout the maximum time to wait for process response
      * @param commands the commands used to start the process */
-    public CommandLineProcess(String processType, String processName, CommandLineService service, int timeout, String... commands) {
+    public CommandLineProcess(String processType, String processName, CommandLineService service, int processTimeout,
+            int responseTimeout, String... commands) {
         this.processType = processType;
         this.processName = processName;
         this.service = service;
         this.commands = commands;
-        this.processId = service.perform().create(processType, processName, timeout, commands);
+        this.processId = service.perform().create(processType, processName, processTimeout, responseTimeout, commands);
     }
 
     /** Sets the working directory of the process
