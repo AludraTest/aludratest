@@ -98,10 +98,14 @@ public class RunnerGroup extends RunnerNode {
     }
 
     @Override
-    public synchronized RunStatus getRunStatus() {
+    public RunStatus getRunStatus() {
         Set<RunStatus> allStates = new HashSet<RunStatus>();
 
-        for (RunnerNode child : children) {
+        List<RunnerNode> checkChildren;
+        synchronized (children) {
+            checkChildren = new ArrayList<RunnerNode>(children);
+        }
+        for (RunnerNode child : checkChildren) {
             allStates.add(child.getRunStatus());
         }
 

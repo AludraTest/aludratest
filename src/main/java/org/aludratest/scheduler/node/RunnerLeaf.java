@@ -55,11 +55,11 @@ public final class RunnerLeaf extends RunnerNode {
     }
 
     @Override
-    public RunStatus getRunStatus() {
+    public synchronized RunStatus getRunStatus() {
         return runStatus;
     }
 
-    public void setRunStatus(RunStatus runStatus) {
+    public synchronized void setRunStatus(RunStatus runStatus) {
         this.runStatus = runStatus;
     }
 

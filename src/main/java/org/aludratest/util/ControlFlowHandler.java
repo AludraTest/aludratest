@@ -119,7 +119,7 @@ public class ControlFlowHandler implements InvocationHandler {
                 return forwardAndHandleException(method, args);
             }
         } else {
-            if (logTestSteps) {
+            if (logTestSteps && !method.getName().equals("setSystemConnector")) {
                 TestStepInfoBean testStep = new TestStepInfoBean();
                 testStep.setServiceId(serviceId);
                 testStep.setCommandNameAndArguments(method, args);
