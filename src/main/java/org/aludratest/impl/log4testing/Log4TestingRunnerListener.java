@@ -81,17 +81,6 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
 
     @Override
     public void newTestStep(RunnerLeaf runnerLeaf, TestStepInfo testStepInfo) {
-        // FIXME debug only
-        Integer cnt = (Integer) runnerLeaf.getAttribute("stepCount");
-        if (cnt == null) {
-            cnt = Integer.valueOf(0);
-        }
-        cnt = Integer.valueOf(cnt.intValue() + 1);
-        runnerLeaf.setAttribute("stepCount", cnt);
-        if (cnt.intValue() > 3000) {
-            System.err.println("ERROR too many test steps");
-        }
-
         TestCaseLog log = TestLogger.getTestCase(runnerLeaf.getName());
 
         log.newTestStep();
