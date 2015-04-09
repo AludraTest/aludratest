@@ -376,7 +376,7 @@ public class Selenium2Wrapper {
                     return;
                 }
             }
-            catch (NoSuchWindowException e) {
+            catch (WebDriverException e) {
                 // this happens, when trying to call getTitle()
                 // on a driver which has just close()d the recent window.
                 // In this case, I fall back to iterating all windows below
@@ -398,7 +398,7 @@ public class Selenium2Wrapper {
                         return;
                     }
                 }
-                catch (NoSuchWindowException e) {
+                catch (WebDriverException e) {
                     // ignore; window has been removed in the meantime
                 }
             }
