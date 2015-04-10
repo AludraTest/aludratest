@@ -899,6 +899,10 @@ public class Selenium2Wrapper {
 
     private void removeHighlight() {
         if (configuration.getHighlightCommands() && this.highlightedElement != null) {
+            // unwrap element if wrapped, for direct access
+            while (highlightedElement instanceof ElementWrapper) {
+                highlightedElement = ((ElementWrapper) highlightedElement).getWrappedElement();
+            }
             try {
                 // first try via ID
                 String id = highlightedElement.getAttribute("id");
