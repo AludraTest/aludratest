@@ -31,7 +31,7 @@ public class ExcelUtil {
         int lastCellIndex = row.getLastCellNum();
         for (int i = 0; i < lastCellIndex; i++) {
             Cell cell = row.getCell(i);
-            if (cell != null && text.equals(cell.getStringCellValue())) {
+            if (cell != null && cell.getCellType() == Cell.CELL_TYPE_STRING && text.equals(cell.getStringCellValue())) {
                 return i;
             }
         }
@@ -64,7 +64,20 @@ public class ExcelUtil {
         if (oldCell != null) {
             Cell newCell = row.createCell(toIndex, oldCell.getCellType());
             newCell.setCellStyle(oldCell.getCellStyle());
-            newCell.setCellValue(oldCell.getStringCellValue());
+
+            if (oldCell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                newCell.setCellValue(oldCell.getNumericCellValue());
+            }
+            else if (oldCell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
+                newCell.setCellValue(oldCell.getBooleanCellValue());
+            }
+            else if (oldCell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+                newCell.setCellFormula(oldCell.getCellFormula());
+            }
+            else if (oldCell.getCellType() == Cell.CELL_TYPE_STRING) {
+                // throws exception for other types
+                newCell.setCellValue(oldCell.getStringCellValue());
+            }
             row.removeCell(oldCell);
         }
     }
