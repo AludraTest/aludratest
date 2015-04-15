@@ -191,7 +191,15 @@ public class Selenium2Wrapper {
             this.proxy = null;
         }
         if (this.driver != null) {
-            close();
+            for (String id : getAllWindowIDs()) {
+                try {
+                    selectWindowByTechnicalName(id);
+                    close();
+                }
+                catch (Exception e) {
+                    // ignore during close
+                }
+            }
             quit();
             this.driver = null;
         }
@@ -999,13 +1007,18 @@ public class Selenium2Wrapper {
         LOGGER.debug("setValue(WebElement, {})", value);
         sendKeys(element, Keys.END);
         String text;
-        while (!DataMarkerCheck.isNull(text = getValue(element))) {
+        int tryCounter = 3;
+        while (tryCounter > 0 && !DataMarkerCheck.isNull(text = getValue(element))) {
             int length = text.length();
             String[] arr = new String[length];
             for (int i = 0; i < length; i++) {
                 arr[i] = "\b";
             }
             sendKeys(element, arr);
+            tryCounter--;
+        }
+        if (tryCounter == 0) {
+            throw new AutomationException("Could not clear input field. Maybe covered by other component?");
         }
         sendKeys(element, value);
 
