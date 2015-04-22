@@ -95,10 +95,21 @@ public class Selenium2Driver {
     }
 
     /** @param url the URL for which to create a WebDriver instance.
+     * @param arguments Additional arguments to include for the WebDriver instance, or an empty array.
      * @return a freshly created instance of the related WebDriver class */
-    public WebDriver newRemoteDriver(URL url) {
+    public WebDriver newRemoteDriver(URL url, String[] arguments) {
         HttpCommandExecutor executor = new HttpCommandExecutor(url);
-        RemoteWebDriver driver = new RemoteWebDriver(executor, capabilities);
+
+        DesiredCapabilities caps = capabilities;
+        if (arguments != null && arguments.length > 0) {
+            caps = new DesiredCapabilities(capabilities);
+            ChromeOptions opts = (ChromeOptions) caps.getCapability(ChromeOptions.CAPABILITY);
+            if (opts != null) {
+                opts.addArguments(arguments);
+            }
+        }
+
+        RemoteWebDriver driver = new RemoteWebDriver(executor, caps);
         driver.setFileDetector(new LocalFileDetector());
         return driver;
     }

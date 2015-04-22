@@ -26,17 +26,15 @@ import org.aludratest.service.gui.web.selenium.AbstractSeleniumService;
 import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
 import org.slf4j.LoggerFactory;
 
-/**
- * Implements the interface {@link AludraWebGUI} using Selenium 2 functionality
- * to access the web GUI.
- * @author Volker Bergmann
- */
+/** Implements the interface {@link AludraWebGUI} using Selenium 2 functionality to access the web GUI.
+ * @author Volker Bergmann */
 @Implementation({ AludraWebGUI.class })
 @ConfigProperties({
     @ConfigProperty(name = "use.local.proxy", type = boolean.class, description = "If true, a local HTTP proxy will be used to allow adding custom HTTP headers. If set to false, no proxy will be used, but the method addCustomHttpHeaderCommand will have no effect.", defaultValue = "true"),
     @ConfigProperty(name = "proxy.port.min", type = int.class, description = "The lowest port number to use for the authenticating proxy.", defaultValue = "19600"),
     @ConfigProperty(name = "driver", type = String.class, description = "The Selenium 2 driver name. Have a look at the org.aludratest.service.gui.web.selenium.selenium2.Drivers enumeration for potential values", defaultValue = "FIREFOX"),
-    @ConfigProperty(name = "use.remotedriver", type = boolean.class, description = "If true, use Selenium Remote Driver (talk to Selenium RC), otherwise, directly use driver class.", defaultValue = "false") })
+    @ConfigProperty(name = "use.remotedriver", type = boolean.class, description = "If true, use Selenium Remote Driver (talk to Selenium RC), otherwise, directly use driver class.", defaultValue = "false"),
+    @ConfigProperty(name = "browser.arguments", type = String.class, description = "Space-separated list of arguments to pass to the browser. Currently, only the CHROME driver supports additional arguments.", required = false) })
 public class AludraSelenium2 extends AbstractSeleniumService implements AludraWebGUI {
 
     private Selenium2Interaction interaction;

@@ -163,7 +163,7 @@ public class Selenium2Wrapper {
             Selenium2Driver driverEnum = Selenium2Driver.valueOf(driverName);
 
             if (configuration.isUsingRemoteDriver()) {
-                return driverEnum.newRemoteDriver(seleniumUrl);
+                return driverEnum.newRemoteDriver(seleniumUrl, configuration.getBrowserArguments());
             }
             else {
                 return driverEnum.newLocalDriver();
