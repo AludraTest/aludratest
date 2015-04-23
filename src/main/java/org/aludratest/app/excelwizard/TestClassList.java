@@ -18,6 +18,7 @@ package org.aludratest.app.excelwizard;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -78,8 +79,8 @@ public class TestClassList extends JList {
     }
 
     private boolean matchesFilter(String filter, Class<?> testClass) {
-        String term = filter.trim().toLowerCase();
-        return (term.isEmpty() || testClass.getName().toLowerCase().contains(term));
+        String term = filter.trim().toLowerCase(Locale.US);
+        return (term.isEmpty() || testClass.getName().toLowerCase(Locale.US).contains(term));
     }
 
 }

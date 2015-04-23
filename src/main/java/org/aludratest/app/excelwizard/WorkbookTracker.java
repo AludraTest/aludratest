@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.aludratest.util.ExcelUtil;
@@ -110,7 +111,7 @@ public class WorkbookTracker {
 
     static WorkbookTracker createWorkbook(File file, Method testMethod) {
         Workbook workbook;
-        if (file.getName().toLowerCase().endsWith(".xls")) {
+        if (file.getName().toLowerCase(Locale.US).endsWith(".xls")) {
             workbook = new HSSFWorkbook();
         }
         else {

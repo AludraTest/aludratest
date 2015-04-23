@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.data.DataConfiguration;
@@ -182,7 +183,7 @@ public class DatabeneFormatsTestDataProvider implements TestDataProvider {
                     throws InvalidFormatException, IOException {
         // check URL
         String uri = sourceAnno.uri();
-        if (!uri.toLowerCase().endsWith("xls") && !uri.toLowerCase().endsWith("xlsx")) {
+        if (!uri.toLowerCase(Locale.US).endsWith("xls") && !uri.toLowerCase(Locale.US).endsWith("xlsx")) {
             throw new UnsupportedOperationException("Not a supported file format: " + uri);
         }
 

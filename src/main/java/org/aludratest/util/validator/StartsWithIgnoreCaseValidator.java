@@ -17,26 +17,24 @@ package org.aludratest.util.validator;
 
 import java.util.Locale;
 
-/**
- * Requires strings to contain a sub string ignoring capitalization.
- * @author Volker Bergmann
- */
-public class ContainsIgnoreCaseTrimmedValidator extends AbstractNullStringValidator {
+/** Requires strings to start with an expected substring, ignoring capitalization.
+ * @author Volker Bergmann */
+public class StartsWithIgnoreCaseValidator extends AbstractNullStringValidator {
 
     /** Constructor.
      *  @param expectedSubString the required sub string */
-    public ContainsIgnoreCaseTrimmedValidator(String expectedSubString) {
+    public StartsWithIgnoreCaseValidator(String expectedSubString) {
         super(expectedSubString);
     }
 
     @Override
     protected boolean validImpl(String text) {
-        return text.toLowerCase(Locale.US).contains(validationTerm.trim().toLowerCase(Locale.US));
+        return text.toLowerCase(Locale.US).startsWith(validationTerm.toLowerCase(Locale.US));
     }
 
     @Override
     protected String descriptionImpl() {
-        return "expecting the trimmed sub string '" + validationTerm + "' ignoring case";
+        return "expecting a starting sub string '" + validationTerm + "' ignoring case";
     }
 
 }
