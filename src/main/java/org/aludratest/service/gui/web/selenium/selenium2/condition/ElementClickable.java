@@ -15,6 +15,7 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
+import java.util.Locale;
 import java.util.Set;
 
 import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
@@ -52,7 +53,7 @@ public class ElementClickable extends WebElementCondition {
         if (!element.isEnabled()) {
             return false;
         }
-        String tagName = element.getTagName().toLowerCase();
+        String tagName = element.getTagName().toLowerCase(Locale.US);
         if (!EDITABLE_ELEMENTS.contains(tagName)) {
             return false;
         }

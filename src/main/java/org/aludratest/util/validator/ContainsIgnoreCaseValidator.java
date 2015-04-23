@@ -15,7 +15,9 @@
  */
 package org.aludratest.util.validator;
 
-/** 
+import java.util.Locale;
+
+/**
  * Requires strings to contain an expected substring, ignoring capitalization.
  * @author Volker Bergmann
  */
@@ -29,7 +31,7 @@ public class ContainsIgnoreCaseValidator extends AbstractNullStringValidator {
 
     @Override
     protected boolean validImpl(String text) {
-        return text.toLowerCase().contains(validationTerm.toLowerCase());
+        return text.toLowerCase(Locale.US).contains(validationTerm.toLowerCase(Locale.US));
     }
 
     @Override
