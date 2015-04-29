@@ -17,6 +17,7 @@ package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
 import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -40,7 +41,13 @@ public abstract class StringCondition extends AbstractElementCondition<String> {
         if (element == null) {
             return null;
         }
-        return applyOnElement(element);
+        try {
+            return applyOnElement(element);
+        }
+        catch (StaleElementReferenceException e) {
+            // element defined by locator has just disappeared in this very millisecond...
+            return null;
+        }
     }
 
     protected abstract String applyOnElement(WebElement element);
