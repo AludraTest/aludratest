@@ -243,6 +243,11 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
+    public void waitForWindowToBeClosed(String elementType, String elementName, TitleLocator locator, int taskCompletionTimeout) {
+        wrapper.waitForWindowToBeClosed(locator, taskCompletionTimeout);
+    }
+
+    @Override
     public void addCustomHttpHeaderCommand(String key, String value) {
         wrapper.addCustomRequestHeader(key, value);
     }

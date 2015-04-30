@@ -17,6 +17,7 @@ package org.aludratest.service.gui.web.selenium.selenium1;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
+import org.aludratest.exception.PerformanceFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.gui.component.impl.LinkImpl;
@@ -796,6 +797,37 @@ public class SeleniumWrapper {
         });
         if (!windowIsFound) {
             throw new AutomationException("Window not found");
+        }
+    }
+
+    public void waitForWindowToBeClosed(final WindowLocator windowLocator, int taskCompletionTimeout) {
+        ConditionCheck check = new ConditionCheck() {
+            @Override
+            public boolean eval() {
+                if (windowLocator instanceof TitleLocator) {
+                    String requestedTitle = ((TitleLocator) windowLocator).getTitle();
+                    String[] titles = getAllWindowTitles();
+                    for (String title : titles) {
+                        if (title.equalsIgnoreCase(requestedTitle)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                else {
+                    throw ServiceUtil.newUnsupportedLocatorException(windowLocator);
+                }
+            }
+        };
+        boolean windowIsGone;
+        if (taskCompletionTimeout > -1) {
+            windowIsGone = retryUntilTrueOrTimeout(check, taskCompletionTimeout);
+        }
+        else {
+            windowIsGone = retryUntilTimeout(check);
+        }
+        if (!windowIsGone) {
+            throw new PerformanceFailure("Window not closed within timeout");
         }
     }
 

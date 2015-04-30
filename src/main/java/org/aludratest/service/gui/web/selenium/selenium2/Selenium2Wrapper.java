@@ -47,6 +47,7 @@ import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownOptio
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementValuePresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.MixedElementCondition;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.NotCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.OptionSelected;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ValidatingCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.WindowPresence;
@@ -834,6 +835,17 @@ public class Selenium2Wrapper {
         }
         catch (TimeoutException e) {
             throw new FunctionalFailure(condition.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void waitForWindowToBeClosed(TitleLocator locator, int taskCompletionTimeout) {
+        try {
+            waitFor(new NotCondition(new WindowPresence(locator, this)), taskCompletionTimeout == -1 ? configuration.getTimeout()
+                    : taskCompletionTimeout);
+        }
+        catch (TimeoutException e) {
+            throw new PerformanceFailure("Window was not closed within timeout");
         }
     }
 

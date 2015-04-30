@@ -74,6 +74,8 @@ public class GUITestUIMap extends UIMap {
     public final static GUIElementLocator FILE_NAME_ID = new IdLocator("FileName");
     public final static GUIElementLocator FILE_CONTENT_ID = new IdLocator("FileContent");
 
+    public final static GUIElementLocator SLOW_CLOSE_ID = new XPathLocator("//a[@id='slow_close']");
+
     // There is no element defined on test web page with this ID
     public final static GUIElementLocator NOT_EXISTING_BUTTON_ID = new IdLocator("test:test:test");
 
@@ -175,6 +177,10 @@ public class GUITestUIMap extends UIMap {
 
     public Label fileContentLabel() {
         return aludraGUI.getComponentFactory().createLabel(FILE_CONTENT_ID);
+    }
+
+    public Link slowCloseLink() {
+        return aludraGUI.getComponentFactory().createLink(SLOW_CLOSE_ID);
     }
 
 }
