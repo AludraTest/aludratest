@@ -81,7 +81,10 @@ public final class AludraTest {
      * @return the freshly created instance */
     public static AludraTest startFramework() {
         AludraTest framework = new AludraTest();
-        LOGGER.info("Starting AludraTest {}", framework.getAludraTestConfig().getVersion());
+
+        // get environment
+        String envName = getEnvironmentName();
+        LOGGER.info("Starting AludraTest {} on environment {}", framework.getAludraTestConfig().getVersion(), envName);
 
         // static accessors to "dynamic" content are initialized here.
         DataMarkerCheck.init(framework.getServiceManager());
