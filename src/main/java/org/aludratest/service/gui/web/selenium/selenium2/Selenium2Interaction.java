@@ -239,6 +239,11 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
         }
     }
 
+    @Override
+    public void waitForWindowToBeClosed(String elementType, String elementName, TitleLocator locator, int taskCompletionTimeout) {
+        wrapper.waitForWindowToBeClosed(locator, taskCompletionTimeout);
+    }
+
     // special features --------------------------------------------------------
 
     @Override

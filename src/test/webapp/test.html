@@ -3,9 +3,21 @@
 <html>
 <head>
 <title>Beschreibung der Seite</title>
+
+<script type="text/javascript">
+function closeSlowly() {
+	window.setTimeout(closeIt, 2000);	
+}
+
+function closeIt() {
+	window.close();	
+}
+</script>
 </head>
 <body>
 <h1> TEST </h1>
 <a href="index.html">Back to Testwebsite</a> 
+<br />
+<a href="#" id="slow_close" onclick="closeSlowly()">Close this window SLOOWLY</a>
 </body>
 </html>

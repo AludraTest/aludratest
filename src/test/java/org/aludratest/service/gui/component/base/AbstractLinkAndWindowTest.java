@@ -95,6 +95,44 @@ public abstract class AbstractLinkAndWindowTest extends GUITest {
         checkOpen(new TitleLocator("lwdncnclknwd"), false);
     }
 
+    @Test
+    public void waitForClosingWindow() {
+        guiTestUIMap.testLink().click();
+        checkLastStepStatus(TestStatus.PASSED);
+
+        checkOpen(GUITestUIMap.LINKED_PAGE_TITLE, true);
+        aludraWebGUI.perform().selectWindow(GUITestUIMap.LINKED_PAGE_TITLE);
+
+        // click the SLOW link
+        guiTestUIMap.slowCloseLink().click();
+        checkLastStepStatus(TestStatus.PASSED);
+
+        checkOpen(GUITestUIMap.LINKED_PAGE_TITLE, true);
+
+        aludraWebGUI.perform().waitForWindowToBeClosed("el", "op", GUITestUIMap.LINKED_PAGE_TITLE, 5000);
+        checkLastStepStatus(TestStatus.PASSED);
+
+        checkOpen(GUITestUIMap.LINKED_PAGE_TITLE, false);
+    }
+
+    @Test
+    public void waitForClosingWindowTimeout() {
+        guiTestUIMap.testLink().click();
+        checkLastStepStatus(TestStatus.PASSED);
+
+        checkOpen(GUITestUIMap.LINKED_PAGE_TITLE, true);
+        aludraWebGUI.perform().selectWindow(GUITestUIMap.LINKED_PAGE_TITLE);
+
+        // click the SLOW link
+        guiTestUIMap.slowCloseLink().click();
+        checkLastStepStatus(TestStatus.PASSED);
+
+        checkOpen(GUITestUIMap.LINKED_PAGE_TITLE, true);
+
+        aludraWebGUI.perform().waitForWindowToBeClosed("el", "op", GUITestUIMap.LINKED_PAGE_TITLE, 500);
+        checkLastStepStatus(TestStatus.FAILEDPERFORMANCE);
+    }
+
     private void checkOpen(TitleLocator title, boolean expectedValue) {
         boolean open = aludraWebGUI.check().isWindowOpen("el", "op", title);
         assertEquals("Window " + title + " is " + (expectedValue ? "" : "not ") + " expected to be open", expectedValue, open);

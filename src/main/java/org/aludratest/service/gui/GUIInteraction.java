@@ -207,6 +207,18 @@ public interface GUIInteraction extends Interaction {
     void closeOtherWindows(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator TitleLocator locator);
 
+    /** Waits until the given window is closed, or the given timeout is reached. This is especially useful if a window is closed
+     * asynchronously some time after some event (e.g. a button click).
+     * 
+     * @param elementType the type of the target windows to log
+     * @param elementName the name of the target windows to log
+     * @param locator is a window locator or just a String which will be automatically converted to one of the default locators
+     *            depending on the underlying driver and the used default localization mechanism
+     * @param taskCompletionTimeout Timeout to wait until the window is closed. If the timeout is triggered, a TimeoutException is
+     *            raised. A value of -1 indicates to use the default configured timeout. */
+    void waitForWindowToBeClosed(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator TitleLocator locator, int taskCompletionTimeout);
+
     void wrongPageFlow(String message);
 
     void functionalError(String message);
