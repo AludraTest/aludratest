@@ -20,7 +20,7 @@ import org.aludratest.util.DataUtil;
 public class StringAttachment extends BinaryAttachment {
 
     public StringAttachment(String title, String stringToBeSaved, String fileExtension) {
-        super(title, stringToBeSaved.getBytes(DataUtil.UTF_8), fileExtension);
+        super(title, (stringToBeSaved == null ? "" : stringToBeSaved).getBytes(DataUtil.UTF_8), fileExtension);
     }
 
 }
