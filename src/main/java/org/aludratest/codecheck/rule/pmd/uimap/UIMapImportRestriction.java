@@ -15,6 +15,8 @@
  */
 package org.aludratest.codecheck.rule.pmd.uimap;
 
+import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
+
 import org.aludratest.codecheck.rule.pmd.ImportRestrictions;
 import org.aludratest.service.gui.AludraGUI;
 import org.aludratest.service.gui.component.GUIComponent;
@@ -22,8 +24,7 @@ import org.aludratest.service.gui.web.uimap.UIMap;
 import org.aludratest.service.gui.web.uimap.UIMapHelper;
 import org.aludratest.service.gui.web.uimap.UIMapUtility;
 import org.aludratest.service.locator.Locator;
-
-import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
+import org.aludratest.service.locator.element.ElementLocators;
 
 /**
  * See <code>src/main/resources/pmd-rules-aludra.xml</code> or the project Site
@@ -35,7 +36,7 @@ import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
 public class UIMapImportRestriction extends ImportRestrictions {
 
     private static final Class<?>[] ALLOWED_IMPORT_PARENTS = { GUIComponent.class, Locator.class, UIMap.class, UIMapHelper.class,
-            UIMapUtility.class, AludraGUI.class };
+            UIMapUtility.class, AludraGUI.class, ElementLocators.class };
 
     @Override
     protected String getImportViolationMessage(String importName) {
