@@ -36,7 +36,7 @@ import org.aludratest.service.locator.element.ElementLocators;
 public class UIMapImportRestriction extends ImportRestrictions {
 
     private static final Class<?>[] ALLOWED_IMPORT_PARENTS = { GUIComponent.class, Locator.class, UIMap.class, UIMapHelper.class,
-            UIMapUtility.class, AludraGUI.class, ElementLocators.class };
+        UIMapUtility.class, AludraGUI.class, ElementLocators.class };
 
     @Override
     protected String getImportViolationMessage(String importName) {
@@ -50,7 +50,7 @@ public class UIMapImportRestriction extends ImportRestrictions {
 
     @Override
     public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
-        if (!isUIMapClass(node)) {
+        if (!isUIMapClass(node) || node.isAbstract()) {
             return null;
         }
 
