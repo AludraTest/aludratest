@@ -18,6 +18,8 @@ package org.aludratest.service.file.impl;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -52,6 +54,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelector;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.databene.commons.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -234,7 +237,16 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
             String linefeed = configuration.getLinefeed();
             FileObject target = getFileObject(filePath);
             boolean existedBefore = checkWritable(target, overwrite);
-            writer = new OutputStreamWriter(target.getContent().getOutputStream(), encoding);
+            // Workaround for strange VFS bug: do it yourself for local files
+            if (target instanceof LocalFile) {
+                // ensure path exists
+                File f = new File(target.getURL().toURI());
+                f.getParentFile().mkdirs();
+                writer = new OutputStreamWriter(new FileOutputStream(f), encoding);
+            }
+            else {
+                writer = new OutputStreamWriter(target.getContent().getOutputStream(), encoding);
+            }
             reader = new BufferedReader(source);
             boolean firstLine = true;
             String line;
@@ -284,7 +296,16 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         try {
             FileObject target = getFileObject(filePath);
             boolean existedBefore = checkWritable(target, overwrite);
-            out = target.getContent().getOutputStream();
+            // Workaround for strange VFS bug: do it yourself for local files
+            if (target instanceof LocalFile) {
+                // ensure path exists
+                File f = new File(target.getURL().toURI());
+                f.getParentFile().mkdirs();
+                out = new FileOutputStream(f);
+            }
+            else {
+                out = target.getContent().getOutputStream();
+            }
             IOUtil.transfer(source, out);
             LOGGER.debug("Wrote binary file {}", filePath);
             return existedBefore;
