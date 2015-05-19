@@ -42,6 +42,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -119,10 +120,19 @@ public class LocatorSupport {
         LOGGER.debug("findElementImmediately({})", locator);
         try {
             driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
+            if (driver instanceof RemoteWebDriver) {
+                // also reduce timeout for TCP connection, in case remote hangs
+                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(2000);
+            }
+
             return findElement(locator, config.getTimeout());
         }
         finally {
             driver.manage().timeouts().implicitlyWait(DEFAULT_IMPLICIT_WAIT_MILLIS, TimeUnit.MILLISECONDS);
+            if (driver instanceof RemoteWebDriver) {
+                // restore defaults
+                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(0);
+            }
         }
     }
 
