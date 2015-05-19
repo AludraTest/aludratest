@@ -122,7 +122,7 @@ public class LocatorSupport {
             driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
             if (driver instanceof RemoteWebDriver) {
                 // also reduce timeout for TCP connection, in case remote hangs
-                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(2000);
+                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(5000);
             }
 
             return findElement(locator, config.getTimeout());
