@@ -37,4 +37,4 @@ For a list of services please refer to [[aludratest-services]], which is automat
 
 === Conclusion ===
 
-By using these definition for Service and ActionWordLibrary, AludraTest can be extended and adapted to any technology, while the tester writing tests does not have to deal with the techlogies or or different APIs.
+By using these definition for Service and ActionWordLibrary, AludraTest can be extended and adapted to any technology, while the tester writing tests does not have to deal with the technologies or or different APIs.

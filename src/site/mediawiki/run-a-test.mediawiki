@@ -1,6 +1,6 @@
 = Run a Test =
 
-=== Run a tests in Eclipse ===
+=== Run a test in Eclipse ===
 
 In order to start tests in Eclipse, a generic 'Eclipse run configuration' needs to be defined. This is a one-time-effort, after which you can execute any test with this generic configuration.
 
@@ -26,7 +26,7 @@ You can reuse this single run configuration to run any individual test: Select t
 
 === Creating an eclipse Run Configuration with JUnit ===
 
-Testcases can be executed locally with the use of JUnit functions in Eclipse. Follow the guideline below:
+Test cases can be executed locally with the use of JUnit functions in Eclipse. Follow the guideline below:
 
 * Create a class '''AludraJUnitTest.java''' in your project
 
@@ -43,7 +43,7 @@ Testcases can be executed locally with the use of JUnit functions in Eclipse. Fo
 
 * Create a '''JUnit''' run configuration which executes exactly this class. Add this as a '''VM argument''' on the second tab:
 
-<code>-Dsuite=${resource_path}</code> 
+<code>-Dsuite=${java_type_name}</code> 
 
 Now you can reuse this single run configuration to run any individual test: Select the test class in the Package Explorer, then click the triangle on the right of the "Run" button and click "AludraTest" in the appearing list.
 

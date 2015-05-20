@@ -2,14 +2,12 @@
 
 ActionWordLibrary is one of the core concepts AludraTest is build upon.
 
-
-
 For simplifying the implementation of tests, a special type of dictionary approach is used. Each component of a specific application interface (e.g. a page of a web application or a special file type) is represented by a dedicated class which has the following requirements to meet the ActionWordLibrary approach:
 
 * Test code may only interact with ActionWordLibraries (calling their methods)
 * An ActionWordLibrary is a class that implements the interface '''org.aludratest.dict.ActionWordLibrary'''
 * An instance of an ActionWordLibrary represents the current state of the interface (e.g. the web page currently visible in the user's browser, including the current state of the page, e.g. field values)
-* The internal state of an ActionWordLibrary instance is verfied calling its '''verifyState()''' method
+* The internal state of an ActionWordLibrary instance is verified calling its '''verifyState()''' method
 * Each public method of an ActionWordLibrary is called '''Action''', represents a feature of the related interface element and can be looked up by the developer e.g. using a Java IDE's code completion feature.
 * Each parameter of an Action method (if any) must be a '''Data''' class (see below).
 * Each invocation of a public method is a potential state transition which has to reflect the target state by returning an ActionWordLibrary instance: Either itself (<code>this</code>) or a new instance reflecting the new state (e.g. web page opened by calling a <code>click()</code> method). Before the instance is passed, its state has to be checked calling <code>verifyState()</code>, for example by returning <code>this.verifyState()</code> or <code>new OtherPage().verifyState()</code>.

@@ -6,7 +6,7 @@ Please refer to [[Aludra PMD Rules]] for detailed list of PMD rules generated fr
 
 To activate these rules for your project, include the Maven PMD Plugin in your build, and set <code>/pmd-rules-aludra.xml</code> as the rule set.
 
-This article lists the requirments and may be substituted by the generated report.
+This article lists the requirements and may be substituted by the generated report.
 
 == Basic Requirements / Goals for Client code ==
 

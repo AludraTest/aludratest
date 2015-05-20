@@ -43,7 +43,7 @@ When your service operations detect an error, throw one of the predefined Aludra
      throw new FunctionalFailure("Retrieved message other than 'Hello'");
  }
 
-* '''AutomationException''' when a problem arises which makes it unable to complete current task. Usually, methods of the '''Perform''' and '''Check''' objects thow this exception type. AutomationExceptions allow you to add the root cause of the exception (Exception chaining). Example:
+* '''AutomationException''' when a problem arises which makes it unable to complete current task. Usually, methods of the '''Perform''' and '''Check''' objects throw this exception type. AutomationExceptions allow you to add the root cause of the exception (Exception chaining). Example:
 
  public void isHello() {
    try {
