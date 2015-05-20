@@ -1,0 +1,40 @@
+= Core Concept =
+
+AludraTest is build on four core concepts:
+*Test Case
+*Data Class / Data Source
+*Action / ActionWordLibrary
+*Service
+
+=== Test Case ===
+A test case defines the flow of actions and validation to be performed.
+It is represented by unit like methods and uses Data Classes and ActionWordLibrary's to perform the tasks.
+
+For details see [[test case]]. 
+
+=== Data Class / Data Source ===
+A data class is a structured representation of the data used by test cases. It is injected into the test case as actual parameter by a data source.
+The test case passes the data as parameter to actions of ActionWordLibrary's. 
+
+=== Action / ActionWordLibrary ===
+An ActionWordLibrary is class derived from <ActionWordLibrary</code> that provides a set of actions to be executed with a specific <code>Service</code>. 
+
+An Action is a method within a ActionWordLibrary class.
+The action has to comply with certain coding rules (see [[aludra-pmd-rules]]), mainly:
+* parameters shall be an instance of <code>Data</code>
+* return value shall be an instance of <code>ActionWordLibrary</code>
+
+This to constraints imply fluid programming within test case methods.
+ 
+=== Service ===
+A service is an adapter to a certain technology and may wrap other tools.
+The implementation <code>WebGuiSelenium2Service</code> provides <code>WebGuiService</code> by using the famous selenium 2 aka webdriver.
+
+A service is always bundle with a corresponding abstract ActionWordLibrary.
+The <code>WebGuiService</code> corresponds to <code>Page</code>.
+
+For a list of services please refer to [[aludratest-services]], which is automatically generated from the source code and includes all configuration parameters.
+
+=== Conclusion ===
+
+By using these definition for Service and ActionWordLibrary, AludraTest can be extended and adapted to any technology, while the tester writing tests does not have to deal with the techlogies or or different APIs.

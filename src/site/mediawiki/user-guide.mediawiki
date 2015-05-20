@@ -1,5 +1,6 @@
 = AludraTest User Guide =
 
+<<<<<<< HEAD
 
 == Basic Usage ==
 
@@ -442,3 +443,5 @@ For generating Excel documents in Eclipse, first create a "Java Application" run
 On second tab "Arguments", in the field 'Program Arguments' enter ${java_type_name}.
 
 In order to execute the generator, select the test class in the Eclipse package explorer and start the new Run Configuration.
+=======
+>>>>>>> 1bef6
