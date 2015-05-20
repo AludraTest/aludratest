@@ -101,6 +101,13 @@
       </requirements>
     </component>
     <component>
+      <role>org.aludratest.testcase.data.impl.xml.ScriptLibrary</role>
+      <role-hint>default</role-hint>
+      <implementation>org.aludratest.testcase.data.impl.xml.DefaultScriptLibrary</implementation>
+      <description></description>
+      <isolated-realm>false</isolated-realm>
+    </component>
+    <component>
       <role>org.aludratest.service.ServiceWrapper</role>
       <role-hint>aludra</role-hint>
       <implementation>org.aludratest.testcase.event.impl.DefaultAludraServiceWrapper</implementation>
