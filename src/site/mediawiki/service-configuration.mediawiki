@@ -70,7 +70,7 @@ Notice that the encoding settings does not have that much effect, again because 
 
 === Environment Configuration ===
 
-We have some elements needing enviroment specific configuration in our example usage scenario. First of all, the requirement for locally executed test cases. As AludraTest assumes an enviroment named <code>LOCAL</code> by default, we can use this and specify our configuration for this environment.
+We have some elements needing environment specific configuration in our example usage scenario. First of all, the requirement for locally executed test cases. As AludraTest assumes an environment named <code>LOCAL</code> by default, we can use this and specify our configuration for this environment.
 
 To get the configuration for this environment, a file named <code>config/_LOCAL/fileService.properties</code> is
 searched on the ''Classpath''. Notice the underscore prefix, which indicates an environment name instead of

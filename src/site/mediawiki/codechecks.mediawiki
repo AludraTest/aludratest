@@ -1,6 +1,12 @@
+= Code Checks =
+
 AludraTest enforces some design patterns to be applied by a client project's code. A class has to meet certain requirements to be considered an implementor of a pattern and has to comply to the rules imposed by consequence.
 
-To activate these rules for your project, include the Maven PMD Plugin in your build, and set <code>/pmd-rules-aludra.xml</code> as the ruleset. For documentation of the PMD rules, see [[Aludra PMD Rules]].
+Please refer to [[Aludra PMD Rules]] for detailed list of PMD rules generated from source code.
+
+To activate these rules for your project, include the Maven PMD Plugin in your build, and set <code>/pmd-rules-aludra.xml</code> as the rule set.
+
+This article lists the requirements and may be substituted by the generated report.
 
 == Basic Requirements / Goals for Client code ==
 
@@ -31,7 +37,7 @@ A UIMap provides access to sub components (e.g. HTML elements) of the current Pa
 
 ==== GUIComponent ====
 
-A GUIComponent encapsules the interaction with a single GUI element (e.g. HTML element like a Button). GUIComponents must not be implemented outside AludraTest, and may only be instantiated by UIMaps. Every GUIComponent receives a Locator object on instantiation which is stored in the GUIComponent.
+A GUIComponent encapsulates the interaction with a single GUI element (e.g. HTML element like a Button). GUIComponents must not be implemented outside AludraTest, and may only be instantiated by UIMaps. Every GUIComponent receives a Locator object on instantiation which is stored in the GUIComponent.
 
 === Data Class ===
 

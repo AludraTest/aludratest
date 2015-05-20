@@ -106,7 +106,7 @@ As soon as an object is looked up via the internal IoC container (Plexus; see [[
 # Parse the annotations of the class and the implemented interface(s) to find default values for configuration
 # Call <code>fillDefaults()</code> to get additional (dynamic) default values
 # Call <code>getPropertiesBaseName()</code> to get the base Properties name for the object
-# Create a <code>PropertyPriorityPreferences</code> object which cares about the different configuration scopes and their subsitution machansism
+# Create a <code>PropertyPriorityPreferences</code> object which cares about the different configuration scopes and their substitution mechansism
 # Pass this object to <code>configure()</code>. Every invocation on this object now will retrieve the correct value.
 
 The ''instance name'' of the Configurable is taken from the Plexus ''Role hint'', if any is set. Setting this is performed in <code>AludraServiceManager</code>.
@@ -431,7 +431,7 @@ Logging of service invocations is performed by the class '''LoggingInvocationHan
 
 The proxy that was created by the Dynamic Proxy API forwards each call to its InvocationHandler's '''invoke()''' method. There the real Action object is invoked calling method.invoke and execution results are logged.
 
-If the called method returns normally and was no Condition method, then its return value is logged. If an exception occured, it is logged in any case and rethrown in order to propagate it to the caller. Note that the original exception is usually wrapped with an InvocationTargetException, so it is unpacked in order to assure proper exception type mapping.
+If the called method returns normally and was no Condition method, then its return value is logged. If an exception occurred, it is logged in any case and rethrown in order to propagate it to the caller. Note that the original exception is usually wrapped with an InvocationTargetException, so it is unpacked in order to assure proper exception type mapping.
 
 Annotations can control the logging of method parameters etc. One of these Annotations is, for example, the '''TechnicalLocator'''. A method parameter can be annotated to indicate that its value shall be logged as "technical locator" (which is a special column in the Log4testing log). Non-annotated arguments are logged as "usedParameters". 
 
@@ -440,9 +440,9 @@ Annotations can control the logging of method parameters etc. One of these Annot
 AludraTest's control flow facility provides the following features to handle exceptions:
 
 * If the ControlFlowHandler is configured to cancel execution, then all subsequent Action method calls are swallowed and logged as IGNORED
-* If a SystemConnector has been provided by the service, then it is queried for errors that may have happened aside the main control flow (to analyse inherited errors) and its error information is logged.
+* If a SystemConnector has been provided by the service, then it is queried for errors that may have happened aside the main control flow (to analyze inherited errors) and its error information is logged.
 
-The ControlFlowHandler implementation checks if test case exceution has been cancelled before. If yes, the requested Action method is logged as IGNORED and swallowed, if no, it is executed in the forward() method:
+The ControlFlowHandler implementation checks if test case execution has been cancelled before. If yes, the requested Action method is logged as IGNORED and swallowed, if no, it is executed in the forward() method:
 
  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
    if (!shallContinueTestCaseExecution(method)) {
@@ -495,10 +495,10 @@ The configuration of this auto-retry mechanism is done in a file '''retry.xml'''
 :The exception type that signals the error. The class specified here matches all child classes. Thus, '''java.lang.Throwable''' matches any exception.
 
 ;interface
-:The interface onwhich the exception occured. The interface specified here matches all child interfaces and classes. As an example, '''org.aludratest.service.gui.web.AludraWebGUI''' matches org.aludratest.service.gui.web.selenium1.AludraSelenium1 as well as org.aludratest.service.gui.web.selenium2.AludraSelenium2.
+:The interface on which the exception occurred. The interface specified here matches all child interfaces and classes. As an example, '''org.aludratest.service.gui.web.AludraWebGUI''' matches org.aludratest.service.gui.web.selenium1.AludraSelenium1 as well as org.aludratest.service.gui.web.selenium2.AludraSelenium2.
 
 ;method
-:The name of the method on which the exception occured. If the interface has several methods with the same name and different signatures, any of them is matched.
+:The name of the method on which the exception occurred. If the interface has several methods with the same name and different signatures, any of them is matched.
 
 
 == Special Topics ==
@@ -511,4 +511,4 @@ Nevertheless the Selenium tests must be executed on the developer's computer bef
 
  mvn clean verify -DperformLocalTests=true
 
-The code which causes this behaviour is located in <code>org.aludratest.LocalTestCase</code> (in src/test/java source folder).
+The code which causes this behavior is located in <code>org.aludratest.LocalTestCase</code> (in src/test/java source folder).
