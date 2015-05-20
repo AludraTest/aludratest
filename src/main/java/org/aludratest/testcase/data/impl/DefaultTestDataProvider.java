@@ -72,6 +72,7 @@ public class DefaultTestDataProvider implements TestDataProvider {
     public List<TestCaseData> getTestDataSets(Method method) {
         if (!initialized) {
             initProviders();
+            initialized = true;
         }
         // analyze annotations; select provider based on extension
         Set<String> extensions = new HashSet<String>();
