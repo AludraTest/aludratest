@@ -21,6 +21,7 @@ import org.aludratest.AludraTest;
 import org.aludratest.LocalTestCase;
 import org.aludratest.impl.log4testing.data.TestCaseLog;
 import org.aludratest.impl.log4testing.data.TestLogger;
+import org.aludratest.impl.log4testing.data.TestStepLog;
 import org.aludratest.service.ComponentId;
 import org.aludratest.service.gui.web.AludraWebGUI;
 import org.aludratest.service.gui.web.selenium.selenium1.AludraSelenium1;
@@ -28,6 +29,7 @@ import org.aludratest.service.gui.web.selenium.selenium2.AludraSelenium2;
 import org.aludratest.service.util.DirectLogTestListener;
 import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.impl.AludraTestContextImpl;
+import org.databene.commons.StringUtil;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -109,7 +111,16 @@ public abstract class GUITest extends LocalTestCase {
      * @param expectedStatus expected status
      */
     protected void checkLastStepStatus(TestStatus expectedStatus) {
-        assertEquals(expectedStatus, getLastStepStatus());
+        // get the last test step
+        TestStepLog lastStep = tCase.getLastTestStep();
+        // format the failure message
+        String message = lastStep.getErrorMessage();
+        if (StringUtil.isEmpty(message)) {
+            message = lastStep.getComment();
+        }
+        message = "Last test step message: '" + StringUtil.nullToEmpty(message) + "'.";
+        // assert
+        assertEquals(message, expectedStatus, lastStep.getStatus());
     }
 
     /**
@@ -141,11 +152,6 @@ public abstract class GUITest extends LocalTestCase {
     // Get error message of the last test step
     private String getLastStepErrorMessage() {
         return tCase.getLastTestStep().getErrorMessage();
-    }
-
-    // Get status of the last test step
-    private TestStatus getLastStepStatus() {
-        return tCase.getLastTestStep().getStatus();
     }
 
     protected String getTestPageUrl() {

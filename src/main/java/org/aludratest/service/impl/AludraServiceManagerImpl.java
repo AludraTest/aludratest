@@ -76,13 +76,16 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
         cd.setInstantiationStrategy(isSingleton(iface) ? "singleton" : "per-lookup");
         cd.setRealm(realm);
 
-        // lookup Requirements in class
-        Class<?> implClassClass = realm.loadClass(implClass);
-        for (Field f : implClassClass.getDeclaredFields()) {
-            Requirement req = f.getAnnotation(Requirement.class);
-            if (req != null) {
-                cd.addRequirement(createComponentRequirement(f, req));
+        // lookup Requirements in class and parent classes
+        Class<?> clazz = realm.loadClass(implClass);
+        while (clazz != null && clazz != Object.class) {
+            for (Field f : clazz.getDeclaredFields()) {
+                Requirement req = f.getAnnotation(Requirement.class);
+                if (req != null) {
+                    cd.addRequirement(createComponentRequirement(f, req));
+                }
             }
+            clazz = clazz.getSuperclass();
         }
 
         return cd;
@@ -180,39 +183,42 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
 
     private <T> T newImplementorInstance(Class<T> iface, String instanceName) {
         String implementorClassName = serviceRegistry.getImplementationClassName(iface.getName());
-        if ((implementorClassName == null || implementorClassName.trim().isEmpty())
-                && container.getComponentDescriptor(iface.getName(), instanceName) == null) {
-            // if Plexus also does not know it, exception
-            throw new AutomationException("No implementor class configured for interface " + iface.getName());
-        }
 
         // use Plexus container for lookup
-        if (container.getComponentDescriptor(iface.getName(), instanceName) == null) {
-            try {
-                ClassRealm realm = container.getLookupRealm();
-                if (realm == null) {
-                    realm = container.getContainerRealm();
-                }
-                container.addComponentDescriptor(createComponentDescriptor(iface, instanceName, realm));
+        synchronized (container) {
+            if ((implementorClassName == null || implementorClassName.trim().isEmpty())
+                    && container.getComponentDescriptor(iface.getName(), instanceName) == null) {
+                // if Plexus also does not know it, exception
+                throw new AutomationException("No implementor class configured for interface " + iface.getName());
             }
-            catch (CycleDetectedInComponentGraphException e) {
-                throw new TechnicalException("Unexpected IoC error when instantiating object", e);
-            }
-            catch (ClassNotFoundException e) {
-                throw new AutomationException("Could not find implementation class", e);
-            }
-        }
 
-        try {
-            if (instanceName == null) {
-                return container.lookup(iface);
+            if (container.getComponentDescriptor(iface.getName(), instanceName) == null) {
+                try {
+                    ClassRealm realm = container.getLookupRealm();
+                    if (realm == null) {
+                        realm = container.getContainerRealm();
+                    }
+                    container.addComponentDescriptor(createComponentDescriptor(iface, instanceName, realm));
+                }
+                catch (CycleDetectedInComponentGraphException e) {
+                    throw new TechnicalException("Unexpected IoC error when instantiating object", e);
+                }
+                catch (ClassNotFoundException e) {
+                    throw new AutomationException("Could not find implementation class", e);
+                }
             }
-            else {
-                return container.lookup(iface, instanceName);
+
+            try {
+                if (instanceName == null) {
+                    return container.lookup(iface);
+                }
+                else {
+                    return container.lookup(iface, instanceName);
+                }
             }
-        }
-        catch (ComponentLookupException e) {
-            throw new TechnicalException("Could not lookup implementation for class " + iface.getName(), e);
+            catch (ComponentLookupException e) {
+                throw new TechnicalException("Could not lookup implementation for class " + iface.getName(), e);
+            }
         }
     }
 

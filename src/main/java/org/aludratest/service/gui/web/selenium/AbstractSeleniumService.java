@@ -19,13 +19,16 @@ import org.aludratest.config.ConfigProperties;
 import org.aludratest.config.ConfigProperty;
 import org.aludratest.config.Preferences;
 import org.aludratest.service.AbstractConfigurableAludraService;
+import org.aludratest.service.ComponentId;
+import org.aludratest.service.gui.component.GUIComponentFactory;
+import org.aludratest.service.gui.component.impl.DefaultGUIComponentFactory;
 import org.aludratest.service.gui.web.AludraWebGUI;
+import org.codehaus.plexus.component.annotations.Requirement;
 
 /** Common base class for Selenium based implementations of the AludraWebGUI interface.
  * 
  * @author falbrech */
 @ConfigProperties({
-    @ConfigProperty(name = "selenium.port", type = int.class, description = "The TCP port the Selenium server is listening on", defaultValue = "4444"),
     @ConfigProperty(name = "timeout", type = int.class, description="Timeout in milliseconds after which a test step stops retrying doing a action.", defaultValue = "15000"),
     @ConfigProperty(name = "speed", type = int.class, description="Speed in milliseconds. What means that between each Selenium command Selenium waits x milliseconds where x is the speed.", defaultValue="50"),
     @ConfigProperty(name = "browser.log.level", type = String.class, description = "The browser log level. One of debug, info, warn, error.", defaultValue = "error"),
@@ -43,6 +46,11 @@ public abstract class AbstractSeleniumService extends AbstractConfigurableAludra
 
     protected SeleniumWrapperConfiguration configuration;
 
+    @Requirement(hint = "default")
+    private GUIComponentFactory componentFactory;
+
+    private boolean componentFactoryConfigured;
+
     @Override
     public final String getPropertiesBaseName() {
         return "seleniumWrapper";
@@ -51,6 +59,17 @@ public abstract class AbstractSeleniumService extends AbstractConfigurableAludra
     @Override
     public final void configure(Preferences preferences) {
         configuration = new SeleniumWrapperConfiguration(preferences);
+    }
+
+    @Override
+    public GUIComponentFactory getComponentFactory() {
+        if (!componentFactoryConfigured) {
+            ComponentId<AludraWebGUI> componentId = ComponentId
+                    .create(AludraWebGUI.class, aludraServiceContext.getInstanceName());
+            ((DefaultGUIComponentFactory) componentFactory).configureForGUIService(aludraServiceContext, componentId);
+            componentFactoryConfigured = true;
+        }
+        return componentFactory;
     }
 
 }

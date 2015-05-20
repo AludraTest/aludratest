@@ -19,7 +19,6 @@ import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.service.gui.web.WebGUIInteraction;
 import org.aludratest.service.gui.web.selenium.ConditionCheck;
-import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.XPathLocator;
 import org.aludratest.service.locator.option.IndexLocator;
@@ -44,124 +43,111 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
-    public void selectRadiobutton(String elementType, String operation, Locator locator, int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        wrapper.click(elementLocator, taskCompletionTimeout);
+    public void selectRadiobutton(String elementType, String operation, GUIElementLocator locator, int taskCompletionTimeout) {
+        wrapper.click(locator, taskCompletionTimeout);
     }
 
     @Override
-    public void changeCheckbox(String elementType, String operation, Locator locator, int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        wrapper.click(elementLocator, taskCompletionTimeout);
+    public void changeCheckbox(String elementType, String operation, GUIElementLocator locator, int taskCompletionTimeout) {
+        wrapper.click(locator, taskCompletionTimeout);
     }
 
     @Override
-    public void selectCheckbox(String elementType, String operation, Locator locator, int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        if (!wrapper.isChecked(elementLocator)) {
-            wrapper.click(elementLocator, taskCompletionTimeout);
+    public void selectCheckbox(String elementType, String operation, GUIElementLocator locator, int taskCompletionTimeout) {
+        if (!wrapper.isChecked(locator)) {
+            wrapper.click(locator, taskCompletionTimeout);
         }
     }
 
     @Override
-    public void deselectCheckbox(String elementType, String operation, Locator locator, int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        if (wrapper.isChecked(elementLocator)) {
-            wrapper.click(elementLocator, taskCompletionTimeout);
+    public void deselectCheckbox(String elementType, String operation, GUIElementLocator locator, int taskCompletionTimeout) {
+        if (wrapper.isChecked(locator)) {
+            wrapper.click(locator, taskCompletionTimeout);
         }
     }
 
     @Override
-    public void selectDropDownEntry(String elementType, String operation, Locator locator, OptionLocator optionLocator,
+    public void selectDropDownEntry(String elementType, String operation, GUIElementLocator locator, OptionLocator optionLocator,
             int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        wrapper.isElementPresent(elementLocator);
-        checkLabels(operation, optionLocator, elementLocator);
-        wrapper.select(elementLocator, optionLocator, taskCompletionTimeout);
+        wrapper.isElementPresent(locator);
+        checkLabels(optionLocator, locator);
+        wrapper.select(locator, optionLocator, taskCompletionTimeout);
     }
 
     @Override
-    public void type(String elementType, String operation, Locator locator, String text, int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        wrapper.type(elementLocator, (text == null ? "" : text), taskCompletionTimeout);
+    public void type(String elementType, String operation, GUIElementLocator locator, String text, int taskCompletionTimeout) {
+        wrapper.type(locator, (text == null ? "" : text), taskCompletionTimeout);
     }
 
     @Override
-    public void assignFileResource(String elementType, String elementName, Locator locator, String filePath,
+    public void assignFileResource(String elementType, String elementName, GUIElementLocator locator, String filePath,
             int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        wrapper.type(elementLocator, filePath, taskCompletionTimeout);
+        wrapper.type(locator, filePath, taskCompletionTimeout);
     }
 
     @Override
-    public void click(String elementType, String operation, Locator locator, int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        wrapper.click(elementLocator, taskCompletionTimeout);
+    public void click(String elementType, String operation, GUIElementLocator locator, int taskCompletionTimeout) {
+        wrapper.click(locator, taskCompletionTimeout);
     }
 
     @Override
-    public void clickNotEditable(String elementType, String operation, Locator locator, int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        wrapper.clickNotEditable(elementLocator, taskCompletionTimeout);
+    public void clickNotEditable(String elementType, String operation, GUIElementLocator locator, int taskCompletionTimeout) {
+        wrapper.clickNotEditable(locator, taskCompletionTimeout);
     }
 
     @Override
-    public void doubleClickNotEditable(String elementType, String elementName, Locator locator, int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        wrapper.doubleClickNotEditable(elementLocator, taskCompletionTimeout);
+    public void doubleClickNotEditable(String elementType, String elementName, GUIElementLocator locator,
+            int taskCompletionTimeout) {
+        wrapper.doubleClickNotEditable(locator, taskCompletionTimeout);
     }
 
     @Override
-    public String getInputFieldValue(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementLocator = assertGUIElementLocator(locator);
+    public String getInputFieldValue(String elementType, String operation, final GUIElementLocator locator) {
         wrapper.retryUntilTimeout(new ConditionCheck() {
             @Override
             public boolean eval() {
                 String actualValue = null;
-                actualValue = wrapper.getValue(elementLocator);
+                actualValue = wrapper.getValue(locator);
                 if (actualValue == null || "".equals(actualValue)) {
                     return false;
                 }
                 return true;
             }
         });
-        String readValue = wrapper.getValue(elementLocator);
+        String readValue = wrapper.getValue(locator);
         return readValue == null ? "" : readValue;
     }
 
     @Override
-    public String getInputFieldSelectedLabel(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementLocator = assertGUIElementLocator(locator);
+    public String getInputFieldSelectedLabel(String elementType, String operation, final GUIElementLocator locator) {
         wrapper.retryUntilTimeout(new ConditionCheck() {
             @Override
             public boolean eval() {
                 String actualValue = null;
-                actualValue = wrapper.getSelectedLabel(elementLocator);
+                actualValue = wrapper.getSelectedLabel(locator);
                 if (actualValue == null || "".equals(actualValue)) {
                     return false;
                 }
                 return true;
             }
         });
-        String readValue = wrapper.getSelectedLabel(elementLocator);
+        String readValue = wrapper.getSelectedLabel(locator);
         return readValue == null ? "" : readValue;
     }
 
     @Override
-    public void selectWindow(Locator locator) {
-        WindowLocator elementLocator = getDefaultWindowLocator(wrapper, locator);
-        wrapper.selectWindow(elementLocator);
+    public void selectWindow(WindowLocator locator) {
+        wrapper.selectWindow(locator);
     }
 
     @Override
-    public String getText(String elementType, String operation, Locator locator) {
+    public String getText(String elementType, String operation, GUIElementLocator locator) {
         return getText(elementType, operation, locator, true);
     }
 
     @Override
-    public String getText(String elementType, String operation, Locator locator, boolean checkVisible) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        String text = wrapper.getText(elementLocator, checkVisible);
+    public String getText(String elementType, String operation, GUIElementLocator locator, boolean checkVisible) {
+        String text = wrapper.getText(locator, checkVisible);
         return StringUtil.nullToEmpty(text);
     }
 
@@ -186,19 +172,18 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
-    public void switchToIFrame(Locator iframeLocator) {
+    public void switchToIFrame(GUIElementLocator iframeLocator) {
         if (iframeLocator == null) {
             wrapper.switchToIFrame(null);
         }
         else {
-            wrapper.switchToIFrame(assertGUIElementLocator(iframeLocator));
+            wrapper.switchToIFrame(iframeLocator);
         }
     }
 
     @Override
-    public void focus(String elementType, String operation, Locator locator) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        wrapper.focus(elementLocator);
+    public void focus(String elementType, String operation, GUIElementLocator locator) {
+        wrapper.focus(locator);
     }
 
     @Override
@@ -207,28 +192,27 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
-    public void doubleClick(String elementType, String operation, Locator locator, int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        wrapper.doubleClick(elementLocator, taskCompletionTimeout);
+    public void doubleClick(String elementType, String operation, GUIElementLocator locator, int taskCompletionTimeout) {
+        wrapper.doubleClick(locator, taskCompletionTimeout);
     }
 
     @Override
-    public void closeOtherWindows(String elementType, String operation, Locator locator) {
-        WindowLocator stillOpenedWindow = getDefaultWindowLocator(wrapper, locator);
+    public void closeOtherWindows(String elementType, String operation, TitleLocator locator) {
+        WindowLocator currentWindow = locator;
         String[] windowTitles = wrapper.getAllWindowTitles();
         for (String windowTitle : windowTitles) {
-            WindowLocator windowToClose = getDefaultWindowLocator(wrapper, windowTitle);
-            if (!windowToClose.equals(stillOpenedWindow)) {
+            WindowLocator windowToClose = new TitleLocator(windowTitle);
+            if (!windowToClose.equals(currentWindow)) {
                 wrapper.selectWindow(windowToClose);
                 wrapper.close();
             }
         }
-        wrapper.selectWindow(stillOpenedWindow);
+        wrapper.selectWindow(currentWindow);
     }
 
     @Override
     public void closeWindows(String elementType, String operation, TitleLocator locator) {
-        WindowLocator stillOpenedWindow = null;
+        WindowLocator remainingWindowLocator = null;
         boolean found = false;
         String[] windowTitles = wrapper.getAllWindowTitles();
         if (windowTitles != null) {
@@ -240,16 +224,16 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
                     found = true;
                 }
                 else if (windowTitle.length() > 0) {
-                    stillOpenedWindow = getDefaultWindowLocator(wrapper, windowTitle);
+                    remainingWindowLocator = new TitleLocator(windowTitle);
                 }
             }
             if (found) {
-                if (stillOpenedWindow == null) {
+                if (remainingWindowLocator == null) {
                     wrapper.tearDown();
                 }
             }
             else {
-                wrapper.selectWindow(stillOpenedWindow);
+                wrapper.selectWindow(remainingWindowLocator);
                 throw new AutomationException("Window not found");
             }
         }
@@ -259,11 +243,16 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
+    public void waitForWindowToBeClosed(String elementType, String elementName, TitleLocator locator, int taskCompletionTimeout) {
+        wrapper.waitForWindowToBeClosed(locator, taskCompletionTimeout);
+    }
+
+    @Override
     public void addCustomHttpHeaderCommand(String key, String value) {
         wrapper.addCustomRequestHeader(key, value);
     }
 
-    private void checkLabels(String operation, final OptionLocator optLocator, final GUIElementLocator elementLocator) {
+    private void checkLabels(final OptionLocator optLocator, final GUIElementLocator elementLocator) {
         wrapper.retryUntilTimeout(new ConditionCheck() {
             @Override
             public boolean eval() {

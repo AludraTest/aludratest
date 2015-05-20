@@ -18,12 +18,8 @@ package org.aludratest.service.gui.web.selenium.selenium2;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.service.gui.web.WebGUIVerification;
-import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.util.DataUtil;
-import org.aludratest.util.PolledValidationTask;
-import org.aludratest.util.Provider;
-import org.aludratest.util.poll.PollService;
 import org.databene.commons.StringUtil;
 import org.databene.commons.Validator;
 
@@ -35,22 +31,19 @@ import org.databene.commons.Validator;
  */
 public class Selenium2Verification extends AbstractSelenium2Action implements WebGUIVerification {
 
-    Selenium2Verification(Selenium2Wrapper seleniumWrapper) {
-        super(seleniumWrapper);
+    Selenium2Verification(Selenium2Wrapper wrapper) {
+        super(wrapper);
     }
 
     @Override
-    public void assertTextMatches(String elementType, String operation, Locator locator, Validator<String> validator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        Provider<String> provider = new TextProvider(elementLocator);
-        waitForMatch(provider, validator);
+    public void assertTextMatches(String elementType, String operation, GUIElementLocator locator, Validator<String> validator) {
+        wrapper.waitForTextValidity(locator, validator);
     }
 
     @Override
-    public void assertVisible(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
+    public void assertVisible(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.waitUntilVisible(elementLocator);
+            wrapper.waitUntilVisible(locator, getTimeout());
         }
         catch (AutomationException e) {
             throw new FunctionalFailure(e.getMessage());
@@ -58,26 +51,34 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
     }
 
     @Override
-    public void assertEditable(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        if (!wrapper.isEditable(elementLocator)) {
-            throw new FunctionalFailure("Element not editable.");
+    public void assertEditable(String elementType, String operation, GUIElementLocator locator) {
+        try {
+            wrapper.waitUntilClickable(locator, getTimeout());
+        }
+        catch (AutomationException e) { // NOSONAR
+            throw new FunctionalFailure(e.getMessage());
         }
     }
 
     @Override
-    public void assertNotEditable(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        if (wrapper.isEditable(elementLocator)) {
+    public void assertNotEditable(String elementType, String operation, GUIElementLocator locator) {
+        try {
+            wrapper.waitUntilClickable(locator, getTimeout());
             throw new FunctionalFailure("Element not expected to be editable");
         }
+        catch (FunctionalFailure e) {
+            throw e;
+        }
+        catch (AutomationException e) { // NOSONAR
+            // this is the desired outcome
+        }
     }
 
     @Override
-    public void assertElementPresent(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
+    public void assertElementPresent(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.isElementPresent(elementLocator);
+            long timeout = getConfiguration().getTimeout();
+            wrapper.waitUntilPresent(locator, timeout);
         }
         catch (AutomationException e) {
             // because of ASSERTION, it is a functional failure (expected failure from SUT)
@@ -86,32 +87,29 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
     }
 
     @Override
-    public void assertChecked(String elementType, String operation, Locator locator) {
+    public void assertChecked(String elementType, String operation, GUIElementLocator locator) {
         assertChecked(elementType, operation, true, locator);
     }
 
     @Override
-    public void assertChecked(String elementType, String operation, boolean expected, Locator locator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        if (wrapper.isChecked(elementLocator) != expected) {
+    public void assertChecked(String elementType, String operation, boolean expected, GUIElementLocator locator) {
+        if (wrapper.isChecked(locator) != expected) {
             String message = "Checkbox or Radiobutton is " + (expected ? "unchecked" : "checked");
             throw new FunctionalFailure(message);
         }
     }
 
     @Override
-    public void assertHasFocus(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        final boolean hasFocus = wrapper.hasFocus(elementLocator);
+    public void assertHasFocus(String elementType, String operation, GUIElementLocator locator) {
+        final boolean hasFocus = wrapper.hasFocus(locator);
         if (!hasFocus) {
             throw new FunctionalFailure("The element does not have the focus.");
         }
     }
 
     @Override
-    public void assertHasValues(String elementType, String operation, Locator locator, String[] expectedValues) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        final String[] actualValues = wrapper.getSelectOptions(elementLocator);
+    public void assertHasValues(String elementType, String operation, GUIElementLocator locator, String[] expectedValues) {
+        final String[] actualValues = wrapper.getSelectOptions(locator);
         final String mismatches = DataUtil.expectEqualArrays(expectedValues, actualValues);
         if (!StringUtil.isEmpty(mismatches)) {
             throw new FunctionalFailure("The actual values are not as expected. " +
@@ -120,39 +118,25 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
     }
 
     @Override
-    public void assertHasLabels(String elementType, String operation, Locator locator, String[] expectedLabels) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        checkLabels(expectedLabels, elementLocator, false);
+    public void assertHasLabels(String elementType, String operation, GUIElementLocator locator, String[] expectedLabels) {
+        checkLabels(expectedLabels, locator, false);
     }
 
     @Override
-    public void assertValueMatches(String elementType, String operation, Locator locator, Validator<String> validator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        Provider<String> provider = new Provider<String>() {
-            @Override
-            public String getName() {
-                return "Value";
-            }
-            @Override
-            public String getValue() {
-                return wrapper.getValue(elementLocator);
-            }
-        };
-        waitForMatch(provider, validator);
+    public void assertValueMatches(String elementType, String operation, final GUIElementLocator locator,
+            Validator<String> validator) {
+        wrapper.waitForValueValidity(locator, validator);
     }
 
     @Override
-    public void assertContainsLabels(String elementType, String operation, Locator locator, String[] labels) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        checkLabels(labels, elementLocator, true);
-
+    public void assertContainsLabels(String elementType, String operation, GUIElementLocator locator, String[] labels) {
+        checkLabels(labels, locator, true);
     }
 
     @Override
-    public void assertElementNotPresent(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
+    public void assertElementNotPresent(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.waitForElementNotPresent(elementLocator);
+            wrapper.waitUntilElementNotPresent(locator, getTimeout());
         }
         catch (AutomationException e) {
             // because of ASSERTION, it is a functional failure (expected failure from SUT)
@@ -161,104 +145,18 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
     }
 
     @Override
-    public void assertDropDownEntrySelectionMatches(String elementType, String operation, Locator locator, Validator<String> validator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        Provider<String> provider = new Provider<String>() {
-            @Override
-            public String getName() {
-                return "Label";
-            }
-            @Override
-            public String getValue() {
-                return wrapper.getSelectedLabel(elementLocator);
-            }
-        };
-        waitForMatch(provider, validator);
+    public void assertDropDownEntrySelectionMatches(String elementType, String operation, final GUIElementLocator locator,
+            Validator<String> validator) {
+        wrapper.waitForSelectedLabelValidity(locator, validator);
     }
 
-    private void checkLabels(String[] labels, GUIElementLocator elementLocator, boolean contains) {
-        final String[] actualLabels = wrapper.getLabels(elementLocator);
-        final String mismatches;
-        if (contains) {
-            mismatches = DataUtil.containsStrings(labels, actualLabels);
-            if (mismatches.length() > 0) {
-                throw new FunctionalFailure("The expected labels are not contained " +
-                        "in the actual labels. Following Label(s) is/are missing: " +
-                        mismatches);
-            }
-        } else {
-            mismatches = DataUtil.expectEqualArrays(labels, actualLabels);
-            if (!StringUtil.isEmpty(mismatches)) {
-                throw new FunctionalFailure("The actual labels are not equal " +
-                        "to the expected ones. As follows the unequal pairs " +
-                        "(expected!=actual): " + mismatches);
-            }
+    private void checkLabels(String[] labels, GUIElementLocator dropDownLocator, boolean contains) {
+        try {
+            wrapper.waitForDropDownEntries(dropDownLocator, labels, contains);
         }
-    }
-
-    private void waitForMatch(Provider<String> provider, Validator<String> validator) {
-        PollService pollService = new PollService(wrapper.getTimeout(), wrapper.getPauseBetweenRetries());
-        pollService.poll(new PolledValidationTask(provider, validator));
-    }
-
-    class TextProvider implements Provider<String> {
-
-        private GUIElementLocator elementLocator;
-
-        public TextProvider(GUIElementLocator elementLocator) {
-            this.elementLocator = elementLocator;
+        catch (AssertionError e) {
+            throw new FunctionalFailure(e.getMessage());
         }
-
-        @Override
-        public String getName() {
-            return "Text";
-        }
-
-        @Override
-        public String getValue() {
-            return wrapper.getText(elementLocator, true);
-        }
-
-    }
-
-    class ValueProvider implements Provider<String> {
-
-        private GUIElementLocator elementLocator;
-
-        public ValueProvider(GUIElementLocator elementLocator) {
-            this.elementLocator = elementLocator;
-        }
-
-        @Override
-        public String getName() {
-            return "Value";
-        }
-
-        @Override
-        public String getValue() {
-            return wrapper.getValue(elementLocator);
-        }
-
-    }
-
-    class SelectedLabelProvider implements Provider<String> {
-
-        private GUIElementLocator elementLocator;
-
-        public SelectedLabelProvider(GUIElementLocator elementLocator) {
-            this.elementLocator = elementLocator;
-        }
-
-        @Override
-        public String getName() {
-            return "Label";
-        }
-
-        @Override
-        public String getValue() {
-            return wrapper.getSelectedLabel(elementLocator);
-        }
-
     }
 
 }

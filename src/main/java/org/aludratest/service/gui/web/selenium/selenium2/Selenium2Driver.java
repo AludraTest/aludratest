@@ -28,7 +28,6 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
@@ -95,10 +94,21 @@ public class Selenium2Driver {
     }
 
     /** @param url the URL for which to create a WebDriver instance.
+     * @param arguments Additional arguments to include for the WebDriver instance, or an empty array.
      * @return a freshly created instance of the related WebDriver class */
-    public WebDriver newRemoteDriver(URL url) {
-        HttpCommandExecutor executor = new HttpCommandExecutor(url);
-        RemoteWebDriver driver = new RemoteWebDriver(executor, capabilities);
+    public WebDriver newRemoteDriver(URL url, String[] arguments) {
+        AludraSeleniumHttpCommandExecutor executor = new AludraSeleniumHttpCommandExecutor(url);
+
+        DesiredCapabilities caps = capabilities;
+        if (arguments != null && arguments.length > 0) {
+            caps = new DesiredCapabilities(capabilities);
+            ChromeOptions opts = (ChromeOptions) caps.getCapability(ChromeOptions.CAPABILITY);
+            if (opts != null) {
+                opts.addArguments(arguments);
+            }
+        }
+
+        RemoteWebDriver driver = new RemoteWebDriver(executor, caps);
         driver.setFileDetector(new LocalFileDetector());
         return driver;
     }

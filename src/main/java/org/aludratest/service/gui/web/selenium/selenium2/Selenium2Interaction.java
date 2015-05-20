@@ -20,12 +20,8 @@ import java.util.Map;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.service.gui.web.WebGUIInteraction;
-import org.aludratest.service.gui.web.selenium.ConditionCheck;
-import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.XPathLocator;
-import org.aludratest.service.locator.option.IndexLocator;
-import org.aludratest.service.locator.option.LabelLocator;
 import org.aludratest.service.locator.option.OptionLocator;
 import org.aludratest.service.locator.window.TitleLocator;
 import org.aludratest.service.locator.window.WindowLocator;
@@ -42,12 +38,8 @@ import org.w3c.dom.NodeList;
  */
 public class Selenium2Interaction extends AbstractSelenium2Action implements WebGUIInteraction {
 
-    /**
-     * Constructor.
-     * 
-     * @param seleniumWrapper
-     *            the {@link Selenium2Wrapper} to use
-     */
+    /** Constructor.
+     * @param seleniumWrapper the {@link Selenium2Wrapper} to use */
     public Selenium2Interaction(Selenium2Wrapper seleniumWrapper) {
         super(seleniumWrapper);
     }
@@ -67,62 +59,58 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     // click operations --------------------------------------------------------
 
     @Override
-    public void click(String elementType, String operation, Locator locator,
+    public void click(String elementType, String operation, GUIElementLocator locator,
             int taskCompletionTimeout) {
-        wrapper.click(getDefaultElementLocator(locator));
+        wrapper.click(locator, operation, taskCompletionTimeout);
     }
 
     @Override
-    public void clickNotEditable(String elementType, String operation, Locator locator,
+    public void clickNotEditable(String elementType, String operation, GUIElementLocator locator,
             int taskCompletionTimeout) {
-        wrapper.clickNotEditable(getDefaultElementLocator(locator));
+        wrapper.clickNotEditable(locator, operation, taskCompletionTimeout);
     }
 
     @Override
-    public void doubleClickNotEditable(String elementType, String elementName, Locator locator, int taskCompletionTimeout) {
-        wrapper.doubleClickNotEditable(getDefaultElementLocator(locator));
+    public void doubleClickNotEditable(String elementType, String elementName, GUIElementLocator locator,
+            int taskCompletionTimeout) {
+        wrapper.doubleClickNotEditable(locator, elementName, taskCompletionTimeout);
     }
 
     @Override
-    public void doubleClick(String elementType, String operation, Locator locator,
+    public void doubleClick(String elementType, String operation, GUIElementLocator locator,
             int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.doubleClick(elementLocator);
+        wrapper.doubleClick(locator, operation, taskCompletionTimeout);
     }
 
     // radio button selection --------------------------------------------------
 
     @Override
-    public void selectRadiobutton(String elementType, String operation, Locator locator,
+    public void selectRadiobutton(String elementType, String operation, GUIElementLocator locator,
             int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.click(elementLocator);
+        wrapper.click(locator, operation, taskCompletionTimeout);
     }
 
     // check box selection -----------------------------------------------------
 
     @Override
-    public void changeCheckbox(String elementType, String operation, Locator locator,
+    public void changeCheckbox(String elementType, String operation, GUIElementLocator locator,
             int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.click(elementLocator);
+        wrapper.click(locator, operation, taskCompletionTimeout);
     }
 
     @Override
-    public void selectCheckbox(String elementType, String operation, Locator locator,
+    public void selectCheckbox(String elementType, String operation, GUIElementLocator locator,
             int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        if (!wrapper.isChecked(elementLocator)) {
-            wrapper.click(elementLocator);
+        if (!wrapper.isChecked(locator)) {
+            wrapper.click(locator, operation, taskCompletionTimeout);
         }
     }
 
     @Override
-    public void deselectCheckbox(String elementType, String operation, Locator locator,
+    public void deselectCheckbox(String elementType, String operation, GUIElementLocator locator,
             int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        if (wrapper.isChecked(elementLocator)) {
-            wrapper.click(elementLocator);
+        if (wrapper.isChecked(locator)) {
+            wrapper.click(locator, operation, taskCompletionTimeout);
         }
     }
 
@@ -130,21 +118,18 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
 
     @Override
     public void selectDropDownEntry(String elementType, String operation,
-            Locator locator, OptionLocator optionLocator,
+            GUIElementLocator dropDownLocator, OptionLocator entryLocator,
             int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.isElementPresent(elementLocator);
-        checkLabels(operation, optionLocator, elementLocator);
-        wrapper.select(elementLocator, optionLocator);
+        wrapper.waitForDropDownEntryLocatablity(entryLocator, dropDownLocator);
+        wrapper.select(dropDownLocator, entryLocator, taskCompletionTimeout);
     }
 
     // text operations ---------------------------------------------------------
 
     @Override
-    public void type(String elementType, String operation, Locator locator, String text,
+    public void type(String elementType, String operation, GUIElementLocator locator, String text,
             int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.type(elementLocator, text == null ? "" : text);
+        wrapper.type(locator, (text == null ? "" : text), taskCompletionTimeout);
     }
 
     @Override
@@ -153,72 +138,38 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     }
 
     @Override
-    public String getInputFieldValue(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        StringBuilder inputFieldValue = new StringBuilder(0);
-        wrapper.retryUntilTimeout(new ConditionCheck() {
-            @Override
-            public boolean eval() {
-                String actualValue = wrapper.getValue(elementLocator);
-                return !StringUtil.isEmpty(actualValue);
-            }
-        });
-        String readValue = wrapper.getValue(elementLocator);
-        if (readValue != null) {
-            inputFieldValue.append(readValue);
-        }
-        return inputFieldValue.toString();
+    public String getInputFieldValue(String elementType, String operation, final GUIElementLocator locator) {
+        return wrapper.waitForValue(locator);
     }
 
     @Override
-    public String getInputFieldSelectedLabel(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        StringBuilder inputFieldValue = new StringBuilder(0);
-        wrapper.retryUntilTimeout(new ConditionCheck() {
-            @Override
-            public boolean eval() {
-                String actualValue = wrapper.getSelectedLabel(elementLocator);
-                return !StringUtil.isEmpty(actualValue);
-            }
-        });
-        String readValue = wrapper.getSelectedLabel(elementLocator);
-        if (readValue != null) {
-            inputFieldValue.append(readValue);
-        }
-        return inputFieldValue.toString();
+    public String getInputFieldSelectedLabel(String elementType, String operation, final GUIElementLocator locator) {
+        return wrapper.waitForSelection(locator);
     }
 
     @Override
-    public String getText(String elementType, String operation, Locator locator) {
+    public String getText(String elementType, String operation, GUIElementLocator locator) {
         return getText(elementType, operation, locator, true);
     }
 
     @Override
-    public String getText(String elementType, String operation, Locator locator, boolean checkVisible) {
-        GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        StringBuilder textValue = new StringBuilder(0);
-        String readValue = wrapper.getText(elementLocator, checkVisible);
-        if (readValue != null) {
-            textValue.append(readValue);
-        }
-        return textValue.toString();
+    public String getText(String elementType, String operation, GUIElementLocator locator, boolean checkVisible) {
+        return StringUtil.nullToEmpty(wrapper.getText(locator, checkVisible));
     }
 
     // file operations ---------------------------------------------------------
 
     @Override
-    public void assignFileResource(String elementType, String elementName, Locator locator, String filePath,
+    public void assignFileResource(String elementType, String elementName, GUIElementLocator locator, String filePath,
             int taskCompletionTimeout) {
-        GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.sendKeys(elementLocator, filePath);
+        wrapper.sendKeys(locator, filePath, taskCompletionTimeout);
     }
 
     // window operations -------------------------------------------------------
 
     @Override
-    public void selectWindow(Locator locator) {
-        WindowLocator elementLocator = getDefaultWindowLocator(locator);
-        wrapper.selectWindow(elementLocator);
+    public void selectWindow(WindowLocator locator) {
+        wrapper.selectWindow(locator);
     }
 
     @Override
@@ -232,18 +183,21 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     }
 
     @Override
-    public void closeOtherWindows(String elementType, String operation, Locator locator) {
-        WindowLocator locatorOfRemainingWindow = getDefaultWindowLocator(locator);
-
+    public void closeOtherWindows(String elementType, String operation, TitleLocator locatorOfRemainingWindow) {
         String[] windowTitles = wrapper.getAllWindowTitles();
         for (String windowTitle : windowTitles) {
-            WindowLocator windowToClose = getDefaultWindowLocator(windowTitle);
-            if (!windowToClose.equals(locatorOfRemainingWindow)) {
-                wrapper.selectWindowDirectly(windowToClose);
-                wrapper.close();
+            WindowLocator locatorOfCurrentWindow = new TitleLocator(windowTitle);
+            if (!locatorOfCurrentWindow.equals(locatorOfRemainingWindow)) {
+                try {
+                    wrapper.selectWindowImmediately(locatorOfCurrentWindow);
+                    wrapper.close();
+                }
+                catch (AutomationException e) {
+                    // ignore; window has been closed in the meantime
+                }
             }
         }
-        wrapper.selectWindowDirectly(locatorOfRemainingWindow);
+        wrapper.selectWindowImmediately(locatorOfRemainingWindow);
     }
 
     @Override
@@ -285,18 +239,22 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
         }
     }
 
+    @Override
+    public void waitForWindowToBeClosed(String elementType, String elementName, TitleLocator locator, int taskCompletionTimeout) {
+        wrapper.waitForWindowToBeClosed(locator, taskCompletionTimeout);
+    }
+
     // special features --------------------------------------------------------
 
     @Override
-    public void switchToIFrame(Locator iframeLocator) {
+    public void switchToIFrame(GUIElementLocator iframeLocator) {
         wrapper.switchToIFrame(iframeLocator);
 
     }
 
     @Override
-    public void focus(String elementType, String operation, Locator locator) {
-        GUIElementLocator elementLocator = getDefaultElementLocator(locator);
-        wrapper.focus(elementLocator);
+    public void focus(String elementType, String operation, GUIElementLocator locator) {
+        wrapper.focus(locator);
     }
 
     @Override
@@ -332,38 +290,6 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     public String evalXPathAsString(String xpath) {
         String html = new String(wrapper.getPageSource().getFileData(), DataUtil.UTF_8);
         return DataUtil.evalXPathInHTMLAsString(xpath, html);
-    }
-
-    // private methods ---------------------------------------------------------
-
-    private void checkLabels(String operation, final OptionLocator optLocator, final GUIElementLocator elementLocator) {
-        wrapper.retryUntilTimeout(new ConditionCheck() {
-            @Override
-            public boolean eval() {
-                String[] actualLabels = wrapper.getLabels(elementLocator);
-                if (optLocator instanceof LabelLocator) {
-                    String mismatches = DataUtil.containsString(optLocator.toString(), actualLabels);
-                    return (mismatches.length() == 0);
-                } else {
-                    return ((optLocator instanceof IndexLocator) && ((IndexLocator) optLocator).getIndex() < actualLabels.length);
-                }
-            }
-        });
-        String[] actualLabels = wrapper.getLabels(elementLocator);
-        if (optLocator instanceof LabelLocator) {
-            String mismatches = DataUtil.containsString(optLocator.toString(), actualLabels);
-            if (mismatches.length() > 0) {
-                throw new AutomationException("The expected labels are not contained "
-                        +
-                        "in the actual labels. Following Label(s) is/are missing: " +
-                        mismatches);
-            }
-        } else if (optLocator instanceof IndexLocator) {
-            IndexLocator iLoc = (IndexLocator) optLocator;
-            if (iLoc.getIndex() >= actualLabels.length) {
-                throw new AutomationException("The requested index " + iLoc.getIndex() + " does not exist");
-            }
-        }
     }
 
 }

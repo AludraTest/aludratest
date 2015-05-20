@@ -15,6 +15,8 @@
  */
 package org.aludratest.util.validator;
 
+import java.util.Locale;
+
 /**
  * Requires strings to contain a sub string ignoring capitalization.
  * @author Volker Bergmann
@@ -29,7 +31,7 @@ public class ContainsIgnoreCaseTrimmedValidator extends AbstractNullStringValida
 
     @Override
     protected boolean validImpl(String text) {
-        return text.toLowerCase().contains(validationTerm.trim().toLowerCase());
+        return text.toLowerCase(Locale.US).contains(validationTerm.trim().toLowerCase(Locale.US));
     }
 
     @Override

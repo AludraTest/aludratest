@@ -17,9 +17,10 @@ package org.aludratest.service.gui.web.selenium.selenium1;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
+import org.aludratest.exception.PerformanceFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
-import org.aludratest.service.gui.component.Link;
+import org.aludratest.service.gui.component.impl.LinkImpl;
 import org.aludratest.service.gui.web.selenium.ConditionCheck;
 import org.aludratest.service.gui.web.selenium.ElementCommand;
 import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
@@ -85,19 +86,10 @@ public class SeleniumWrapper {
     private void init() {
         try {
             usedSeleniumHost = seleniumResourceService.acquire();
-            int seleniumPort = configuration.getDefaultSeleniumPort();
+            // int seleniumPort = configuration.getDefaultSeleniumPort();
             String host = usedSeleniumHost;
 
-            if (usedSeleniumHost.contains(":")) {
-                try {
-                    seleniumPort = Integer.parseInt(usedSeleniumHost.substring(usedSeleniumHost.indexOf(':') + 1).trim());
-                    host = usedSeleniumHost.substring(0, usedSeleniumHost.indexOf(':'));
-                }
-                catch (NumberFormatException e) {
-                    LOGGER.error("Invalid host:port syntax for selenium host: " + usedSeleniumHost);
-                }
-            }
-            selenium = new SeleniumFacade(configuration, host, seleniumPort);
+            selenium = new SeleniumFacade(configuration, host);
             selenium.start();
         } catch (Exception e) {
             if (selenium != null) {
@@ -116,6 +108,7 @@ public class SeleniumWrapper {
         return configuration;
     }
 
+    /** @return the host count of the {@link #seleniumResourceService} */
     public int getHostCount() {
         return seleniumResourceService.getHostCount();
     }
@@ -243,7 +236,7 @@ public class SeleniumWrapper {
                 }
             }, timeout);
             if (!elementIsEnabled) {
-                throw new AutomationException("Element not editable.");
+                throw new AutomationException("Element not editable");
             }
         }
     }
@@ -510,6 +503,8 @@ public class SeleniumWrapper {
         selenium.windowFocus();
     }
 
+    /** Switches to the requested IFrame.
+     * @param locator the locator of the IFrame to switch to, or null for the top-level frame */
     public void switchToIFrame(GUIElementLocator locator) {
         selenium.switchToIFrame(locator);
     }
@@ -779,7 +774,7 @@ public class SeleniumWrapper {
     }
 
     private boolean isCalledByLink() {
-        return isCalledBy(Link.class);
+        return isCalledBy(LinkImpl.class);
     }
 
     private void waitForWindow(final WindowLocator windowLocator) {
@@ -802,6 +797,37 @@ public class SeleniumWrapper {
         });
         if (!windowIsFound) {
             throw new AutomationException("Window not found");
+        }
+    }
+
+    public void waitForWindowToBeClosed(final WindowLocator windowLocator, int taskCompletionTimeout) {
+        ConditionCheck check = new ConditionCheck() {
+            @Override
+            public boolean eval() {
+                if (windowLocator instanceof TitleLocator) {
+                    String requestedTitle = ((TitleLocator) windowLocator).getTitle();
+                    String[] titles = getAllWindowTitles();
+                    for (String title : titles) {
+                        if (title.equalsIgnoreCase(requestedTitle)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                else {
+                    throw ServiceUtil.newUnsupportedLocatorException(windowLocator);
+                }
+            }
+        };
+        boolean windowIsGone;
+        if (taskCompletionTimeout > -1) {
+            windowIsGone = retryUntilTrueOrTimeout(check, taskCompletionTimeout);
+        }
+        else {
+            windowIsGone = retryUntilTimeout(check);
+        }
+        if (!windowIsGone) {
+            throw new PerformanceFailure("Window not closed within timeout");
         }
     }
 

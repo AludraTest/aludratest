@@ -30,7 +30,8 @@ package org.aludratest.config;
     @ConfigProperty(name = AludraTestConfig.DEFAULT_LOCALE_PROP, type = String.class, description = "The locale to use as default locale. If not specified, the system default locale is used."),
     @ConfigProperty(name = AludraTestConfig.CONFIG_TAB_REQUIRED_PROP, type = boolean.class, description = "If set to true, a configuration tab is required in Excel files, and its absence will cause an exception.", defaultValue = "false"),
     @ConfigProperty(name = AludraTestConfig.IGNORE_ENABLED_PROP, type = boolean.class, description = "If set to true, test case classes can be marked as ignored. Otherwise, the @Ignored annotation will itself be ignored, causing the marked tests to be executed.", defaultValue = "false"),
-    @ConfigProperty(name = AludraTestConfig.NUMERIC_TOLERANCE_PROP, type = double.class, description = "The maximum allowed difference of a current and an expected value. This is for handling rounding issues when dealing with double precision values.", defaultValue = " 0.00000001") })
+    @ConfigProperty(name = AludraTestConfig.NUMERIC_TOLERANCE_PROP, type = double.class, description = "The maximum allowed difference of a current and an expected value. This is for handling rounding issues when dealing with double precision values.", defaultValue = " 0.00000001"),
+    @ConfigProperty(name = AludraTestConfig.DEBUG_ON_FRAMEWORK_EXCEPTION_PROP, type = boolean.class, description = "If set to true, debug attachments (e.g. screenshots) will be created also on framework (blue) errors.", defaultValue = "false") })
 public interface AludraTestConfig extends Configurable {
 
     /** Configuration property name. */
@@ -56,6 +57,9 @@ public interface AludraTestConfig extends Configurable {
 
     /** Configuration property name. */
     public static final String NUMERIC_TOLERANCE_PROP = "verification.numeric.difference";
+
+    /** Configuration property name. */
+    public static final String DEBUG_ON_FRAMEWORK_EXCEPTION_PROP = "debug.attachments.on.framework.exception";
 
     // interface ---------------------------------------------------------------
 
@@ -89,5 +93,10 @@ public interface AludraTestConfig extends Configurable {
      * 
      * @return The numeric tolerance to use for double precision based operations. */
     public double getNumericTolerance();
+
+    /** Returns if debug attachments shall be created when a Framework Exception occurs.
+     * 
+     * @return <code>true</code> if to include debug attachments on Framework Exceptions. */
+    public boolean isDebugAttachmentsOnFrameworkException();
 
 }

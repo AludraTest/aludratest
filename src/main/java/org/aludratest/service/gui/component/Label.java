@@ -15,79 +15,13 @@
  */
 package org.aludratest.service.gui.component;
 
-import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
-import org.databene.commons.Validator;
+import org.aludratest.service.gui.component.impl.ValueComponent;
 
 /**
  * Represents a Label in a GUI.
  * @author Joerg Langnickel
  * @author Volker Bergmann
  */
-public class Label extends Element<Label> implements ValueComponent {
-
-    private ValueComponentHelper helper = new ValueComponentHelper(this, false);
-
-    /**
-     * Constructor.
-     * @param aludraGui the underlying {@link AludraGUI} service instance
-     * @param locator a locator for the referenced label
-     */
-    public Label(AludraGUI aludraGui, Locator locator) {
-        super(aludraGui, locator);
-    }
-
-    /** Constructor.
-     *  @param aludraGui the underlying {@link AludraGUI} service instance
-     *  @param locator a locator for the referenced element
-     *  @param elementName an explicit name to use for the component */
-    public Label(AludraGUI aludraGui, Locator locator, String elementName) {
-        super(aludraGui, locator, elementName);
-    }
-
-    @Override
-    public String getText() {
-        return helper.getText();
-    }
-
-    @Override
-    public void assertTextEquals(String expectedText) {
-        helper.assertTextEquals(expectedText);
-    }
-
-    @Override
-    public void assertTextNotEquals(String expectedText) {
-        helper.assertTextNotEquals(expectedText);
-    }
-
-    @Override
-    public void assertTextContains(String expectedText) {
-        helper.assertTextContains(expectedText);
-    }
-
-    @Override
-    public void assertTextContainsIgnoreCaseTrimmed(String expectedText) {
-        helper.assertTextContainsIgnoreCaseTrimmed(expectedText);
-    }
-
-    @Override
-    public void assertTextEqualsIgnoreCaseTrimmed(String expectedText) {
-        helper.assertTextEqualsIgnoreCaseTrimmed(expectedText);
-    }
-
-    @Override
-    public void assertTextMatches(Validator<String> validator) {
-        helper.assertTextMatches(validator);
-    }
-
-    @Override
-    public void assertValueGreaterThan(String value) {
-        helper.assertValueGreaterThan(value);
-    }
-
-    @Override
-    public void assertValueLessThan(String value) {
-        helper.assertValueLessThan(value);
-    }
+public interface Label extends Element<Label>, ValueComponent {
 
 }

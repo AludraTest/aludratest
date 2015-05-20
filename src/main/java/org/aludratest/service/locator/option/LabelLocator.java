@@ -27,4 +27,9 @@ public class LabelLocator extends OptionLocator {
         super(label);
     }
 
+    /** @return the label */
+    public String getLabel() {
+        return locator;
+    }
+
 }

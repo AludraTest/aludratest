@@ -61,8 +61,7 @@ public abstract class AbstractDropdownboxTest extends GUITest {
         String notExistingEntry = "Partner Short Name1";
         guiTestUIMap.dropDownBox().selectEntry(notExistingEntry);
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("The expected labels are not contained in the actual labels. "
-                + "Following Label(s) is/are missing: " + notExistingEntry);
+        checkLastStepErrorMessage("The expected labels are not contained in the actual labels. Following Label(s) is/are missing: Partner Short Name1");
     }
 
     /**
@@ -85,7 +84,7 @@ public abstract class AbstractDropdownboxTest extends GUITest {
     public void selectEntryOnDisabledDropdownBox() {
         guiTestUIMap.disabledDropDownBox().selectEntry("City");
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable.");
+        checkLastStepErrorMessage("Element not editable");
     }
 
     /** Positive case to select an entry in a dropdown box using the EMPTY marker. This should select the "" entry in the

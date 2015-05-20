@@ -15,6 +15,8 @@
  */
 package org.aludratest.util.validator;
 
+import org.aludratest.AludraTest;
+import org.junit.After;
 import org.junit.Before;
 
 public abstract class AbstractValidatorTest {
@@ -25,11 +27,19 @@ public abstract class AbstractValidatorTest {
 
     protected static final String ALL_MARKER = "<ALL>";
 
+    private AludraTest aludraTest;
+
     @Before
-    public void setMarkers() {
+    public void setUp() {
         System.setProperty("ALUDRATEST_CONFIG/dataConfiguration/NULL", NULL_MARKER);
         System.setProperty("ALUDRATEST_CONFIG/dataConfiguration/EMPTY", EMPTY_MARKER);
         System.setProperty("ALUDRATEST_CONFIG/dataConfiguration/ALL", ALL_MARKER);
+        this.aludraTest = AludraTest.startFramework();
+    }
+
+    @After
+    public void tearDown() {
+        aludraTest.stopFramework();
     }
 
 }

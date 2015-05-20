@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.aludratest.exception.AludraTestException;
+import org.aludratest.exception.TechnicalException;
 import org.aludratest.impl.log4testing.AttachParameter;
 import org.aludratest.impl.log4testing.AttachResult;
 import org.aludratest.service.Action;
@@ -70,15 +71,18 @@ public class ControlFlowHandler implements InvocationHandler {
 
     private boolean logTestSteps;
 
+    private boolean debugAttachmentsAlways;
+
     /** Constructor which takes the initialization values for all attributes.
      * @param target the target object to forward calls to
      * @param serviceId the {@link ComponentId} related to the target object
      * @param systemConnector an optional {@link SystemConnector} to to provide SUT information
      * @param testContext the test context to log to
      * @param stopOnException a flag that indicates whether to stop on exceptions
-     * @param logTestSteps If <code>true</code>, method invocations will be fired to the test context as new test step. */
+     * @param logTestSteps If <code>true</code>, method invocations will be fired to the test context as new test step.
+     * @param debugAttachmentsAlways If set to <code>true</code>, debug attachments will also be added to Framework Exceptions. */
     public ControlFlowHandler(Object target, ComponentId<? extends AludraService> serviceId, SystemConnector systemConnector,
-            AludraTestContext testContext, boolean stopOnException, boolean logTestSteps) {
+            AludraTestContext testContext, boolean stopOnException, boolean logTestSteps, boolean debugAttachmentsAlways) {
         // check preconditions
         Assert.notNull(target, "target");
         Assert.notNull(testContext, "testContext");
@@ -90,6 +94,7 @@ public class ControlFlowHandler implements InvocationHandler {
         this.testContext = testContext;
         this.stopOnException = stopOnException;
         this.logTestSteps = logTestSteps;
+        this.debugAttachmentsAlways = debugAttachmentsAlways;
     }
 
 
@@ -119,7 +124,7 @@ public class ControlFlowHandler implements InvocationHandler {
                 return forwardAndHandleException(method, args);
             }
         } else {
-            if (logTestSteps) {
+            if (logTestSteps && !method.getName().equals("setSystemConnector")) {
                 TestStepInfoBean testStep = new TestStepInfoBean();
                 testStep.setServiceId(serviceId);
                 testStep.setCommandNameAndArguments(method, args);
@@ -336,21 +341,27 @@ public class ControlFlowHandler implements InvocationHandler {
         t = AludraTestUtil.unwrapInvocationTargetException(t);
         testStep.setError(t);
         testStep.setErrorMessage(t.getMessage());
-        if (t instanceof AludraTestException) {
+        if (t instanceof AludraTestException && !(t instanceof TechnicalException)) {
             testStep.setTestStatus(((AludraTestException) t).getTestStatus());
             // also extract attachments, if applicable
             if (((AludraTestException) t).shouldSaveDebugAttachments() && (target instanceof Action)) {
-                Action action = (Action) target;
-                List<Attachment> attachments = action.createDebugAttachments();
-                if (attachments != null) {
-                    for (Attachment attachment : attachments) {
-                        testStep.addAttachment(attachment);
-                    }
-                }
+                attachDebugAttachments((Action) target, testStep);
             }
         }
         else {
             testStep.setTestStatus(TestStatus.INCONCLUSIVE);
+            if (debugAttachmentsAlways && (target instanceof Action)) {
+                attachDebugAttachments((Action) target, testStep);
+            }
+        }
+    }
+
+    private void attachDebugAttachments(Action action, TestStepInfoBean testStep) {
+        List<Attachment> attachments = action.createDebugAttachments();
+        if (attachments != null) {
+            for (Attachment attachment : attachments) {
+                testStep.addAttachment(attachment);
+            }
         }
     }
 

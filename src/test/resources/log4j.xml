@@ -73,7 +73,7 @@
     </category>
     
     <category name="org.aludratest.service.gui.web.selenium.selenium2">
-       <priority value="info"/>
+       <priority value="debug"/>
     </category>
     
     <category name="org.aludratest.util">
@@ -87,8 +87,9 @@
    <!-- ======================= -->
 
     <root>
-        <priority value="info"/>
+        <priority value="debug"/>
         <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
     </root>
 
 </log4j:configuration>

@@ -67,6 +67,21 @@
       </requirements>
     </component>
     <component>
+      <role>org.aludratest.service.gui.component.GUIComponentFactory</role>
+      <role-hint>default</role-hint>
+      <implementation>org.aludratest.service.gui.component.impl.DefaultGUIComponentFactory</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <description></description>
+      <isolated-realm>false</isolated-realm>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.PlexusContainer</role>
+          <role-hint></role-hint>
+          <field-name>plexusContainer</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
       <role>org.aludratest.service.AludraServiceManager</role>
       <role-hint>default</role-hint>
       <implementation>org.aludratest.service.impl.AludraServiceManagerImpl</implementation>

@@ -17,6 +17,8 @@ package org.aludratest.service.gui.web.selenium;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.aludratest.config.Preferences;
 import org.aludratest.config.ValidatingPreferencesWrapper;
@@ -37,19 +39,9 @@ public final class SeleniumWrapperConfiguration {
      * @param configuration Preferences object containing required configuration. */
     public SeleniumWrapperConfiguration(Preferences configuration) {
         this.configuration = new ValidatingPreferencesWrapper(configuration);
-
-        // invoke all getters to ensure required properties set
-        // getSeleniumPort();
     }
 
     // properties --------------------------------------------------------------
-
-    /** Default port to use for Selenium RC Servers.
-     * 
-     * @return Default port to use for Selenium RC Servers. */
-    public final int getDefaultSeleniumPort() {
-        return configuration.getRequiredIntValue("selenium.port");
-    }
 
     /**
      * Browser which will be used for testing.
@@ -220,6 +212,27 @@ public final class SeleniumWrapperConfiguration {
      */
     public String getDriverName() {
         return configuration.getRequiredStringValue("driver");
+    }
+
+    /** Returns the (possibly empty) list of additional arguments to pass to the Browser. Only used for Selenium 2, and only
+     * supported by CHROME driver.
+     * 
+     * @return (possibly empty) list of additional arguments to pass to the Browser. */
+    public String[] getBrowserArguments() {
+        String value = configuration.getStringValue("browser.arguments");
+        if (value == null) {
+            return new String[0];
+        }
+
+        List<String> result = new ArrayList<String>();
+        for (String arg : value.split(" ")) {
+            arg = arg.trim();
+            if (arg.length() > 0) {
+                result.add(arg);
+            }
+        }
+
+        return result.toArray(new String[0]);
     }
 
     /**

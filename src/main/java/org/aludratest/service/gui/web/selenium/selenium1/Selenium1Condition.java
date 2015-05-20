@@ -17,7 +17,6 @@ package org.aludratest.service.gui.web.selenium.selenium1;
 
 import org.aludratest.exception.AludraTestException;
 import org.aludratest.service.gui.web.WebGUICondition;
-import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.window.WindowLocator;
 import org.databene.commons.StringUtil;
@@ -46,10 +45,9 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean isElementPresent(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementObject = assertGUIElementLocator(locator);
+    public boolean isElementPresent(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.waitForElement(elementObject);
+            wrapper.waitForElement(locator);
             return true;
         }
         catch (AludraTestException e) {
@@ -62,10 +60,9 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean isElementVisible(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementObject = assertGUIElementLocator(locator);
+    public boolean isElementVisible(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.waitForVisible(elementObject);
+            wrapper.waitForVisible(locator);
             return true;
         }
         catch (AludraTestException e) {
@@ -78,10 +75,9 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean isElementEnabled(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementObject = assertGUIElementLocator(locator);
+    public boolean isElementEnabled(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.waitForEnabled(elementObject);
+            wrapper.waitForEnabled(locator);
             return true;
         }
         catch (AludraTestException e) {
@@ -94,10 +90,9 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean isElementNotPresent(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementObject = assertGUIElementLocator(locator);
+    public boolean isElementNotPresent(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.waitForElementNotPresent(elementObject);
+            wrapper.waitForElementNotPresent(locator);
             return true;
         }
         catch (AludraTestException e) {
@@ -110,10 +105,9 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean isElementPresent(String elementType, String operation, Locator locator, long timeout) {
-        final GUIElementLocator elementObject = assertGUIElementLocator(locator);
+    public boolean isElementPresent(String elementType, String operation, GUIElementLocator locator, long timeout) {
         try {
-            wrapper.waitForElement(elementObject, timeout);
+            wrapper.waitForElement(locator, timeout);
             return true;
         }
         catch (AludraTestException e) {
@@ -126,10 +120,9 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean isElementVisible(String elementType, String operation, Locator locator, long timeout) {
-        final GUIElementLocator elementObject = assertGUIElementLocator(locator);
+    public boolean isElementVisible(String elementType, String operation, GUIElementLocator locator, long timeout) {
         try {
-            wrapper.waitForVisible(elementObject, timeout);
+            wrapper.waitForVisible(locator, timeout);
             return true;
         }
         catch (AludraTestException e) {
@@ -142,10 +135,9 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean isElementEnabled(String elementType, String operation, Locator locator, long timeout) {
-        final GUIElementLocator elementObject = assertGUIElementLocator(locator);
+    public boolean isElementEnabled(String elementType, String operation, GUIElementLocator locator, long timeout) {
         try {
-            wrapper.waitForEnabled(elementObject, timeout);
+            wrapper.waitForEnabled(locator, timeout);
             return true;
         }
         catch (AludraTestException e) {
@@ -158,10 +150,9 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean isElementNotPresent(String elementType, String operation, Locator locator, long timeout) {
-        final GUIElementLocator elementObject = assertGUIElementLocator(locator);
+    public boolean isElementNotPresent(String elementType, String operation, GUIElementLocator locator, long timeout) {
         try {
-            wrapper.waitForElementNotPresent(elementObject, timeout);
+            wrapper.waitForElementNotPresent(locator, timeout);
             return true;
         }
         catch (AludraTestException e) {
@@ -174,10 +165,9 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean isWindowOpen(String elementType, String operation, Locator locator) {
-        final WindowLocator windowObject = getDefaultWindowLocator(wrapper, locator);
+    public boolean isWindowOpen(String elementType, String operation, WindowLocator locator) {
         try {
-            wrapper.selectWindow(windowObject);
+            wrapper.selectWindow(locator);
             return true;
         }
         catch (AludraTestException e) {
@@ -190,11 +180,10 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean isElementPresentandInForeground(String elementType, String operation, Locator locator) {
-        final GUIElementLocator elementObject = assertGUIElementLocator(locator);
+    public boolean isElementPresentandInForeground(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.waitForElement(elementObject);
-            wrapper.waitForInForeground(elementObject);
+            wrapper.waitForElement(locator);
+            wrapper.waitForInForeground(locator);
             return true;
         }
         catch (AludraTestException e) {
@@ -207,12 +196,11 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean isElementChecked(String elementType, String elementName, Locator locator) {
-        final GUIElementLocator elementObject = assertGUIElementLocator(locator);
+    public boolean isElementChecked(String elementType, String elementName, GUIElementLocator locator) {
         try {
-            wrapper.waitForElement(elementObject);
-            wrapper.waitForInForeground(elementObject);
-            return wrapper.isChecked(elementObject);
+            wrapper.waitForElement(locator);
+            wrapper.waitForInForeground(locator);
+            return wrapper.isChecked(locator);
         }
         catch (AludraTestException e) {
             return false;
@@ -224,17 +212,15 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
-    public boolean containsLabels(String elementType, String elementName, Locator locator, String... labels) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        CheckLabelCondition condition = new CheckLabelCondition(true, labels, wrapper, elementLocator);
+    public boolean containsLabels(String elementType, String elementName, GUIElementLocator locator, String... labels) {
+        CheckLabelCondition condition = new CheckLabelCondition(true, labels, wrapper, locator);
         wrapper.retryUntilTimeout(condition);
         return StringUtil.isEmpty(condition.getMismatches());
     }
 
     @Override
-    public boolean equalsLabels(String elementType, String elementName, Locator locator, String... labels) {
-        GUIElementLocator elementLocator = assertGUIElementLocator(locator);
-        CheckLabelCondition condition = new CheckLabelCondition(false, labels, wrapper, elementLocator);
+    public boolean equalsLabels(String elementType, String elementName, GUIElementLocator locator, String... labels) {
+        CheckLabelCondition condition = new CheckLabelCondition(false, labels, wrapper, locator);
         wrapper.retryUntilTimeout(condition);
         return StringUtil.isEmpty(condition.getMismatches());
     }

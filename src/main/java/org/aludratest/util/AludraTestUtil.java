@@ -98,7 +98,8 @@ public class AludraTestUtil {
         }
         if (context instanceof AludraTestContext) {
             InvocationHandler invocationHandler = new ControlFlowHandler(object, serviceId, systemConnector,
-                    (AludraTestContext) context, stopOnException, !Condition.class.isAssignableFrom(interfaceType));
+                    (AludraTestContext) context, stopOnException, !Condition.class.isAssignableFrom(interfaceType),
+                    config.isDebugAttachmentsOnFrameworkException());
             return AludraTestUtil.<T> wrapWithInvocationHandler(interfaceType, invocationHandler);
         }
         return object;

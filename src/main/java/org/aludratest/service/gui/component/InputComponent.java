@@ -15,44 +15,23 @@
  */
 package org.aludratest.service.gui.component;
 
-import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
 
-/** Abstract base class for input components. Adds an enabled / disabled state to the component.
+/** Interface for input components. Adds an enabled / disabled state to the component.
  * 
  * @author falbrech
- * @param <E> Type of concrete subclasses. */
-public abstract class InputComponent<E extends Element<E>> extends Element<E> {
-
-    /** Constructor.
-     * @param aludraGui The underlying {@link AludraGUI} service instance.
-     * @param locator A locator for the referenced component. */
-    protected InputComponent(AludraGUI aludraGui, Locator locator) {
-        super(aludraGui, locator);
-    }
-
-    /** Constructor.
-     * @param aludraGui The underlying {@link AludraGUI} service instance.
-     * @param locator A locator for the referenced component.
-     * @param elementName An explicit name to use for the component. */
-    protected InputComponent(AludraGUI aludraGui, Locator locator, String elementName) {
-        super(aludraGui, locator, elementName);
-    }
+ * @param <E> Type of concrete component. */
+public interface InputComponent<E extends Element<E>> extends Element<E> {
 
     /** Checks whether this input element is enabled.
      * 
      * @return <code>true</code> if the input element is enabled, <code>false</code> otherwise. */
-    public boolean isEnabled() {
-        return check().isElementEnabled(elementType, elementName, locator);
-    }
+    public boolean isEnabled();
 
     /** Checks whether this input element is enabled.
      * 
      * @param timeout Max time to wait for this input element to become enabled.
      * 
      * @return <code>true</code> if the input element is enabled, <code>false</code> otherwise. */
-    public boolean isEnabled(long timeout) {
-        return check().isElementEnabled(elementType, elementName, locator, timeout);
-    }
+    public boolean isEnabled(long timeout);
 
 }

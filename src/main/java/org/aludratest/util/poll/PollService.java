@@ -15,7 +15,11 @@
  */
 package org.aludratest.util.poll;
 
-import org.aludratest.exception.AludraTestException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeoutException;
+
+import org.aludratest.exception.AutomationException;
+import org.aludratest.util.timeout.TimeoutService;
 import org.databene.commons.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,29 +62,54 @@ public class PollService {
     }
 
     /** Executes the {@link PolledTask} repeatedly until it is successful or a timeout is exceeded.
-     *  @param task
-     *  @return a not-null result of type R returned by the task
-     *  @throws E if the timeout is exceeded before a task invocation returned a not-null result value */
-    public <R, E extends AludraTestException> R poll(PolledTask<R, E> task) throws E {
+     * @param task
+     * @return a not-null result of type R returned by the task
+     * @throws T if the timeout is exceeded before a task invocation returned a not-null result value */
+    public <T> T poll(PolledTask<T> task) {
         long startMillis = System.currentTimeMillis();
         boolean errorOccurred = false;
+        long elapsedTime = 0;
         do {
-            R result = task.run();
+            long remainingTime = timeout - elapsedTime;
+            T result = null;
+            try {
+                result = invokeWithTimeout(task, remainingTime);
+            }
+            catch (TimeoutException e) {
+                LOGGER.debug("Timeout exceeded while executing task {}", task);
+                break;
+            }
+            catch (Exception e) {
+                throw new AutomationException("Unexpected error executing task " + task, e);
+            }
             if (result != null) {
                 LOGGER.debug("Task {} finished successfully, result: {}", task, result);
                 return result;
-            } else {
+            }
+            else if (interval < remainingTime) {
                 LOGGER.debug("Task {} did not succeed, retrying in {} ms", task, interval);
+                try {
+                    Thread.sleep(interval);
+                }
+                catch (InterruptedException e) {
+                    LOGGER.error("Interrupted while polling", e);
+                    errorOccurred = true;
+                }
             }
-            try {
-                Thread.sleep(interval);
-            } catch (InterruptedException e) {
-                LOGGER.error("Interrupted while polling", e);
-                errorOccurred = true;
-            }
-        } while (!errorOccurred && System.currentTimeMillis() - startMillis < timeout);
+            elapsedTime = System.currentTimeMillis() - startMillis;
+        } while (!errorOccurred && elapsedTime < timeout);
         LOGGER.debug("Task {} did not succeed within the timeout of {} ms", task, timeout);
-        throw task.throwTimeoutException();
+        return task.timedOut();
+    }
+
+    private static <T> T invokeWithTimeout(final PolledTask<T> task, long timeout) throws Exception {
+        Callable<T> callable = new Callable<T>() {
+            @Override
+            public T call() throws Exception {
+                return task.run();
+            }
+        };
+        return TimeoutService.call(callable, timeout);
     }
 
 }

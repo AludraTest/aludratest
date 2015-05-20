@@ -64,6 +64,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
     private boolean ignoreEnabled;
     private String version;
 
+    private boolean debugAttachmentsOnFrameworkException;
+
 
     // constructor -------------------------------------------------------------
 
@@ -108,6 +110,41 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         return stopTestCaseOnOtherException;
     }
 
+    @Override
+    public boolean isDebugAttachmentsOnFrameworkException() {
+        return debugAttachmentsOnFrameworkException;
+    }
+
+    @Override
+    public String getXlsRootPath() {
+        return xlsRootPath;
+    }
+
+    @Override
+    public int getNumberOfThreads() {
+        return numberOfThreads;
+    }
+
+    /** @return {@link #xlsFormattedByDefault} */
+    public boolean isXlsFormattedByDefault() {
+        return xlsFormattedByDefault;
+    }
+
+    @Override
+    public boolean isConfigTabRequired() {
+        return configTabRequired;
+    }
+
+    @Override
+    public boolean isIgnoreEnabled() {
+        return ignoreEnabled;
+    }
+
+    @Override
+    public double getNumericTolerance() {
+        return numericTolerance;
+    }
+
     // private helper methods --------------------------------------------------
 
     private void readAludraTestVersion() {
@@ -148,36 +185,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         this.ignoreEnabled = config.getBooleanValue(IGNORE_ENABLED_PROP, IGNORE_ENABLED_DEFAULT);
 
         this.numericTolerance = config.getDoubleValue(NUMERIC_TOLERANCE_PROP, 0.000001);
-    }
 
-    @Override
-    public String getXlsRootPath() {
-        return xlsRootPath;
-    }
-
-    @Override
-    public int getNumberOfThreads() {
-        return numberOfThreads;
-    }
-
-    /** @return {@link #xlsFormattedByDefault} */
-    public boolean isXlsFormattedByDefault() {
-        return xlsFormattedByDefault;
-    }
-
-    @Override
-    public boolean isConfigTabRequired() {
-        return configTabRequired;
-    }
-
-    @Override
-    public boolean isIgnoreEnabled() {
-        return ignoreEnabled;
-    }
-
-    @Override
-    public double getNumericTolerance() {
-        return numericTolerance;
+        this.debugAttachmentsOnFrameworkException = config.getBooleanValue(DEBUG_ON_FRAMEWORK_EXCEPTION_PROP, false);
     }
 
 }

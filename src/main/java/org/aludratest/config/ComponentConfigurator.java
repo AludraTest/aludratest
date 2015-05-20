@@ -17,6 +17,7 @@ package org.aludratest.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -107,27 +108,27 @@ public class ComponentConfigurator {
      * @throws IOException If the resource could not be loaded. */
     public static void fillPreferencesFromPropertiesResource(MutablePreferences preferences, String resourceName,
             ClassLoader classLoader) throws IOException {
-        InputStream in = classLoader.getResourceAsStream(resourceName);
-        if (in == null) {
-            return;
-        }
+        Enumeration<URL> urls = classLoader.getResources(resourceName);
 
-        try {
-            Properties p = new Properties();
-            p.load(in);
-
-            // copy to Preferences
-            Enumeration<?> keyNames = p.propertyNames();
-            while (keyNames.hasMoreElements()) {
-                String key = keyNames.nextElement().toString();
-                preferences.setValue(key, p.getProperty(key));
-            }
-        }
-        finally {
+        while (urls.hasMoreElements()) {
+            InputStream in = urls.nextElement().openStream();
             try {
-                in.close();
+                Properties p = new Properties();
+                p.load(in);
+
+                // copy to Preferences
+                Enumeration<?> keyNames = p.propertyNames();
+                while (keyNames.hasMoreElements()) {
+                    String key = keyNames.nextElement().toString();
+                    preferences.setValue(key, p.getProperty(key));
+                }
             }
-            catch (IOException e2) { // NOSONAR
+            finally {
+                try {
+                    in.close();
+                }
+                catch (IOException e2) { // NOSONAR
+                }
             }
         }
     }

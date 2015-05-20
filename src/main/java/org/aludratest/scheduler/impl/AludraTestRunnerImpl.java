@@ -241,12 +241,16 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
             LOGGER.info("Tasks need to be cancelled: {}", queue);
         }
         while (!queue.isEmpty()) {
+            List<Future<Void>> toCancel = new ArrayList<Future<Void>>();
             synchronized (queue) {
                 if (!queue.isEmpty()) {
                     Future<Void> task = queue.poll();
-                    LOGGER.info("Cancelling task: {}", task);
-                    task.cancel(true);
+                    toCancel.add(task);
                 }
+            }
+            for (Future<Void> task : toCancel) {
+                LOGGER.info("Cancelling task: {}", task);
+                task.cancel(true);
             }
         }
     }

@@ -15,38 +15,17 @@
  */
 package org.aludratest.service.gui.component;
 
-import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
 
 /**
  * Represents a Window/Frame in a GUI.
  * @author Joerg Langnickel
  * @author Volker Bergmann
  */
-public class Window extends GUIComponent {
-
-    /**
-     * Constructor.
-     * @param aludraGui the underlying {@link AludraGUI} service instance
-     * @param locator a locator for the referenced window
-     */
-    public Window(AludraGUI aludraGui, Locator locator) {
-        super(aludraGui, locator);
-    }
-
-    /** Constructor.
-     *  @param aludraGui the underlying {@link AludraGUI} service instance
-     *  @param locator a locator for the referenced element
-     *  @param elementName an explicit name to use for the window */
-    public Window(AludraGUI aludraGui, Locator locator, String elementName) {
-        super(aludraGui, locator, elementName);
-    }
+public interface Window extends GUIComponent {
 
     /**
      * Closes all other open windows.
      */
-    public void closeOthers() {
-        perform().closeOtherWindows(elementType, elementName, locator);
-    }
+    public void closeOthers();
 
 }

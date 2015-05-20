@@ -15,65 +15,31 @@
  */
 package org.aludratest.service.gui.component;
 
-import org.aludratest.service.gui.AludraGUI;
-import org.aludratest.service.locator.Locator;
-import org.aludratest.util.data.helper.DataMarkerCheck;
 
 /**
  * Represents a radio button on a GUI.
  * @author Joerg Langnickel
  * @author Volker Bergmann
  */
-public class RadioButton extends InputComponent<RadioButton> {
+public interface RadioButton extends InputComponent<RadioButton> {
 
-    /**
-     * Constructor.
-     * @param aludraGui the underlying {@link AludraGUI} service instance
-     * @param locator a locator for the referenced radio button
-     */
-    public RadioButton(AludraGUI aludraGui, Locator locator) {
-        super(aludraGui, locator);
-    }
-
-    /** Constructor.
-     *  @param aludraGui the underlying {@link AludraGUI} service instance
-     *  @param locator a locator for the referenced element
-     *  @param elementName an explicit name to use for the component */
-    public RadioButton(AludraGUI aludraGui, Locator locator, String elementName) {
-        super(aludraGui, locator, elementName);
-    }
-    
     /** Selects this radio button. */
-    public void select() {
-        perform().selectRadiobutton(elementType, elementName, locator, taskCompletionTimeout);
-    }
+    public void select();
 
     /** Selects this radio button if and only if the passed string parameter has the value <code>"true"</code>. In every other
      * case, no action is performed.
      * 
      * @param value String parameter to indicate if a select operation shall be performed on this radio button. */
-    public void select(String value) {
-        if (!DataMarkerCheck.isNull(value)) {
-            if (Boolean.parseBoolean(value)) {
-                select();
-            }
-        }
-    }
+    public void select(String value);
 
     /** Asserts that the radio button is checked */
-    public void assertChecked() {
-        verify().assertChecked(elementType, elementName, locator);
-    }
+    public void assertChecked();
 
     /** Asserts that this Radio button is in the expected state, passed by expected string. If the expected string is null or
      * marked as null, no operation will be executed.
      * 
      * @param expected <code>"true"</code> or <code>"false"</code>, or <code>null</code> or marked as null to not perform any
      *            assertion. */
-    public void assertChecked(String expected) {
-        if (!DataMarkerCheck.isNull(expected)) {
-            verify().assertChecked(elementType, elementName, Boolean.parseBoolean(expected), locator);
-        }
-    }
+    public void assertChecked(String expected);
 
 }

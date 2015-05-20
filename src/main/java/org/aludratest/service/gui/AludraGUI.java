@@ -16,6 +16,7 @@
 package org.aludratest.service.gui;
 
 import org.aludratest.service.AludraService;
+import org.aludratest.service.gui.component.GUIComponentFactory;
 
 /**
  * Specialization of the {@link AludraService} interface
@@ -35,5 +36,10 @@ public interface AludraGUI extends AludraService {
     /** @see AludraService#check() */
     @Override
     public GUICondition check();
+
+    /** Returns a factory which can be used to create GUI components for this service.
+     * 
+     * @return A factory which can be used to create GUI components for this service, never <code>null</code>. */
+    public GUIComponentFactory getComponentFactory();
 
 }

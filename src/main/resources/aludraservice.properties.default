@@ -10,3 +10,4 @@ org.aludratest.service.separatedfile.SeparatedFileService=org.aludratest.service
 org.aludratest.config.AludraTestConfig=org.aludratest.config.impl.AludraTestConfigImpl
 org.aludratest.util.retry.AutoRetry=org.aludratest.util.retry.AutoRetryImpl
 org.aludratest.data.DataConfiguration=org.aludratest.data.DataConfigurationImpl
+org.aludratest.service.cmdline.CommandLineService=org.aludratest.service.cmdline.impl.CommandLineServiceImpl
