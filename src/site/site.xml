@@ -26,7 +26,7 @@
     		<item name="Create a test suite" 	href="create-a-test-suite.html"/>
 	    	<item name="Run a test" 			href="run-a-test.html"/>
     		<item name="Run parallel" 			href="run-parallel.html"/> 
-    		<item name="Understand the log" 	href="log4testing-user-guide.html"/>
+    		<item name="Understand the log" 	href="understand-the-log.html"/>
     		<item name="Configure AludraTest" 	href="configure-aludratest.html"/>
     		<item name="Data drive a test" 		href="data-drive-a-test.html"/>
     		<item name="Use Excel data source"	href="use-excel-data-source.html"/>

@@ -31,7 +31,7 @@ When applied to a method, each column of the data source is mapped to the primit
 
 
 ==== Parameter Data Source ====
-Alternatively a data dource can be applied to a method parameter of JavaBean type. Then, data source column names are mapped to JavaBean properties. Even recursive JavaBean graphs can be constructed from a data source like an Excel sheet:
+Alternatively a data source can be applied to a method parameter of JavaBean type. Then, data source column names are mapped to JavaBean properties. Even recursive JavaBean graphs can be constructed from a data source like an Excel sheet:
 <code>
  import org.aludratest.testcase.AludraTestCase;
  import org.aludratest.testcase.data.Source;

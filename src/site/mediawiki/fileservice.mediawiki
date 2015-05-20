@@ -115,7 +115,7 @@ File content can be written and read via FileInteraction using text mode or bina
 
 ==== One-Liners ====
 
-There are methods which make file creation/reading a one-liner (read/WriteText/BinaryFile()): You provide the file name, the file content (as string or byte array) and specify wether existing files shall be overwritten. That's it.
+There are methods which make file creation/reading a one-liner (read/WriteText/BinaryFile()): You provide the file name, the file content (as string or byte array) and specify whether existing files shall be overwritten. That's it.
 
 Example:
 
@@ -147,7 +147,7 @@ Example:
 
 Hint: The method getReaderForTextFile() returns a BufferedReader whose readLine() method can be used to iterate through the stream linewise.
 
-Attention: When iterating the Reader character by character, line feeds are nont converted between the service's file system and the JVM's.
+Attention: When iterating the Reader character by character, line feeds are not converted between the service's file system and the JVM's.
 
 Example:
 

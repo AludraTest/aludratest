@@ -1,6 +1,6 @@
 = Setup Environment for Development =
 
-=== Prerequisits ===
+=== Prerequisites ===
 
 *java development kit (JDK) 1.6 or higher
 *apache maven 3
@@ -8,7 +8,7 @@
 
 Additionally we recommend:
 *using a version control system, e.g. git or svn
-*using a build server for continuous integration (CI), e.g. jenkens
+*using a build server for continuous integration (CI), e.g. jenkins
 *using a local artifact repository, e.g. artifactory, archiva 
 *using a code review workflow or tool, e.g. gerrit
 

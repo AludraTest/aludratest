@@ -1,4 +1,3 @@
-
 == Advanced Topics ==
 
 === Excel Collection Mapping ===
@@ -158,7 +157,7 @@ AludraTest provides a feature to generate Excel documents based on a test method
 
 ==== Excel Generation GUI ====
 
-The Excel Generation GUI is tarted by launching the main class '''org.aludratest.app.excelwizard.ExcelWizard'''. It scans the current project folder for (already compiled) AludraTest test cases and displays them in a list.
+The Excel Generation GUI is started by launching the main class '''org.aludratest.app.excelwizard.ExcelWizard'''. It scans the current project folder for (already compiled) AludraTest test cases and displays them in a list.
 
 Using a filter text, the user can filter the test cases by substring:
 

@@ -29,10 +29,10 @@ If you like to extend Log4Testing, please refer to [[log4testing developer guide
 :A test failed due an error which should be addressed a '''Functional Tester'''. Usually this indicates that the SUT is hanging or takes an intolerable timespan to respond to a user activity.
 
 ;<span style="background-color: rgb(238, 136, 255);">Failed Access</span>
-:A test failed due a failed system access which should be addressed by a '''Test Developer'''. Most likely a required system is offline or access configuration is wrong.
+:A test failed due to a failed system access which should be addressed by a '''Test Developer'''. Most likely a required system is offline or access configuration is wrong.
 
 ;<span style="background-color: rgb(255, 255, 170);">Failed Automation</span>
-:A test failed due an error which could be fixed a '''Test Developer'''. Mostly these are technical errors like a changed technical identifier.
+:A test failed due to an error which could be fixed a '''Test Developer'''. Mostly these are technical errors like a changed technical identifier.
 
 ;<span style="background-color: rgb(46, 154, 254);">Inconclusive</span>
 :A test failed due to an error which has to be examined by an '''AludraTest Developer'''.
