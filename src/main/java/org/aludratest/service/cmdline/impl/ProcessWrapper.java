@@ -111,12 +111,17 @@ public class ProcessWrapper {
     /** Starts the process.
      * @throws IOException */
     public void start() throws IOException {
-        assertState(ProcessState.CREATED);
-        this.process = builder.start();
-        this.stdOut = new ProcessOutputReader(process.getInputStream(), this, "stdout");
-        this.errOut = new ProcessOutputReader(process.getErrorStream(), this, "stderr");
-        this.stdIn = process.getOutputStream();
-        this.state = ProcessState.RUNNING;
+        try {
+            assertState(ProcessState.CREATED);
+            this.process = builder.start();
+            this.stdOut = new ProcessOutputReader(process.getInputStream(), this, "stdout");
+            this.errOut = new ProcessOutputReader(process.getErrorStream(), this, "stderr");
+            this.stdIn = process.getOutputStream();
+            this.state = ProcessState.RUNNING;
+        }
+        catch (IOException e) {
+            throw new AutomationException("Error starting process: " + this, e);
+        }
     }
 
     /** Tells if the process is running.
@@ -151,8 +156,7 @@ public class ProcessWrapper {
     /** Enters the provided text into the process' stdin and appends a line feed.
      * @param text the text to enter */
     public void enterLine(String text) {
-        enter(text);
-        enter(LINEFEED);
+        enter(text + LINEFEED);
     }
 
     /** Enters the provided text into the process' stdin.
