@@ -109,8 +109,6 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         this.responseTimeout = responseTimeout;
         this.service = service;
         this.workingDirectory = SystemInfo.getCurrentDir();
-        // try to call the git client in order to prove its availability
-        version(new VersionData());
     }
 
     /** Returns the working directory of the process.

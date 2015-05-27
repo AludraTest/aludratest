@@ -121,9 +121,12 @@ class ProcessOutputReader implements Closeable {
         public String nextLine() throws IOException {
             if (!bufferedTextAvailable()) {
                 if (process.isRunning()) {
+                    // expect process output
                     waitUntilAvailable();
                 }
-                else {
+                else if (!availableWithinResponseTimeout()) {
+                    // perform another check if process output was pending
+                    // (necessary for Windows)
                     return null;
                 }
             }
@@ -194,14 +197,12 @@ class ProcessOutputReader implements Closeable {
                         builder.append((char) c);
                     }
                     else {
+                        // if the line separator consists of multiple characters,
+                        // assume the following characters match and skip them
+                        for (int i = 1; i < LF.length() && pos < buffer.length() && c != -1; i++) {
+                            c = buffer.get(pos++);
+                        }
                         break;
-                    }
-                }
-                if (c != -1) {
-                    // if the line separator consists of multiple characters, assume the following characters match and skip them
-                    for (int i = 1; i < LF.length(); i++) {
-                        c = in.read();
-                        pos++;
                     }
                 }
                 return builder.toString();

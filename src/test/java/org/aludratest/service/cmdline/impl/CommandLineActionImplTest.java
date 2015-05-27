@@ -18,6 +18,7 @@ package org.aludratest.service.cmdline.impl;
 import static org.junit.Assert.assertEquals;
 
 import org.aludratest.AludraTest;
+import org.aludratest.exception.AutomationException;
 import org.aludratest.service.cmdline.CommandLineProcess;
 import org.aludratest.service.cmdline.CommandLineService;
 import org.aludratest.util.data.IntData;
@@ -68,6 +69,17 @@ public class CommandLineActionImplTest {
         process.stdOut().nextLine().assertEquals(new StringData("Bob"));
         process.stdOut().nextLine().assertEquals(new StringData("Charly"));
         process.stdOut().assertEmpty();
+        process.waitUntilFinished();
+        process.destroy();
+    }
+
+    @Test(expected = AutomationException.class)
+    public void testNonExistingProgram() {
+        CommandLineService service = getCommandLineService();
+        @SuppressWarnings("rawtypes")
+        CommandLineProcess<?> process = new CommandLineProcess("nonexisting_prg", "nonexisting_prg", service, 3000, 2000,
+                "nonexisting_prg");
+        process.start();
         process.waitUntilFinished();
         process.destroy();
     }
