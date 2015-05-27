@@ -5,11 +5,11 @@
 
   <xs:complexType name="testData">
     <xs:sequence>
-      <xs:element name="metadata" type="tns:testDataMetadata"/>
-      <xs:element name="configurations" minOccurs="0">
+      <xs:element name="metadata" type="tns:testDataMetadata" form="qualified"/>
+      <xs:element name="configurations" form="qualified" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="configuration" type="tns:testDataConfiguration" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="configuration" type="tns:testDataConfiguration" form="qualified" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -19,10 +19,10 @@
 
   <xs:complexType name="testDataMetadata">
     <xs:sequence>
-      <xs:element name="segments" minOccurs="0">
+      <xs:element name="segments" form="qualified" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="segment" type="tns:testDataSegmentMetadata" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="segment" type="tns:testDataSegmentMetadata" form="qualified" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -31,10 +31,10 @@
 
   <xs:complexType name="testDataSegmentMetadata">
     <xs:sequence>
-      <xs:element name="fields" minOccurs="0">
+      <xs:element name="fields" form="qualified" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="field" type="tns:testDataFieldMetadata" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="field" type="tns:testDataFieldMetadata" form="qualified" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -46,7 +46,7 @@
   <xs:complexType name="testDataFieldMetadata">
     <xs:sequence/>
     <xs:attribute name="name" type="xs:string" use="required"/>
-    <xs:attribute name="fieldType" type="tns:testDataFieldType" use="required"/>
+    <xs:attribute name="fieldType" type="tns:testDataFieldType"/>
     <xs:attribute name="subTypeClassName" type="xs:string"/>
     <xs:attribute name="formatterPattern" type="xs:string"/>
     <xs:attribute name="formatterLocale" type="xs:string"/>
@@ -54,24 +54,24 @@
 
   <xs:complexType name="testDataConfiguration">
     <xs:sequence>
-      <xs:element name="segments" minOccurs="0">
+      <xs:element name="segments" form="qualified" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="segment" type="tns:testDataConfigurationSegment" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="segment" type="tns:testDataConfigurationSegment" form="qualified" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required"/>
-    <xs:attribute name="ignored" type="xs:boolean" use="required"/>
+    <xs:attribute name="ignored" type="xs:boolean"/>
   </xs:complexType>
 
   <xs:complexType name="testDataConfigurationSegment">
     <xs:sequence>
-      <xs:element name="fieldValues" minOccurs="0">
+      <xs:element name="fieldValues" form="qualified" minOccurs="0">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="fieldValue" type="tns:testDataFieldValue" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="fieldValue" type="tns:testDataFieldValue" form="qualified" minOccurs="0" maxOccurs="unbounded"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -82,12 +82,12 @@
   <xs:complexType name="testDataFieldValue">
     <xs:sequence>
       <xs:choice minOccurs="0">
-        <xs:element name="value" type="tns:stringValue"/>
-        <xs:element name="stringValues" type="tns:stringValueList"/>
+        <xs:element name="value" type="tns:stringValue" form="qualified"/>
+        <xs:element name="stringValues" type="tns:stringValueList" form="qualified"/>
       </xs:choice>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required"/>
-    <xs:attribute name="script" type="xs:boolean" use="required"/>
+    <xs:attribute name="script" type="xs:boolean"/>
   </xs:complexType>
 
   <xs:simpleType name="stringValue">
@@ -96,7 +96,7 @@
 
   <xs:complexType name="stringValueList">
     <xs:sequence>
-      <xs:element name="value" type="tns:stringValue" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="value" type="tns:stringValue" form="qualified" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 
