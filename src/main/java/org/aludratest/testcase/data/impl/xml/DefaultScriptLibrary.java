@@ -23,11 +23,13 @@ import org.mozilla.javascript.Scriptable;
 public final class DefaultScriptLibrary implements ScriptLibrary {
 
     private static final String JS_ADD_DAYS_TO_NOW = "function addDaysToNow(days_add) { return new Date(new Date().getTime() + days_add * 24 * 60 * 60 * 1000); }";
+    private static final String JS_ADD_HOURS_TO_NOW = "function addHoursToNow(hours_add) { return new Date(new Date().getTime() + hours_add * 60 * 60 * 1000); }";
 
     @Override
     public void addFunctionsToContext(Context context, Scriptable scope) {
-        // "compile" function into scope
+        // "compile" functions into scope
         context.evaluateString(scope, JS_ADD_DAYS_TO_NOW, "jsAddDaysToNow", 1, null);
+        context.evaluateString(scope, JS_ADD_HOURS_TO_NOW, "jsAddHoursToNow", 1, null);
     }
 
 }

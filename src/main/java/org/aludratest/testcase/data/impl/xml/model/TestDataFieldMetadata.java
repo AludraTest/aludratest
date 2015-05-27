@@ -18,14 +18,16 @@ package org.aludratest.testcase.data.impl.xml.model;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(namespace = "http://aludratest.org/testdata")
 public class TestDataFieldMetadata {
 
     @XmlAttribute(name = "name", required = true)
     private String name;
 
-    @XmlAttribute(name = "fieldType", required = true)
+    @XmlAttribute(name = "fieldType")
     private TestDataFieldType type;
 
     @XmlAttribute(name = "subTypeClassName")
@@ -42,7 +44,7 @@ public class TestDataFieldMetadata {
     }
 
     public TestDataFieldType getType() {
-        return type;
+        return type == null ? TestDataFieldType.STRING : type;
     }
 
     public String getSubTypeClassName() {

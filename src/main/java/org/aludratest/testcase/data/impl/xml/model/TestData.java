@@ -15,27 +15,36 @@
  */
 package org.aludratest.testcase.data.impl.xml.model;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.transform.Result;
+import javax.xml.transform.stream.StreamResult;
 
-@XmlRootElement(name = "testdata")
+@XmlRootElement(name = "testdata", namespace = "http://aludratest.org/testdata")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TestData {
 
-    @XmlElement(name = "metadata", required = true)
+    @XmlAttribute(name = "version", required = true)
+    private String version;
+
+    @XmlElement(namespace = "http://aludratest.org/testdata", name = "metadata", required = true)
     private TestDataMetadata metadata;
 
-    @XmlElementWrapper(name = "configurations")
-    @XmlElement(name = "configuration", type = TestDataConfiguration.class)
+    @XmlElementWrapper(namespace = "http://aludratest.org/testdata", name = "configurations")
+    @XmlElement(namespace = "http://aludratest.org/testdata", name = "configuration", type = TestDataConfiguration.class)
     private List<TestDataConfiguration> configurations;
 
     public TestDataMetadata getMetadata() {
@@ -52,4 +61,21 @@ public class TestData {
         return (TestData) marshaller.unmarshal(in);
     }
 
+    private static void generateXmlSchema(JAXBContext ctx) throws IOException {
+        SchemaOutputResolver resolver = new SchemaOutputResolver() {
+            @Override
+            public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
+                File file = new File(suggestedFileName);
+                StreamResult result = new StreamResult(file);
+                result.setSystemId(file);
+                return result;
+            }
+        };
+        ctx.generateSchema(resolver);
+    }
+
+    public static void main(String[] args) throws JAXBException, IOException {
+        JAXBContext ctx = JAXBContext.newInstance(TestData.class);
+        generateXmlSchema(ctx);
+    }
 }

@@ -30,10 +30,10 @@ public class TestDataConfiguration {
     private String name;
 
     @XmlAttribute(name = "ignored")
-    private boolean ignored;
+    private Boolean ignored;
 
-    @XmlElementWrapper(name = "segments")
-    @XmlElement(name = "segment", type = TestDataConfigurationSegment.class)
+    @XmlElementWrapper(namespace = "http://aludratest.org/testdata", name = "segments")
+    @XmlElement(namespace = "http://aludratest.org/testdata", name = "segment", type = TestDataConfigurationSegment.class)
     private List<TestDataConfigurationSegment> segments;
 
     public List<TestDataConfigurationSegment> getSegments() {
@@ -45,7 +45,7 @@ public class TestDataConfiguration {
     }
 
     public boolean isIgnored() {
-        return ignored;
+        return ignored == null ? false : ignored.booleanValue();
     }
 
 }

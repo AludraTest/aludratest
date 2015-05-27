@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,9 +54,21 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.databene.commons.BeanUtil;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Undefined;
 
+/** An XML based Test Data provider. XML files must have the AludraTest XML Testdata format; best use AludraTest VDE Plugin for
+ * eclipse to create testdata files. The uri value of Source annotations must point to an XML file. This file is searched in these
+ * two locations:
+ * <ol>
+ * <li>In a folder <i>xlsRootPath</i>/package/of/testclass/as/folder/MyTestClass/</li>
+ * <li>Relative to <i>xlsRootPath</i>
+ * </ol>
+ * xlsRootPath value is configured in aludratest.properties.
+ * 
+ * @author falbrech */
 public class XmlBasedTestDataProvider implements TestDataProvider {
 
     @Requirement
@@ -207,7 +220,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                     if (fieldName.equals(field.getName())) {
                         Object value = field.getFieldValueAsJavaType();
                         if (field.isScript() && (value instanceof String)) {
-                            value = evaluate(value.toString(), fieldMeta.getFormatterPattern(),
+                            return new ScriptToEvaluate(value.toString(), fieldMeta.getFormatterPattern(),
                                     toLocale(fieldMeta.getFormatterLocale()));
                         }
                         return value;
@@ -245,6 +258,9 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             Data data = clazz.newInstance();
 
             // populate data
+            Map<String, ScriptToEvaluate> scriptValues = new HashMap<String, ScriptToEvaluate>();
+            Map<String, Object> plainValues = new HashMap<String, Object>();
+
             for (TestDataFieldMetadata field : segmentMeta.getFields()) {
                 Object value;
                 // if field is reference to another segment or segments, recurse into object creation
@@ -258,9 +274,48 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                     value = getFieldValue(configuration, segmentName, field);
                 }
 
-                if (value != null) {
+                if (!(value instanceof ScriptToEvaluate)) {
+                    // also put null in map to avoid "no such reference"
+                    plainValues.put(field.getName(), value);
+                }
+                else {
+                    scriptValues.put(field.getName(), (ScriptToEvaluate) value);
+                }
+
+                if (value != null && !(value instanceof ScriptToEvaluate)) {
                     BeanUtil.setPropertyValue(data, field.getName(), value);
                 }
+            }
+
+            // now evaluate scripts. Offer already calculated fields as Context variables
+            int lastErrorCount;
+            int errorCount = 0;
+            AutomationException lastException = null;
+            do {
+                lastErrorCount = errorCount;
+                errorCount = 0;
+                Iterator<Map.Entry<String, ScriptToEvaluate>> scriptIter = scriptValues.entrySet().iterator();
+                while (scriptIter.hasNext()) {
+                    Map.Entry<String, ScriptToEvaluate> entry = scriptIter.next();
+                    try {
+                        Object value = evaluate(entry.getValue().script, entry.getValue().formatPattern,
+                                entry.getValue().formatLocale, plainValues);
+                        plainValues.put(entry.getKey(), value);
+                        if (value != null) {
+                            BeanUtil.setPropertyValue(data, entry.getKey(), value);
+                        }
+                        scriptIter.remove();
+                    }
+                    catch (AutomationException e) {
+                        lastException = e;
+                        errorCount++;
+                    }
+                }
+            }
+            while (errorCount != lastErrorCount && !scriptValues.isEmpty());
+
+            if (errorCount > 0 && lastException != null) {
+                throw lastException;
             }
 
             return data;
@@ -362,8 +417,10 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
      *            used. If the expression evaluates to a String, this parameter is ignored.
      * @param locale Locale to apply to the format pattern. If not specified, <code>Locale.US</code> is used (<b>NOT</b> the
      *            platform default, to ensure platform-independent operation).
+     * @param contextVariables Map with objects which should be offered in the script context as variables. Can be
+     *            <code>null</code>.
      * @return */
-    public String evaluate(String script, String formatPattern, Locale locale) {
+    public String evaluate(String script, String formatPattern, Locale locale, Map<String, Object> contextVariables) {
         if (locale == null) {
             locale = Locale.US;
         }
@@ -377,26 +434,41 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                 lib.addFunctionsToContext(context, scope);
             }
 
-            Object result = context.evaluateString(scope, script, "<cmd>", 1, null);
-            result = toJavaObject(result);
-
-            // apply patterns, if required
-            if (result instanceof Date) {
-                if (formatPattern == null) {
-                    formatPattern = "yyyy-MM-dd";
+            // put context variables
+            if (contextVariables != null) {
+                for (Map.Entry<String, Object> entry : contextVariables.entrySet()) {
+                    scope.put(entry.getKey(), scope, entry.getValue() == null ? null : Context.toObject(entry.getValue(), scope));
                 }
-                SimpleDateFormat sdf = new SimpleDateFormat(formatPattern, locale);
-                return sdf.format(result);
-            }
-            if (result instanceof Number) {
-                if (formatPattern == null) {
-                    formatPattern = "#.#";
-                }
-                DecimalFormat df = new DecimalFormat(formatPattern, DecimalFormatSymbols.getInstance(locale));
-                return df.format(result);
             }
 
-            return result.toString();
+            try {
+                Object result = context.evaluateString(scope, script, "<cmd>", 1, null);
+                if (result instanceof Undefined) {
+                    return null;
+                }
+                result = toJavaObject(result);
+
+                // apply patterns, if required
+                if (result instanceof Date) {
+                    if (formatPattern == null) {
+                        formatPattern = "yyyy-MM-dd";
+                    }
+                    SimpleDateFormat sdf = new SimpleDateFormat(formatPattern, locale);
+                    return sdf.format(result);
+                }
+                if (result instanceof Number) {
+                    if (formatPattern == null) {
+                        formatPattern = "#.#";
+                    }
+                    DecimalFormat df = new DecimalFormat(formatPattern, DecimalFormatSymbols.getInstance(locale));
+                    return df.format(result);
+                }
+
+                return result.toString();
+            }
+            catch (RhinoException e) {
+                throw new AutomationException("Cannot evaluate test data script '" + script + "'", e);
+            }
         }
         finally {
             Context.exit();
@@ -442,6 +514,22 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
 
         // invalid locale string
         throw new IllegalArgumentException("Invalid Locale value found in XML: " + s);
+    }
+
+    private static class ScriptToEvaluate {
+
+        private String script;
+
+        private String formatPattern;
+
+        private Locale formatLocale;
+
+        private ScriptToEvaluate(String script, String formatPattern, Locale formatLocale) {
+            this.script = script;
+            this.formatPattern = formatPattern;
+            this.formatLocale = formatLocale;
+        }
+
     }
 
 }

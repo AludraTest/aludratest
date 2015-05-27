@@ -29,8 +29,8 @@ public class TestDataConfigurationSegment {
     @XmlAttribute(name = "name")
     private String name;
 
-    @XmlElementWrapper(name = "fieldValues")
-    @XmlElement(name = "fieldValue")
+    @XmlElementWrapper(namespace = "http://aludratest.org/testdata", name = "fieldValues")
+    @XmlElement(namespace = "http://aludratest.org/testdata", name = "fieldValue")
     private List<TestDataFieldValue> fieldValues;
 
     public String getName() {

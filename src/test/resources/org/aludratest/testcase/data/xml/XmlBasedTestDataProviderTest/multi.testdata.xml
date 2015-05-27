@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<testdata>
+<testdata xmlns="http://aludratest.org/testdata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://aludratest.org/testdata http://aludratest.github.io/aludratest/schema/draft/testdata.xsd" 
+	version="1.0">
     <metadata>
         <segments>
         <segment name="complexObject"

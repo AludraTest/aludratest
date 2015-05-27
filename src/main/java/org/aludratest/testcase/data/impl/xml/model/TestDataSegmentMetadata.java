@@ -32,8 +32,8 @@ public class TestDataSegmentMetadata {
     @XmlAttribute(name = "dataClassName", required = true)
     private String dataClassName;
 
-    @XmlElementWrapper(name = "fields")
-    @XmlElement(name = "field", type = TestDataFieldMetadata.class)
+    @XmlElementWrapper(namespace = "http://aludratest.org/testdata", name = "fields")
+    @XmlElement(namespace = "http://aludratest.org/testdata", name = "field", type = TestDataFieldMetadata.class)
     private List<TestDataFieldMetadata> fields;
 
     public String getName() {

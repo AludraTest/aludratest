@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class StringValueList {
 
-    @XmlElement(name = "value", type = StringValue.class)
+    @XmlElement(namespace = "http://aludratest.org/testdata", name = "value", type = StringValue.class)
     private List<StringValue> values;
 
     public List<StringValue> getValues() {

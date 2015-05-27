@@ -24,6 +24,10 @@ public class ComplexData extends Data {
 
     private String name;
 
+    private String secondField;
+
+    private String thirdField;
+
     public StringData getSubData() {
         return subData;
     }
@@ -38,6 +42,22 @@ public class ComplexData extends Data {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSecondField() {
+        return secondField;
+    }
+
+    public void setSecondField(String secondField) {
+        this.secondField = secondField;
+    }
+
+    public String getThirdField() {
+        return thirdField;
+    }
+
+    public void setThirdField(String thirdField) {
+        this.thirdField = thirdField;
     }
 
 }

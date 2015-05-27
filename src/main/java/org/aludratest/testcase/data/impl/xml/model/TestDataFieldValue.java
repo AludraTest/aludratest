@@ -30,12 +30,12 @@ public class TestDataFieldValue {
     @XmlAttribute(name = "name", required = true)
     private String name;
 
-    @XmlElements({ @XmlElement(name = "value", type = StringValue.class),
-        @XmlElement(name = "stringValues", type = StringValueList.class) })
+    @XmlElements({ @XmlElement(namespace = "http://aludratest.org/testdata", name = "value", type = StringValue.class),
+        @XmlElement(namespace = "http://aludratest.org/testdata", name = "stringValues", type = StringValueList.class) })
     private Object fieldValue;
 
     @XmlAttribute(name = "script")
-    private boolean script;
+    private Boolean script;
 
     public String getName() {
         return name;
@@ -60,7 +60,7 @@ public class TestDataFieldValue {
     }
 
     public boolean isScript() {
-        return script;
+        return script == null ? false : script.booleanValue();
     }
 
 }

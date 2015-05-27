@@ -21,12 +21,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(namespace = "http://aludratest.org/testdata")
 public class TestDataMetadata {
 
-    @XmlElementWrapper(name = "segments")
-    @XmlElement(name = "segment", type = TestDataSegmentMetadata.class)
+    @XmlElementWrapper(namespace = "http://aludratest.org/testdata", name = "segments")
+    @XmlElement(namespace = "http://aludratest.org/testdata", name = "segment", type = TestDataSegmentMetadata.class)
     private List<TestDataSegmentMetadata> segments;
 
     public List<TestDataSegmentMetadata> getSegments() {

@@ -70,6 +70,20 @@ public class XmlBasedTestDataProviderTest {
     }
 
     @Test
+    public void testReferencingScript() throws Exception {
+        XmlBasedTestDataProvider provider = createProvider();
+        List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
+                "testMethod3", ComplexData.class, StringData.class));
+        assertEquals(1, testData.size());
+        assertEquals(2, testData.get(0).getData().length);
+
+        ComplexData cd = (ComplexData) testData.get(0).getData()[0];
+        assertEquals("The Config1", cd.getName());
+        assertEquals("The Config1Value", cd.getThirdField());
+        assertEquals("The Config1Value is great", cd.getSecondField());
+    }
+
+    @Test
     public void testMultiAndNull() throws Exception {
         XmlBasedTestDataProvider provider = createProvider();
         List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
@@ -106,6 +120,13 @@ public class XmlBasedTestDataProviderTest {
 
     public void testMethod2(@Source(uri = "multi.testdata.xml", segment = "complexObject") ComplexData object,
             @Source(uri = "multi.testdata.xml", segment = "stringObject") StringData object2) {
+        if (object == null) {
+            // do nothing
+        }
+    }
+
+    public void testMethod3(@Source(uri = "referencing.testdata.xml", segment = "complexObject") ComplexData object,
+            @Source(uri = "referencing.testdata.xml", segment = "stringObject") StringData object2) {
         if (object == null) {
             // do nothing
         }

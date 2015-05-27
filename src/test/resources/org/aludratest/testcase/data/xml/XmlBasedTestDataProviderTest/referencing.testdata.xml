@@ -9,6 +9,8 @@
         	dataClassName="org.aludratest.testcase.data.xml.ComplexData">
         <fields>
         	<field name="name"/>
+        	<field name="secondField" />
+        	<field name="thirdField" />
         	<field name="subData" fieldType="OBJECT" subTypeClassName="org.aludratest.util.data.StringData"/>
         </fields>
         </segment>
@@ -35,20 +37,19 @@
     				<fieldValue name="name">
     					<value>The Config1</value>
     				</fieldValue>
+    				<fieldValue name="secondField" script="true">
+    					<value>thirdField + " is great"</value>
+    				</fieldValue>
+    				<fieldValue name="thirdField" script="true">
+    					<value>name + "Value"</value>
+    				</fieldValue>
     				<fieldValue name="subData"></fieldValue>
     			</fieldValues>
     		</segment>
     		<segment name="stringObject">
     			<fieldValues>
     				<fieldValue name="value">
-    					<value>Some value ending with space </value>
-    				</fieldValue>
-    			</fieldValues>
-    		</segment>
-    		<segment name="complexObject.subData">
-    			<fieldValues>
-    				<fieldValue name="value">
-    					<value>SubData Here.</value>
+    					<value>Some value</value>
     				</fieldValue>
     			</fieldValues>
     		</segment>
