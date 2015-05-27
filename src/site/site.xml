@@ -8,26 +8,44 @@
   </skin>
   
   <body>
-  
-    <menu name="Using AludraTest">
-    	<item name="User Guide" href="user-guide.html" />
-    	<item name="Action Word Libraries" href="actionwordlibrary.html" />
-    	<item name="Service Configuration" href="service-configuration.html" />
-    	<item name="Log4Testing" href="log4testing-user-guide.html" />
-    	<item name="Code Checks" href="codechecks.html" />
-    	<item name="PMD Ruleset" href="aludra-pmd-rules.html" />
+  	<menu name="Introduction">
+  		<item name="General" 			 href="general.html"/>
+  		<item name="Core Concept"		 href="core-concept.html"	collapse="true">
+  			<item name="Test Case"		 	 href="test-case.html"/>
+    		<item name="Action Word Library" href="actionwordlibrary.html" />
+			<item name="Data Class"			 href="data-class.html" />
+	    	<item name="Code Checks" 		 href="codechecks.html" />
+    		<item name="Aludra PMD Rules" 	 href="aludra-pmd-rules.html" />
+  		</item>
+  	</menu>
+  	
+  	<menu name="Guides">
+    	<item name="Getting Started"			href="setup-environment.html"	collapse="true">
+    		<item name="Setup environment" 		href="setup-environment.html"/>
+    		<item name="Create a test case" 	href="create-a-test-case.html"/>
+    		<item name="Create a test suite" 	href="create-a-test-suite.html"/>
+	    	<item name="Run a test" 			href="run-a-test.html"/>
+    		<item name="Run parallel" 			href="run-parallel.html"/> 
+    		<item name="Understand the log" 	href="understand-the-log.html"/>
+    		<item name="Configure AludraTest" 	href="configure-aludratest.html"/>
+    		<item name="Data drive a test" 		href="data-drive-a-test.html"/>
+    		<item name="Use Excel data source"	href="use-excel-data-source.html"/>
+    	</item>
+		<item name="Services" 					href="aludratest-services.html"	collapse="true">
+    		<item name="Service Configuration"	href="service-configuration.html" />
+    		<item name="Web GUI Service"		href="webguiservice.html"/>
+    		<item name="File Service" 			href="fileservice.html" />
+    		<item name="Flat File Service" 		href="flatfileservice.html" />
+    		<item name="Separated File Service" href="separatedfileservice.html" />
+        </item>
+	    <item name="Extend AludraTest" 				 href="aludratest-developer-guide.html" collapse="true">
+    		<item name="Developer Guide" 			 href="aludratest-developer-guide.html" />
+    		<item name="Develop a Service" 			 href="developing-service.html" />
+	    	<item name="FileService Developer Guide" href="fileservice-developer-guide.html" />
+    		<item name="Log4Testing Developer Guide" href="log4testing-developer-guide.html" />
+    	</item>
     </menu>
-    <menu name="AludraTest Services">
-    	<item name="File Service" href="fileservice.html" />
-    	<item name="FlatFile Service" href="flatfileservice.html" />
-    	<item name="SeparatedFile Service" href="separatedfileservice.html" />
-    </menu>
-    <menu name="Extending AludraTest">
-    	<item name="Developer Guide" href="aludratest-developer-guide.html" />
-    	<item name="Develop a Service" href="developing-service.html" />
-    	<item name="FileService Developer Guide" href="fileservice-developer-guide.html" />
-    </menu>
-    
+ 
     <menu ref="reports" />
     
   </body>

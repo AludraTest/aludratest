@@ -526,7 +526,9 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     }
 
     private void deleteGitRepository(GitClient git) {
-        FileUtil.deleteDirectory(new File(git.getWorkingDirectory().getValue()));
+        if (git != null) {
+            FileUtil.deleteDirectory(new File(git.getWorkingDirectory().getValue()));
+        }
     }
 
     private static File createOrOverwriteFile(String name, String content, boolean add, GitClient gitClient) throws IOException {

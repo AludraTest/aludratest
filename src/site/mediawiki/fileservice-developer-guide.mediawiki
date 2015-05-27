@@ -9,7 +9,7 @@ This document describes the internal mechanisms used in the implementation of th
 
 == Interfaces ==
 
-The FileService follows the AludraService conventions defining an Interface FileService with methods that provide file-realated action interfaces:
+The FileService follows the AludraService conventions defining an Interface FileService with methods that provide file-related action interfaces:
 
 * perform(): FileInteraction
 * verify(): FileVerification
@@ -37,7 +37,7 @@ The FileServiceConfiguration object is created using the FileService Preferences
 
 Core classes of Commons VFS are the StandardFileSystemManager and the class FileObject. The first one provides access to a file system and the latter one represents an element in a file system: a file or a directory.
 
-Commons VFS is able to support arbirary file systems by a plugin mechanism which is configured in an XML file, <code>META-INF/vfs-providers.xml</code>, and evaluated by the StandardFileSystemManager.
+Commons VFS is able to support arbitrary file systems by a plugin mechanism which is configured in an XML file, <code>META-INF/vfs-providers.xml</code>, and evaluated by the StandardFileSystemManager.
 
 === Plugging in File System Types ===
 

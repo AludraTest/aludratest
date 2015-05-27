@@ -1,0 +1,11 @@
+= Configuring AludraTest =
+
+AludraTest has a complex and extensible configuration engine supporting configuration based on environment, service, service instance and any composition of these elements.
+
+For example, this allows to configure certain timeouts to be more strict when running on performance environment giving a ''lightweight performance test''. If those timeouts where as strict on a standard, non-dedicated test environment, they may lead to wrong performance failures due to load and limited capacity of used test environment.
+
+Most settings have a default value, so you do not have to configure anything to run your first tests. But if you plan to e.g. run web application tests using Selenium, you will definitely have to configure something. 
+
+For general information about the configuration engine, see [[Service Configuration]].
+
+For specific information about the configuration options for certain components and services, see [[AludraTest Services]].

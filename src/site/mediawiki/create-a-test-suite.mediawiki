@@ -1,0 +1,15 @@
+=== Create a test suite ===
+
+Similar to junit, a test suite is defined as an empty Java classes with a '''org.aludratest.Suite''' annotation which lists the suite components. Each suite component may be a simple test class or a suite itself. Thus, suite structures can be nested arbitrarily deeply.
+
+Example:
+<code>
+ import org.aludratest.Suite;
+ 
+ @Suite({
+   MyTestClass1.class,
+   MyTestClass2.class,
+   NestedTestSuite.class
+ })
+ public class MyTestSuite {}
+</code>
