@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="testdata" type="testData"/>
+
+  <xs:complexType name="testData">
+    <xs:sequence>
+      <xs:element name="version" type="xs:string" default="1.0"/>
+      <xs:element name="metadata" type="testDataMetadata"/>
+      <xs:element name="configurations" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="configuration" type="testDataConfiguration" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="testDataMetadata">
+    <xs:sequence>
+      <xs:element name="segments" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="segment" type="testDataSegmentMetadata" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="testDataSegmentMetadata">
+    <xs:sequence>
+      <xs:element name="fields" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="field" type="testDataFieldMetadata" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="dataClassName" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="testDataFieldMetadata">
+    <xs:sequence/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="fieldType" type="testDataFieldType" use="required"/>
+    <xs:attribute name="subTypeClassName" type="xs:string"/>
+    <xs:attribute name="formatterPattern" type="xs:string"/>
+    <xs:attribute name="formatterLocale" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="testDataConfiguration">
+    <xs:sequence>
+      <xs:element name="segments" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="segment" type="testDataConfigurationSegment" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="ignored" type="xs:boolean" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="testDataConfigurationSegment">
+    <xs:sequence>
+      <xs:element name="fieldValues" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="fieldValue" type="testDataFieldValue" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="testDataFieldValue">
+    <xs:sequence>
+      <xs:choice minOccurs="0">
+        <xs:element name="value" type="stringValue"/>
+        <xs:element name="stringValues" type="stringValueList"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="script" type="xs:boolean" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="stringValue">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:complexType name="stringValueList">
+    <xs:sequence>
+      <xs:element name="value" type="stringValue" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="testDataFieldType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="STRING"/>
+      <xs:enumeration value="DATE"/>
+      <xs:enumeration value="NUMBER"/>
+      <xs:enumeration value="BOOLEAN"/>
+      <xs:enumeration value="OBJECT"/>
+      <xs:enumeration value="OBJECT_LIST"/>
+      <xs:enumeration value="STRING_LIST"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+
