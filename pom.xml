@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.aludratest</groupId>
@@ -142,11 +143,11 @@
 				<!-- exclude XOM because XOM 1.0 has a dependency to bad ICU version -->
 				<exclusion>
 					<groupId>xom</groupId>
-					<artifactId>xom</artifactId>					
+					<artifactId>xom</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>xom</groupId>
 			<artifactId>xom</artifactId>
@@ -255,6 +256,14 @@
 			<artifactId>xml-apis</artifactId>
 			<version>1.4.01</version>
 		</dependency>
+
+		<!-- for JS support in XML testdata provider -->
+		<dependency>
+			<groupId>org.mozilla</groupId>
+			<artifactId>rhino</artifactId>
+			<version>1.7R5</version>
+		</dependency>
+
 
 		<!-- for integration tests with SFTP -->
 		<dependency>
@@ -480,7 +489,8 @@
 							<stylesheet>src/site/xsl/rule-format.xsl</stylesheet>
 							<outputDir>target/generated-site/xdoc</outputDir>
 							<fileMappers>
-								<fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
+								<fileMapper
+									implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
 									<pattern>pmd-rules-aludra</pattern>
 									<replacement>aludra-pmd-rules</replacement>
 								</fileMapper>
@@ -579,14 +589,14 @@
 					<skipDeploy>true</skipDeploy>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<!-- fixes a bug with 2.3 and 2.4 (commits were not pushed) -->
 				<version>2.5.1</version>
 			</plugin>
-			
+
 		</plugins>
 
 		<pluginManagement>
