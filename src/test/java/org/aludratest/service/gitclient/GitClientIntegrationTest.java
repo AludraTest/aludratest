@@ -22,6 +22,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.UUID;
 
@@ -557,8 +559,17 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
 
     private String getFileContent(String localFilePath, GitClient git) throws IOException {
         File file = file(localFilePath, git);
-        String actualContent = IOUtil.getContentOfURI(file.getAbsolutePath());
+        String actualContent = getContentOfURI(file.getAbsolutePath(), SystemInfo.getFileEncoding());
         return actualContent;
+    }
+
+    public static String getContentOfURI(String uri, String encoding) throws IOException {
+        Reader reader = IOUtil.getReaderForURI(uri, encoding);
+        StringWriter writer = new StringWriter();
+        IOUtil.transfer(reader, writer);
+        IOUtil.close(reader);
+        IOUtil.close(writer);
+        return writer.toString();
     }
 
     private static StatusData getStatus(GitClient gitClient) {
