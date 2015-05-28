@@ -18,6 +18,7 @@ package org.aludratest.service.gitclient;
 import java.io.StringReader;
 
 import org.aludratest.dict.ActionWordLibrary;
+import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.cmdline.CommandLineProcess;
 import org.aludratest.service.cmdline.CommandLineService;
@@ -141,7 +142,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
                 }
             }
         }
-        invokeGenerically(GIT_CONFIG_PROCESS_NAME, true, builder.toArray());
+        invokeGenericallyAndGetStdOut(GIT_CONFIG_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -149,7 +150,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data an instance of the data class that receives the query result
      * @return a reference to this */
     public GitClient version(VersionData data) {
-        String output = invokeGenerically(GIT_VERSION_PROCESS_NAME, true, "--version");
+        String output = invokeGenericallyAndGetStdOut(GIT_VERSION_PROCESS_NAME, true, "--version");
         String versionNumber = extractVersionNumber(output);
         data.setVersionNumber(versionNumber);
         return this;
@@ -171,7 +172,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         data.getUpdatedFiles().clear();
 
         // invoke git
-        String output = invokeGenerically(GIT_STATUS_PROCESS_NAME, true, "status", "--short", "--branch");
+        String output = invokeGenericallyAndGetStdOut(GIT_STATUS_PROCESS_NAME, true, "status", "--short", "--branch");
         LineIterator iterator = new LineIterator(new StringReader(output));
         while (iterator.hasNext()) {
             String line = iterator.next();
@@ -222,7 +223,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         if (data.getMaxCount() != null) {
             builder.add("--max-count=" + data.getMaxCount());
         }
-        String output = invokeGenerically(GIT_LOG_PROCESS_NAME, true, builder.toArray());
+        String output = invokeGenericallyAndGetStdOut(GIT_LOG_PROCESS_NAME, true, builder.toArray());
         LineIterator iterator = new LineIterator(new StringReader(output));
         while (iterator.hasNext()) {
             parseLogItem(iterator, data);
@@ -234,7 +235,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient add(AddData data) {
-        invokeGenerically(GIT_ADD_PROCESS_NAME, true, "add", data.getFilePattern());
+        invokeGenericallyAndGetStdOut(GIT_ADD_PROCESS_NAME, true, "add", data.getFilePattern());
         return this;
     }
 
@@ -252,7 +253,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient listBranches(BranchListData data) {
-        String output = invokeGenerically(GIT_LIST_BRANCHES_PROCESS_NAME, true, "branch", "--list");
+        String output = invokeGenericallyAndGetStdOut(GIT_LIST_BRANCHES_PROCESS_NAME, true, "branch", "--list");
         LineIterator iterator = new LineIterator(new StringReader(output));
         while (iterator.hasNext()) {
             String line = iterator.next();
@@ -270,7 +271,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient createBranch(BranchCreationData data) {
-        invokeGenerically(GIT_CREATE_BRANCH_PROCESS_NAME, true, "branch", data.getBranchName());
+        invokeGenericallyAndGetStdOut(GIT_CREATE_BRANCH_PROCESS_NAME, true, "branch", data.getBranchName());
         return this;
     }
 
@@ -278,7 +279,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient deleteBranch(BranchDeletionData data) {
-        invokeGenerically(GIT_DELETE_BRANCH_PROCESS_NAME, true, "branch", "--delete", data.getBranchName());
+        invokeGenericallyAndGetStdOut(GIT_DELETE_BRANCH_PROCESS_NAME, true, "branch", "--delete", data.getBranchName());
         return this;
     }
 
@@ -286,8 +287,12 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient checkout(CheckoutData data) {
-        invokeGenerically(GIT_CHECKOUT_PROCESS_NAME, false, "checkout", data.getBranchName());
-        // TODO Verify that the err out say "Switched to '<branch_name>'"
+        CommandLineProcess<?> process = invokeGenerically(GIT_CHECKOUT_PROCESS_NAME, false, "checkout", data.getBranchName());
+        String expectedErrOut = "Switched to branch '" + data.getBranchName() + "'";
+        String actualErrOut = getErrOut(process, true);
+        if (!actualErrOut.equals(expectedErrOut)) {
+            throw new AutomationException("Expected err out \"" + expectedErrOut + "\", but encountered \"" + actualErrOut + "\"");
+        }
         return this;
     }
 
@@ -301,7 +306,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         if (!StringUtil.isEmpty(data.getDirectory())) {
             builder.add(data.getDirectory());
         }
-        invokeGenerically(GIT_CLONE_PROCESS_NAME, false, builder.toArray());
+        invokeGenericallyAndGetStdOut(GIT_CLONE_PROCESS_NAME, false, builder.toArray());
         return this;
     }
 
@@ -317,7 +322,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         if (!StringUtil.isEmpty(data.getMessage())) {
             builder.add("-m").add(quoteArg(data.getMessage()));
         }
-        invokeGenerically(GIT_COMMIT_PROCESS_NAME, true, builder.toArray());
+        invokeGenericallyAndGetStdOut(GIT_COMMIT_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -325,14 +330,18 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient fetch(FetchData data) {
-        invokeGenerically(GIT_FETCH_PROCESS_NAME, false, "fetch", data.getRepository()); // TODO check err out explicitly
+        CommandLineProcess<?> process = invokeGenerically(GIT_FETCH_PROCESS_NAME, false, "fetch", data.getRepository());
+        String errOut = getErrOut(process, true);
+        if (!errOut.startsWith("From ")) {
+            throw new AutomationException("Unexpected error output: " + errOut);
+        }
         return this;
     }
 
     /** Creates an empty git repository or reinitializes an existing one.
      * @return a reference to this */
     public GitClient init() {
-        invokeGenerically(GIT_INIT_PROCESS_NAME, true, "init");
+        invokeGenericallyAndGetStdOut(GIT_INIT_PROCESS_NAME, true, "init");
         return this;
     }
 
@@ -348,7 +357,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         for (StringData branch : data.getBranches()) {
             builder.add(branch.getValue());
         }
-        invokeGenerically(GIT_MERGE_PROCESS_NAME, true, builder.toArray());
+        invokeGenericallyAndGetStdOut(GIT_MERGE_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -356,7 +365,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient mv(MvData data) {
-        invokeGenerically(GIT_MV_PROCESS_NAME, true, "mv", data.getSource(), data.getDestination());
+        invokeGenericallyAndGetStdOut(GIT_MV_PROCESS_NAME, true, "mv", data.getSource(), data.getDestination());
         return this;
     }
 
@@ -372,7 +381,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
                 builder.add(data.getRefspec());
             }
         }
-        invokeGenerically(GIT_PULL_PROCESS_NAME, true, builder.toArray());
+        invokeGenericallyAndGetStdOut(GIT_PULL_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -388,7 +397,11 @@ public class GitClient implements ActionWordLibrary<GitClient> {
                 builder.add(data.getRefspec());
             }
         }
-        invokeGenerically(GIT_PUSH_PROCESS_NAME, false, builder.toArray()); // TODO check err out explicitly
+        CommandLineProcess<?> process = invokeGenerically(GIT_PUSH_PROCESS_NAME, false, builder.toArray());
+        String errOut = getErrOut(process, true);
+        if (!errOut.startsWith("To ")) {
+            throw new AutomationException("Unexpected error output: " + errOut);
+        }
         return this;
     }
 
@@ -407,7 +420,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         for (StringData branch : data.getBranches()) {
             builder.add(branch.getValue());
         }
-        invokeGenerically(GIT_REBASE_PROCESS_NAME, true, builder.toArray());
+        invokeGenericallyAndGetStdOut(GIT_REBASE_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -421,7 +434,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         if (data.getCommit() != null) {
             builder.add(data.getCommit());
         }
-        invokeGenerically(GIT_RESET_SOFT_PROCESS_NAME, true, builder.toArray());
+        invokeGenericallyAndGetStdOut(GIT_RESET_SOFT_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -434,7 +447,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         if (data.getCommit() != null) {
             builder.add(data.getCommit());
         }
-        invokeGenerically(GIT_RESET_MIXED_PROCESS_NAME, true, builder.toArray());
+        invokeGenericallyAndGetStdOut(GIT_RESET_MIXED_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -447,7 +460,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         if (data.getCommit() != null) {
             builder.add(data.getCommit());
         }
-        invokeGenerically(GIT_RESET_HARD_PROCESS_NAME, true, builder.toArray());
+        invokeGenericallyAndGetStdOut(GIT_RESET_HARD_PROCESS_NAME, true, builder.toArray());
         return this;
     }
 
@@ -455,21 +468,21 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param data
      * @return a reference to this */
     public GitClient rm(RmData data) {
-        invokeGenerically(GIT_RM_PROCESS_NAME, true, "rm", data.getFilePattern());
+        invokeGenericallyAndGetStdOut(GIT_RM_PROCESS_NAME, true, "rm", data.getFilePattern());
         return this;
     }
 
     /** Saves the workspace to the stash.
      * @return a reference to this */
     public GitClient stashSave() {
-        invokeGenerically(GIT_STASH_SAVE_PROCESS_NAME, true, "stash", "save");
+        invokeGenericallyAndGetStdOut(GIT_STASH_SAVE_PROCESS_NAME, true, "stash", "save");
         return this;
     }
 
     /** Puts back previously stashed contents to the workspace.
      * @return a reference to this */
     public GitClient stashPop() {
-        invokeGenerically(GIT_STASH_POP_PROCESS_NAME, true, "stash", "pop");
+        invokeGenericallyAndGetStdOut(GIT_STASH_POP_PROCESS_NAME, true, "stash", "pop");
         return this;
     }
 
@@ -478,7 +491,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @return the process' output to stdout */
     public GitClient invokeGenerically(InvocationData data) {
         boolean failOnErrOut = Boolean.parseBoolean(data.getFailOnErrOut());
-        String stdOut = invokeGenerically(data.getProcessName(), failOnErrOut, CollectionUtil.toArray(data.getArgs()));
+        String stdOut = invokeGenericallyAndGetStdOut(data.getProcessName(), failOnErrOut, CollectionUtil.toArray(data.getArgs()));
         data.setStdOut(stdOut);
         return this;
     }
@@ -489,7 +502,12 @@ public class GitClient implements ActionWordLibrary<GitClient> {
      * @param processName
      * @param args
      * @return the process' output to stdout */
-    private String invokeGenerically(String processName, boolean failOnErrOut, String... args) {
+    private String invokeGenericallyAndGetStdOut(String processName, boolean failOnErrOut, String... args) {
+        CommandLineProcess<?> process = invokeGenerically(processName, failOnErrOut, args);
+        return getStdOut(process);
+    }
+
+    private CommandLineProcess<?> invokeGenerically(String processName, boolean failOnErrOut, String... args) {
         // prepare invocation
         String[] commands = new String[args.length + 1];
         commands[0] = GIT_COMMAND;
@@ -512,15 +530,27 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         if (failOnErrOut && !StringUtil.isEmpty(errorOutput.getValue())) {
             throw new TechnicalException("Error invoking process: " + errorOutput);
         }
+        return process;
+    }
 
-        // get and return stdout
+    private String quoteArg(String arg) {
+        return '"' + arg + '"';
+    }
+
+    private String getStdOut(CommandLineProcess<?> process) {
         StringData textOutput = new StringData();
         process.stdOut().redirectTo(textOutput);
         return textOutput.getValue();
     }
 
-    private String quoteArg(String arg) {
-        return '"' + arg + '"';
+    private String getErrOut(CommandLineProcess<?> process, boolean trim) {
+        StringData textOutput = new StringData();
+        process.errOut().redirectTo(textOutput);
+        String text = textOutput.getValue();
+        if (trim) {
+            text = text.trim();
+        }
+        return text;
     }
 
     static String extractVersionNumber(String text) {
