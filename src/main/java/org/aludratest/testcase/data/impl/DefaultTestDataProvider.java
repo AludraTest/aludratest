@@ -77,6 +77,11 @@ public class DefaultTestDataProvider implements TestDataProvider {
         // analyze annotations; select provider based on extension
         Set<String> extensions = new HashSet<String>();
 
+        if (method.getParameterTypes().length == 0) {
+            // no-arg method
+            return databeneProvider.getTestDataSets(method);
+        }
+
         Annotation[][] annos = method.getParameterAnnotations();
         for (int i = 0; i < annos.length; i++) {
             Source src = getSourceAnnotation(annos[i]);
