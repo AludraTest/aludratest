@@ -79,6 +79,10 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
 
     @Override
     public List<TestCaseData> getTestDataSets(Method method) {
+        if (method.getParameterTypes().length == 0) {
+            return Collections.singletonList(new TestCaseData("0", null, null));
+        }
+
         // get @Source annotated parameters
         Annotation[][] annots = method.getParameterAnnotations();
 
