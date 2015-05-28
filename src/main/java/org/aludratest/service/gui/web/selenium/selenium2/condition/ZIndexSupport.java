@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +87,13 @@ public class ZIndexSupport {
             } while ("auto".equals(zIndex) && element != null);
         } catch (InvalidSelectorException e) {
             // this occurs when having reached the root element
+        }
+        catch (WebDriverException e) {
+            // for PhantomJS, such an exception is thrown instead
+            if (e.getMessage() == null || !e.getMessage().contains(" should be an element")) {
+                throw e;
+            }
+            // otherwise OK
         }
         int value = parseZIndex(zIndex);
         LOGGER.trace("WebElement {} has z index {}", element, value);
