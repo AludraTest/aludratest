@@ -38,9 +38,11 @@ import static org.openqa.selenium.remote.DriverCommand.QUIT;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -80,6 +82,7 @@ import org.openqa.selenium.remote.http.HttpRequest;
 import org.openqa.selenium.remote.http.JsonHttpCommandCodec;
 import org.openqa.selenium.remote.http.JsonHttpResponseCodec;
 import org.openqa.selenium.remote.internal.HttpClientFactory;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 
@@ -89,6 +92,8 @@ import com.google.common.base.Throwables;
 public class AludraSeleniumHttpCommandExecutor implements CommandExecutor, NeedsLocalLogs {
 
     private static final int MAX_REDIRECTS = 10;
+
+    private static final int THREE_HOURS = (int) TimeUnit.MILLISECONDS.convert(3, TimeUnit.HOURS);
 
     private final HttpHost targetHost;
     private final URL remoteServer;
@@ -197,8 +202,14 @@ public class AludraSeleniumHttpCommandExecutor implements CommandExecutor, Needs
         }
 
         if (requestTimeout > 0 && (httpMethod instanceof HttpRequestBase)) {
-            RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(2000).setConnectTimeout(2000)
+            RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(15000).setConnectTimeout(15000)
                     .setSocketTimeout(requestTimeout).build();
+            ((HttpRequestBase) httpMethod).setConfig(requestConfig);
+        }
+        else {
+            // ensure Selenium Standard is set
+            RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(60000).setConnectTimeout(60000)
+                    .setSocketTimeout(THREE_HOURS).build();
             ((HttpRequestBase) httpMethod).setConfig(requestConfig);
         }
 
@@ -216,6 +227,12 @@ public class AludraSeleniumHttpCommandExecutor implements CommandExecutor, Needs
                 throw new UnsupportedOperationException("No information from server. Command name was: " + command.getName(),
                         e.getCause());
             }
+            throw e;
+        }
+        catch (SocketTimeoutException e) {
+            LoggerFactory.getLogger(AludraSeleniumHttpCommandExecutor.class).warn(
+                    "Timeout in HTTP Command Executor. Timeout was "
+                            + ((HttpRequestBase) httpMethod).getConfig().getSocketTimeout());
             throw e;
         }
     }
@@ -347,4 +364,3 @@ public class AludraSeleniumHttpCommandExecutor implements CommandExecutor, Needs
         return response;
     }
 }
-
