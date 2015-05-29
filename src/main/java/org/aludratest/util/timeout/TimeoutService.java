@@ -41,6 +41,8 @@ public class TimeoutService {
             return handler.get(timeout, TimeUnit.MILLISECONDS);
         }
         catch (TimeoutException e) {
+            // FIXME this does not stop Selenium if it hangs. The SocketInputStream#read0 method does not seem to
+            // check Thread's interrupted state.
             handler.cancel(true);
             throw e;
         }
