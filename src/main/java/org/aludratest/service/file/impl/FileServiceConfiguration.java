@@ -78,9 +78,8 @@ public class FileServiceConfiguration implements AludraCloseable {
 
         // configure FileObject for root folder
         this.manager = new StandardFileSystemManager();
-        // the setConfiguration call causes the vfs-providers.xml to be read twice
-        // but is a trick to prevent parsing of VFS-2.0's internal default configuration file
-        this.manager.setConfiguration(getClass().getResource("/META-INF/vfs-providers.xml"));
+        // the setConfiguration() call prevents parsing of VFS-2.0's internal default configuration file
+        this.manager.setConfiguration(getClass().getResource("/META-INF/no-providers.xml"));
         this.manager.init();
         this.rootFolder = manager.resolveFile(protocol + "://" + baseUrl, fileSystemOptions);
 

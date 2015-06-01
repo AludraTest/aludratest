@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <providers>
-	<default-provider class-name="org.apache.commons.vfs2.provider.local.AludraLocalFileProvider" />
-	<provider class-name="org.apache.commons.vfs2.provider.ftp.FtpFileProvider" />
-	<provider class-name="org.apache.commons.vfs2.provider.sftp.SftpFileProvider" />
-	<provider class-name="org.apache.commons.vfs2.provider.http.HttpFileProvider" />
-	<provider class-name="org.apache.commons.vfs2.provider.https.HttpsFileProvider" />
+	<provider class-name="org.apache.commons.vfs2.provider.local.AludraLocalFileProvider">
+        <scheme name="file"/>
+	</provider>
+	<provider class-name="org.apache.commons.vfs2.provider.ftp.FtpFileProvider">
+        <scheme name="ftp"/>
+	</provider>
+    <provider class-name="org.apache.commons.vfs2.provider.sftp.SftpFileProvider">
+        <scheme name="sftp"/>
+        <if-available class-name="javax.crypto.Cipher"/>
+        <if-available class-name="com.jcraft.jsch.JSch"/>
+    </provider>
+    <provider class-name="org.apache.commons.vfs2.provider.http.HttpFileProvider">
+        <scheme name="http"/>
+    </provider>
+	<provider class-name="org.apache.commons.vfs2.provider.https.HttpsFileProvider">
+        <scheme name="https"/>
+	</provider>
 </providers>
