@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <providers>
+	<default-provider class-name="org.apache.commons.vfs2.provider.local.AludraLocalFileProvider" />
 	<provider class-name="org.apache.commons.vfs2.provider.ftp.FtpFileProvider" />
 	<provider class-name="org.apache.commons.vfs2.provider.sftp.SftpFileProvider" />
 	<provider class-name="org.apache.commons.vfs2.provider.http.HttpFileProvider" />
