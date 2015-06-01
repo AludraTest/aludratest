@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.scheduler;
+package org.aludratest.testcase;
 
-public interface RunnerTreeBuilder {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    public static final String ROLE = RunnerTreeBuilder.class.getName();
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface TestAttributes {
 
-    /** Builds a Runner Tree for the given test suite or test class.
-     * 
-     * @param suiteOrTestClass Class extending <code>AludraTestCase</code> or having a <code>Suite</code> annotation
-     * @return A newly created RunnerTree which can be passed to an {@link AludraTestRunner} for execution. */
-    public RunnerTree buildRunnerTree(Class<?> suiteOrTestClass);
-
-    public RunnerTree buildRunnerTree(AnnotationBasedExecution executionConfig);
+    public TestAttribute[] value();
 
 }
