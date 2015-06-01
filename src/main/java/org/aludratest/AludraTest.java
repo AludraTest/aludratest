@@ -171,8 +171,7 @@ public final class AludraTest {
      * 
      * @param jarOrClassRoot A JAR file or a folder containing all class files to search.
      * @param filterString A filter for test classes to include in the execution. See <a
-     *            href="https://github.com/AludraTest/aludratest/wiki/Draft-for-Filter-Category-based-Test-Execution">TODO change
-     *            link</a> for syntax.
+     *            href="http://aludratest.github.io/aludratest/test-filter-syntax.html">AludraTest Documentation</a> for syntax.
      * @param categoryString A comma-separated string identifying the order of attributes to use for top-level, second-level etc.
      *            grouping.
      * @param classLoader The class loader to use to load the test classes, or <code>null</code> to use the default class loader.
