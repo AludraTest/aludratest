@@ -23,7 +23,6 @@ import org.aludratest.service.file.FileService;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.UserAuthenticator;
 import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
@@ -43,7 +42,7 @@ public class FileServiceConfiguration implements AludraCloseable {
 
     private ValidatingPreferencesWrapper configuration;
 
-    /** Common-vfs' {@link FileSystemManager}. */
+    /** Common-VFS' {@link StandardFileSystemManager}. */
     private StandardFileSystemManager manager;
 
     /** The root folder used by this service instance. */
@@ -79,6 +78,8 @@ public class FileServiceConfiguration implements AludraCloseable {
 
         // configure FileObject for root folder
         this.manager = new StandardFileSystemManager();
+        // the setConfiguration() call prevents parsing of VFS-2.0's internal default configuration file
+        this.manager.setConfiguration(getClass().getResource("/META-INF/no-providers.xml"));
         this.manager.init();
         this.rootFolder = manager.resolveFile(protocol + "://" + baseUrl, fileSystemOptions);
 
