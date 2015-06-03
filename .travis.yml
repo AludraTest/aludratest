@@ -1,2 +1,7 @@
 language: java
+
+before_script:
+ - export JAVA_OPTS="$JAVA_OPTS -Xmx512m"
+ - echo $JAVA_OPTS
+
 script: mvn test site
