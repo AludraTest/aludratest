@@ -276,7 +276,7 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
 
         RunnerTree tree = builder.buildRunnerTree(exec);
         RunnerGroup group = tree.getRoot();
-        assertEquals("org.aludratest.scheduler.test.annot", group.getName());
+        assertEquals("All Tests", group.getName());
         assertEquals(2, group.getChildren().size());
     }
 
