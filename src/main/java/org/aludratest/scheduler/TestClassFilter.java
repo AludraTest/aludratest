@@ -15,16 +15,18 @@
  */
 package org.aludratest.scheduler;
 
-public interface RunnerTreeBuilder {
+import org.aludratest.testcase.AludraTestCase;
 
-    public static final String ROLE = RunnerTreeBuilder.class.getName();
+/** Interface for filters which filter test classes. Used in conjunction with {@link AnnotationBasedExecution}.
+ * 
+ * @author falbrech */
+public interface TestClassFilter {
 
-    /** Builds a Runner Tree for the given test suite or test class.
+    /** Checks the given class if it fulfills the criteria of this filter.
      * 
-     * @param suiteOrTestClass Class extending <code>AludraTestCase</code> or having a <code>Suite</code> annotation
-     * @return A newly created RunnerTree which can be passed to an {@link AludraTestRunner} for execution. */
-    public RunnerTree buildRunnerTree(Class<?> suiteOrTestClass);
-
-    public RunnerTree buildRunnerTree(AnnotationBasedExecution executionConfig);
+     * @param testClass Class to check.
+     * 
+     * @return <code>true</code> if the class fulfills the criteria of this filter, <code>false</code> otherwise. */
+    public boolean matches(Class<? extends AludraTestCase> testClass);
 
 }

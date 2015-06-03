@@ -23,7 +23,7 @@ import org.joda.time.DateTime;
 
 /**
  * Represents a Group of TestSteps which could be identified by the name.
- *  
+ * 
  * @author Marcel Malitz
  * @author Volker Bergmann
  */
@@ -36,7 +36,7 @@ public class TestStepGroup extends TestStepContainer {
     private TestCaseLog parent;
 
     /** Constructor.
-     *  @param name the name of the test step group 
+     *  @param name the name of the test step group
      *  @param parent the parent {@link TestCaseLog} */
     protected TestStepGroup(String name, TestCaseLog parent) {
         super(name);
@@ -75,18 +75,18 @@ public class TestStepGroup extends TestStepContainer {
         return testStep;
     }
 
-    /**
-     * Creates a new test step and adds it to this group.
-     * @param status
-     * @param command
-     * @param comment
-     * @return the new test step
-     */
+    /** Creates a new test step and adds it to this group.
+     * @param status Status to set in the test step, or <code><code>null</code> to not change the default
+     * @param command Command of the test step
+     * @param comment Comment for the test step
+     * @return the new test step */
     public TestStepLog newTestStep(TestStatus status, String command, String comment) {
         TestStepLog testStep = newTestStep();
         testStep.setCommand(command);
         testStep.setComment(comment);
-        testStep.setStatus(status);
+        if (status != null) {
+            testStep.setStatus(status);
+        }
         return testStep;
     }
 
@@ -112,13 +112,13 @@ public class TestStepGroup extends TestStepContainer {
         return null;
     }
 
-    /** Returns the first TestStep 
+    /** Returns the first TestStep
      *  @return the first TestStep*/
     public TestStepLog getFirstTestStep() {
         return getTestStep(0);
     }
 
-    /** Returns the last TestStep 
+    /** Returns the last TestStep
      *  @return the last TestStep */
     public TestStepLog getLastTestStep() {
         return getTestStep(testSteps.size() - 1);

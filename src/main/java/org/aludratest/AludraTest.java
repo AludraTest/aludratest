@@ -20,6 +20,12 @@ import static org.aludratest.impl.AludraTestConstants.EXIT_EXECUTION_FAILURE;
 import static org.aludratest.impl.AludraTestConstants.EXIT_ILLEGAL_ARGUMENT;
 import static org.aludratest.impl.AludraTestConstants.EXIT_NORMAL;
 
+import java.io.File;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.config.impl.DefaultConfigurator;
 import org.aludratest.impl.log4testing.data.TestLogger;
@@ -28,6 +34,7 @@ import org.aludratest.impl.plexus.AludraTestClosePhase;
 import org.aludratest.impl.plexus.AludraTestComponentDiscoverer;
 import org.aludratest.impl.plexus.AludraTestConfigurationPhase;
 import org.aludratest.scheduler.AludraTestRunner;
+import org.aludratest.scheduler.AnnotationBasedExecution;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.RunnerTreeBuilder;
 import org.aludratest.service.AludraServiceManager;
@@ -158,6 +165,43 @@ public final class AludraTest {
      * @return The service manager of AludraTest, never <code>null</code>. */
     public AludraServiceManager getServiceManager() {
         return serviceManager;
+    }
+
+    /** Executes tests based on their <code>TestAttribute</code> annotations. Waits until all tests are finished.
+     * 
+     * @param jarOrClassRoot A JAR file or a folder containing all class files to search.
+     * @param filterString A filter for test classes to include in the execution. See <a
+     *            href="http://aludratest.github.io/aludratest/test-filter-syntax.html">AludraTest Documentation</a> for syntax.
+     * @param categoryString A comma-separated string identifying the order of attributes to use for top-level, second-level etc.
+     *            grouping.
+     * @param classLoader The class loader to use to load the test classes, or <code>null</code> to use the default class loader.
+     * @return The resulting exit code.
+     * @throws ParseException If the filter or category string is invalid.
+     * @since AludraTest 3.0.0 */
+    public int run(File jarOrClassRoot, String filterString, String categoryString, ClassLoader classLoader)
+            throws ParseException {
+        RunnerTreeBuilder builder = serviceManager.newImplementorInstance(RunnerTreeBuilder.class);
+
+        List<String> categories;
+        if (categoryString != null && !"".equals(categoryString.trim())) {
+            categories = Arrays.asList(categoryString.trim().split(","));
+        }
+        else {
+            categories = Collections.emptyList();
+        }
+        AnnotationBasedExecution exec = new AnnotationBasedExecution(jarOrClassRoot,
+                AnnotationBasedExecution.parseFilterString(filterString), categories, classLoader);
+
+        RunnerTree runnerTree = builder.buildRunnerTree(exec);
+        // This would SORT the tree
+        // RunnerTreeSorter.sortTree(runnerTree, new Alphabetic());
+
+        AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
+        runner.runAludraTests(runnerTree);
+
+        int failures = TestLogger.getTestSuite(runnerTree.getRoot().getName()).getNumberOfFailedTestCases();
+        int exitCode = (failures > 0 ? EXIT_EXECUTION_FAILURE : EXIT_NORMAL);
+        return exitCode;
     }
 
     /** Parses the test class/suite, executes it and waits until all tests are finished.

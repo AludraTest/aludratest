@@ -13,23 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.suite;
+package org.aludratest.scheduler.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.AssertionFailedError;
 
 import org.aludratest.PreconditionFailedException;
 import org.aludratest.impl.log4testing.data.TestLogger;
+import org.aludratest.scheduler.AnnotationBasedExecution;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.RunnerTreeBuilder;
-import org.aludratest.scheduler.impl.RunnerTreeBuilderImpl;
+import org.aludratest.scheduler.TestClassFilter;
 import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerNode;
+import org.aludratest.scheduler.test.annot.AnnotatedTestClass1;
+import org.aludratest.scheduler.test.annot.AnnotatedTestClass2;
 import org.aludratest.service.AbstractAludraServiceTest;
+import org.aludratest.suite.DuplicateChildSuite;
+import org.aludratest.suite.ParallelTestClass;
+import org.aludratest.suite.ParallelTestSuite;
+import org.aludratest.suite.PlainTestClass;
+import org.aludratest.suite.PlainTestSuite;
+import org.aludratest.suite.SequentialTestClass;
+import org.aludratest.suite.SequentialTestSuite;
 import org.aludratest.testcase.AludraTestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,8 +74,8 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
             throw new AssertionFailedError("Exception expected");
         }
         catch (PreconditionFailedException e) {
-            String expectedMessage = "Abstract class not suitable as test class: "
-                    + "org.aludratest.suite.RunnerTreeBuilderImplTest$AbstractTestClass";
+            String expectedMessage = "Abstract class not suitable as test class: " + RunnerTreeBuilderImplTest.class.getName()
+                    + "$AbstractTestClass";
             assertEquals(expectedMessage, e.getMessage());
         }
     }
@@ -81,7 +95,8 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
             throw new AssertionFailedError("Exception expected");
         }
         catch (PreconditionFailedException e) {
-            String expectedMessage = "Test class does not inherit from org.aludratest.testcase.AludraTestCase: org.aludratest.suite.RunnerTreeBuilderImplTest$TestClassWithoutParent";
+            String expectedMessage = "Test class does not inherit from org.aludratest.testcase.AludraTestCase: "
+                    + RunnerTreeBuilderImplTest.class.getName() + "$TestClassWithoutParent";
             assertEquals(expectedMessage, e.getMessage());
         }
     }
@@ -101,8 +116,8 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
             throw new AssertionFailedError("Exception expected");
         }
         catch (PreconditionFailedException e) {
-            String expectedMessage = "No @Test methods found in class: "
-                    + "org.aludratest.suite.RunnerTreeBuilderImplTest$EmptyTestClass";
+            String expectedMessage = "No @Test methods found in class: " + RunnerTreeBuilderImplTest.class.getName()
+                    + "$EmptyTestClass";
             assertEquals(expectedMessage, e.getMessage());
         }
     }
@@ -205,6 +220,64 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
     public void testDuplicateChildSuite() {
         Class<?> testClass = DuplicateChildSuite.class;
         parseTestClass(testClass);
+    }
+
+    @Test
+    public void testAnnotatedClasses() throws Exception {
+        File classRoot = new File("target/test-classes");
+        RunnerTreeBuilder builder = aludra.getServiceManager().newImplementorInstance(RunnerTreeBuilder.class);
+        assertTrue(builder instanceof RunnerTreeBuilderImpl);
+
+        TestClassFilter filter = new FilterParser().parse("testName=RunnerTreeBuilderImplTest");
+        AnnotationBasedExecution exec = new AnnotationBasedExecution(classRoot, filter, Arrays.asList(new String[] { "state",
+        "author" }), null);
+
+        RunnerTree tree = builder.buildRunnerTree(exec);
+        assertEquals("All Tests", tree.getRoot().getName());
+        assertEquals(1, tree.getRoot().getChildren().size());
+
+        assertEquals("InWork", tree.getRoot().getChildren().get(0).getName());
+
+        RunnerGroup group = (RunnerGroup) tree.getRoot().getChildren().get(0);
+        assertEquals(2, group.getChildren().size());
+        List<String> names = new ArrayList<String>();
+        names.add(group.getChildren().get(0).getName());
+        names.add(group.getChildren().get(1).getName());
+        assertTrue(names.contains("InWork.falbrech"));
+        assertTrue(names.contains("InWork.jdoe"));
+
+        // and the actual classes
+        RunnerGroup classGroup = (RunnerGroup) group.getChildren().get(0);
+        assertEquals(1, classGroup.getChildren().size());
+        if ("InWork.falbrech".equals(classGroup.getName())) {
+            assertEquals(AnnotatedTestClass1.class.getName(), classGroup.getChildren().get(0).getName());
+        }
+        else {
+            assertEquals(AnnotatedTestClass2.class.getName(), classGroup.getChildren().get(0).getName());
+        }
+        classGroup = (RunnerGroup) group.getChildren().get(1);
+        assertEquals(1, classGroup.getChildren().size());
+        if ("InWork.falbrech".equals(classGroup.getName())) {
+            assertEquals(AnnotatedTestClass1.class.getName(), classGroup.getChildren().get(0).getName());
+        }
+        else {
+            assertEquals(AnnotatedTestClass2.class.getName(), classGroup.getChildren().get(0).getName());
+        }
+    }
+
+    @Test
+    public void testAnnotatedClassesPackageBase() throws Exception {
+        File classRoot = new File("target/test-classes");
+        RunnerTreeBuilder builder = aludra.getServiceManager().newImplementorInstance(RunnerTreeBuilder.class);
+        assertTrue(builder instanceof RunnerTreeBuilderImpl);
+
+        TestClassFilter filter = new FilterParser().parse("testName=RunnerTreeBuilderImplTest");
+        AnnotationBasedExecution exec = new AnnotationBasedExecution(classRoot, filter, Collections.<String> emptyList(), null);
+
+        RunnerTree tree = builder.buildRunnerTree(exec);
+        RunnerGroup group = tree.getRoot();
+        assertEquals("All Tests", group.getName());
+        assertEquals(2, group.getChildren().size());
     }
 
     /** Verifies the properties of an AludraTest suite class. */

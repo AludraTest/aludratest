@@ -1,0 +1,39 @@
+= Test Filter Syntax =
+
+As described under [[Run a test]], you can specify ''dynamic'' filter criteria to determine which test classes to execute.
+
+The filter string is usually configured within your Apache Maven <code>pom.xml</code>.
+
+This is the syntax of these filters, in '''BNF''':
+<code>
+ Filter             ::= AndFilter OrFilterList
+ OrFilterList       ::= EOF | '|' AndFilter OrFilterList
+ AndFilter          ::= AttributeName Comparison AttributeValueList AndFilterList
+ AndFilterList      ::=  | ';' AndFilter AndFilterList
+ AttributeName      ::= Identifier
+ Comparison         ::= '=' | '!='
+ AttributeValueList ::= AttributeValue
+                        | '(' AttributeValue AttributeValues ')'
+ AttributeValues    ::=  | ',' AttributeValue AttributeValues
+ AttributeValue     ::= Identifier
+</code>
+
+For an <code>Identifier</code>, all characters except <code>,;()=!|</code> are valid.
+
+A valid filter would be:
+
+ author=(jdoe,mmiller);status!=(Draft,InWork);testgroup=UAT|status=Approved
+ 
+Note that spaces are ignored and only kept within identifiers (so an identifier cannot begin or end with a space).
+
+So this would result in the same filter:
+
+ author = (jdoe, mmiller  );status!=(Draft,  InWork ) ; testgroup =UAT   | status =Approved
+
+To refer to the fact that a given attribute is not present in a class, use <code>[]</code> as attribute value, e.g.:
+
+ author=(jdoe,mmiller,[])
+This refers to all classes having jdoe or mmiller as author, or no author attribute set at all. <br/><br/>
+
+ status!=(Draft,InWork,[])
+This includes only test classes '''not''' having the status attribute set to Draft or InWork. Classes without a status attribute are '''also''' excluded (note that, if the [] would not be listed in the filter, these classes would match the criterion ''not Draft nor InWork'').

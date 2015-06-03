@@ -1,30 +1,149 @@
 = Run a Test =
 
-=== Run a test in Eclipse ===
+== Run tests with Maven ==
 
-In order to start tests in Eclipse, a generic 'Eclipse run configuration' needs to be defined. This is a one-time-effort, after which you can execute any test with this generic configuration.
+For regular or automatic executions of AludraTest based tests, execution via Apache Maven is the preferred way. AludraTest integrates nicely into the Maven build lifecycle via its own Surefire Provider Plugin, which is also available
+on Maven Central (and automatically downloaded by Maven).
 
-==== Creating a Run Configuration in Eclipse ====
+To include AludraTest execution in your Maven build, add this XML to your <code>&lt;build&gt;</code> section of your
+<code>pom.xml</code>:
+<code>
+ <plugin>
+ 	<artifactId>maven-surefire-plugin</artifactId>
+ 	<version>2.17</version>
+ 	<dependencies>
+ 		<!-- inject aludratest provider -->
+ 		<dependency>
+ 			<groupId>org.aludratest.maven</groupId>
+ 			<artifactId>aludratest-surefire-provider</artifactId>
+ 			<version>${aludratest.surefire.version}</version>
+ 		</dependency>
+ 		<!-- inject HP ALM connector, if required -->
+ 		<dependency>
+ 			<groupId>org.aludratest</groupId>
+ 			<artifactId>aludratest-hpalm-connector</artifactId>
+ 			<version>${aludratest.hpalm.version}</version>
+ 		</dependency>
+ 	</dependencies>
+ 	
+ 	<configuration>
+ 		<!-- Specify to use src/main/java instead of default src/test/java, 
+ 		     if your project only consists of AludraTest test classes in src/main/java -->
+ 		<testSourceDirectory>src/main/java</testSourceDirectory>
+ 		<!-- Same as above - use target/classes instead of target/test-classes -->
+ 		<testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
+ 		<!-- The test suite to execute -->
+ 		<test>${aludratest.test}</test>
+ 		<!-- An optional "skip" flag -->
+ 		<skip>${aludratest.skip}</skip>
+ 		<!-- AludraTest itself cares about forking -->
+ 		<forkCount>0</forkCount>
+ 		<properties>
+ 			<aludratest.filter>${aludratest.filter}</aludratest.filter>
+ 			<aludratest.categories>${aludratest.categories}</aludratest.categories>
+ 		</properties> 		
+ 	</configuration>
+ </plugin>
+</code>
 
-# Open the Eclipse Run Configurations dialog
-# Create a new "Java Application" run configuration 
-# Change the name to "AludraTest"
-# As project, select your client project which contains the test class(es)
-# As main class, select <code>org.aludratest.app.AludraSuiteRunner</code>
-# Select the "Arguments" tab
-# In the text area "Program arguments", enter <code>${resource_path}</code>
-# Click "Run"
+This is a general configuration which allows configuring every detail of AludraTest using Maven or command line properties.
 
-Now the test class is executed. Please note that the test class must be the '''active editor''' in Eclipse when you click
-on "Run".
+You can define some standard or all AludraTest properties via your <code>&lt;properties&gt;</code> section of your
+<code>pom.xml</code>:
 
-==== (Re)using the run configuration ====
+<code>
+ <properties>
+ 	<!-- The version of AludraTest to use. -->
+ 	<aludratest.version>3.0.0</aludratest.version>
+ 	<aludratest.surefire.version>3.0.0</aludratest.surefire.version>
+ 	<!-- The version of AludraTest HP ALM Connector. -->
+ 	<aludratest.hpalm.version>1.0.0</aludratest.hpalm.version>
+ 	
+ 	<!-- The name of the test class or suite to test. -->
+ 	<aludratest.test>com.acme.myapp.ft.ApprovedTestSuite</aludratest.test>
+ 	<!-- Skip AludraTest execution by default to pass verify build. -->
+ 	<aludratest.skip>true</aludratest.skip>
+ </properties>
+</code>
 
-You can reuse this single run configuration to run any individual test: Select the test class in the Package Explorer, then click the triangle on the right of the "Run" button and click "AludraTest" in the appearing list.
+Note that <code>aludratest.skip</code> is set to <code>true</code> by default in this configuration. This allows to execute <code>mvn test</code> without executing the functional tests. If your code is continously built e.g. by Jenkins, this avoids having the functional tests executed for every commit. 
 
-[[Image:AludraTest2-Eclipse-3.png]]
+Instead, there should be an automated job invoking
 
-=== Creating an eclipse Run Configuration with JUnit ===
+ mvn clean test -Daludratest.skip=false
+ 
+which triggers the functional AludraTest based tests (you can also manually trigger them via command line this way).
+
+== Run tests matching criteria ==
+
+The default execution mode described above executes a given ''Test Suite'' (<code>com.acme.myapp.ft.ApprovedTestSuite</code> in the example above). This is a ''static'' way of test grouping, because every suite describes in its source code which test classes (or child suites) make up the suite.
+
+There is also a ''dynamic'' way of test execution. You can define ''filters'' which tests to execute. These filters apply to the level of test classes only (all test cases of the class are executed). To work with filters, you have to ''annotate'' your test classes with arbitrary attributes:
+
+ @TestAttributes({
+ @TestAttribute(name = "author", value = "jdoe"),
+ @TestAttribute(name = "component", value = "core"),
+ @TestAttribute(name = "subcomponent", value = "mail"),
+ @TestAttribute(name = "testgroup", value = "UAT"),
+ @TestAttribute(name = "status", value = "Draft")
+ })
+ public class MyTestClass extends AludraTestCase {
+ ...
+ }
+
+This allows for filtering based on these attributes. A typical filter would be:
+
+ author=(jdoe,mmiller);status!=(Draft,InWork);testgroup=UAT|status=Approved
+ 
+This filter matches the following test classes:
+
+* All classes having the status "Approved" (note that the pipe operator, indicating an OR, is the top-level operator)
+* All classes written by authors jdoe or mmiller, '''and''' having a status different from Draft or InWork (including having no status attribute at all), '''and''' having the testgroup attribute set to UAT.
+
+More information about the test filters can be found on [[Test Filter Syntax]].
+
+When you use this dynamic mode to execute tests, the matching test classes still have to be grouped somehow for test result output. By default, their package names will be used for this grouping, removing the common base package of all matching classes. But you can specify your own grouping hierarchy, e.g.:
+
+ component,subcomponent,status
+
+This would result in a test execution tree like this:
+
+ All Tests
+   core
+     core.user
+       core.user.Production
+         TestClass4711
+           testCase9991
+           testCase9992
+           ...
+       core.user.ReadyForApproval
+     core.mail
+       core.mail.Production
+       core.mail.ReadyForApproval
+   anotherComponent
+     ...
+
+So the "component" attribute makes up the top level distinction. Inside each component, there are groups for each subcomponent ("user" and "mail" in the example), and inside each subcomponent, there are groups for each status found in the matching classes of this subcomponent (Production and ReadyForApproval in the example). Below this last specified hierarchy element, the class names follow, and their test cases make up the leafs in this test tree.
+
+To specify a filter and an optional grouping, adjust your <code>pom.xml</code> properties (assuming you use the configuration shown in the last chapter):
+<code>
+ <properties>
+ 	<!-- The version of AludraTest to use. -->
+ 	<aludratest.version>3.0.0</aludratest.version>
+ 	<aludratest.surefire.version>3.0.0</aludratest.surefire.version>
+ 	
+ 	<!-- The name of the test class or suite to test. Empty because filtering is used. -->
+ 	<aludratest.test></aludratest.test>
+ 	<!-- Skip AludraTest execution by default to pass verify build. -->
+ 	<aludratest.skip>true</aludratest.skip>
+ 	
+ 	<!-- Filtering and grouping -->
+ 	<aludratest.filter>author=(jdoe,mmiller);status!=(Draft,InWork);testgroup=UAT|status=Approved</aludratest.filter>
+ 	<aludratest.categories>component,subcomponent,status</aludratest.categories>
+ </properties>
+</code>
+
+== Run a test in Eclipse ==
 
 Test cases can be executed locally with the use of JUnit functions in Eclipse. Follow the guideline below:
 
@@ -41,14 +160,8 @@ Test cases can be executed locally with the use of JUnit functions in Eclipse. F
  }
 </code>
 
-* Create a '''JUnit''' run configuration which executes exactly this class. Add this as a '''VM argument''' on the second tab:
+* Create a '''JUnit''' run configuration which executes exactly this class. Name it '''AludraTest'''. Add this as a '''VM argument''' on the second tab:
 
 <code>-Dsuite=${java_type_name}</code> 
 
-Now you can reuse this single run configuration to run any individual test: Select the test class in the Package Explorer, then click the triangle on the right of the "Run" button and click "AludraTest" in the appearing list.
-
-=== Run tests with Maven ===
-
- TODO
-
-
+Now you can reuse this single run configuration to run any individual test or test suite: Select the test class in the Package Explorer, then click the triangle on the right of the "Run" button and click "AludraTest" in the appearing list.
