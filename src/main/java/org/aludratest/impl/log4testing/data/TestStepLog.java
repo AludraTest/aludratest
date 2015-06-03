@@ -143,7 +143,7 @@ public class TestStepLog extends TestObject {
 
     /**
      * Sets the {@link #service}.
-     * @param service 
+     * @param service
      * @return a self-reference to the TestStep for invocation chaining
      */
     public TestStepLog setService(String service) {
@@ -164,6 +164,9 @@ public class TestStepLog extends TestObject {
      * @return a self-reference to the TestStep for invocation chaining
      */
     public TestStepLog setStatus(TestStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("status must not be null");
+        }
         this.status = status;
         finish();
         return this;
