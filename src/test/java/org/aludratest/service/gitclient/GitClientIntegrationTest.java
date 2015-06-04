@@ -177,12 +177,12 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
                 createOrOverwriteFile(fileName, "content", true, gitClient);
                 // verify its presence
                 StatusData status = getStatus(gitClient);
-                assertTrue(containsFile(fileName, status.getAddedFiles()));
+                assertFileContained(fileName, status.getAddedFiles());
                 // commit the file
                 gitClient.commit(new CommitData("commit1"));
                 // verify its change
                 status = getStatus(gitClient);
-                assertFalse(containsFile(fileName, status.getAddedFiles()));
+                assertFileMissing(fileName, status.getAddedFiles());
             }
         });
     }
@@ -198,7 +198,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
                 createOrOverwriteFile(fileName1, "content1", true, gitClient);
                 // verify its presence
                 StatusData status = getStatus(gitClient);
-                assertTrue(containsFile(fileName1, status.getAddedFiles()));
+                assertFileContained(fileName1, status.getAddedFiles());
                 // commit the file
                 gitClient.commit(new CommitData("commit1"));
                 // move the file
@@ -220,14 +220,14 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
                 createOrOverwriteFile(fileName, "content1", true, gitClient);
                 // verify its presence
                 StatusData status = getStatus(gitClient);
-                assertTrue(containsFile(fileName, status.getAddedFiles()));
+                assertFileContained(fileName, status.getAddedFiles());
                 // commit the file
                 gitClient.commit(new CommitData("commit1"));
                 // delete the file
                 gitClient.rm(new RmData(fileName));
                 // verify its deletion
                 status = getStatus(gitClient);
-                assertTrue(containsFile(fileName, status.getDeletedFiles()));
+                assertFileContained(fileName, status.getDeletedFiles());
             }
         });
     }
@@ -242,8 +242,8 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
                 gitClient.resetSoft(new ResetData());
                 // verify their absence
                 StatusData status = getStatus(gitClient);
-                assertTrue(containsFile(UNTRACKED_FILE, status.getUntrackedFiles()));
-                assertTrue(containsFile(ADDED_FILE, status.getAddedFiles()));
+                assertFileContained(UNTRACKED_FILE, status.getUntrackedFiles());
+                assertFileContained(ADDED_FILE, status.getAddedFiles());
             }
         });
     }
@@ -258,9 +258,9 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
                 gitClient.resetMixed(new ResetData());
                 // verify their absence
                 StatusData status = getStatus(gitClient);
-                assertTrue(containsFile(UNTRACKED_FILE, status.getUntrackedFiles()));
-                assertFalse(containsFile(ADDED_FILE, status.getAddedFiles()));
-                assertTrue(containsFile(ADDED_FILE, status.getUntrackedFiles()));
+                assertFileContained(UNTRACKED_FILE, status.getUntrackedFiles());
+                assertFileMissing(ADDED_FILE, status.getAddedFiles());
+                assertFileContained(ADDED_FILE, status.getUntrackedFiles());
             }
         });
     }
@@ -275,8 +275,8 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
                 gitClient.resetHard(new ResetData());
                 // verify their absence
                 StatusData status = getStatus(gitClient);
-                assertTrue(containsFile(UNTRACKED_FILE, status.getUntrackedFiles()));
-                assertFalse(containsFile(ADDED_FILE, status.getAddedFiles()));
+                assertFileContained(UNTRACKED_FILE, status.getUntrackedFiles());
+                assertFileMissing(ADDED_FILE, status.getAddedFiles());
             }
         });
     }
@@ -301,15 +301,15 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
                 gitClient.stashSave();
                 // verify the files' absence
                 StatusData status = getStatus(gitClient);
-                assertTrue(containsFile(UNTRACKED_FILE, status.getUntrackedFiles()));
-                assertFalse(containsFile(ADDED_FILE, status.getUntrackedFiles()));
-                assertFalse(containsFile(ADDED_FILE, status.getAddedFiles()));
+                assertFileContained(UNTRACKED_FILE, status.getUntrackedFiles());
+                assertFileMissing(ADDED_FILE, status.getUntrackedFiles());
+                assertFileMissing(ADDED_FILE, status.getAddedFiles());
                 // stash pop
                 gitClient.stashPop();
                 // verify the files' absence
                 status = getStatus(gitClient);
-                assertTrue(containsFile(UNTRACKED_FILE, status.getUntrackedFiles()));
-                assertTrue(containsFile(ADDED_FILE, status.getAddedFiles()));
+                assertFileContained(UNTRACKED_FILE, status.getUntrackedFiles());
+                assertFileContained(ADDED_FILE, status.getAddedFiles());
             }
         });
     }
@@ -601,6 +601,14 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
         StatusData status = getStatus(gitClient);
         assertTrue(containsFile(UNTRACKED_FILE, status.getUntrackedFiles()));
         assertTrue(containsFile(ADDED_FILE, status.getAddedFiles()));
+    }
+
+    public void assertFileContained(String expectedFile, List<StringData> actualFiles) {
+        assertTrue("File missing: " + expectedFile, containsFile(expectedFile, actualFiles));
+    }
+
+    public void assertFileMissing(String unexpectedFile, List<StringData> actualFiles) {
+        assertFalse("File expected to be missing, but was found: " + unexpectedFile, containsFile(unexpectedFile, actualFiles));
     }
 
     private static boolean containsFile(String fileName, List<StringData> list) {
