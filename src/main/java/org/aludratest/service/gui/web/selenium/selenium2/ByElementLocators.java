@@ -15,12 +15,14 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.aludratest.service.locator.element.ElementLocators;
 import org.aludratest.service.locator.element.ElementLocators.ElementLocatorsGUI;
 import org.aludratest.service.locator.element.GUIElementLocator;
+import org.aludratest.service.locator.element.IdLocator;
+import org.aludratest.service.locator.element.XPathLocator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.SearchContext;
@@ -43,30 +45,69 @@ public class ByElementLocators extends By {
 
     @Override
     public List<WebElement> findElements(SearchContext context) {
-        List<WebElement> result = new ArrayList<WebElement>();
-        // assume that the ElementLocators' pointer attribute already has been set correctly.
-        // Do NOT fallback to try everything else again, as we would have gotten a new
-        // ByElementLocators object by the LocatorUtil class.
         GUIElementLocator usedOption = elementLocators.getUsedOption();
         if (usedOption != null) {
-            result.add(context.findElement(LocatorSupport.by(usedOption)));
-            return result;
+            return Collections.singletonList(context.findElement(LocatorSupport.by(usedOption)));
         }
 
-        // ... and try all alternatives
+        // build an XPath OR string to have only one XPath for invocation, if possible
+        String xpath = buildXPathLocator(elementLocators);
+        if (xpath == null) {
+            return Collections.singletonList(iterativeFindElement(context));
+        }
+
+        WebElement element = context.findElement(By.xpath(xpath));
+        String id = element.getAttribute("id");
+        if (id != null && !"".equals(id)) {
+            elementLocators.setUsedOption(new IdLocator(id));
+        }
+
+        return Collections.singletonList(element);
+    }
+
+    private String buildXPathLocator(ElementLocatorsGUI locators) {
+        StringBuilder sb = new StringBuilder();
+        for (GUIElementLocator locator : locators) {
+            if (sb.length() > 0) {
+                sb.append("|");
+            }
+            if (locator instanceof XPathLocator) {
+                sb.append(locator.toString());
+            }
+            else if (locator instanceof IdLocator) {
+                sb.append("//*[@id='" + locator.toString() + "']");
+            }
+            else if (locator instanceof ElementLocatorsGUI) {
+                // recursive element
+                String xpath = buildXPathLocator((ElementLocatorsGUI) locator);
+                if (xpath == null) {
+                    return null;
+                }
+                sb.append(xpath);
+            }
+            else {
+                // unsupported locator type, fallback to slow method
+                return null;
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private WebElement iterativeFindElement(SearchContext context) {
+        // try all alternatives
         for (GUIElementLocator alternative : elementLocators) {
             try {
                 WebElement element = context.findElement(LocatorSupport.by(alternative));
                 // if the element is found, update the pointer and return the element to the caller
                 elementLocators.setUsedOption(alternative);
-                result.add(element);
-                return result;
+                return element;
             } catch (NoSuchElementException e) {
                 // if any single locator cannot be found, simply ignore it
                 // and loop to the next option
             }
         }
-        // if all alternatives have failed, throw a NoSuchElementException
+
         throw new NoSuchElementException("No element found for locator " + elementLocators);
     }
 

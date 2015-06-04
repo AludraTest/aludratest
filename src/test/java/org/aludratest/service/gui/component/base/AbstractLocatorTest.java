@@ -16,8 +16,8 @@
 package org.aludratest.service.gui.component.base;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import org.aludratest.service.locator.Locator;
 import org.aludratest.service.locator.element.CSSLocator;
@@ -91,7 +91,8 @@ public abstract class AbstractLocatorTest extends GUITest {
         ElementLocatorsGUI elementLocators = (ElementLocatorsGUI) new ElementLocators(opt1, opt2).newMutableInstance();
         assertNull(elementLocators.getUsedOption());
         aludraWebGUI.verify().assertElementPresent("el", "op", elementLocators);
-        assertTrue(opt2 == elementLocators.getUsedOption());
+        assertNotNull(elementLocators.getUsedOption());
+        assertEquals("before:LinktoTThis:after", elementLocators.getUsedOption().toString());
         checkLastStepStatus(TestStatus.PASSED);
     }
 

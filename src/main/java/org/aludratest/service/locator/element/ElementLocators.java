@@ -118,9 +118,6 @@ public class ElementLocators implements Iterable<GUIElementLocator> {
          *            the pointer to set
          */
         public final void setUsedOption(GUIElementLocator option) {
-            if (option != null && indexOf(option) < 0) {
-                throw new IllegalArgumentException("Option does not exist: " + option);
-            }
             this.usedOption = option;
         }
 
@@ -169,9 +166,9 @@ public class ElementLocators implements Iterable<GUIElementLocator> {
                 builder.append("#").append(i).append(": ").append(options.get(i));
             }
             builder.append("]");
-            builder.append(", usedIndex=");
+            builder.append(", usedLocator=");
             if (usedOption != null) {
-                builder.append(indexOf(usedOption));
+                builder.append(usedOption.toString());
             }
             else {
                 builder.append("none");

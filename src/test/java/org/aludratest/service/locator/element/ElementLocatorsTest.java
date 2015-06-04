@@ -34,13 +34,13 @@ public class ElementLocatorsTest {
         IdLocator opt1 = new IdLocator("id1");
         IdLocator opt2 = new IdLocator("id2");
         ElementLocatorsGUI loc = (ElementLocatorsGUI) new ElementLocators(opt1, opt2).newMutableInstance();
-        assertEquals("ElementLocatorsGUI[options=[#0: id1, #1: id2], usedIndex=none]", loc.toString());
+        assertEquals("ElementLocatorsGUI[options=[#0: id1, #1: id2], usedLocator=none]", loc.toString());
         loc.setUsedOption(null);
-        assertEquals("ElementLocatorsGUI[options=[#0: id1, #1: id2], usedIndex=none]", loc.toString());
+        assertEquals("ElementLocatorsGUI[options=[#0: id1, #1: id2], usedLocator=none]", loc.toString());
         loc.setUsedOption(opt1);
-        assertEquals("ElementLocatorsGUI[options=[#0: id1, #1: id2], usedIndex=0]", loc.toString());
+        assertEquals("ElementLocatorsGUI[options=[#0: id1, #1: id2], usedLocator=id1]", loc.toString());
         loc.setUsedOption(opt2);
-        assertEquals("ElementLocatorsGUI[options=[#0: id1, #1: id2], usedIndex=1]", loc.toString());
+        assertEquals("ElementLocatorsGUI[options=[#0: id1, #1: id2], usedLocator=id2]", loc.toString());
     }
 
     @Test
@@ -55,15 +55,6 @@ public class ElementLocatorsTest {
         assertTrue(opt2 == loc.getUsedOption());
         loc.setUsedOption(null);
         assertNull(loc.getUsedOption());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testUsedOption_illegal() {
-        IdLocator opt1 = new IdLocator("id1");
-        IdLocator opt2 = new IdLocator("id2");
-        ElementLocatorsGUI loc = (ElementLocatorsGUI) new ElementLocators(opt1, opt2).newMutableInstance();
-        assertNull(loc.getUsedOption());
-        loc.setUsedOption(new IdLocator("id3"));
     }
 
 }
