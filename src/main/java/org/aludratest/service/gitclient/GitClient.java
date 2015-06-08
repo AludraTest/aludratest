@@ -176,6 +176,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         LineIterator iterator = new LineIterator(new StringReader(output));
         while (iterator.hasNext()) {
             String line = iterator.next();
+            LOGGER.debug("Git Status output: {}", line);
             if (line.startsWith("##")) {
                 data.setCurrentBranch(line.substring(3));
             }

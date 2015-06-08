@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -140,6 +141,7 @@ public class Selenium2Wrapper {
             this.usedSeleniumHost = resourceService.acquire();
             this.seleniumUrl = new URL(usedSeleniumHost + "/wd/hub");
             this.driver = newDriver();
+            this.driver.manage().timeouts().pageLoadTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS);
             this.locatorSupport = new LocatorSupport(this.driver, configuration);
         } catch (Exception e) {
             LOGGER.error("Error initializing Selenium 2", e);
