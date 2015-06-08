@@ -533,7 +533,7 @@
 							<goal>test</goal>
 						</goals>
 						<configuration>
-							<argLine>-Xmx1024M -XX:MaxPermSize=128M -DperformLocalTests=${performLocalTests}</argLine>
+							<argLine>-DperformLocalTests=${performLocalTests}</argLine>
 							<excludes>
 								<exclude>none</exclude>
 							</excludes>
