@@ -15,15 +15,12 @@
  */
 package org.aludratest.impl.log4testing.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aludratest.impl.log4testing.data.TestCaseLog;
-import org.aludratest.impl.log4testing.data.TestLogger;
-import org.aludratest.impl.log4testing.data.TestStepLog;
-import org.aludratest.impl.log4testing.data.TestSuiteLog;
 import org.aludratest.impl.log4testing.observer.ObserverTestUtil;
 import org.aludratest.impl.log4testing.observer.PendingTestsObserver;
 import org.aludratest.impl.log4testing.observer.TestObserverManager;
@@ -58,7 +55,7 @@ public class MultiThreadedTestCaseTest {
 
     @Test
     public void testComplexHighlyConcurrent() throws Exception {
-        performTest(3, 4, 20, 0);
+        performTest(3, 4, 10, 0);
     }
 
     private void performTest(int hierarchyDepth, int childSuiteCount, int childCaseCount, int sleepTime) throws InterruptedException {
@@ -131,6 +128,7 @@ public class MultiThreadedTestCaseTest {
             }
         }
 
+        @Override
         public void uncaughtException(Thread thread, Throwable throwable) {
             TestStepLog lastStep = testCase.getLastTestStep();
             lastStep.setStatus(TestStatus.FAILEDAUTOMATION);
