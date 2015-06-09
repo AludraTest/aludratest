@@ -103,6 +103,7 @@ public class ProcessWrapper {
      * @param directory the working directory to set. */
     public void setWorkingDirectory(File directory) {
         assertState(ProcessState.CREATED);
+        directory.mkdirs();
         this.builder.directory(directory);
     }
 

@@ -15,7 +15,6 @@
  */
 package org.aludratest.service.cmdline;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -44,9 +43,9 @@ public interface CommandLineInteraction extends Interaction {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param directory */
-    void setWorkingDirectory(@ElementType String processType, @ElementName String processName, @TechnicalLocator int processId,
-            File directory);
+     * @param relativeWorkingDirectory the path of the process' working directory relative to the configuration's base.directory setting */
+    void setRelativeWorkingDirectory(@ElementType String processType, @ElementName String processName,
+            @TechnicalLocator int processId, String relativeWorkingDirectory);
 
     /** Sets an environment variable of the specified process.
      * @param processType the process type

@@ -15,17 +15,31 @@
  */
 package org.aludratest.service.cmdline.impl;
 
-import org.aludratest.service.AbstractAludraService;
+import org.aludratest.config.ConfigProperties;
+import org.aludratest.config.Preferences;
+import org.aludratest.exception.AutomationException;
+import org.aludratest.service.AbstractConfigurableAludraService;
+import org.aludratest.service.Implementation;
 import org.aludratest.service.cmdline.CommandLineCondition;
 import org.aludratest.service.cmdline.CommandLineInteraction;
 import org.aludratest.service.cmdline.CommandLineService;
 import org.aludratest.service.cmdline.CommandLineVerification;
+import org.apache.commons.vfs2.FileSystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Default implementation of the {@link CommandLineService}. It uses a single {@link CommandLineActionImpl} instance.
  * @author Volker Bergmann */
-public class CommandLineServiceImpl extends AbstractAludraService implements CommandLineService {
+@Implementation({ CommandLineService.class })
+@ConfigProperties({})
+public class CommandLineServiceImpl extends AbstractConfigurableAludraService implements CommandLineService {
+
+    /** The logger of the class. */
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandLineServiceImpl.class);
 
     private CommandLineActionImpl action;
+
+    private CommandLineServiceConfiguration configuration;
 
     // properties --------------------------------------------------------------
 
@@ -34,17 +48,35 @@ public class CommandLineServiceImpl extends AbstractAludraService implements Com
         return getClass().getSimpleName();
     }
 
-    // life cycle methods ------------------------------------------------------
+    // Configurable interface implementation ----------------------------------
+
+    @Override
+    public String getPropertiesBaseName() {
+        return "commandLineService";
+    }
+
+    @Override
+    public void configure(Preferences preferences) throws AutomationException {
+        try {
+            configuration = new CommandLineServiceConfiguration(preferences);
+        }
+        catch (FileSystemException e) {
+            LOGGER.error("Error configuring FileService", e);
+            throw new AutomationException("Error initializing " + this, e);
+        }
+    }
+
+    // AludraService interface implementation ----------------------------------
 
     @Override
     public void initService() {
-        this.action = new CommandLineActionImpl();
+        this.action = new CommandLineActionImpl(configuration);
     }
 
     /** Closes the service */
     @Override
     public void close() {
-        // nothing to do
+        this.configuration.close();
     }
 
     // functional interface ----------------------------------------------------
@@ -62,6 +94,11 @@ public class CommandLineServiceImpl extends AbstractAludraService implements Com
     @Override
     public CommandLineCondition check() {
         return action;
+    }
+
+    @Override
+    public String getBaseDirectory() {
+        return configuration.getBaseDirectory();
     }
 
 }

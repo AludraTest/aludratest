@@ -71,7 +71,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
 
     @Before
     public void prepareService() {
-        this.service = getLoggingService(CommandLineService.class, "test");
+        this.service = getLoggingService(CommandLineService.class, "gittest");
     }
 
     @After
@@ -403,15 +403,15 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     @Test
     public void testCloneRepository() throws Exception {
         GitClient origin = null;
-        GitClient local = null;
+        GitClient copy = null;
         try {
             origin = createGitRepository();
-            local = createAndCloneRepository(origin, new File("target/gittest/testClone"));
+            copy = createAndCloneRepository(origin, "testClone");
             // verify the clone
-            assertFileContent("m_content", "m.txt", local);
+            assertFileContent("m_content", "m.txt", copy);
         }
         finally {
-            deleteGitRepository(local);
+            deleteGitRepository(copy);
             deleteGitRepository(origin);
         }
     }
@@ -422,7 +422,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
         GitClient local = null;
         try {
             origin = createGitRepository();
-            local = createAndCloneRepository(origin, new File("target/gittest/testFetchAndMerge"));
+            local = createAndCloneRepository(origin, "testFetchAndMerge");
             assertFileContent("m_content", "m.txt", local);
             createOrOverwriteFile("newfile.txt", "new content", true, origin);
             origin.commit(new CommitData("added newfile.txt"));
@@ -444,7 +444,7 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
         GitClient local = null;
         try {
             origin = createGitRepository();
-            local = createAndCloneRepository(origin, new File("target/gittest/testPush"));
+            local = createAndCloneRepository(origin, "testPush");
             configureUserAndMail(local);
             assertFileContent("m_content", "m.txt", local);
             // create a local branch 'experiment' and add a file
@@ -492,8 +492,9 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
     }
 
     private GitClient createGitRepository() {
-        File tempDir = createTempDirectory();
-        GitClient git = createGitClient().setWorkingDirectory(new StringData(tempDir.getAbsolutePath()));
+        GitClient git = createGitClient();
+        File tempDir = createTempDirectory(git);
+        git.setRelativeWorkingDirectory(new StringData(tempDir.getName()));
         git.init();
         return configureUserAndMail(git);
     }
@@ -506,31 +507,34 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
         return git;
     }
 
-    private GitClient createAndCloneRepository(GitClient origin, File localDir) throws IOException {
-        GitClient local;
+    private GitClient createAndCloneRepository(GitClient origin, String directory) throws IOException {
         // create a file "m.txt" and commit master on origin
         createOrOverwriteFile("m.txt", "m_content", true, origin);
         origin.commit(new CommitData("initial commit"));
 
         // clone origin on local git
-        String originPath = origin.getWorkingDirectory().getValue();
-        localDir.mkdirs();
-        local = createGitClient().setWorkingDirectory(new StringData(localDir.getAbsolutePath()));
-        local.cloneRepository(new CloneRepositoryData(originPath, "."));
-        return local;
+        GitClient copy = createGitClient();
+        copy.setRelativeWorkingDirectory(new StringData(directory));
+        String originPath = workingDirectory(origin).getCanonicalPath();
+        copy.cloneRepository(new CloneRepositoryData(originPath, "."));
+        return copy;
     }
 
-    private File createTempDirectory() {
-        String tempRoot = SystemInfo.getTempDir();
+    private File createTempDirectory(GitClient git) {
+        String tempRoot = git.getBaseDirectory();
         File tempDir = new File(tempRoot, UUID.randomUUID().toString());
-        tempDir.mkdir();
+        tempDir.mkdirs();
         return tempDir;
     }
 
-    private void deleteGitRepository(GitClient git) {
+    private void deleteGitRepository(GitClient git) throws IOException {
         if (git != null) {
-            FileUtil.deleteDirectory(new File(git.getWorkingDirectory().getValue()));
+            FileUtil.deleteDirectory(workingDirectory(git));
         }
+    }
+
+    private File workingDirectory(GitClient git) throws IOException {
+        return file(".", git);
     }
 
     private static File createOrOverwriteFile(String name, String content, boolean add, GitClient gitClient) throws IOException {
@@ -542,9 +546,9 @@ public class GitClientIntegrationTest extends AbstractAludraServiceTest {
         return file;
     }
 
-    private static File file(String name, GitClient gitClient) {
-        String tempDir = gitClient.getWorkingDirectory().getValue();
-        return new File(tempDir, name);
+    private static File file(String name, GitClient git) throws IOException {
+        String tempDir = git.getRelativeWorkingDirectory().getValue();
+        return new File(new File(git.getBaseDirectory(), tempDir), name).getCanonicalFile();
     }
 
     private void assertFileNotFound(String localFilePath, GitClient git) throws IOException {
