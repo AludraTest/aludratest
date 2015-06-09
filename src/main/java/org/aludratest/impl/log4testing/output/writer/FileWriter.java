@@ -94,6 +94,11 @@ public abstract class FileWriter<T extends TestObject> implements Writer<T> {
         this.shortTimeFormat = shortTimeFormat;
     }
 
+    protected boolean isHtml() {
+        return "HTML".equalsIgnoreCase(this.extension);
+    }
+
+    @Override
     public void validate() {
         // check extension property
         assertNotEmpty("extension", extension);
