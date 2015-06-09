@@ -134,7 +134,8 @@ public class Selenium2Wrapper {
         try {
             this.configuration = configuration;
             this.resourceService = resourceService;
-            if (configuration.isUrlOfAutHttp() && configuration.isUsingLocalProxy()) {
+            // TODO support HTTPS
+            if ("http".equals(configuration.getUrlOfAutAsUrl().getProtocol()) && configuration.isUsingLocalProxy()) {
                 this.proxy = getProxyPool().acquire();
                 this.proxy.start();
             }
@@ -152,7 +153,8 @@ public class Selenium2Wrapper {
     }
 
     private synchronized ProxyPool getProxyPool() {
-        if (proxyPool == null && configuration.isUrlOfAutHttp() && configuration.isUsingLocalProxy()) {
+        if (proxyPool == null && "http".equals(configuration.getUrlOfAutAsUrl().getProtocol())
+                && configuration.isUsingLocalProxy()) { // TODO support HTTPS
             URL url = configuration.getUrlOfAutAsUrl();
             proxyPool = new ProxyPool(url.getHost(), url.getPort(), configuration.getMinProxyPort(),
                     resourceService.getHostCount());
