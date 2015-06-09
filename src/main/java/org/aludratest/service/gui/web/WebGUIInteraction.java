@@ -50,9 +50,7 @@ public interface WebGUIInteraction extends GUIInteraction {
      */
     void windowFocus();
 
-    /** TODO move to AludraWebGui maby SeliumWebGui and maybe as configuration
-     * 
-     * Tells the Selenium server to add the specified key and value as a custom outgoing request header. This only works if the
+    /** Tells the Selenium server to add the specified key and value as a custom outgoing request header. This only works if the
      * browser is configured to use the built in Selenium proxy.
      * @param key the header name
      * @param value the header value */

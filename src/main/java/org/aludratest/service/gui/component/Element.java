@@ -19,9 +19,6 @@ import org.aludratest.service.gui.AludraGUI;
 import org.aludratest.service.locator.element.GUIElementLocator;
 
 /** Parent interface for GUI Elements e.g. Button.
- * 
- * TODO document waitingUntilTaskCompletion feature
- * 
  * @author Joerg Langnickel
  * @author Volker Bergmann
  * @param <E> Type of the concrete element, to be used by subclasses. */
