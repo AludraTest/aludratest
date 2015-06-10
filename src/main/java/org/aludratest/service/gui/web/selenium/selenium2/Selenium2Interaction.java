@@ -274,14 +274,12 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
 
     @Override
     public NodeList evalXPath(XPathLocator locator) {
-        // TODO check if this can be implemented using Selenium2's By.xpath
         String html = new String(wrapper.getPageSource().getFileData(), DataUtil.UTF_8);
         return DataUtil.evalXPathInHTML(locator, html);
     }
 
     @Override
     public NodeList evalXPath(String xpath) {
-        // TODO check if this can be implemented using Selenium2's By.xpath
         String html = new String(wrapper.getPageSource().getFileData(), DataUtil.UTF_8);
         return DataUtil.evalXPathInHTML(xpath, html);
     }

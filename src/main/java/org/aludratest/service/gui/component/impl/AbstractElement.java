@@ -15,14 +15,22 @@
  */
 package org.aludratest.service.gui.component.impl;
 
+import org.aludratest.exception.PerformanceFailure;
+import org.aludratest.service.SystemConnector;
 import org.aludratest.service.gui.AludraGUI;
 import org.aludratest.service.gui.component.Element;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 
 /** Parent class for GUI Elements e.g. Button.
- * 
- * TODO document waitingUntilTaskCompletion feature
+ * Each element can be configured to wait (or not) for the completion of tasks that are caused by user actions on the element. A
+ * task completion timeout is configured by calling {@link #waitingUntilTaskCompletion(int)} and implicitly applied after the
+ * execution of a {@link #click()} or {@link #doubleClick()}. Child classes are expected to behave similarly on relevant
+ * operations (like e.g. select()). The wait mechanism first waits for activity to occur (indicated by a {@link SystemConnector}
+ * for the related system and limited by a task start timeout). If no activity is reported, pending activities are assumed to have
+ * already been finished before starting the check. If activity is reported, the task completion timeout is applied which waits
+ * for the specified number of milliseconds until the connector reports the system is not busy any longer. If the timeout is
+ * exceeded, the system throws a {@link PerformanceFailure}, otherwise returns normally.
  * 
  * @author Joerg Langnickel
  * @author Volker Bergmann
