@@ -15,11 +15,16 @@
  */
 package org.aludratest.service.cmdline;
 
+import org.aludratest.config.ConfigProperties;
+import org.aludratest.config.ConfigProperty;
 import org.aludratest.service.AludraService;
+import org.aludratest.service.ServiceInterface;
 
 /** Provides command line operations, like executíng a program or script and check the results. The service provides an interface
  * with streams for sending data to the executable and reading results back.
  * @author Volker Bergmann */
+@ServiceInterface(name = "Command Line Service", description = "Provides invocation and I/O of command line processes.")
+@ConfigProperties({ @ConfigProperty(name = "base.directory", type = String.class, description = "The base URL of the service. On a local filesystem, this is a folder path.", defaultValue = "${user.home}", required = true) })
 public interface CommandLineService extends AludraService {
 
     /** Exhibits the service's Interaction implementor */
@@ -33,5 +38,10 @@ public interface CommandLineService extends AludraService {
     /** Exhibits the service's Condition implementor */
     @Override
     CommandLineCondition check();
+
+    /**
+     * @return the configured base.directory
+     */
+    String getBaseDirectory();
 
 }

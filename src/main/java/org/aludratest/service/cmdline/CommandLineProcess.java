@@ -56,8 +56,8 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> {
      * @param directoryPath the path of the directory to be used
      * @return this */
     @SuppressWarnings("unchecked")
-    public E setWorkingDirectory(String directoryPath) {
-        service.perform().setWorkingDirectory(processType, processName, processId, new File(directoryPath));
+    public E setRelativeWorkingDirectory(String directoryPath) {
+        service.perform().setRelativeWorkingDirectory(processType, processName, processId, directoryPath);
         return (E) this;
     }
 

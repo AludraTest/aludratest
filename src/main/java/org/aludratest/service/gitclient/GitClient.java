@@ -93,7 +93,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
 
     private final CommandLineService service;
 
-    private String workingDirectory;
+    private String relativeWorkingDirectory;
     private int processTimeout;
     private int responseTimeout;
 
@@ -109,21 +109,28 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         this.processTimeout = processTimeout;
         this.responseTimeout = responseTimeout;
         this.service = service;
-        this.workingDirectory = SystemInfo.getCurrentDir();
+        this.relativeWorkingDirectory = ".";
     }
 
     /** Returns the working directory of the process.
      * @return the working directory of the process */
-    public StringData getWorkingDirectory() {
-        return new StringData(workingDirectory);
+    public StringData getRelativeWorkingDirectory() {
+        return new StringData(relativeWorkingDirectory);
     }
 
     /** Sets the working directory.
-     * @param workingDirectory the workingDirectory to set.
+     * @param relativeWorkingDirectory the workingDirectory to set.
      * @return a reference to this */
-    public GitClient setWorkingDirectory(StringData workingDirectory) {
-        this.workingDirectory = workingDirectory.getValue();
+    public GitClient setRelativeWorkingDirectory(StringData relativeWorkingDirectory) {
+        this.relativeWorkingDirectory = relativeWorkingDirectory.getValue();
         return this;
+    }
+
+    /**
+     * @return the associated CommandLineService's configured base.directory
+     */
+    public String getBaseDirectory() {
+        return service.getBaseDirectory();
     }
 
     // operational interface ---------------------------------------------------
@@ -516,9 +523,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
         @SuppressWarnings("rawtypes")
         CommandLineProcess<?> process = new CommandLineProcess(GIT_PROCESS_TYPE, processName, service, processTimeout,
                 responseTimeout, commands);
-        if (!StringUtil.isEmpty(workingDirectory)) {
-            process.setWorkingDirectory(workingDirectory);
-        }
+        process.setRelativeWorkingDirectory(relativeWorkingDirectory);
 
         // invoke and wait until finished
         LOGGER.debug("Starting command line process: {}", process);

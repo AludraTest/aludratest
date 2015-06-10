@@ -40,13 +40,17 @@ import org.databene.commons.Validator;
  * @author Volker Bergmann */
 public class CommandLineActionImpl implements CommandLineInteraction, CommandLineVerification, CommandLineCondition {
 
+    private CommandLineServiceConfiguration configuration;
+
     private int lastProcessId;
     private Map<Integer, ProcessWrapper> processes;
 
     // configuration -----------------------------------------------------------
 
-    /** Constructor with default visibility for preventing external instantiation */
-    CommandLineActionImpl() {
+    /** Constructor with default visibility for preventing external instantiation
+     * @param configuration */
+    CommandLineActionImpl(CommandLineServiceConfiguration configuration) {
+        this.configuration = configuration;
         this.lastProcessId = 0;
         this.processes = new HashMap<Integer, ProcessWrapper>();
     }
@@ -128,8 +132,15 @@ public class CommandLineActionImpl implements CommandLineInteraction, CommandLin
     }
 
     @Override
-    public void setWorkingDirectory(String processType, String processName, int processId, File directory) {
-        getProcess(processId).setWorkingDirectory(directory);
+    public void setRelativeWorkingDirectory(String processType, String processName, int processId, String relativeWorkingDirectory) {
+        try {
+            File workingDirectory = new File(configuration.getBaseDirectory(), relativeWorkingDirectory);
+            workingDirectory = workingDirectory.getCanonicalFile();
+            getProcess(processId).setWorkingDirectory(workingDirectory);
+        }
+        catch (IOException e) {
+            throw new AutomationException("Error setting working directory", e);
+        }
     }
 
     @Override
