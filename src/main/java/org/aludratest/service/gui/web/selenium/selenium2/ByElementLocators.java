@@ -75,7 +75,9 @@ public class ByElementLocators extends By {
                 sb.append(locator.toString());
             }
             else if (locator instanceof IdLocator) {
-                sb.append("//*[@id='" + locator.toString() + "']");
+                // XPath 1.0 "ends-with" replacement
+                sb.append("//*[substring(@id, string-length(@id) - string-length('" + locator.toString() + "') + 1) ='"
+                        + locator.toString() + "']");
             }
             else if (locator instanceof ElementLocatorsGUI) {
                 // recursive element
