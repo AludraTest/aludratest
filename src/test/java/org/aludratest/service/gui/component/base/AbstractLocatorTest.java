@@ -97,6 +97,19 @@ public abstract class AbstractLocatorTest extends GUITest {
     }
 
     @Test
+    public void elementLocators_endsWith() {
+        IdLocator opt1 = new IdLocator("xlkhbsdcbli");
+        IdLocator opt2 = new IdLocator("LinktoTThis:after");
+        ElementLocatorsGUI elementLocators = (ElementLocatorsGUI) new ElementLocators(opt1, opt2).newMutableInstance();
+        assertNull(elementLocators.getUsedOption());
+        aludraWebGUI.verify().assertElementPresent("el", "op", elementLocators);
+        assertNotNull(elementLocators.getUsedOption());
+        assertEquals("before:LinktoTThis:after", elementLocators.getUsedOption().toString());
+        checkLastStepStatus(TestStatus.PASSED);
+    }
+
+
+    @Test
     public void elementLocators_notfound() {
         ElementLocatorsGUI elementLocators = (ElementLocatorsGUI) new ElementLocators(new IdLocator("xlkhbsdcbli"),
                 new IdLocator("klsdbckjsbdc"), new IdLocator("sdknclksndc")).newMutableInstance();
