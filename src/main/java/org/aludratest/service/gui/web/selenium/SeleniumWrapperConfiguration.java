@@ -181,14 +181,6 @@ public final class SeleniumWrapperConfiguration {
         }
     }
 
-    /** Tells if the URL of the application under test is accessed using http protocol. TODO Should be removed - is used for
-     * Selenium 2 proxy, which should also be able to handle https.
-     * 
-     * @return <code>true</code> if the URL of the application under test is accessed using http protocol. */
-    public boolean isUrlOfAutHttp() {
-        return "http".equals(getUrlOfAutAsUrl().getProtocol());
-    }
-
     /** Returns, for Selenium 2, if a local proxy server shall be used.
      * 
      * @return <true> if a local proxy server shall be used, enabling additional HTTP features, <code>false</code> otherwise. */
