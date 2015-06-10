@@ -32,8 +32,6 @@ public abstract class AbstractFileFieldTest extends GUITest {
     public void setResourceNameAndContent() throws Exception {
         guiTestUIMap.fileField().assertTextEquals("");
         ByteArrayInputStream content = new ByteArrayInputStream("myTestFileContent".getBytes(Encodings.UTF_8));
-        // TODO VBE the following step fails for Google Chrome with Selenium 1
-        // see https://code.google.com/p/selenium/issues/detail?id=7802
         guiTestUIMap.fileField().setResourceNameAndContent("myTestFile.txt", content);
         checkLastStepStatus(TestStatus.PASSED);
         guiTestUIMap.fileSubmitButton().click();

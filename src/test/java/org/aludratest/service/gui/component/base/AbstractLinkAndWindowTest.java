@@ -72,7 +72,7 @@ public abstract class AbstractLinkAndWindowTest extends GUITest {
         checkLastStepStatus(TestStatus.PASSED);
         // try to select the main page
         aludraWebGUI.perform().selectWindow(GUITestUIMap.TEST_PAGE_TITLE);
-        // TODO VBE the following check fails for Google Chrome with Selenium 1
+        // Verify that a failure is diagnosed
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
     }
 
