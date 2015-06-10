@@ -33,7 +33,6 @@ import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
 import org.aludratest.testcase.event.TestStepInfo;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.codehaus.plexus.component.annotations.Component;
-import org.databene.formats.html.util.HTMLUtil;
 
 @Component(role = RunnerListener.class, hint = "log4testing")
 public class Log4TestingRunnerListener extends AbstractRunnerListener {
@@ -109,8 +108,7 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
             PrintWriter pw = new PrintWriter(sw);
             testStepInfo.getError().printStackTrace(pw);
             pw.flush();
-            // TODO this is not the right place, as the output engine should decide how to escape the string
-            log.getLastTestStep().setComment(HTMLUtil.escape(sw.toString()).replace("\n", "<br />"));
+            log.getLastTestStep().setComment(sw.toString());
         }
     }
 

@@ -107,7 +107,7 @@
 				<td>$!testStep.Service</td>
 				<td>$!testStep.TechnicalLocator</td>
 				<td>$!testStep.TechnicalArguments</td>
-				<td>$!testStep.Comment</td>
+				<td>$html.format($!testStep.Comment)</td>
 			</tr>
 			#end
 			</tbody>

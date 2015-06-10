@@ -31,6 +31,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.databene.commons.IOUtil;
+import org.databene.formats.html.util.HTMLUtil;
 import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,6 +129,7 @@ public abstract class VelocityWriter<T extends TestStepContainer> extends FileWr
         context.put(getVariable(), testObject);
         context.put("name", new NameFormat());
         context.put("time", new TimeFormat());
+        context.put("html", new HtmlFormat());
         return context;
     }
 
@@ -169,7 +171,7 @@ public abstract class VelocityWriter<T extends TestStepContainer> extends FileWr
      */
     public class TimeFormat {
         private static final int HOURS_PER_DAY = 24;
-        
+
         private DecimalFormat nf2 = new DecimalFormat("00");
         private DecimalFormat nf3 = new DecimalFormat("000");
 
@@ -186,6 +188,17 @@ public abstract class VelocityWriter<T extends TestStepContainer> extends FileWr
             } else {
                 return period.getDays() + " days " + period.getHours() + " hours " + period.getMinutes() + " minutes " + period.getSeconds() + " seconds " + period.getMillis() + " ms";
             }
+        }
+    }
+
+    /** Formats texts in HTML.
+     * @author Volker Bergmann */
+    public class HtmlFormat {
+
+        /** @param text the text to format in HTML
+         * @return an HTML representation of the text */
+        public String format(String text) {
+            return HTMLUtil.escape(text).replace("\n", "<br />");
         }
     }
 
