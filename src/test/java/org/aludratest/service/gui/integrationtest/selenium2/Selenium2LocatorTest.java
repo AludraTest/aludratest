@@ -15,9 +15,19 @@
  */
 package org.aludratest.service.gui.integrationtest.selenium2;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.aludratest.service.gui.component.base.AbstractLocatorTest;
 import org.aludratest.service.locator.Locator;
+import org.aludratest.service.locator.element.ElementLocators;
+import org.aludratest.service.locator.element.ElementLocators.ElementLocatorsGUI;
+import org.aludratest.service.locator.element.IdLocator;
+import org.aludratest.service.locator.element.XPathLocator;
+import org.aludratest.testcase.TestStatus;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests {@link Locator}s with Selenium 2.
@@ -29,6 +39,30 @@ public class Selenium2LocatorTest extends AbstractLocatorTest {
     @BeforeClass
     public static void setUpSelenium2() {
         activateSelenium2();
+    }
+
+    @Test
+    public void elementLocators() {
+        IdLocator opt1 = new IdLocator("xlkhbsdcbli");
+        XPathLocator opt2 = new XPathLocator("//a[@id='before:LinktoTThis:after']");
+        ElementLocatorsGUI elementLocators = (ElementLocatorsGUI) new ElementLocators(opt1, opt2).newMutableInstance();
+        assertNull(elementLocators.getUsedOption());
+        aludraWebGUI.verify().assertElementPresent("el", "op", elementLocators);
+        assertNotNull(elementLocators.getUsedOption());
+        assertEquals("before:LinktoTThis:after", elementLocators.getUsedOption().toString());
+        checkLastStepStatus(TestStatus.PASSED);
+    }
+
+    @Test
+    public void elementLocators_endsWith() {
+        IdLocator opt1 = new IdLocator("xlkhbsdcbli");
+        IdLocator opt2 = new IdLocator("LinktoTThis:after");
+        ElementLocatorsGUI elementLocators = (ElementLocatorsGUI) new ElementLocators(opt1, opt2).newMutableInstance();
+        assertNull(elementLocators.getUsedOption());
+        aludraWebGUI.verify().assertElementPresent("el", "op", elementLocators);
+        assertNotNull(elementLocators.getUsedOption());
+        assertEquals("before:LinktoTThis:after", elementLocators.getUsedOption().toString());
+        checkLastStepStatus(TestStatus.PASSED);
     }
 
 }

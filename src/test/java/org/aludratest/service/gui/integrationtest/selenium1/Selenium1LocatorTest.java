@@ -15,8 +15,18 @@
  */
 package org.aludratest.service.gui.integrationtest.selenium1;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.aludratest.service.gui.component.base.AbstractLocatorTest;
+import org.aludratest.service.locator.element.ElementLocators;
+import org.aludratest.service.locator.element.ElementLocators.ElementLocatorsGUI;
+import org.aludratest.service.locator.element.IdLocator;
+import org.aludratest.service.locator.element.XPathLocator;
+import org.aludratest.testcase.TestStatus;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests locators with Selenium 1.
@@ -29,6 +39,18 @@ public class Selenium1LocatorTest extends AbstractLocatorTest {
     @BeforeClass
     public static void setUpSelenium1() {
         activateSelenium1();
+    }
+
+    @Test
+    public void elementLocators() {
+        IdLocator opt1 = new IdLocator("xlkhbsdcbli");
+        XPathLocator opt2 = new XPathLocator("//a[@id='before:LinktoTThis:after']");
+        ElementLocatorsGUI elementLocators = (ElementLocatorsGUI) new ElementLocators(opt1, opt2).newMutableInstance();
+        assertNull(elementLocators.getUsedOption());
+        aludraWebGUI.verify().assertElementPresent("el", "op", elementLocators);
+        assertNotNull(elementLocators.getUsedOption());
+        assertEquals(opt2, elementLocators.getUsedOption());
+        checkLastStepStatus(TestStatus.PASSED);
     }
 
 }

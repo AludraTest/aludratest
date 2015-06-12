@@ -16,7 +16,6 @@
 package org.aludratest.service.gui.component.base;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.aludratest.service.locator.Locator;
@@ -83,31 +82,6 @@ public abstract class AbstractLocatorTest extends GUITest {
         aludraWebGUI.verify().assertElementPresent("el", "op", new XPathLocator("//a[@id='before:LinktoTThis:after_notfound']"));
         checkLastStepStatus(TestStatus.FAILED);
     }
-
-    @Test
-    public void elementLocators() {
-        IdLocator opt1 = new IdLocator("xlkhbsdcbli");
-        XPathLocator opt2 = new XPathLocator("//a[@id='before:LinktoTThis:after']");
-        ElementLocatorsGUI elementLocators = (ElementLocatorsGUI) new ElementLocators(opt1, opt2).newMutableInstance();
-        assertNull(elementLocators.getUsedOption());
-        aludraWebGUI.verify().assertElementPresent("el", "op", elementLocators);
-        assertNotNull(elementLocators.getUsedOption());
-        assertEquals("before:LinktoTThis:after", elementLocators.getUsedOption().toString());
-        checkLastStepStatus(TestStatus.PASSED);
-    }
-
-    @Test
-    public void elementLocators_endsWith() {
-        IdLocator opt1 = new IdLocator("xlkhbsdcbli");
-        IdLocator opt2 = new IdLocator("LinktoTThis:after");
-        ElementLocatorsGUI elementLocators = (ElementLocatorsGUI) new ElementLocators(opt1, opt2).newMutableInstance();
-        assertNull(elementLocators.getUsedOption());
-        aludraWebGUI.verify().assertElementPresent("el", "op", elementLocators);
-        assertNotNull(elementLocators.getUsedOption());
-        assertEquals("before:LinktoTThis:after", elementLocators.getUsedOption().toString());
-        checkLastStepStatus(TestStatus.PASSED);
-    }
-
 
     @Test
     public void elementLocators_notfound() {
