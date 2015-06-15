@@ -1117,6 +1117,11 @@ public class Selenium2Wrapper {
             throw wde;
         }
 
+        // check for a time out
+        if (e instanceof TimeoutException) {
+            throw new PerformanceFailure(e.getMessage(), e);
+        }
+
         // otherwise, throw a technical exception
         throw new TechnicalException("Unknown exception when clicking element", e);
     }
