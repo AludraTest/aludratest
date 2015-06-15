@@ -25,10 +25,17 @@ public final class PerformanceFailure extends AludraTestException {
 
     private static final long serialVersionUID = 1L;
 
-    /** Constructor.
-     *  @param message the exception message */
+    /** Basic constructor.
+     * @param message the exception message */
     public PerformanceFailure(String message) {
-        super(message);
+        this(message, null);
+    }
+
+    /** Chaining constructor.
+     * @param message the exception message
+     * @param cause the root exception that caused this exception */
+    public PerformanceFailure(String message, Throwable cause) {
+        super(message, cause);
     }
 
     @Override
