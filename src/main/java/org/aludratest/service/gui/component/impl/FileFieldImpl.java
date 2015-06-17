@@ -121,6 +121,7 @@ public class FileFieldImpl extends AbstractInputComponent<FileField> implements 
     }
 
     private File getTestResourceFolder() {
+        // TODO this should be more dynamic, perhaps even in the OS temp area
         return new File("target/classes");
     }
 
