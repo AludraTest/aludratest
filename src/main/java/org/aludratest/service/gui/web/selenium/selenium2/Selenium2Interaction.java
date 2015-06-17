@@ -82,6 +82,11 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
         wrapper.doubleClick(locator, operation, taskCompletionTimeout);
     }
 
+    @Override
+    public String clickForDownload(String elementType, String elementName, GUIElementLocator locator, int taskCompletionTimeout) {
+        return wrapper.clickForDownload(locator, taskCompletionTimeout);
+    }
+
     // radio button selection --------------------------------------------------
 
     @Override

@@ -41,6 +41,7 @@ import org.aludratest.service.SystemConnector;
 import org.aludratest.service.gui.web.selenium.ProxyPool;
 import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
 import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
+import org.aludratest.service.gui.web.selenium.SystemDownloadProvider;
 import org.aludratest.service.gui.web.selenium.httpproxy.AuthenticatingHttpProxy;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.AnyDropDownOptions;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownBoxOptionLabelsPresence;
@@ -290,6 +291,25 @@ public class Selenium2Wrapper {
         WebElement element = doBeforeDelegate(locator, true, false, true);
         doubleClick(element);
         doAfterDelegate(taskCompletionTimeout, operation);
+    }
+
+    public String clickForDownload(GUIElementLocator locator, int taskCompletionTimeout) {
+        // FIXME temporarily set "enabled" to false due to img used in GLOBE for tests. Change after tests.
+        WebElement element = doBeforeDelegate(locator, true, false, true);
+        // get System Connector for download
+        SystemDownloadProvider downloader = systemConnector.getConnector(SystemDownloadProvider.class);
+        if (downloader != null) {
+            Attachment att = downloader.downloadFile(configuration.getUrlOfAutAsUrl(), element, driver.manage().getCookies());
+            if (att != null) {
+                return att.getFileName() + ":" + att.getFileDataAsBase64String();
+            }
+            else {
+                throw new FunctionalFailure("Expected file download, but no download available");
+            }
+        }
+        else {
+            throw new AutomationException("A SystemDownloadProvider system connector must be available for downloads");
+        }
     }
 
     public void select(GUIElementLocator locator, final OptionLocator optionLocator, int taskCompletionTimeout) {

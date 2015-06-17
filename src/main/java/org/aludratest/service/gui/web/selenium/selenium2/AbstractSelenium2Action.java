@@ -18,6 +18,7 @@ package org.aludratest.service.gui.web.selenium.selenium2;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.aludratest.exception.TechnicalException;
@@ -25,7 +26,9 @@ import org.aludratest.service.Action;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
 import org.aludratest.testcase.event.attachment.Attachment;
+import org.aludratest.testcase.event.attachment.BinaryAttachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +65,15 @@ public abstract class AbstractSelenium2Action implements Action {
 
     @Override
     public List<Attachment> createAttachments(Object object, String label) {
-        throw new TechnicalException("Not supported");
+        if ("Downloaded File".equals(label)) {
+            String contents = object.toString();
+            String fn = contents.substring(0, contents.indexOf(':'));
+            String suffix = fn.contains(".") ? fn.substring(fn.lastIndexOf('.') + 1) : "dat";
+            byte[] data = Base64.decodeBase64(contents.substring(contents.indexOf(':') + 1));
+            return Collections.<Attachment> singletonList(new BinaryAttachment(label, data, suffix));
+        }
+
+        throw new TechnicalException("Unsupported attachment: " + label);
     }
 
     /** Takes a screen shot and saves the HTML sources of the current page. */

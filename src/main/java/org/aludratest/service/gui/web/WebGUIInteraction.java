@@ -15,6 +15,10 @@
  */
 package org.aludratest.service.gui.web;
 
+import org.aludratest.impl.log4testing.AttachResult;
+import org.aludratest.impl.log4testing.ElementName;
+import org.aludratest.impl.log4testing.ElementType;
+import org.aludratest.impl.log4testing.TechnicalArgument;
 import org.aludratest.impl.log4testing.TechnicalLocator;
 import org.aludratest.service.gui.GUIInteraction;
 import org.aludratest.service.locator.element.GUIElementLocator;
@@ -77,5 +81,19 @@ public interface WebGUIInteraction extends GUIInteraction {
      * 
      * @return String containing XPath evaluation result */
     String evalXPathAsString(@TechnicalLocator String xpath);
+
+    /** Clicks on an element and expects a download to start (e.g. a Download button or link). Downloads the file and returns it
+     * binary contents, in an encoded form. <br>
+     * If no download starts within the given task completion timeout, a <code>FunctionalFailure</code> is thrown. <br>
+     * 
+     * @param elementType the type of the related GUI element to log
+     * @param elementName the name of the related GUI element to log
+     * @param locator to locate buttons, links or any other elements which react on mouse clicks.
+     * @param taskCompletionTimeout
+     * @return The binary contents of the file, as a Base64 encoded string; prefixed by the file name and a colon (e.g.
+     *         <code>myExcelFile.xls:AP8uMKg...</code>). */
+    @AttachResult("Downloaded File")
+    String clickForDownload(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator, @TechnicalArgument int taskCompletionTimeout);
 
 }
