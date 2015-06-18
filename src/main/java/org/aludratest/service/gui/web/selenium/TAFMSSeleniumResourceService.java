@@ -31,25 +31,32 @@ import org.aludratest.config.Preferences;
 import org.aludratest.exception.AutomationException;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.NoConnectionReuseStrategy;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
 
 /** Uses a TAFMS server to obtain Selenium resources. The TAFMS server deals with priorities among different users.
  * 
@@ -88,8 +95,9 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
         }
 
         // prepare authentication
-        DefaultCredentialsProvider provider = new DefaultCredentialsProvider();
-        provider.addCredentials(configuration.getStringValue("tafms.user"), configuration.getStringValue("tafms.password"));
+        BasicCredentialsProvider provider = new BasicCredentialsProvider();
+        provider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(configuration.getStringValue("tafms.user"),
+                configuration.getStringValue("tafms.password")));
 
         CloseableHttpClient client = HttpClientBuilder.create().setConnectionReuseStrategy(new NoConnectionReuseStrategy())
                 .disableConnectionState().disableAutomaticRetries().setDefaultCredentialsProvider(provider).build();
@@ -97,6 +105,19 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
         String message = null;
         try {
             boolean wait;
+
+            // use preemptive authentication to avoid double connection count
+            AuthCache authCache = new BasicAuthCache();
+            // Generate BASIC scheme object and add it to the local auth cache
+            BasicScheme basicAuth = new BasicScheme();
+            URL url = new URL(getTafmsUrl());
+            HttpHost host = new HttpHost(url.getHost(), url.getPort() == -1 ? url.getDefaultPort() : url.getPort(),
+                    url.getProtocol());
+            authCache.put(host, basicAuth);
+
+            // Add AuthCache to the execution context
+            BasicHttpContext localcontext = new BasicHttpContext();
+            localcontext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
 
             do {
                 // send a POST request to resource URL
@@ -108,7 +129,7 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
                 CloseableHttpResponse response = null;
 
                 // fire request
-                response = client.execute(request);
+                response = client.execute(request, localcontext);
 
                 try {
                     if (response.getStatusLine() == null) {
@@ -140,10 +161,10 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
                             return null;
                         }
 
-                        String url = resource.getString("url");
-                        hostResourceIds.put(url, object.getString("requestId"));
+                        String sUrl = resource.getString("url");
+                        hostResourceIds.put(sUrl, object.getString("requestId"));
 
-                        return url;
+                        return sUrl;
                     }
                 }
                 finally {
@@ -270,7 +291,6 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
             EntityUtils.consumeQuietly(entity);
             IOUtils.closeQuietly(in);
         }
-
     }
 
 }
