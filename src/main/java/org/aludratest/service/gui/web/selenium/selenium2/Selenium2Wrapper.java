@@ -444,8 +444,7 @@ public class Selenium2Wrapper {
         }
 
         try {
-            LOGGER.debug("driver.getTitle()");
-            String title = driver.getTitle();
+            String title = getTitle();
             handlesAndTitles.put(initialWindowHandle, title);
         }
         catch (WebDriverException e) {
@@ -525,7 +524,18 @@ public class Selenium2Wrapper {
     /** @see Selenium#getTitle() */
     public String getTitle() {
         LOGGER.debug("getTitle()");
-        return driver.getTitle();
+        if (driver instanceof RemoteWebDriver) {
+            // also reduce timeout for TCP connection, in case remote hangs
+            ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(5000);
+        }
+        try {
+            return driver.getTitle();
+        }
+        finally {
+            if (driver instanceof RemoteWebDriver) {
+                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(0);
+            }
+        }
     }
 
     public String getWindowHandle() {
@@ -568,11 +578,21 @@ public class Selenium2Wrapper {
             }
         };
         try {
+            if (driver instanceof RemoteWebDriver) {
+                // also reduce timeout for TCP connection, in case remote hangs
+                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(5000);
+            }
             return RetryService.call(callable, WebDriverException.class, 2);
         }
         catch (Throwable t) {
             LOGGER.error("Could not retrieve window handles", t);
             return Collections.emptySet();
+        }
+        finally {
+            if (driver instanceof RemoteWebDriver) {
+                // also reduce timeout for TCP connection, in case remote hangs
+                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(0);
+            }
         }
     }
 
