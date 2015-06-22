@@ -113,24 +113,14 @@ public interface GUIInteraction extends Interaction {
     void click(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
-    /** Clicks with a single click on any kind of element which reacts on click events and is not editable. A common example are
-     * buttons and links.
+    /** Does a double click on the element which is identified by the locator.
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
-     * @param locator to locate buttons, links or any other elements which react on mouse clicks.
+     * @param locator which identifies the element which shall be double clicked
      * @param taskCompletionTimeout */
-    void clickNotEditable(@ElementType String elementType, @ElementName String elementName,
+    void doubleClick(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
-
-    /** Clicks with a double click on any kind of element which reacts on click events and is not editable. A common example are
-     * buttons and links.
-     * @param elementType the type of the related GUI element to log
-     * @param elementName the name of the related GUI element to log
-     * @param locator to locate buttons, links or any other elements which react on mouse clicks.
-     * @param taskCompletionTimeout */
-    void doubleClickNotEditable(@ElementType String elementType, @ElementName String elementName,
-            @TechnicalLocator GUIElementLocator locator, @TechnicalArgument int taskCompletionTimeout);
 
     /** Reads the value of an inputfield and returns it as a String without conversion/manipulation.
      * @param elementType the type of the related GUI element to log
@@ -182,15 +172,6 @@ public interface GUIInteraction extends Interaction {
      * @param keycode is the key which shall be pressed.
      * @see java.awt.event.KeyEvent */
     void keyPress(int keycode);
-
-    /** Does a double click on the element which is identified by the locator.
-     * @param elementType the type of the related GUI element to log
-     * @param elementName the name of the related GUI element to log
-     * @param locator which identifies the element which shall be double clicked
-     * @param taskCompletionTimeout */
-    void doubleClick(@ElementType String elementType, @ElementName String elementName,
-            @TechnicalLocator GUIElementLocator locator,
-            @TechnicalArgument int taskCompletionTimeout);
 
     /** Closes all windows identified by their name. That means, that if there are several windows with same name all will be
      * closed. This method is not waiting for a window to open.

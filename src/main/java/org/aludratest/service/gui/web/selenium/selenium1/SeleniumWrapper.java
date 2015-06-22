@@ -232,10 +232,33 @@ public class SeleniumWrapper {
             boolean elementIsEnabled = retryUntilTrueOrTimeout(new ConditionCheck() {
                 @Override
                 public boolean eval() {
-                    return selenium.isEditable(locator);
+                    return selenium.isEnabled(locator);
                 }
             }, timeout);
             if (!elementIsEnabled) {
+                throw new AutomationException("Element not editable");
+            }
+        }
+    }
+
+    /** Waits until an element is editable.
+     * @param locator a {@link GUIElementLocator} of the target element */
+    public void waitForEditable(GUIElementLocator locator) {
+        waitForEditable(locator, getTimeout());
+    }
+
+    /** Waits until an element is enabled.
+     * @param locator a {@link GUIElementLocator} of the target element
+     * @param timeout the maximum time to wait */
+    public void waitForEditable(final GUIElementLocator locator, long timeout) {
+        if (!isCalledByLink()) {
+            boolean elementIsEditable = retryUntilTrueOrTimeout(new ConditionCheck() {
+                @Override
+                public boolean eval() {
+                    return selenium.isEditable(locator);
+                }
+            }, timeout);
+            if (!elementIsEditable) {
                 throw new AutomationException("Element not editable");
             }
         }
@@ -276,37 +299,6 @@ public class SeleniumWrapper {
         callElementCommand(locator, taskCompletionTimeout, clickCommand);
     }
 
-    /** Clicks a web GUI element requiring it to be not editable.
-     *  @param locator
-     *  @param taskCompletionTimeout */
-    public void clickNotEditable(GUIElementLocator locator, int taskCompletionTimeout) {
-        ElementCommand<Void> clickNotEditableCommand = new ElementCommand<Void>("clickNotEditable", true) {
-            @Override
-            public Void call(GUIElementLocator locator) {
-                selenium.click(locator);
-                return null;
-            }
-        };
-        callElementCommand(locator, taskCompletionTimeout, true, false, clickNotEditableCommand);
-    }
-
-    /**
-     * Double clicks a web GUI element requiring it to be not editable.
-     * 
-     * @param locator
-     * @param taskCompletionTimeout
-     */
-    public void doubleClickNotEditable(GUIElementLocator locator, int taskCompletionTimeout) {
-        ElementCommand<Void> doubleClickNotEditableCommand = new ElementCommand<Void>("doubleClickNotEditable", true) {
-            @Override
-            public Void call(GUIElementLocator locator) {
-                selenium.doubleClick(locator);
-                return null;
-            }
-        };
-        callElementCommand(locator, taskCompletionTimeout, true, false, doubleClickNotEditableCommand);
-    }
-
     /** Tells if an element is present.
      *  @param locator
      *  @return true if the element is present, otherwise false */
@@ -333,6 +325,19 @@ public class SeleniumWrapper {
             }
         };
         return callElementCommand(locator, -1, true, false, editableCheckCommand);
+    }
+
+    /** Tells if an element is enabled.
+     * @param locator
+     * @return true if the element is editable, otherwise false */
+    public boolean isEnabled(GUIElementLocator locator) {
+        ElementCommand<Boolean> enabledCheckCommand = new ElementCommand<Boolean>("isEnabled", false) {
+            @Override
+            public Boolean call(GUIElementLocator locator) {
+                return selenium.isEnabled(locator);
+            }
+        };
+        return callElementCommand(locator, -1, true, false, enabledCheckCommand);
     }
 
     /** Selects an element.

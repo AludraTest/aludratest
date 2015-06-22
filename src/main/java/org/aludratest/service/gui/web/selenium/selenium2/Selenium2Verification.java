@@ -53,7 +53,7 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
     @Override
     public void assertEditable(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.waitUntilClickable(locator, getTimeout());
+            wrapper.waitUntilEditable(locator, getTimeout());
         }
         catch (AutomationException e) { // NOSONAR
             throw new FunctionalFailure(e.getMessage());
@@ -63,8 +63,32 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
     @Override
     public void assertNotEditable(String elementType, String operation, GUIElementLocator locator) {
         try {
-            wrapper.waitUntilClickable(locator, getTimeout());
+            wrapper.waitUntilEditable(locator, getTimeout());
             throw new FunctionalFailure("Element not expected to be editable");
+        }
+        catch (FunctionalFailure e) {
+            throw e;
+        }
+        catch (AutomationException e) { // NOSONAR
+            // this is the desired outcome
+        }
+    }
+
+    @Override
+    public void assertEnabled(String elementType, String elementName, GUIElementLocator locator) {
+        try {
+            wrapper.waitUntilEnabled(locator, getTimeout());
+        }
+        catch (AutomationException e) { // NOSONAR
+            throw new FunctionalFailure(e.getMessage());
+        }
+    }
+
+    @Override
+    public void assertNotEnabled(String elementType, String elementName, GUIElementLocator locator) {
+        try {
+            wrapper.waitUntilEnabled(locator, getTimeout());
+            throw new FunctionalFailure("Element not expected to be enabled");
         }
         catch (FunctionalFailure e) {
             throw e;

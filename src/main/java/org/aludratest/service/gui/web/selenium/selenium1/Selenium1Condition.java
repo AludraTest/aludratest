@@ -90,6 +90,36 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
     }
 
     @Override
+    public boolean isElementEditable(String elementType, String elementName, GUIElementLocator locator) {
+        try {
+            wrapper.waitForEditable(locator);
+            return true;
+        }
+        catch (AludraTestException e) {
+            return false;
+        }
+        catch (Exception e) { // NOSONAR
+            LOGGER.error("Unexpected exception during check which will be ignored", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isElementEditable(String elementType, String elementName, GUIElementLocator locator, long timeout) {
+        try {
+            wrapper.waitForEditable(locator, timeout);
+            return true;
+        }
+        catch (AludraTestException e) {
+            return false;
+        }
+        catch (Exception e) { // NOSONAR
+            LOGGER.error("Unexpected exception during check which will be ignored", e);
+            return false;
+        }
+    }
+
+    @Override
     public boolean isElementNotPresent(String elementType, String operation, GUIElementLocator locator) {
         try {
             wrapper.waitForElementNotPresent(locator);

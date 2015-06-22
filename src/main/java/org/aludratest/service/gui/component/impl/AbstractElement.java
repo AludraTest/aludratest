@@ -61,18 +61,6 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
         return (E) this;
     }
 
-    /** Asserts that the element is editable. */
-    @Override
-    public void assertEditable() {
-        verify().assertEditable(elementType, elementName, getLocator());
-    }
-
-    /** Asserts that the element is not editable. */
-    @Override
-    public void assertNotEditable() {
-        verify().assertNotEditable(elementType, elementName, getLocator());
-    }
-
     /** Asserts that the element is present */
     @Override
     public void assertPresent() {
@@ -124,30 +112,6 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
                 click();
             }
         }
-    }
-
-    /** Selectable not editable click - clicks only when provided string is not null, not marked as null and provided string is
-     * "true"
-     * @param click -String */
-    @Override
-    public void clickNotEditable(String click) {
-        if (!DataMarkerCheck.isNull(click)) {
-            if (Boolean.parseBoolean(click)) {
-                clickNotEditable();
-            }
-        }
-    }
-
-    /** Click on an element which is not editable (accept the non-editable state) */
-    @Override
-    public void clickNotEditable() {
-        perform().clickNotEditable(elementType, elementName, getLocator(), taskCompletionTimeout);
-    }
-
-    /** Double click on an element which is not editable (accept the non-editable state) */
-    @Override
-    public void doubleClickNotEditable() {
-        perform().doubleClickNotEditable(elementType, elementName, getLocator(), taskCompletionTimeout);
     }
 
     /** Checks if the specified element is somewhere on the page within the standard timeout.

@@ -38,12 +38,6 @@ public interface Element<E extends Element<E>> extends GUIComponent {
      * @return This object. */
     public E waitingUntilTaskCompletion(int waitTime);
 
-    /** Asserts that the element is editable. */
-    public void assertEditable();
-
-    /** Asserts that the element is not editable. */
-    public void assertNotEditable();
-
     /** Asserts that the element is present */
     public void assertPresent();
 
@@ -70,22 +64,6 @@ public interface Element<E extends Element<E>> extends GUIComponent {
      * @param click -String
      */
     public void click(String click);
-
-    /**
-     * Selectable not editable click - clicks only when provided string is not null, not marked as null and provided string is "true"
-     * @param click -String
-     */
-    public void clickNotEditable(String click);
-
-    /**
-     * Click on an element which is not editable (accept the non-editable state)
-     */
-    public void clickNotEditable();
-
-    /**
-     * Double click on an element which is not editable (accept the non-editable state)
-     */
-    public void doubleClickNotEditable();
 
     /** Checks if the specified element is somewhere on the page within the standard timeout.
      * 

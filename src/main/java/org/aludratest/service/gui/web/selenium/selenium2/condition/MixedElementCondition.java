@@ -20,25 +20,22 @@ import org.aludratest.service.locator.element.GUIElementLocator;
 import org.openqa.selenium.WebElement;
 
 /** Performs a combination of checks on a web GUI element: It always checks for presence and if it is in foreground and can be
- * configured to check for visibility and/or clickability additionally. If one of the internal checks fails, the failure message
- * is reported in the {@link #message} property.
+ * configured to check for visibility additionally. If one of the internal checks fails, the failure message is reported in the
+ * {@link #message} property.
  * @author Volker Bergmann */
 public class MixedElementCondition extends WebElementCondition {
 
     private ZIndexSupport zIndexSupport;
     private boolean visible;
-    private boolean enabled;
 
     /** Constructor.
      * @param locator a locator for the element to check
      * @param locatorSupport
-     * @param visible specifies if the element shall be checked for visibility
-     * @param enabled specifies if the element shall be check if enabled (clickable) */
-    public MixedElementCondition(GUIElementLocator locator, LocatorSupport locatorSupport, boolean visible, boolean enabled) {
+     * @param visible specifies if the element shall be checked for visibility */
+    public MixedElementCondition(GUIElementLocator locator, LocatorSupport locatorSupport, boolean visible) {
         super(locator, locatorSupport);
         this.zIndexSupport = new ZIndexSupport(locatorSupport);
         this.visible = visible;
-        this.enabled = enabled;
         this.message = null;
     }
 
@@ -54,18 +51,13 @@ public class MixedElementCondition extends WebElementCondition {
             this.message = "Element not visible";
             return null;
         }
-        // check if it is enabled (clickable or editable)
-        if (enabled && !ElementClickable.isClickable(element)) {
-            this.message = "Element not editable";
-            return null;
-        }
+
         return element;
     }
 
     @Override
     public String toString() {
-        return "Foreground position " + (visible ? "and visibility " : "") + (enabled ? "and clickability " : "")
-                + " of the element located by " + locator;
+        return "Foreground position " + (visible ? "and visibility " : "") + " of the element located by " + locator;
     }
 
 }

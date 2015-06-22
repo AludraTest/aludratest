@@ -157,4 +157,22 @@ public abstract class AbstractInputFieldTest extends GUITest {
         checkLastStepStatus(TestStatus.PASSED);
     }
 
+    @Test
+    public void testAssertNotEditable() {
+        guiTestUIMap.readonlyTextField().assertNotEditable();
+        checkLastStepStatus(TestStatus.PASSED);
+        guiTestUIMap.disabledTextField().assertNotEditable();
+        checkLastStepStatus(TestStatus.PASSED);
+        guiTestUIMap.readonlyTextField().assertEditable();
+        checkLastStepStatus(TestStatus.FAILED);
+    }
+
+    @Test
+    public void testAssertEditable() {
+        guiTestUIMap.textField().assertEditable();
+        checkLastStepStatus(TestStatus.PASSED);
+        guiTestUIMap.readonlyTextField().assertEditable();
+        checkLastStepStatus(TestStatus.FAILED);
+    }
+
 }

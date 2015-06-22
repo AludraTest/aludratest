@@ -46,13 +46,29 @@ public interface GUICondition extends Condition {
             @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator);
 
-    /**
-     * Determines whether the specified input element is editable, ie hasn't been disabled.
-     */
+    /** Determines whether the specified input element is enabled, ie hasn't been disabled. */
     boolean isElementEnabled(
             @ElementType String elementType,
             @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator);
+
+    /** Determines whether the specified input element is editable, i.e. is not disabled and would accept user text input.
+     * @param elementType Type of the element, depending on the implementation.
+     * @param elementName Name of the element.
+     * @param locator Locator of the element.
+     * @return <code>true</code> if the element is editable, <code>false</code> otherwise. */
+    boolean isElementEditable(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator);
+
+    /** Determines whether the specified input element is editable within the given timeout, i.e. is not disabled and would accept
+     * user text input.
+     * @param elementType Type of the element, depending on the implementation.
+     * @param elementName Name of the element.
+     * @param locator Locator of the element.
+     * @param timeout Timeout to use.
+     * @return <code>true</code> if the element is editable, <code>false</code> otherwise. */
+    boolean isElementEditable(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator, @TechnicalArgument long timeout);
 
     /**
      * Determines that the specified element is not on the page
@@ -80,9 +96,7 @@ public interface GUICondition extends Condition {
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument long timeout);
 
-    /**
-     * Determines whether the specified input element is editable in the over given timeout, ie hasn't been disabled.
-     */
+    /** Determines whether the specified input element is enabled in the over given timeout, ie hasn't been disabled. */
     boolean isElementEnabled(
             @ElementType String elementType,
             @ElementName String elementName,

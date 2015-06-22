@@ -91,17 +91,6 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
-    public void clickNotEditable(String elementType, String operation, GUIElementLocator locator, int taskCompletionTimeout) {
-        wrapper.clickNotEditable(locator, taskCompletionTimeout);
-    }
-
-    @Override
-    public void doubleClickNotEditable(String elementType, String elementName, GUIElementLocator locator,
-            int taskCompletionTimeout) {
-        wrapper.doubleClickNotEditable(locator, taskCompletionTimeout);
-    }
-
-    @Override
     public String getInputFieldValue(String elementType, String operation, final GUIElementLocator locator) {
         wrapper.retryUntilTimeout(new ConditionCheck() {
             @Override

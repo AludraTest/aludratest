@@ -30,46 +30,30 @@ import org.junit.Test;
 @SuppressWarnings("javadoc")
 public abstract class AbstractElementTest extends GUITest {
 
-    /**
-     * positive case to test method {@link org.aludratest.service.gui.component.Element#assertEditable()}
-     * <br/> dropdownbox is editable
-     */
     @Test
-    public void isEditableOnEditableElement() {
-        guiTestUIMap.dropDownBox().assertEditable();
+    public void isEnabledOnEnabledElement() {
+        guiTestUIMap.dropDownBox().assertEnabled();
         checkLastStepStatus(TestStatus.PASSED);
     }
 
-    /**
-     * negative case to test method {@link org.aludratest.service.gui.component.Element#assertEditable()}
-     * <br/> disabledTextField is not editable
-     */
     @Test
-    public void isEditableOnDisableElement() {
-        guiTestUIMap.disabledTextField().assertEditable();
+    public void isEnabledOnDisabledElement() {
+        guiTestUIMap.disabledTextField().assertEnabled();
         checkLastStepStatus(TestStatus.FAILED);
-        checkLastStepErrorMessage("Element not editable");
+        checkLastStepErrorMessage("Element not enabled");
     }
 
-    /**
-     * positive case to test method {@link org.aludratest.service.gui.component.Element#assertNotEditable()}
-     * <br/> disabledTextField is not editable
-     */
     @Test
-    public void isNotEditableOnDisabledElement() {
-        guiTestUIMap.disabledTextField().assertNotEditable();
+    public void isNotEnabledOnDisabledElement() {
+        guiTestUIMap.disabledTextField().assertNotEnabled();
         checkLastStepStatus(TestStatus.PASSED);
     }
 
-    /**
-     * negative case to test method {@link org.aludratest.service.gui.component.Element#assertNotEditable()}
-     * <br/> dropdownbox is editable
-     */
     @Test
-    public void isNotEditableOnEditableElement() {
-        guiTestUIMap.dropDownBox().assertNotEditable();
+    public void isNotEnabledOnEnabledElement() {
+        guiTestUIMap.dropDownBox().assertNotEnabled();
         checkLastStepStatus(TestStatus.FAILED);
-        checkLastStepErrorMessage("Element not expected to be editable");
+        checkLastStepErrorMessage("Element not expected to be enabled");
     }
 
     /**
@@ -188,7 +172,7 @@ public abstract class AbstractElementTest extends GUITest {
     public void focusOnDisabledElement() {
         guiTestUIMap.disabledTextField().focus();
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable");
+        checkLastStepErrorMessage("Element not enabled");
     }
 
     /**
@@ -211,37 +195,22 @@ public abstract class AbstractElementTest extends GUITest {
         checkLastStepStatus(TestStatus.PASSED);
     }
 
-    /**
-     * negative case to test method {@link org.aludratest.service.gui.component.Element#doubleClick()}
-     * <br/> double click on diabled button
-     */
     @Test
     public void doubleClickOnNotEditableElementButton() {
         guiTestUIMap.disabledButton().doubleClick();
-        checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable");
+        checkLastStepStatus(TestStatus.PASSED);
     }
 
-    /**
-     * negative case to test method {@link org.aludratest.service.gui.component.Element#doubleClick()}
-     * <br/> double click on image
-     */
     @Test
     public void doubleClickOnNotEditableElementImage() {
         guiTestUIMap.image().doubleClick();
-        checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable");
+        checkLastStepStatus(TestStatus.PASSED);
     }
 
-    /**
-     * negative case to test method {@link org.aludratest.service.gui.component.Element#doubleClick()}
-     * <br/> double click on label
-     */
     @Test
     public void doubleClickOnNotEditableElementLabel() {
         guiTestUIMap.label().doubleClick();
-        checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable");
+        checkLastStepStatus(TestStatus.PASSED);
     }
 
     /**
@@ -266,66 +235,27 @@ public abstract class AbstractElementTest extends GUITest {
         checkLastStepStatus(TestStatus.PASSED);
     }
 
-    /**
-     * negative case to test method {@link org.aludratest.service.gui.component.Element#click()}
-     * <br/> click on disabled button
-     */
+    /** positive case to test method {@link org.aludratest.service.gui.component.Element#click()} <br>
+     * click on disabled button */
     @Test
     public void clickOnNotEditableElementButton() {
         guiTestUIMap.disabledButton().click();
-        checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable");
+        checkLastStepStatus(TestStatus.PASSED);
     }
 
-    /**
-     * negative case to test method {@link org.aludratest.service.gui.component.Element#click()}
-     * <br/> click on image
-     */
+    /** positive case to test method {@link org.aludratest.service.gui.component.Element#click()} <br>
+     * click on image */
     @Test
     public void clickOnNotEditableElementImage() {
         guiTestUIMap.image().click();
-        checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable");
+        checkLastStepStatus(TestStatus.PASSED);
     }
 
-    /**
-     * negative case to test method {@link org.aludratest.service.gui.component.Element#click()}
-     * <br/> click on image
-     */
+    /** positive case to test method {@link org.aludratest.service.gui.component.Element#click()} <br/>
+     * click on image */
     @Test
-    public void clickOnNotEditableElementLabel() {
+    public void clickOnElementLabel() {
         guiTestUIMap.label().click();
-        checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable");
-    }
-
-    /**
-     * positive case to test method {@link org.aludratest.service.gui.component.Element#clickNotEditable()}
-     * <br/> not-editable-click on disabled button
-     */
-    @Test
-    public void clickNotEditableOnNotEditableElementButton() {
-        guiTestUIMap.disabledButton().clickNotEditable();
-        checkLastStepStatus(TestStatus.PASSED);
-    }
-
-    /**
-     * positive case to test method {@link org.aludratest.service.gui.component.Element#clickNotEditable()}
-     * <br/> not-editable-click on image
-     */
-    @Test
-    public void clickNotEditableOnNotEditableElementImage() {
-        guiTestUIMap.image().clickNotEditable();
-        checkLastStepStatus(TestStatus.PASSED);
-    }
-
-    /**
-     * positive case to test method {@link org.aludratest.service.gui.component.Element#clickNotEditable()}
-     * <br/> not-editable-click on label button
-     */
-    @Test
-    public void clickNotEditableOnNotEditableElementLabel() {
-        guiTestUIMap.label().clickNotEditable();
         checkLastStepStatus(TestStatus.PASSED);
     }
 
@@ -334,8 +264,8 @@ public abstract class AbstractElementTest extends GUITest {
      * <br/> not-editable-click on dropdown box
      */
     @Test
-    public void clickNotEditableOnEditableElement() {
-        guiTestUIMap.dropDownBox().clickNotEditable();
+    public void clickOnEditableElement() {
+        guiTestUIMap.dropDownBox().click();
         checkLastStepStatus(TestStatus.PASSED);
     }
 

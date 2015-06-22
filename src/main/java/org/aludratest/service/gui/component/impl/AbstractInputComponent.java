@@ -24,22 +24,25 @@ import org.aludratest.service.gui.component.InputComponent;
  * @param <E> Type of concrete subclasses. */
 public abstract class AbstractInputComponent<E extends Element<E>> extends AbstractElement<E> implements InputComponent<E> {
 
-    /** Checks whether this input element is enabled.
-     * 
-     * @return <code>true</code> if the input element is enabled, <code>false</code> otherwise. */
     @Override
     public boolean isEnabled() {
         return check().isElementEnabled(elementType, elementName, getLocator());
     }
 
-    /** Checks whether this input element is enabled.
-     * 
-     * @param timeout Max time to wait for this input element to become enabled.
-     * 
-     * @return <code>true</code> if the input element is enabled, <code>false</code> otherwise. */
     @Override
     public boolean isEnabled(long timeout) {
         return check().isElementEnabled(elementType, elementName, getLocator(), timeout);
+    }
+
+    @Override
+    public void assertEnabled() {
+        verify().assertEnabled(elementType, elementName, getLocator());
+
+    }
+
+    @Override
+    public void assertNotEnabled() {
+        verify().assertNotEnabled(elementType, elementName, getLocator());
     }
 
 }

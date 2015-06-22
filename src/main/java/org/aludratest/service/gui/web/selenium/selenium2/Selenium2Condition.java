@@ -80,7 +80,27 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
     @Override
     public boolean isElementEnabled(String elementType, String operation, GUIElementLocator locator, long timeout) {
         try {
-            wrapper.waitUntilClickable(locator, timeout);
+            wrapper.waitUntilEnabled(locator, timeout);
+            return true;
+        }
+        catch (AludraTestException e) {
+            return false;
+        }
+        catch (Exception e) { // NOSONAR
+            logger.error("Unexpected exception during check which will be ignored", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isElementEditable(String elementType, String operation, GUIElementLocator locator) {
+        return isElementEditable(elementType, operation, locator, getTimeout());
+    }
+
+    @Override
+    public boolean isElementEditable(String elementType, String elementName, GUIElementLocator locator, long timeout) {
+        try {
+            wrapper.waitUntilEditable(locator, timeout);
             return true;
         }
         catch (AludraTestException e) {

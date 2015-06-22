@@ -54,8 +54,12 @@ public interface GUIVerification extends Verification {
     void assertVisible(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator);
 
-    /** Verifies for an element identified by a locator that it is editable. Uneditable elements will raise an exception which will
-     * be handled by the test framework.
+    /** Verifies for an element identified by a locator that it is editable. Read-only elements will raise an exception which will
+     * be handled by the test framework. <br>
+     * Usually, an "editable" state only applies to text input components, which can have a "read-only" state. Other components
+     * are always treated as not editable. Use {@link #assertEnabled(String, String, GUIElementLocator)} to verify the "enabled"
+     * state, which applies to most components.
+     * 
      * @param elementType Type of the element, depending on the implementation.
      * @param elementName Name of the element.
      * @param locator Locator of the element. */
@@ -63,11 +67,32 @@ public interface GUIVerification extends Verification {
             @TechnicalLocator GUIElementLocator locator);
 
     /** Verifies for an element identified by a locator that it is <b>not</b> editable. Editable elements will raise an exception
-     * which will be handled by the test framework.
+     * which will be handled by the test framework. <br>
+     * Usually, an "editable" state only applies to text input components, which can have a "read-only" state. Other components
+     * are always treated as not editable. Use {@link #assertNotEnabled(String, String, GUIElementLocator)} to verify the
+     * "enabled" state, which applies to most components.
      * @param elementType Type of the element, depending on the implementation.
      * @param elementName Name of the element.
      * @param locator Locator of the element. */
     void assertNotEditable(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator);
+
+    /** Verifies for an element identified by a locator that it is enabled, i.e. not disabled. The "disabled" state is defined by
+     * the GUI implementation, but in most GUIs, disabled components are shown in a somewhat "grayed" state and do not accept any
+     * user input.
+     * @param elementType Type of the element, depending on the implementation.
+     * @param elementName Name of the element.
+     * @param locator Locator of the element. */
+    void assertEnabled(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator);
+
+    /** Verifies for an element identified by a locator that it is <b>not</b> enabled, i.e. disabled. The "disabled" state is
+     * defined by the GUI implementation, but in most GUIs, disabled components are shown in a somewhat "grayed" state and do not
+     * accept any user input.
+     * @param elementType Type of the element, depending on the implementation.
+     * @param elementName Name of the element.
+     * @param locator Locator of the element. */
+    void assertNotEnabled(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator);
 
     /** Verifies for an element identified by a locator that it is present in the GUI (maybe visible or invisible). Elements not

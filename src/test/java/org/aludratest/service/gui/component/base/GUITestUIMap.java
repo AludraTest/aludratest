@@ -49,6 +49,7 @@ public class GUITestUIMap extends UIMap {
     public final static GUIElementLocator NOID_TEXT_FIELD = new XPathLocator("//input[contains(@class, 'myclass')]");
 
     public final static GUIElementLocator DISABLED_TEXT_FIELD_ID = new IdLocator("disabled_TextField:after");
+    public final static GUIElementLocator READONLY_TEXT_FIELD_ID = new IdLocator("readonly_TextField");
 
     public final static GUIElementLocator RADIO_BUTTON_AND = new IdLocator("RadioAnd:after");
     public final static GUIElementLocator RADIO_BUTTON_OR = new IdLocator("RadioOR:after");
@@ -101,6 +102,10 @@ public class GUITestUIMap extends UIMap {
 
     public InputField disabledTextField() {
         return aludraGUI.getComponentFactory().createInputField(DISABLED_TEXT_FIELD_ID);
+    }
+
+    public InputField readonlyTextField() {
+        return aludraGUI.getComponentFactory().createInputField(READONLY_TEXT_FIELD_ID);
     }
 
     public Button findButton() {
