@@ -79,7 +79,7 @@ public class Selenium1Verification extends AbstractSeleniumAction implements Web
     @Override
     public void assertNotEnabled(String elementType, String elementName, GUIElementLocator locator) {
         if (wrapper.isEnabled(locator)) {
-            throw new FunctionalFailure("Element not enabled");
+            throw new FunctionalFailure("Element not expected to be enabled");
         }
     }
 

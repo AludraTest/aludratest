@@ -17,6 +17,7 @@ package org.aludratest.service.gui.web.selenium.selenium1;
 
 import java.util.ArrayList;
 
+import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.PerformanceFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
@@ -506,6 +507,9 @@ public class SeleniumFacade {
      */
     public void focus(GUIElementLocator locator) {
         String seleniumLocator = getSeleniumLocator(locator);
+        if (!isEnabled(locator)) {
+            throw new AutomationException("Element not enabled");
+        }
         selenium.focus(seleniumLocator);
     }
 
