@@ -173,7 +173,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                 loadedFileModels.put(uri, testData);
             }
             catch (Exception e) {
-                throw new AutomationException("Could not read test data XML", e);
+                throw new AutomationException("Could not read test data XML at " + uri, e);
             }
             finally {
                 IOUtils.closeQuietly(in);
