@@ -16,6 +16,7 @@
 package org.aludratest.testcase.data.xml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -88,9 +89,13 @@ public class XmlBasedTestDataProviderTest {
         XmlBasedTestDataProvider provider = createProvider();
         List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
                 "testMethod2", ComplexData.class, StringData.class));
-        assertEquals(2, testData.size());
+        assertEquals(3, testData.size());
         assertEquals(2, testData.get(0).getData().length);
         assertEquals(2, testData.get(1).getData().length);
+        assertEquals(2, testData.get(2).getData().length);
+        assertFalse(testData.get(0).isIgnored());
+        assertFalse(testData.get(1).isIgnored());
+        assertTrue(testData.get(2).isIgnored());
 
         ComplexData cd = (ComplexData) testData.get(0).getData()[0];
         assertNull(cd.getSubData());
@@ -109,6 +114,16 @@ public class XmlBasedTestDataProviderTest {
                 "testInvalidMethod", ComplexData.class, StringData.class));
         assertNull(testData.get(0).getException());
         assertTrue(testData.get(1).getException() instanceof AutomationException);
+    }
+
+    public void testIgnoredMethod() throws Exception {
+        XmlBasedTestDataProvider provider = createProvider();
+        List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
+                "testIgnoredMethod", ComplexData.class, StringData.class));
+        assertNull(testData.get(0).getException());
+        assertTrue(testData.get(0).isIgnored());
+        assertTrue(testData.get(1).isIgnored());
+        assertTrue(testData.get(2).isIgnored());
     }
 
     public void testMethod1(@Source(uri = "complex.testdata.xml", segment = "complexObject") ComplexData object,
@@ -134,6 +149,13 @@ public class XmlBasedTestDataProviderTest {
 
     public void testInvalidMethod(@Source(uri = "multi.testdata.xml", segment = "complexObject") ComplexData object,
             @Source(uri = "complex.testdata.xml", segment = "stringObject") StringData object2) {
+        if (object == null) {
+            // do nothing
+        }
+    }
+
+    public void testIgnoredMethod(@Source(uri = "multi.testdata.xml", segment = "complexObject") ComplexData object,
+            @Source(uri = "multi.testdata.xml", segment = "stringObject") StringData object2) {
         if (object == null) {
             // do nothing
         }
