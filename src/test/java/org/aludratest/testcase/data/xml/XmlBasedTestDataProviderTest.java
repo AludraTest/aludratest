@@ -28,6 +28,7 @@ import java.util.Map;
 import org.aludratest.config.impl.AludraTestConfigImpl;
 import org.aludratest.config.impl.DefaultConfigurator;
 import org.aludratest.exception.AutomationException;
+import org.aludratest.testcase.Ignored;
 import org.aludratest.testcase.data.Source;
 import org.aludratest.testcase.data.TestCaseData;
 import org.aludratest.testcase.data.impl.xml.DefaultScriptLibrary;
@@ -116,6 +117,7 @@ public class XmlBasedTestDataProviderTest {
         assertTrue(testData.get(1).getException() instanceof AutomationException);
     }
 
+    @Test
     public void testIgnoredMethod() throws Exception {
         XmlBasedTestDataProvider provider = createProvider();
         List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
@@ -154,6 +156,7 @@ public class XmlBasedTestDataProviderTest {
         }
     }
 
+    @Ignored
     public void testIgnoredMethod(@Source(uri = "multi.testdata.xml", segment = "complexObject") ComplexData object,
             @Source(uri = "multi.testdata.xml", segment = "stringObject") StringData object2) {
         if (object == null) {
