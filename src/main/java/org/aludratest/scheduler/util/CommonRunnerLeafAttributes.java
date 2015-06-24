@@ -19,4 +19,6 @@ public interface CommonRunnerLeafAttributes {
 
     public static final String IGNORE = "IGNORE";
 
+    public static final String IGNORE_REASON = "IGNORE_REASON";
+
 }

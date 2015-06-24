@@ -28,4 +28,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Ignored {
 
+    /** The optional reason why the test method has been marked as ignored.
+     * 
+     * @return The optional reason why the test method has been marked as ignored. */
+    public String value() default "";
+
 }

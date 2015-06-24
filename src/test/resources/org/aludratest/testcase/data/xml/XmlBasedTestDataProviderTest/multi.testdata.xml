@@ -72,7 +72,7 @@
     		</segment>
     	</segments>
     </configuration>
-    <configuration name="config3" ignored="true">
+    <configuration name="config3" ignored="true" ignoredReason="Ignored for test">
     	<segments>
     		<segment name="complexObject">
     			<fieldValues>

@@ -33,6 +33,8 @@ public final class TestCaseData {
 
     private boolean ignored;
 
+    private String ignoredReason;
+
     private Throwable exception;
 
     /** Constructs a new TestCaseData object.
@@ -62,6 +64,22 @@ public final class TestCaseData {
         this.description = description;
         this.data = data == null ? new Data[0] : ArrayUtil.copyOfRange(data, 0, data.length);
         this.ignored = ignored;
+    }
+
+    /** Constructs a new TestCaseData object.
+     * 
+     * @param id ID for the test case data. Must be not <code>null</code> and unique within all datasets for the same test method
+     *            (this will be checked by the framework before test invocation).
+     * @param description Description for the test case data. May be <code>null</code>.
+     * @param data The array of parameters for the test method to use for a single test invocation. May be <code>null</code> if
+     *            the method does not require any parameters. Otherwise, it must have as many entries as the method has
+     *            parameters.
+     * @param ignored If <code>true</code>, marks this data set as ignored, i.e. this test case shall not be invoked (this
+     *            behaviour can be disabled by Framework settings).
+     * @param ignoredReason A text describing why this data set has been marked as ignored. */
+    public TestCaseData(String id, String description, Data[] data, boolean ignored, String ignoredReason) {
+        this(id, description, data, ignored);
+        this.ignoredReason = ignoredReason;
     }
 
     /** Constructs a new TestCaseData object, for a dataset which could not be loaded for a given reason.
@@ -103,6 +121,13 @@ public final class TestCaseData {
      * @return <code>true</code> if this dataset should not be tested, but skipped, <code>false</code> otherwise. */
     public boolean isIgnored() {
         return ignored;
+    }
+
+    /** Returns the optional reason why this dataset has been marked as ignored.
+     * 
+     * @return The optional reason why this dataset has been marked as ignored, or <code>null</code>. */
+    public String getIgnoredReason() {
+        return ignoredReason;
     }
 
     /** Returns an exception that describes why this dataset could not be loaded. If <code>null</code> is returned, the dataset

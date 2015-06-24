@@ -277,8 +277,8 @@ public class SeleniumWrapper {
     }
 
     /** Clicks a web GUI element requiring it to be not editable.
-     *  @param locator
-     *  @param taskCompletionTimeout */
+     * @param locator
+     * @param taskCompletionTimeout */
     public void clickNotEditable(GUIElementLocator locator, int taskCompletionTimeout) {
         ElementCommand<Void> clickNotEditableCommand = new ElementCommand<Void>("clickNotEditable", true) {
             @Override
@@ -290,12 +290,10 @@ public class SeleniumWrapper {
         callElementCommand(locator, taskCompletionTimeout, true, false, clickNotEditableCommand);
     }
 
-    /**
-     * Double clicks a web GUI element requiring it to be not editable.
+    /** Double clicks a web GUI element requiring it to be not editable.
      * 
      * @param locator
-     * @param taskCompletionTimeout
-     */
+     * @param taskCompletionTimeout */
     public void doubleClickNotEditable(GUIElementLocator locator, int taskCompletionTimeout) {
         ElementCommand<Void> doubleClickNotEditableCommand = new ElementCommand<Void>("doubleClickNotEditable", true) {
             @Override
@@ -704,8 +702,8 @@ public class SeleniumWrapper {
         return callElementCommand(locator, taskCompletionTimeout, true, true, command);
     }
 
-    private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout,
-            boolean visible, boolean enabled, ElementCommand<T> command) {
+    private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout, boolean visible, boolean enabled,
+            ElementCommand<T> command) {
         doBeforeDelegate(locator, visible, enabled, command.isInteraction());
         try {
             T returnValue = command.call(locator);
@@ -721,8 +719,7 @@ public class SeleniumWrapper {
         }
     }
 
-    private void doBeforeDelegate(GUIElementLocator locator,
-            boolean visible, boolean enabled, boolean actionPending) {
+    private void doBeforeDelegate(GUIElementLocator locator, boolean visible, boolean enabled, boolean actionPending) {
         if (actionPending) {
             waitUntilNotBusy();
         }

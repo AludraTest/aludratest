@@ -38,6 +38,9 @@
 				<th>Test&nbsp;steps</th>
 				<th>Failed</th>
 				<th>Error&nbsp;Message</th>
+				#if ($testCase.IgnoredReason) 
+				<th>Reason for Skipping</th>
+				#end 
 			</tr>
 		</thead>
 		<tbody>
@@ -49,6 +52,9 @@
 				<td>$testCase.NumberOfTestSteps</td>
 				<td>#if ($testCase.isFailed()) 1 #else 0 #end</td>
 				<td><a href="#teststep$!{testCase.LastFailed.Id}" onClick="$('#ts$!{testCase.LastFailed.Id}').parent().show();$('#ts$!{testCase.LastFailed.Id}').parent().prev().find('h3 a').text('[-]')">$!testCase.LastFailed.ErrorMessage</a></td>
+				#if ($testCase.IgnoredReason) 
+				<td>$testCase.IgnoredReason</td>
+				#end 
 			</tr>
 		</tbody>
 	</table>

@@ -97,6 +97,7 @@ public class XmlBasedTestDataProviderTest {
         assertFalse(testData.get(0).isIgnored());
         assertFalse(testData.get(1).isIgnored());
         assertTrue(testData.get(2).isIgnored());
+        assertEquals("Ignored for test", testData.get(2).getIgnoredReason());
 
         ComplexData cd = (ComplexData) testData.get(0).getData()[0];
         assertNull(cd.getSubData());
@@ -126,6 +127,9 @@ public class XmlBasedTestDataProviderTest {
         assertTrue(testData.get(0).isIgnored());
         assertTrue(testData.get(1).isIgnored());
         assertTrue(testData.get(2).isIgnored());
+        assertEquals("Some reason", testData.get(0).getIgnoredReason());
+        assertEquals("Some reason", testData.get(1).getIgnoredReason());
+        assertEquals("Some reason", testData.get(2).getIgnoredReason());
     }
 
     public void testMethod1(@Source(uri = "complex.testdata.xml", segment = "complexObject") ComplexData object,
@@ -156,7 +160,7 @@ public class XmlBasedTestDataProviderTest {
         }
     }
 
-    @Ignored
+    @Ignored("Some reason")
     public void testIgnoredMethod(@Source(uri = "multi.testdata.xml", segment = "complexObject") ComplexData object,
             @Source(uri = "multi.testdata.xml", segment = "stringObject") StringData object2) {
         if (object == null) {
