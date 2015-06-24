@@ -17,6 +17,7 @@ package org.aludratest.service.gui.web.selenium.selenium1;
 
 import java.util.ArrayList;
 
+import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.PerformanceFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
@@ -235,14 +236,30 @@ public class SeleniumFacade {
         selenium.click(getSeleniumLocatorForClick(locator));
     }
 
-    /**
-     * Tells if a web GUI element is editable.
+    /** Tells if a web GUI element is editable.
      * 
-     * @param locator
-     *            a {@link Locator} of the element to examine
-     * @return true if the element is editable otherwise false
-     */
+     * @param locator a {@link Locator} of the element to examine
+     * @return <code>true</code> if the element is editable, otherwise <code>false</code>. */
     public boolean isEditable(GUIElementLocator locator) {
+        try {
+            if (!isEnabled(locator)) {
+                return false;
+            }
+
+            String attr = selenium.getAttribute(getSeleniumLocator(locator) + "@readonly");
+            return (attr == null || !("readonly".equals(attr) || "true".equals(attr)));
+        }
+        catch (Exception e) { // NOSONAR
+            // assert "no readonly attribute". This could return false positives for non-input fields.
+            return true;
+        }
+    }
+
+    /** Tells if a web GUI element is enabled.
+     * 
+     * @param locator a {@link Locator} of the element to examine
+     * @return <code>true</code> if the element is enabled, otherwise <code>false</code>. */
+    public boolean isEnabled(GUIElementLocator locator) {
         try {
             return selenium.isEditable(getSeleniumLocator(locator));
         }
@@ -490,6 +507,9 @@ public class SeleniumFacade {
      */
     public void focus(GUIElementLocator locator) {
         String seleniumLocator = getSeleniumLocator(locator);
+        if (!isEnabled(locator)) {
+            throw new AutomationException("Element not enabled");
+        }
         selenium.focus(seleniumLocator);
     }
 

@@ -46,6 +46,8 @@ import org.aludratest.service.gui.web.selenium.selenium2.condition.AnyDropDownOp
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownBoxOptionLabelsPresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownOptionLocatable;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementEditableCondition;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementEnabledCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementValuePresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.MixedElementCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.NotCondition;
@@ -238,7 +240,7 @@ public class Selenium2Wrapper {
     }
 
     @SuppressWarnings("unchecked")
-    private WebElement doBeforeDelegate(GUIElementLocator locator, boolean visible, boolean enabled, boolean actionPending) {
+    private WebElement doBeforeDelegate(GUIElementLocator locator, boolean visible, boolean actionPending, boolean enabled) {
         if (actionPending) {
             waitUntilNotBusy();
         }
@@ -269,25 +271,13 @@ public class Selenium2Wrapper {
     }
 
     public void click(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
-        WebElement element = doBeforeDelegate(locator, true, true, true);
-        click(element);
-        doAfterDelegate(taskCompletionTimeout, operation);
-    }
-
-    public void clickNotEditable(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
-        WebElement element = doBeforeDelegate(locator, true, false, true);
+        WebElement element = doBeforeDelegate(locator, true, true, false);
         click(element);
         doAfterDelegate(taskCompletionTimeout, operation);
     }
 
     public void doubleClick(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
-        WebElement element = doBeforeDelegate(locator, true, true, true);
-        doubleClick(element);
-        doAfterDelegate(taskCompletionTimeout, operation);
-    }
-
-    public void doubleClickNotEditable(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
-        WebElement element = doBeforeDelegate(locator, true, false, true);
+        WebElement element = doBeforeDelegate(locator, true, true, false);
         doubleClick(element);
         doAfterDelegate(taskCompletionTimeout, operation);
     }
@@ -306,7 +296,7 @@ public class Selenium2Wrapper {
     }
 
     public void sendKeys(GUIElementLocator locator, String keys, int taskCompletionTimeout) {
-        WebElement element = doBeforeDelegate(locator, true, true, true);
+        WebElement element = doBeforeDelegate(locator, true, true, false);
         sendKeys(element, keys);
         doAfterDelegate(taskCompletionTimeout, "sendKeys");
     }
@@ -454,8 +444,7 @@ public class Selenium2Wrapper {
         }
 
         try {
-            LOGGER.debug("driver.getTitle()");
-            String title = driver.getTitle();
+            String title = getTitle();
             handlesAndTitles.put(initialWindowHandle, title);
         }
         catch (WebDriverException e) {
@@ -535,7 +524,18 @@ public class Selenium2Wrapper {
     /** @see Selenium#getTitle() */
     public String getTitle() {
         LOGGER.debug("getTitle()");
-        return driver.getTitle();
+        if (driver instanceof RemoteWebDriver) {
+            // also reduce timeout for TCP connection, in case remote hangs
+            ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(5000);
+        }
+        try {
+            return driver.getTitle();
+        }
+        finally {
+            if (driver instanceof RemoteWebDriver) {
+                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(0);
+            }
+        }
     }
 
     public String getWindowHandle() {
@@ -578,11 +578,21 @@ public class Selenium2Wrapper {
             }
         };
         try {
+            if (driver instanceof RemoteWebDriver) {
+                // also reduce timeout for TCP connection, in case remote hangs
+                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(5000);
+            }
             return RetryService.call(callable, WebDriverException.class, 2);
         }
         catch (Throwable t) {
             LOGGER.error("Could not retrieve window handles", t);
             return Collections.emptySet();
+        }
+        finally {
+            if (driver instanceof RemoteWebDriver) {
+                // also reduce timeout for TCP connection, in case remote hangs
+                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(0);
+            }
         }
     }
 
@@ -601,7 +611,7 @@ public class Selenium2Wrapper {
     }
 
     public boolean hasFocus(GUIElementLocator locator) {
-        WebElement element = doBeforeDelegate(locator, true, true, false);
+        WebElement element = doBeforeDelegate(locator, true, false, true);
         LOGGER.debug("hasFocus({})", locator);
         boolean returnValue = (Boolean) executeScript(HAS_FOCUS_SCRIPT, element);
         doAfterDelegate(-1, "hasFocus");
@@ -610,7 +620,7 @@ public class Selenium2Wrapper {
 
     public void focus(GUIElementLocator locator) {
         LOGGER.debug("focus({})", locator);
-        WebElement element = waitUntilClickable(locator, configuration.getTimeout());
+        WebElement element = waitUntilEnabled(locator, configuration.getTimeout());
         executeScript("arguments[0].focus()", element);
     }
 
@@ -695,8 +705,8 @@ public class Selenium2Wrapper {
     }
 
     @SuppressWarnings("unchecked")
-    public WebElement waitUntilClickable(GUIElementLocator locator, long timeOutInMillis) {
-        MixedElementCondition condition = new MixedElementCondition(locator, locatorSupport, true, true);
+    public WebElement waitUntilEnabled(GUIElementLocator locator, long timeOutInMillis) {
+        ElementEnabledCondition condition = new ElementEnabledCondition(locator, locatorSupport);
         try {
             return waitFor(condition, timeOutInMillis, NoSuchElementException.class);
         } catch (TimeoutException e) {
@@ -705,9 +715,21 @@ public class Selenium2Wrapper {
     }
 
     @SuppressWarnings("unchecked")
+    public WebElement waitUntilEditable(GUIElementLocator locator, long timeOutInMillis) {
+        ElementEditableCondition condition = new ElementEditableCondition(locator, locatorSupport);
+        try {
+            return waitFor(condition, timeOutInMillis, NoSuchElementException.class);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage()); // NOSONAR
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     public void waitUntilVisible(GUIElementLocator locator, long timeOutInMillis) {
         try {
-            waitFor(new MixedElementCondition(locator, locatorSupport, true, false), timeOutInMillis, NoSuchElementException.class);
+            waitFor(new MixedElementCondition(locator, locatorSupport, true, false), timeOutInMillis,
+                    NoSuchElementException.class);
         } catch (TimeoutException e) {
             throw new AutomationException("The element is not visible."); // NOSONAR
         }

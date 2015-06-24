@@ -232,10 +232,33 @@ public class SeleniumWrapper {
             boolean elementIsEnabled = retryUntilTrueOrTimeout(new ConditionCheck() {
                 @Override
                 public boolean eval() {
-                    return selenium.isEditable(locator);
+                    return selenium.isEnabled(locator);
                 }
             }, timeout);
             if (!elementIsEnabled) {
+                throw new AutomationException("Element not enabled");
+            }
+        }
+    }
+
+    /** Waits until an element is editable.
+     * @param locator a {@link GUIElementLocator} of the target element */
+    public void waitForEditable(GUIElementLocator locator) {
+        waitForEditable(locator, getTimeout());
+    }
+
+    /** Waits until an element is enabled.
+     * @param locator a {@link GUIElementLocator} of the target element
+     * @param timeout the maximum time to wait */
+    public void waitForEditable(final GUIElementLocator locator, long timeout) {
+        if (!isCalledByLink()) {
+            boolean elementIsEditable = retryUntilTrueOrTimeout(new ConditionCheck() {
+                @Override
+                public boolean eval() {
+                    return selenium.isEditable(locator);
+                }
+            }, timeout);
+            if (!elementIsEditable) {
                 throw new AutomationException("Element not editable");
             }
         }
@@ -273,36 +296,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, taskCompletionTimeout, clickCommand);
-    }
-
-    /** Clicks a web GUI element requiring it to be not editable.
-     * @param locator
-     * @param taskCompletionTimeout */
-    public void clickNotEditable(GUIElementLocator locator, int taskCompletionTimeout) {
-        ElementCommand<Void> clickNotEditableCommand = new ElementCommand<Void>("clickNotEditable", true) {
-            @Override
-            public Void call(GUIElementLocator locator) {
-                selenium.click(locator);
-                return null;
-            }
-        };
-        callElementCommand(locator, taskCompletionTimeout, true, false, clickNotEditableCommand);
-    }
-
-    /** Double clicks a web GUI element requiring it to be not editable.
-     * 
-     * @param locator
-     * @param taskCompletionTimeout */
-    public void doubleClickNotEditable(GUIElementLocator locator, int taskCompletionTimeout) {
-        ElementCommand<Void> doubleClickNotEditableCommand = new ElementCommand<Void>("doubleClickNotEditable", true) {
-            @Override
-            public Void call(GUIElementLocator locator) {
-                selenium.doubleClick(locator);
-                return null;
-            }
-        };
-        callElementCommand(locator, taskCompletionTimeout, true, false, doubleClickNotEditableCommand);
+        callElementCommand(locator, taskCompletionTimeout, true, false, clickCommand);
     }
 
     /** Tells if an element is present.
@@ -317,7 +311,7 @@ public class SeleniumWrapper {
                 return true;
             }
         };
-        return callElementCommand(locator, -1, true, false, presenceCommand);
+        return callElementCommand(locator, -1, true, presenceCommand);
     }
 
     /** Tells if an element is editable.
@@ -330,7 +324,20 @@ public class SeleniumWrapper {
                 return selenium.isEditable(locator);
             }
         };
-        return callElementCommand(locator, -1, true, false, editableCheckCommand);
+        return callElementCommand(locator, -1, true, editableCheckCommand);
+    }
+
+    /** Tells if an element is enabled.
+     * @param locator
+     * @return true if the element is editable, otherwise false */
+    public boolean isEnabled(GUIElementLocator locator) {
+        ElementCommand<Boolean> enabledCheckCommand = new ElementCommand<Boolean>("isEnabled", false) {
+            @Override
+            public Boolean call(GUIElementLocator locator) {
+                return selenium.isEnabled(locator);
+            }
+        };
+        return callElementCommand(locator, -1, true, enabledCheckCommand);
     }
 
     /** Selects an element.
@@ -345,7 +352,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, taskCompletionTimeout, selectCommand);
+        callElementCommand(locator, taskCompletionTimeout, true, true, selectCommand);
     }
 
     /** Sends characters to a web GUI element.
@@ -360,7 +367,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, taskCompletionTimeout, typeCommand);
+        callElementCommand(locator, taskCompletionTimeout, true, true, typeCommand);
     }
 
     /** @param locator
@@ -382,7 +389,7 @@ public class SeleniumWrapper {
                 return selenium.getText(locator);
             }
         };
-        return callElementCommand(locator, -1, visible, false, command);
+        return callElementCommand(locator, -1, visible, command);
     }
 
     /** Tells if a web GUI element is checked.
@@ -395,7 +402,7 @@ public class SeleniumWrapper {
                 return selenium.isChecked(locator);
             }
         };
-        return callElementCommand(locator, -1, true, false, isCheckedCommand);
+        return callElementCommand(locator, -1, true, isCheckedCommand);
     }
 
     /** Returns the options of a web GUI &lt;select&gt; element.
@@ -408,7 +415,7 @@ public class SeleniumWrapper {
                 return selenium.getSelectOptions(locator);
             }
         };
-        return callElementCommand(locator, -1, true, false, selectOptionsCommand);
+        return callElementCommand(locator, -1, true, selectOptionsCommand);
     }
 
     /** Returns the selected value of a GUI element.
@@ -421,7 +428,7 @@ public class SeleniumWrapper {
                 return selenium.getSelectedValue(locator);
             }
         };
-        return callElementCommand(locator, -1, true, false, selectedValueCommand);
+        return callElementCommand(locator, -1, true, selectedValueCommand);
     }
 
     /** Returns the selected label of a web GUI component.
@@ -434,7 +441,7 @@ public class SeleniumWrapper {
                 return selenium.getSelectedLabel(locator);
             }
         };
-        return callElementCommand(locator, -1, true, false, selectedLabelCommand);
+        return callElementCommand(locator, -1, true, selectedLabelCommand);
     }
 
     /** Returns the value of a web GUI component.
@@ -447,7 +454,7 @@ public class SeleniumWrapper {
                 return selenium.getValue(locator);
             }
         };
-        return callElementCommand(locator, -1, true, false, getValueCommand);
+        return callElementCommand(locator, -1, true, getValueCommand);
     }
 
     /** Selects a window.
@@ -536,7 +543,7 @@ public class SeleniumWrapper {
                 return selenium.hasFocus(locator);
             }
         };
-        return callElementCommand(locator, -1, hasFocusCommand);
+        return callElementCommand(locator, -1, true, true, hasFocusCommand);
     }
 
     /** @param locator
@@ -554,7 +561,7 @@ public class SeleniumWrapper {
                 return selenium.getDropDownValues(locator);
             }
         };
-        return callElementCommand(locator, -1, true, false, getValuesCommand);
+        return callElementCommand(locator, -1, true, getValuesCommand);
     }
 
     /** Focuses a web GUI element.
@@ -567,7 +574,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, -1, focusCommand);
+        callElementCommand(locator, -1, true, true, focusCommand);
     }
 
     /** @param elementLocator
@@ -581,7 +588,7 @@ public class SeleniumWrapper {
                 return selenium.getAttributeValue(elementLocator, attributeName);
             }
         };
-        return callElementCommand(elementLocator, -1, true, false, getAttributeValueCommand);
+        return callElementCommand(elementLocator, -1, true, getAttributeValueCommand);
     }
 
     /** Sends a key-press event to the web GUI.
@@ -601,7 +608,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, -1, doubleClickCommand);
+        callElementCommand(locator, -1, true, false, doubleClickCommand);
     }
 
     /** Closes the Selenium client. */
@@ -621,7 +628,7 @@ public class SeleniumWrapper {
                 return selenium.getTableCellText(locator, row, col);
             }
         };
-        return callElementCommand(locator, -1, getTableCellTextCommand);
+        return callElementCommand(locator, -1, true, false, getTableCellTextCommand);
     }
 
     /** Adds a custom request header.
@@ -697,9 +704,9 @@ public class SeleniumWrapper {
         }
     }
 
-    private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout,
+    private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout, boolean visible,
             ElementCommand<T> command) {
-        return callElementCommand(locator, taskCompletionTimeout, true, true, command);
+        return callElementCommand(locator, taskCompletionTimeout, visible, false, command);
     }
 
     private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout, boolean visible, boolean enabled,

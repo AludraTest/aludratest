@@ -34,4 +34,10 @@ public interface InputComponent<E extends Element<E>> extends Element<E> {
      * @return <code>true</code> if the input element is enabled, <code>false</code> otherwise. */
     public boolean isEnabled(long timeout);
 
+    /** Asserts that this element is enabled, i.e. does not have an active "disabled" state. */
+    public void assertEnabled();
+
+    /** Asserts that this element is not enabled, i.e. has an active "disabled" state. */
+    public void assertNotEnabled();
+
 }

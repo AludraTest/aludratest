@@ -32,4 +32,11 @@ public interface InputField extends InputComponent<InputField>, ValueComponent {
      */
     public void enter(String text);
 
+    /** Asserts that the element is editable, i.e. text can be entered. */
+    public void assertEditable();
+
+    /** Asserts that the element is not editable, i.e. no text can be entered. Disabled controls are also treated as
+     * "not editable". */
+    public void assertNotEditable();
+
 }

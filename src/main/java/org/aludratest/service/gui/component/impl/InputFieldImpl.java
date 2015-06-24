@@ -82,4 +82,16 @@ public class InputFieldImpl extends AbstractInputComponent<InputField> implement
         helper.assertValueLessThan(value);
     }
 
+    /** Asserts that the element is editable. */
+    @Override
+    public void assertEditable() {
+        verify().assertEditable(elementType, elementName, getLocator());
+    }
+
+    /** Asserts that the element is not editable. */
+    @Override
+    public void assertNotEditable() {
+        verify().assertNotEditable(elementType, elementName, getLocator());
+    }
+
 }

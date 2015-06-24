@@ -84,7 +84,7 @@ public abstract class AbstractDropdownboxTest extends GUITest {
     public void selectEntryOnDisabledDropdownBox() {
         guiTestUIMap.disabledDropDownBox().selectEntry("City");
         checkLastStepStatus(TestStatus.FAILEDAUTOMATION);
-        checkLastStepErrorMessage("Element not editable");
+        checkLastStepErrorMessage("Element not enabled");
     }
 
     /** Positive case to select an entry in a dropdown box using the EMPTY marker. This should select the "" entry in the
