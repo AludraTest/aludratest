@@ -27,15 +27,18 @@ public class MixedElementCondition extends WebElementCondition {
 
     private ZIndexSupport zIndexSupport;
     private boolean visible;
+    private boolean enabled;
 
     /** Constructor.
      * @param locator a locator for the element to check
      * @param locatorSupport
-     * @param visible specifies if the element shall be checked for visibility */
-    public MixedElementCondition(GUIElementLocator locator, LocatorSupport locatorSupport, boolean visible) {
+     * @param visible specifies if the element shall be checked for visibility
+     * @param enabled specified if the element shall be checked for enabled state */
+    public MixedElementCondition(GUIElementLocator locator, LocatorSupport locatorSupport, boolean visible, boolean enabled) {
         super(locator, locatorSupport);
         this.zIndexSupport = new ZIndexSupport(locatorSupport);
         this.visible = visible;
+        this.enabled = enabled;
         this.message = null;
     }
 
@@ -49,6 +52,10 @@ public class MixedElementCondition extends WebElementCondition {
         // check visibility if required
         if (visible && !element.isDisplayed()) {
             this.message = "Element not visible";
+            return null;
+        }
+        if (enabled && !element.isEnabled()) {
+            this.message = "Element not enabled";
             return null;
         }
 

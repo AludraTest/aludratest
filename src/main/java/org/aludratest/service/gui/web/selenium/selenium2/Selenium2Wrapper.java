@@ -240,11 +240,11 @@ public class Selenium2Wrapper {
     }
 
     @SuppressWarnings("unchecked")
-    private WebElement doBeforeDelegate(GUIElementLocator locator, boolean visible, boolean actionPending) {
+    private WebElement doBeforeDelegate(GUIElementLocator locator, boolean visible, boolean actionPending, boolean enabled) {
         if (actionPending) {
             waitUntilNotBusy();
         }
-        MixedElementCondition condition = new MixedElementCondition(locator, locatorSupport, visible);
+        MixedElementCondition condition = new MixedElementCondition(locator, locatorSupport, visible, enabled);
         try {
             WebElement element = waitFor(condition, configuration.getTimeout());
             highlight(locator);
@@ -271,45 +271,45 @@ public class Selenium2Wrapper {
     }
 
     public void click(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
-        WebElement element = doBeforeDelegate(locator, true, true);
+        WebElement element = doBeforeDelegate(locator, true, true, false);
         click(element);
         doAfterDelegate(taskCompletionTimeout, operation);
     }
 
     public void doubleClick(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
-        WebElement element = doBeforeDelegate(locator, true, true);
+        WebElement element = doBeforeDelegate(locator, true, true, false);
         doubleClick(element);
         doAfterDelegate(taskCompletionTimeout, operation);
     }
 
     public void select(GUIElementLocator locator, final OptionLocator optionLocator, int taskCompletionTimeout) {
-        WebElement element = doBeforeDelegate(locator, true, true);
+        WebElement element = doBeforeDelegate(locator, true, true, true);
         select(optionLocator, element);
         doAfterDelegate(taskCompletionTimeout, "select");
     }
 
     public void type(GUIElementLocator locator, final String value, int taskCompletionTimeout) {
-        WebElement element = doBeforeDelegate(locator, true, true);
+        WebElement element = doBeforeDelegate(locator, true, true, true);
         // setValue instead of sendKeys to ensure field is reset, and to work with file component
         setValue(element, value);
         doAfterDelegate(taskCompletionTimeout, "type");
     }
 
     public void sendKeys(GUIElementLocator locator, String keys, int taskCompletionTimeout) {
-        WebElement element = doBeforeDelegate(locator, true, true);
+        WebElement element = doBeforeDelegate(locator, true, true, false);
         sendKeys(element, keys);
         doAfterDelegate(taskCompletionTimeout, "sendKeys");
     }
 
     public String getText(GUIElementLocator locator, Boolean visible) {
-        WebElement element = doBeforeDelegate(locator, visible, false);
+        WebElement element = doBeforeDelegate(locator, visible, false, false);
         String text = getText(element);
         doAfterDelegate(-1, "getText");
         return text;
     }
 
     public boolean isChecked(GUIElementLocator locator) {
-        WebElement element = doBeforeDelegate(locator, true, false);
+        WebElement element = doBeforeDelegate(locator, true, false, false);
         LOGGER.debug("isChecked({})", locator);
         Boolean returnValue = element.isSelected();
         doAfterDelegate(-1, "isChecked");
@@ -317,7 +317,7 @@ public class Selenium2Wrapper {
     }
 
     public String[] getSelectOptions(GUIElementLocator locator) {
-        WebElement element = doBeforeDelegate(locator, true, false);
+        WebElement element = doBeforeDelegate(locator, true, false, false);
         LOGGER.debug("getSelectOptions({})", locator);
         Select select = new Select(element);
         List<WebElement> options = select.getOptions();
@@ -330,14 +330,14 @@ public class Selenium2Wrapper {
     }
 
     public String getSelectedValue(GUIElementLocator locator) {
-        WebElement element = doBeforeDelegate(locator, true, false);
+        WebElement element = doBeforeDelegate(locator, true, false, false);
         String selectedValue = getSelectedLabel(element);
         doAfterDelegate(-1, "getSelectedValue");
         return selectedValue;
     }
 
     public String getSelectedLabel(GUIElementLocator locator) {
-        WebElement element = doBeforeDelegate(locator, true, false);
+        WebElement element = doBeforeDelegate(locator, true, false, false);
         String selectedLabel = getSelectedLabel(element);
         doAfterDelegate(-1, "getSelectedLabel");
         return selectedLabel;
@@ -611,7 +611,7 @@ public class Selenium2Wrapper {
     }
 
     public boolean hasFocus(GUIElementLocator locator) {
-        WebElement element = doBeforeDelegate(locator, true, false);
+        WebElement element = doBeforeDelegate(locator, true, false, true);
         LOGGER.debug("hasFocus({})", locator);
         boolean returnValue = (Boolean) executeScript(HAS_FOCUS_SCRIPT, element);
         doAfterDelegate(-1, "hasFocus");
@@ -625,7 +625,7 @@ public class Selenium2Wrapper {
     }
 
     public String getAttributeValue(final GUIElementLocator locator, String attributeName) {
-        WebElement element = doBeforeDelegate(locator, true, false);
+        WebElement element = doBeforeDelegate(locator, true, false, false);
         LOGGER.debug("WebElement.getAttributeValue({})", attributeName);
         String returnValue = element.getAttribute(attributeName);
         doAfterDelegate(-1, "getAttributeValue");
@@ -728,7 +728,8 @@ public class Selenium2Wrapper {
     @SuppressWarnings("unchecked")
     public void waitUntilVisible(GUIElementLocator locator, long timeOutInMillis) {
         try {
-            waitFor(new MixedElementCondition(locator, locatorSupport, true), timeOutInMillis, NoSuchElementException.class);
+            waitFor(new MixedElementCondition(locator, locatorSupport, true, false), timeOutInMillis,
+                    NoSuchElementException.class);
         } catch (TimeoutException e) {
             throw new AutomationException("The element is not visible."); // NOSONAR
         }
@@ -746,7 +747,7 @@ public class Selenium2Wrapper {
 
     @SuppressWarnings("unchecked")
     public void waitUntilInForeground(final GUIElementLocator locator, long timeOutInMillis) {
-        MixedElementCondition condition = new MixedElementCondition(locator, locatorSupport, false);
+        MixedElementCondition condition = new MixedElementCondition(locator, locatorSupport, false, false);
         try {
             waitFor(condition, timeOutInMillis, NoSuchElementException.class);
         }

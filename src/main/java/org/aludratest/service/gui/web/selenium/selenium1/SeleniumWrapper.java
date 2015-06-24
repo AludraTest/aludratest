@@ -296,7 +296,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, taskCompletionTimeout, clickCommand);
+        callElementCommand(locator, taskCompletionTimeout, true, false, clickCommand);
     }
 
     /** Tells if an element is present.
@@ -352,7 +352,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, taskCompletionTimeout, selectCommand);
+        callElementCommand(locator, taskCompletionTimeout, true, true, selectCommand);
     }
 
     /** Sends characters to a web GUI element.
@@ -367,7 +367,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, taskCompletionTimeout, typeCommand);
+        callElementCommand(locator, taskCompletionTimeout, true, true, typeCommand);
     }
 
     /** @param locator
@@ -543,7 +543,7 @@ public class SeleniumWrapper {
                 return selenium.hasFocus(locator);
             }
         };
-        return callElementCommand(locator, -1, hasFocusCommand);
+        return callElementCommand(locator, -1, true, true, hasFocusCommand);
     }
 
     /** @param locator
@@ -608,7 +608,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, -1, doubleClickCommand);
+        callElementCommand(locator, -1, true, false, doubleClickCommand);
     }
 
     /** Closes the Selenium client. */
@@ -628,7 +628,7 @@ public class SeleniumWrapper {
                 return selenium.getTableCellText(locator, row, col);
             }
         };
-        return callElementCommand(locator, -1, getTableCellTextCommand);
+        return callElementCommand(locator, -1, true, false, getTableCellTextCommand);
     }
 
     /** Adds a custom request header.
@@ -702,10 +702,6 @@ public class SeleniumWrapper {
                 LOGGER.trace("Highlighting does not work.", e);
             }
         }
-    }
-
-    private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout, ElementCommand<T> command) {
-        return callElementCommand(locator, taskCompletionTimeout, true, command);
     }
 
     private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout, boolean visible,
