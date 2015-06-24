@@ -39,6 +39,7 @@ import java.util.Map;
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.dict.Data;
 import org.aludratest.exception.AutomationException;
+import org.aludratest.testcase.Ignored;
 import org.aludratest.testcase.Offset;
 import org.aludratest.testcase.data.Source;
 import org.aludratest.testcase.data.TestCaseData;
@@ -87,6 +88,14 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         Annotation[][] annots = method.getParameterAnnotations();
 
         Offset offsetAnno = method.getAnnotation(Offset.class);
+        boolean ignored = method.getAnnotation(Ignored.class) != null;
+        String ignoredReason = null;
+        if (ignored) {
+            ignoredReason = method.getAnnotation(Ignored.class).value();
+            if ("".equals(ignoredReason)) {
+                ignoredReason = null;
+            }
+        }
 
         List<TestCaseData> result = new ArrayList<TestCaseData>();
 
@@ -96,7 +105,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         // load param by param; transpose into test case data afterwards
         List<List<Data>> allData = new ArrayList<List<Data>>();
         for (int i = 0; i < annots.length; i++) {
-            List<Data> paramData = getDataObjects(method, i, loadedFileModels, result);
+            List<Data> paramData = getDataObjects(method, i, loadedFileModels);
             if (offsetAnno != null) {
                 int offset = offsetAnno.value();
                 if (offset < paramData.size()) {
@@ -132,16 +141,21 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             }
 
             if (dataForConfig != null) {
-                result.add(new TestCaseData(getNextAutoId(result, false), config.getName(), dataForConfig.toArray(new Data[0]),
-                        config.isIgnored()));
+                if (ignored) {
+                    result.add(new TestCaseData(getNextAutoId(result, false), config.getName(), dataForConfig
+                            .toArray(new Data[0]), true, ignoredReason));
+                }
+                else {
+                    result.add(new TestCaseData(getNextAutoId(result, false), config.getName(), dataForConfig
+                            .toArray(new Data[0]), config.isIgnored(), config.isIgnored() ? config.getIgnoredReason() : null));
+                }
             }
         }
 
         return result;
     }
 
-    private List<Data> getDataObjects(Method method, int paramIndex, Map<String, TestData> loadedFileModels,
-            List<TestCaseData> allTestCaseDatas) {
+    private List<Data> getDataObjects(Method method, int paramIndex, Map<String, TestData> loadedFileModels) {
         Annotation[][] annots = method.getParameterAnnotations();
         String paramName = method.getName() + " param #" + paramIndex;
         Source src = getRequiredSourceAnnotation(annots[paramIndex], paramName);
@@ -173,7 +187,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                 loadedFileModels.put(uri, testData);
             }
             catch (Exception e) {
-                throw new AutomationException("Could not read test data XML", e);
+                throw new AutomationException("Could not read test data XML at " + uri, e);
             }
             finally {
                 IOUtils.closeQuietly(in);

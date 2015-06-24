@@ -31,6 +31,8 @@ public class TestCaseLog extends TestSuiteLogComponent {
 
     private boolean ignored;
 
+    private String ignoredReason;
+
     State state;
 
     private DateTime startingTime;
@@ -150,10 +152,23 @@ public class TestCaseLog extends TestSuiteLogComponent {
         this.ignored = true;
     }
 
+    /** Marks the test case to be ignored for a given reason.
+     * 
+     * @param reason Reason for the ignore flag. */
+    public void ignore(String reason) {
+        ignore();
+        this.ignoredReason = reason;
+    }
+
     /** Tells if the test shall be ignored
      *  @return true if the test shall be ignored, otherwise false */
     public boolean isIgnored() {
         return ignored;
+    }
+
+    /** @return The optional reason for the ignored flag. */
+    public String getIgnoredReason() {
+        return ignoredReason;
     }
 
     /** @return true if the test case is ignored and passed, otherwise false */

@@ -707,8 +707,8 @@ public class SeleniumWrapper {
     private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout, boolean visible,
             ElementCommand<T> command) {
         return callElementCommand(locator, taskCompletionTimeout, visible, false, command);
-
     }
+
     private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout, boolean visible, boolean enabled,
             ElementCommand<T> command) {
         doBeforeDelegate(locator, visible, enabled, command.isInteraction());

@@ -72,5 +72,30 @@
     		</segment>
     	</segments>
     </configuration>
+    <configuration name="config3" ignored="true" ignoredReason="Ignored for test">
+    	<segments>
+    		<segment name="complexObject">
+    			<fieldValues>
+    				<fieldValue name="name">
+    					<value>The Config2</value>
+    				</fieldValue>
+    				<fieldValue name="subData"></fieldValue>
+    			</fieldValues>
+    		</segment>
+    		<segment name="stringObject">
+    			<fieldValues>
+    				<fieldValue name="value">
+    					<value>Dragons be here</value>
+    				</fieldValue>
+    			</fieldValues>
+    		</segment>
+    		<segment name="complexObject.subData">
+    			<!-- empty, but should still generate empty object. -->
+    			<fieldValues>
+    			<fieldValue name="value"></fieldValue>
+    			</fieldValues>
+    		</segment>
+    	</segments>
+    </configuration>    
     </configurations>
 </testdata>

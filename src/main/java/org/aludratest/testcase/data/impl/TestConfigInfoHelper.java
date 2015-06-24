@@ -126,7 +126,7 @@ public class TestConfigInfoHelper {
             }
             else {
                 boolean ignored = isIgnored(method) || parseIgnoredCell(infoRow, ignoreColumnIndex);
-                testInfos.add(new TestDataLoadInfo(infoText, ignored));
+                testInfos.add(new TestDataLoadInfo(infoText, ignored, getIgnoredReason(method)));
             }
             LOGGER.debug("testConfiguration for invocation {} on method {} is: {}", new Object[] { invocationNumber, method,
                     infoText });
@@ -140,6 +140,11 @@ public class TestConfigInfoHelper {
 
     private boolean isIgnored(Method method) {
         return (method.getAnnotation(Ignored.class) != null);
+    }
+
+    private String getIgnoredReason(Method method) {
+        Ignored annot = method.getAnnotation(Ignored.class);
+        return annot == null || "".equals(annot.value()) ? null : annot.value();
     }
 
     private boolean parseIgnoredCell(Row infoRow, int ignoreColumnIndex) {

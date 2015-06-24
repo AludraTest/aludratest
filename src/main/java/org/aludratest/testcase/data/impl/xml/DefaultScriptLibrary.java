@@ -15,6 +15,11 @@
  */
 package org.aludratest.testcase.data.impl.xml;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.component.annotations.Component;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -30,6 +35,23 @@ public final class DefaultScriptLibrary implements ScriptLibrary {
         // "compile" functions into scope
         context.evaluateString(scope, JS_ADD_DAYS_TO_NOW, "jsAddDaysToNow", 1, null);
         context.evaluateString(scope, JS_ADD_HOURS_TO_NOW, "jsAddHoursToNow", 1, null);
+
+        // complex Date format addition
+        loadScript(context, scope, "date-format.js");
+    }
+
+    private void loadScript(Context context, Scriptable scope, String jsResourceName) {
+        InputStream in = DefaultScriptLibrary.class.getResourceAsStream(jsResourceName);
+        try {
+            InputStreamReader reader = new InputStreamReader(in, "UTF-8");
+            context.evaluateReader(scope, reader, jsResourceName, 1, null);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            IOUtils.closeQuietly(in);
+        }
     }
 
 }

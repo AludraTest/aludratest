@@ -364,8 +364,8 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                 List<TestCaseData> invocationParams = testDataProvider.getTestDataSets(method);
                 for (TestCaseData data : invocationParams) {
                     if (data.getException() == null) {
-                        createTestRunnerForMethodInvocation(method, data.getData(), data.getId(), data.isIgnored(), methodGroup,
-                                tree);
+                        createTestRunnerForMethodInvocation(method, data.getData(), data.getId(), data.isIgnored(),
+                                data.getIgnoredReason(), methodGroup, tree);
                     }
                     else {
                         createTestRunnerForErrorReporting(method, data.getException(), methodGroup, tree);
@@ -380,14 +380,14 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
     /** Creates a test runner for a single method invocation */
     private void createTestRunnerForMethodInvocation(Method method, Data[] args, String testInfo, boolean ignore,
-            RunnerGroup methodGroup, RunnerTree tree) {
+            String ignoredReason, RunnerGroup methodGroup, RunnerTree tree) {
         // create log4testing TestCase
         String invocationTestCaseName = createInvocationTestCaseName(testInfo, methodGroup.getName());
         // Create test object
         @SuppressWarnings("unchecked")
         AludraTestCase testObject = BeanUtil.newInstance((Class<? extends AludraTestCase>) method.getDeclaringClass());
         TestInvoker invoker = new AludraTestMethodInvoker(testObject, method, args);
-        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, ignore);
+        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, ignore, ignoredReason);
     }
 
     /** Creates a test runner for error reporting.
@@ -399,13 +399,17 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                 + errorCount.incrementAndGet();
         // Create test object
         TestInvoker invoker = new ErrorReportingInvoker(method, e);
-        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, false);
+        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, false, null);
     }
 
-    private void createRunnerForTestInvoker(TestInvoker invoker, RunnerGroup parentGroup, RunnerTree tree, String testCaseName, boolean ignore) {
+    private void createRunnerForTestInvoker(TestInvoker invoker, RunnerGroup parentGroup, RunnerTree tree, String testCaseName,
+            boolean ignore, String ignoredReason) {
         RunnerLeaf leaf = tree.addLeaf(nextLeafId.incrementAndGet(), invoker, testCaseName, parentGroup);
         if (ignore) {
             leaf.setAttribute(CommonRunnerLeafAttributes.IGNORE, Boolean.valueOf(ignore));
+            if (ignoredReason != null) {
+                leaf.setAttribute(CommonRunnerLeafAttributes.IGNORE_REASON, ignoredReason);
+            }
         }
     }
 

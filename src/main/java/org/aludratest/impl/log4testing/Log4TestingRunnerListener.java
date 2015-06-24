@@ -48,7 +48,13 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
     public void startingTestLeaf(RunnerLeaf runnerLeaf) {
         TestCaseLog log = TestLogger.getTestCase(runnerLeaf.getName());
         if (Boolean.TRUE.equals(runnerLeaf.getAttribute(CommonRunnerLeafAttributes.IGNORE))) {
-            log.ignore();
+            String reason = (String) runnerLeaf.getAttribute(CommonRunnerLeafAttributes.IGNORE_REASON);
+            if (reason != null) {
+                log.ignore(reason);
+            }
+            else {
+                log.ignore();
+            }
         }
         log.start();
     }
