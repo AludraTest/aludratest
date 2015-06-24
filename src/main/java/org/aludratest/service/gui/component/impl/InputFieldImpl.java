@@ -20,7 +20,7 @@ import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.databene.commons.Validator;
 
 /** Default implementation of the InputField interface. */
-public class InputFieldImpl extends AbstractInputComponent<InputField> implements ValueComponent, InputField {
+public class InputFieldImpl extends AbstractElement<InputField> implements ValueComponent, InputField {
 
     private ValueComponentHelper helper = new ValueComponentHelper(this, true);
 

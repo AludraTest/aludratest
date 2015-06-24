@@ -47,6 +47,12 @@ public interface Element<E extends Element<E>> extends GUIComponent {
     /** Asserts that the element is visible */
     public void assertVisible();
 
+    /** Asserts that this element is enabled, i.e. does not have an active "disabled" state. */
+    public void assertEnabled();
+
+    /** Asserts that this element is not enabled, i.e. has an active "disabled" state. */
+    public void assertNotEnabled();
+
     /** Asserts that the element has the focus. */
     public void assertFocus();
 
@@ -111,4 +117,17 @@ public interface Element<E extends Element<E>> extends GUIComponent {
      * 
      * @return <code>true</code> if the element was found visible during the given timeout, <code>false</code> otherwise. */
     public boolean isVisible(long timeout);
+
+    /** Checks whether this input element is enabled.
+     * 
+     * @return <code>true</code> if the input element is enabled, <code>false</code> otherwise. */
+    public boolean isEnabled();
+
+    /** Checks whether this input element is enabled.
+     * 
+     * @param timeout Max time to wait for this input element to become enabled.
+     * 
+     * @return <code>true</code> if the input element is enabled, <code>false</code> otherwise. */
+    public boolean isEnabled(long timeout);
+
 }

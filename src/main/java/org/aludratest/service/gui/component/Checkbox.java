@@ -19,7 +19,7 @@ package org.aludratest.service.gui.component;
 /** Represents a checkbox in a GUI.
  * @author Joerg Langnickel
  * @author Volker Bergmann */
-public interface Checkbox extends InputComponent<Checkbox> {
+public interface Checkbox extends Element<Checkbox> {
 
     /** Selects or deselects a Checkbox due to overgiven String If the text is null or marked as null the operation is not
      * executed.

@@ -28,7 +28,7 @@ import org.databene.commons.IOUtil;
 import org.databene.commons.Validator;
 
 /** Default implementation of the FileField interface. */
-public class FileFieldImpl extends AbstractInputComponent<FileField> implements ValueComponent, FileField {
+public class FileFieldImpl extends AbstractElement<FileField> implements ValueComponent, FileField {
 
     private ValueComponentHelper helper = new ValueComponentHelper(this, true);
 

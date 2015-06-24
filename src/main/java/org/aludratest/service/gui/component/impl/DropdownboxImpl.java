@@ -27,7 +27,7 @@ import org.aludratest.util.validator.NotEqualsValidator;
 import org.databene.commons.Validator;
 
 /** Default implementation of the Dropdownbox interface. */
-public class DropdownboxImpl extends AbstractInputComponent<Dropdownbox> implements Dropdownbox {
+public class DropdownboxImpl extends AbstractElement<Dropdownbox> implements Dropdownbox {
 
     /** Selects an entry of this Dropdownbox by its label. If the label is <code>null</code> or marked as null, the operation is
      * not executed. It the label is marked as empty, it will be replaced with "".

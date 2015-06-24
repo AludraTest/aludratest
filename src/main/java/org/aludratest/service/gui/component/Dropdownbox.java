@@ -23,7 +23,7 @@ import org.databene.commons.Validator;
 /** Represents a dropdownbox in a GUI.
  * @author Joerg Langnickel
  * @author Volker Bergmann */
-public interface Dropdownbox extends InputComponent<Dropdownbox> {
+public interface Dropdownbox extends Element<Dropdownbox> {
 
     /** Selects an entry of this Dropdownbox by its label. If the label is <code>null</code> or marked as null, the operation is
      * not executed. It the label is marked as empty, it will be replaced with "".
