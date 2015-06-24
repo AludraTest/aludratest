@@ -89,6 +89,13 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
 
         Offset offsetAnno = method.getAnnotation(Offset.class);
         boolean ignored = method.getAnnotation(Ignored.class) != null;
+        String ignoredReason = null;
+        if (ignored) {
+            ignoredReason = method.getAnnotation(Ignored.class).value();
+            if ("".equals(ignoredReason)) {
+                ignoredReason = null;
+            }
+        }
 
         List<TestCaseData> result = new ArrayList<TestCaseData>();
 
@@ -134,8 +141,14 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             }
 
             if (dataForConfig != null) {
-                result.add(new TestCaseData(getNextAutoId(result, false), config.getName(), dataForConfig.toArray(new Data[0]),
-                        config.isIgnored() || ignored));
+                if (ignored) {
+                    result.add(new TestCaseData(getNextAutoId(result, false), config.getName(), dataForConfig
+                            .toArray(new Data[0]), true, ignoredReason));
+                }
+                else {
+                    result.add(new TestCaseData(getNextAutoId(result, false), config.getName(), dataForConfig
+                            .toArray(new Data[0]), config.isIgnored(), config.isIgnored() ? config.getIgnoredReason() : null));
+                }
             }
         }
 

@@ -24,6 +24,7 @@ public class TestDataLoadInfo {
     /** The info, either a {@link String} or a {@link Throwable}. */
     private Object info;
     private boolean ignored;
+    private String ignoredReason;
 
     /** Good case constructor porting a test message.
      *  @param infoText the text to store as info
@@ -31,6 +32,16 @@ public class TestDataLoadInfo {
     public TestDataLoadInfo(String infoText, boolean ignored) {
         this.info = infoText;
         this.ignored = ignored;
+    }
+
+    /** Good case constructor porting a test message and a reason for the test data record being ignored.
+     * @param infoText the text to store as info
+     * @param ignored a flag that indicates whether the related test shall be ignored.
+     * @param ignoredReason a string describing why the test data record is marked as ignored. */
+    public TestDataLoadInfo(String infoText, boolean ignored, String ignoredReason) {
+        this.info = infoText;
+        this.ignored = ignored;
+        this.ignoredReason = ignoredReason;
     }
 
     /**
@@ -50,6 +61,11 @@ public class TestDataLoadInfo {
     /** @return the value of the {@link #ignored} attribute. */
     public boolean isIgnored() {
         return ignored;
+    }
+
+    /** @return The reason why this test data record should be ignored. */
+    public String getIgnoredReason() {
+        return ignoredReason;
     }
 
 }

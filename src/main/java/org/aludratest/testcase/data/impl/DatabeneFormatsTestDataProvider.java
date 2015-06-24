@@ -136,7 +136,7 @@ public class DatabeneFormatsTestDataProvider implements TestDataProvider {
                 }
                 else {
                     dataSets.add(new TestCaseData(info == null ? getNextAutoId(dataSets, false) : info.toString(), null, args, ti
-                            .isIgnored()));
+                            .isIgnored(), ti.getIgnoredReason()));
                 }
             }
             return dataSets;
