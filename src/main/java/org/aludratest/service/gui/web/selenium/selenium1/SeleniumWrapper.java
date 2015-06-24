@@ -273,12 +273,12 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, taskCompletionTimeout, true, false, clickCommand);
+        callElementCommand(locator, taskCompletionTimeout, clickCommand);
     }
 
     /** Clicks a web GUI element requiring it to be not editable.
-     *  @param locator
-     *  @param taskCompletionTimeout */
+     * @param locator
+     * @param taskCompletionTimeout */
     public void clickNotEditable(GUIElementLocator locator, int taskCompletionTimeout) {
         ElementCommand<Void> clickNotEditableCommand = new ElementCommand<Void>("clickNotEditable", true) {
             @Override
@@ -290,12 +290,10 @@ public class SeleniumWrapper {
         callElementCommand(locator, taskCompletionTimeout, true, false, clickNotEditableCommand);
     }
 
-    /**
-     * Double clicks a web GUI element requiring it to be not editable.
+    /** Double clicks a web GUI element requiring it to be not editable.
      * 
      * @param locator
-     * @param taskCompletionTimeout
-     */
+     * @param taskCompletionTimeout */
     public void doubleClickNotEditable(GUIElementLocator locator, int taskCompletionTimeout) {
         ElementCommand<Void> doubleClickNotEditableCommand = new ElementCommand<Void>("doubleClickNotEditable", true) {
             @Override
@@ -347,7 +345,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, taskCompletionTimeout, true, true, selectCommand);
+        callElementCommand(locator, taskCompletionTimeout, selectCommand);
     }
 
     /** Sends characters to a web GUI element.
@@ -362,7 +360,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, taskCompletionTimeout, true, true, typeCommand);
+        callElementCommand(locator, taskCompletionTimeout, typeCommand);
     }
 
     /** @param locator
@@ -538,7 +536,7 @@ public class SeleniumWrapper {
                 return selenium.hasFocus(locator);
             }
         };
-        return callElementCommand(locator, -1, true, true, hasFocusCommand);
+        return callElementCommand(locator, -1, hasFocusCommand);
     }
 
     /** @param locator
@@ -569,7 +567,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, -1, true, true, focusCommand);
+        callElementCommand(locator, -1, focusCommand);
     }
 
     /** @param elementLocator
@@ -603,7 +601,7 @@ public class SeleniumWrapper {
                 return null;
             }
         };
-        callElementCommand(locator, -1, true, false, doubleClickCommand);
+        callElementCommand(locator, -1, doubleClickCommand);
     }
 
     /** Closes the Selenium client. */
@@ -623,7 +621,7 @@ public class SeleniumWrapper {
                 return selenium.getTableCellText(locator, row, col);
             }
         };
-        return callElementCommand(locator, -1, true, false, getTableCellTextCommand);
+        return callElementCommand(locator, -1, getTableCellTextCommand);
     }
 
     /** Adds a custom request header.
@@ -700,7 +698,12 @@ public class SeleniumWrapper {
     }
 
     private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout,
-            boolean visible, boolean enabled, ElementCommand<T> command) {
+            ElementCommand<T> command) {
+        return callElementCommand(locator, taskCompletionTimeout, true, true, command);
+    }
+
+    private <T> T callElementCommand(GUIElementLocator locator, int taskCompletionTimeout, boolean visible, boolean enabled,
+            ElementCommand<T> command) {
         doBeforeDelegate(locator, visible, enabled, command.isInteraction());
         try {
             T returnValue = command.call(locator);
@@ -716,8 +719,7 @@ public class SeleniumWrapper {
         }
     }
 
-    private void doBeforeDelegate(GUIElementLocator locator,
-            boolean visible, boolean enabled, boolean actionPending) {
+    private void doBeforeDelegate(GUIElementLocator locator, boolean visible, boolean enabled, boolean actionPending) {
         if (actionPending) {
             waitUntilNotBusy();
         }
