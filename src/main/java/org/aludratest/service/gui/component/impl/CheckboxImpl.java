@@ -19,7 +19,7 @@ import org.aludratest.service.gui.component.Checkbox;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 
 /** Default implementation of the Checkbox interface. */
-public class CheckboxImpl extends AbstractInputComponent<Checkbox> implements Checkbox {
+public class CheckboxImpl extends AbstractElement<Checkbox> implements Checkbox {
 
     /** Selects or deselects a Checkbox due to overgiven String If the text is null or marked as null the operation is not
      * executed.

@@ -21,7 +21,7 @@ import org.aludratest.service.gui.component.impl.ValueComponent;
 
 /** Represents a file field in a GUI.
  * @author Volker Bergmann */
-public interface FileField extends InputComponent<FileField>, ValueComponent {
+public interface FileField extends Element<FileField>, ValueComponent {
 
     /** Saves the {@link InputStream}'s content in a new file with the given name.
      * @param fileName the name by which to save the file

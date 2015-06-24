@@ -22,7 +22,7 @@ import org.aludratest.service.gui.component.impl.ValueComponent;
  * @author Joerg Langnickel
  * @author Volker Bergmann
  */
-public interface InputField extends InputComponent<InputField>, ValueComponent {
+public interface InputField extends Element<InputField>, ValueComponent {
 
     /**
      * Enters text in the InputField.
