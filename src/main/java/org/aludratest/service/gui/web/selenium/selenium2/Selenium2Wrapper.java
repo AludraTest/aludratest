@@ -1136,13 +1136,14 @@ public class Selenium2Wrapper {
                 throw new AutomationException("Element not found", wde);
             }
 
+            // check for a time out
+            if (wde instanceof TimeoutException) {
+                throw new PerformanceFailure(wde.getMessage(), wde);
+            }
+
             throw wde;
         }
 
-        // check for a time out
-        if (e instanceof TimeoutException) {
-            throw new PerformanceFailure(e.getMessage(), e);
-        }
 
         // otherwise, throw a technical exception
         throw new TechnicalException("Unknown exception when clicking element", e);
