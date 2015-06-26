@@ -1138,7 +1138,7 @@ public class Selenium2Wrapper {
 
             // check for a time out
             if (wde instanceof TimeoutException) {
-                throw new PerformanceFailure(e.getMessage(), e);
+                throw new PerformanceFailure(wde.getMessage(), wde);
             }
 
             throw wde;
