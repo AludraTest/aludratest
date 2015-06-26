@@ -5,7 +5,7 @@ aludratest
 [![Build Status](https://travis-ci.org/AludraTest/aludratest.svg?branch=master)](https://travis-ci.org/AludraTest/aludratest)
 
 ## Release
-Version 3.0.0 is the most recent release. Please see below on how to include it e.g. in your Maven build.
+Version 3.0.1 is the most recent release. Please see below on how to include it e.g. in your Maven build.
 
 ## Documentation
 The documentation for the most recent release is published [here](http://aludratest.github.io/aludratest/user-guide.html).
@@ -18,7 +18,7 @@ To use Aludratest in your Maven project, add this dependency to your pom.xml:
 <dependency>
   <groupId>org.aludratest</groupId>
   <artifactId>aludratest</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 
