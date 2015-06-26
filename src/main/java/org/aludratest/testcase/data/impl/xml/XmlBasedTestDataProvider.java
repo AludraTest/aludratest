@@ -142,12 +142,11 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
 
             if (dataForConfig != null) {
                 if (ignored) {
-                    result.add(new TestCaseData(getNextAutoId(result, false), config.getName(), dataForConfig
-                            .toArray(new Data[0]), true, ignoredReason));
+                    result.add(new TestCaseData(config.getName(), null, dataForConfig.toArray(new Data[0]), true, ignoredReason));
                 }
                 else {
-                    result.add(new TestCaseData(getNextAutoId(result, false), config.getName(), dataForConfig
-                            .toArray(new Data[0]), config.isIgnored(), config.isIgnored() ? config.getIgnoredReason() : null));
+                    result.add(new TestCaseData(config.getName(), null, dataForConfig.toArray(new Data[0]), config.isIgnored(),
+                            config.isIgnored() ? config.getIgnoredReason() : null));
                 }
             }
         }
