@@ -115,8 +115,14 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             throw new PreconditionFailedException("Unknown file type for class root " + searchRoot.getAbsolutePath());
         }
 
+        // construct the RunnerTree
         RunnerTree tree = new RunnerTree();
-        tree.createRoot("All Tests", true);
+        RunnerGroup root = tree.createRoot("All Tests", true);
+
+        Class<?> initializerClass = executionConfig.getInitializer();
+        if (initializerClass != null) {
+            parseTestOrSuiteClass(initializerClass, root, tree);
+        }
 
         CategoryBuilder categoryBuilder;
         if (executionConfig.getGroupingAttributes().isEmpty()) {
@@ -250,19 +256,6 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         return concatAssertionExceptions(iterator, ex);
     }
 
-    /** Parses an AludraTest test class or suite. */
-    private void parseTestOrSuiteClass(Class<?> testClass, RunnerGroup parentGroup, RunnerTree tree) {
-        // check test class type
-        if (isTestSuiteClass(testClass)) {
-            parseSuiteClass(testClass, parentGroup, tree);
-        }
-        else {
-            if (assertTestClass(testClass)) {
-                parseTestClass(testClass, parentGroup, tree);
-            }
-        }
-    }
-
     private boolean isTestSuiteClass(Class<?> testClass) {
         return (testClass.getAnnotation(Suite.class) != null);
     }
@@ -300,6 +293,22 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                     + " is used in more than one test suite, or part of a test suite recursion.");
         }
         addedClasses.add(clazz);
+    }
+
+    /** Parses an AludraTest test class or suite.
+     * @param testClass the test or suite class to parse
+     * @param parentGroup the RunnerGroup into which to insert the test
+     * @param tree the RunnerTree that holds the test hierarchy */
+    public void parseTestOrSuiteClass(Class<?> testClass, RunnerGroup parentGroup, RunnerTree tree) {
+        // check test class type
+        if (isTestSuiteClass(testClass)) {
+            parseSuiteClass(testClass, parentGroup, tree);
+        }
+        else {
+            if (assertTestClass(testClass)) {
+                parseTestClass(testClass, parentGroup, tree);
+            }
+        }
     }
 
     /** Parses an AludraTest test suite class. */

@@ -39,6 +39,8 @@ public final class AnnotationBasedExecution {
 
     private ClassLoader classLoader;
 
+    private Class<?> initializer;
+
     /** Creates a new annotation based execution configuration object.
      * 
      * @param jarOrClassRoot Location to search for Java class or source files. MUST be a valid root, i.e. no subdirectory like
@@ -49,13 +51,15 @@ public final class AnnotationBasedExecution {
      *            class with the determined name.
      * @param filter Filter to use to determine which classes to use.
      * @param groupingAttributes List of attributes to use for grouping the tests. If empty, the package names are used instead.
+     * @param initializer A test class or suite called before the other tests which causes the SUT to initialize
      * @param classLoader Class loader to use to load the classes, or <code>null</code>. When <code>null</code>, the classes are
      *            loaded with {@link Class#forName(String)}. */
     public AnnotationBasedExecution(File jarOrClassRoot, TestClassFilter filter, List<String> groupingAttributes,
-            ClassLoader classLoader) {
+            Class<?> initializer, ClassLoader classLoader) {
         this.jarOrClassRoot = jarOrClassRoot;
         this.filter = filter;
         this.groupingAttributes = Collections.unmodifiableList(new ArrayList<String>(groupingAttributes));
+        this.initializer = initializer;
         this.classLoader = classLoader;
     }
 
@@ -108,6 +112,11 @@ public final class AnnotationBasedExecution {
      * @throws ParseException If the filter string has an invalid syntax. */
     public static TestClassFilter parseFilterString(String filterString) throws ParseException {
         return new FilterParser().parse(filterString);
+    }
+
+    /** @return the {@link #initializer} */
+    public Class<?> getInitializer() {
+        return initializer;
     }
 
 }
