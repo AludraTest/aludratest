@@ -67,6 +67,8 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RunnerTreeBuilder.class);
 
+    private Class<?> initializer;
+
     private final AtomicLong errorCount = new AtomicLong();
 
     private final AtomicInteger nextLeafId = new AtomicInteger();
@@ -94,6 +96,8 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
     @Override
     public RunnerTree buildRunnerTree(AnnotationBasedExecution executionConfig) {
+        this.initializer = executionConfig.getInitializer();
+
         // find all class files matching the filter
         List<Class<? extends AludraTestCase>> testClasses;
 
@@ -289,10 +293,14 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
     private void checkAddTestClass(Class<?> clazz) {
         if (addedClasses.contains(clazz)) {
-            throw new PreconditionFailedException("The class " + clazz
-                    + " is used in more than one test suite, or part of a test suite recursion.");
+            if (!clazz.equals(initializer)) {
+                throw new PreconditionFailedException("The class " + clazz
+                        + " is used in more than one test suite, or part of a test suite recursion.");
+            }
         }
-        addedClasses.add(clazz);
+        else {
+            addedClasses.add(clazz);
+        }
     }
 
     /** Parses an AludraTest test class or suite.
