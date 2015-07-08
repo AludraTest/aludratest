@@ -291,15 +291,19 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         return count;
     }
 
-    private void checkAddTestClass(Class<?> clazz) {
+    private boolean checkAddTestClass(Class<?> clazz) {
         if (addedClasses.contains(clazz)) {
             if (!clazz.equals(initializer)) {
                 throw new PreconditionFailedException("The class " + clazz
                         + " is used in more than one test suite, or part of a test suite recursion.");
             }
+            else {
+                return false;
+            }
         }
         else {
             addedClasses.add(clazz);
+            return true;
         }
     }
 
@@ -322,25 +326,27 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
     /** Parses an AludraTest test suite class. */
     private void parseSuiteClass(Class<?> testClass, RunnerGroup parentGroup, RunnerTree tree) {
         LOGGER.debug("Parsing suite class: {}", testClass.getName());
-        checkAddTestClass(testClass);
-        addedClasses.add(testClass);
-        Suite suite = testClass.getAnnotation(Suite.class);
-        if (suite == null) {
-            throw new IllegalArgumentException("Class has no @Suite annotation");
-        }
-        RunnerGroup group = createRunnerGroupForTestClass(testClass, parentGroup, tree);
-        for (Class<?> component : suite.value()) {
-            parseTestOrSuiteClass(component, group, tree);
+        if (checkAddTestClass(testClass)) {
+            addedClasses.add(testClass);
+            Suite suite = testClass.getAnnotation(Suite.class);
+            if (suite == null) {
+                throw new IllegalArgumentException("Class has no @Suite annotation");
+            }
+            RunnerGroup group = createRunnerGroupForTestClass(testClass, parentGroup, tree);
+            for (Class<?> component : suite.value()) {
+                parseTestOrSuiteClass(component, group, tree);
+            }
         }
     }
 
     /** Parses an AludraTest test class. */
     private void parseTestClass(Class<?> testClass, RunnerGroup parentGroup, RunnerTree tree) {
         LOGGER.debug("Parsing test class: {}", testClass.getName());
-        checkAddTestClass(testClass);
-        RunnerGroup classGroup = createRunnerGroupForTestClass(testClass, parentGroup, tree);
-        for (Method method : testClass.getMethods()) {
-            parseMethod(method, testClass, classGroup, tree);
+        if (checkAddTestClass(testClass)) {
+            RunnerGroup classGroup = createRunnerGroupForTestClass(testClass, parentGroup, tree);
+            for (Method method : testClass.getMethods()) {
+                parseMethod(method, testClass, classGroup, tree);
+            }
         }
     }
 

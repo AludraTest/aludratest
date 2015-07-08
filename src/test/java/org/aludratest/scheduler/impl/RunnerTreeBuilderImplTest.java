@@ -34,7 +34,6 @@ import org.aludratest.scheduler.RunnerTreeBuilder;
 import org.aludratest.scheduler.TestClassFilter;
 import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerNode;
-import org.aludratest.scheduler.test.SequentialClass;
 import org.aludratest.scheduler.test.annot.AnnotatedTestClass1;
 import org.aludratest.scheduler.test.annot.AnnotatedTestClass2;
 import org.aludratest.service.AbstractAludraServiceTest;
@@ -237,30 +236,8 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
 
         assertEquals("All Tests", tree.getRoot().getName());
         assertEquals(1, tree.getRoot().getChildren().size());
-        verifyFlatAnnotatedTests((RunnerGroup) tree.getRoot().getChildren().get(0));
-    }
+        RunnerGroup group = (RunnerGroup) tree.getRoot().getChildren().get(0);
 
-    @Test
-    public void testAnnotatedClassesWithInitializer() throws Exception {
-        File classRoot = new File("target/test-classes");
-        RunnerTreeBuilder builder = aludra.getServiceManager().newImplementorInstance(RunnerTreeBuilder.class);
-        assertTrue(builder instanceof RunnerTreeBuilderImpl);
-
-        TestClassFilter filter = new FilterParser().parse("testName=RunnerTreeBuilderImplTest");
-        AnnotationBasedExecution exec = new AnnotationBasedExecution(classRoot, filter, Arrays.asList(new String[] { "state",
-        "author" }), SequentialClass.class, null);
-
-        RunnerTree tree = builder.buildRunnerTree(exec);
-
-        assertEquals("All Tests", tree.getRoot().getName());
-        assertEquals(2, tree.getRoot().getChildren().size());
-        RunnerNode initializerNode = tree.getRoot().getChildren().get(0);
-        assertEquals(SequentialClass.class.getName(), initializerNode.getName());
-        assertEquals(4, ((RunnerGroup) initializerNode).getChildren().size());
-        verifyFlatAnnotatedTests((RunnerGroup) tree.getRoot().getChildren().get(1));
-    }
-
-    private void verifyFlatAnnotatedTests(RunnerGroup group) {
         assertEquals("InWork", group.getName());
         assertEquals(2, group.getChildren().size());
         List<String> names = new ArrayList<String>();
@@ -284,6 +261,52 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
             assertEquals(AnnotatedTestClass1.class.getName(), classGroup.getChildren().get(0).getName());
         }
         else {
+            assertEquals(AnnotatedTestClass2.class.getName(), classGroup.getChildren().get(0).getName());
+        }
+    }
+
+    @Test
+    public void testAnnotatedClassesWithInitializer() throws Exception {
+        File classRoot = new File("target/test-classes");
+        RunnerTreeBuilder builder = aludra.getServiceManager().newImplementorInstance(RunnerTreeBuilder.class);
+        assertTrue(builder instanceof RunnerTreeBuilderImpl);
+
+        TestClassFilter filter = new FilterParser().parse("testName=RunnerTreeBuilderImplTest");
+        AnnotationBasedExecution exec = new AnnotationBasedExecution(classRoot, filter, Arrays.asList(new String[] { "state",
+        "author" }), AnnotatedTestClass1.class, null);
+
+        RunnerTree tree = builder.buildRunnerTree(exec);
+
+        assertEquals("All Tests", tree.getRoot().getName());
+        assertEquals(2, tree.getRoot().getChildren().size());
+        RunnerNode initializerNode = tree.getRoot().getChildren().get(0);
+        assertEquals(AnnotatedTestClass1.class.getName(), initializerNode.getName());
+        assertEquals(1, ((RunnerGroup) initializerNode).getChildren().size());
+        RunnerGroup group = (RunnerGroup) tree.getRoot().getChildren().get(1);
+
+        assertEquals("InWork", group.getName());
+        assertEquals(2, group.getChildren().size());
+        List<String> names = new ArrayList<String>();
+        names.add(group.getChildren().get(0).getName());
+        names.add(group.getChildren().get(1).getName());
+        assertTrue(names.contains("InWork.falbrech"));
+        assertTrue(names.contains("InWork.jdoe"));
+
+        // and the actual classes
+        RunnerGroup classGroup = (RunnerGroup) group.getChildren().get(0);
+        if ("InWork.falbrech".equals(classGroup.getName())) {
+            assertEquals(0, classGroup.getChildren().size());
+        }
+        else {
+            assertEquals(1, classGroup.getChildren().size());
+            assertEquals(AnnotatedTestClass2.class.getName(), classGroup.getChildren().get(0).getName());
+        }
+        classGroup = (RunnerGroup) group.getChildren().get(1);
+        if ("InWork.falbrech".equals(classGroup.getName())) {
+            assertEquals(0, classGroup.getChildren().size());
+        }
+        else {
+            assertEquals(1, classGroup.getChildren().size());
             assertEquals(AnnotatedTestClass2.class.getName(), classGroup.getChildren().get(0).getName());
         }
     }
