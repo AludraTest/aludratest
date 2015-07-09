@@ -172,9 +172,12 @@ class ProcessOutputReader implements Closeable {
         public void redirectTo(OutputStream out) throws IOException {
             if (!bufferedTextAvailable()) {
                 if (process.isRunning()) {
+                    // expect process output
                     waitUntilAvailable();
                 }
-                else {
+                else if (!availableWithinResponseTimeout()) {
+                    // perform another check if process output was pending
+                    // (necessary for Windows)
                     return;
                 }
             }
