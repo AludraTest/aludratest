@@ -95,6 +95,7 @@ public class FileFieldImpl extends AbstractElement<FileField> implements ValueCo
     }
 
     private void saveStreamContent(InputStream in, File tempFile) throws FileNotFoundException, IOException {
+        tempFile.getParentFile().mkdirs();
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(tempFile);
@@ -121,7 +122,7 @@ public class FileFieldImpl extends AbstractElement<FileField> implements ValueCo
     }
 
     private File getTestResourceFolder() {
-        return new File("target/classes");
+        return new File("target/temp");
     }
 
 }
