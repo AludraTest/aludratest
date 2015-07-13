@@ -29,6 +29,7 @@ import org.aludratest.config.impl.AludraTestConfigImpl;
 import org.aludratest.config.impl.DefaultConfigurator;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.testcase.Ignored;
+import org.aludratest.testcase.Offset;
 import org.aludratest.testcase.data.Source;
 import org.aludratest.testcase.data.TestCaseData;
 import org.aludratest.testcase.data.impl.xml.DefaultScriptLibrary;
@@ -110,6 +111,25 @@ public class XmlBasedTestDataProviderTest {
     }
 
     @Test
+    public void testMultiWithOffset() throws Exception {
+        XmlBasedTestDataProvider provider = createProvider();
+        List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
+                "testMethod2WithOffset", ComplexData.class, StringData.class));
+        assertEquals(2, testData.size());
+        assertEquals(2, testData.get(0).getData().length);
+        assertEquals(2, testData.get(1).getData().length);
+        assertFalse(testData.get(0).isIgnored());
+        assertTrue(testData.get(1).isIgnored());
+        assertEquals("Ignored for test", testData.get(1).getIgnoredReason());
+
+        ComplexData cd = (ComplexData) testData.get(1).getData()[0];
+        assertNotNull(cd.getSubData());
+        assertNull(cd.getSubData().getValue());
+
+        assertEquals("The Config2", cd.getName());
+    }
+
+    @Test
     public void testMissingConfigs() throws Exception {
         XmlBasedTestDataProvider provider = createProvider();
         List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
@@ -140,6 +160,14 @@ public class XmlBasedTestDataProviderTest {
     }
 
     public void testMethod2(@Source(uri = "multi.testdata.xml", segment = "complexObject") ComplexData object,
+            @Source(uri = "multi.testdata.xml", segment = "stringObject") StringData object2) {
+        if (object == null) {
+            // do nothing
+        }
+    }
+
+    @Offset(1)
+    public void testMethod2WithOffset(@Source(uri = "multi.testdata.xml", segment = "complexObject") ComplexData object,
             @Source(uri = "multi.testdata.xml", segment = "stringObject") StringData object2) {
         if (object == null) {
             // do nothing

@@ -88,6 +88,8 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         Annotation[][] annots = method.getParameterAnnotations();
 
         Offset offsetAnno = method.getAnnotation(Offset.class);
+        int offset = (offsetAnno != null ? offsetAnno.value() : 0);
+
         boolean ignored = method.getAnnotation(Ignored.class) != null;
         String ignoredReason = null;
         if (ignored) {
@@ -106,8 +108,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         List<List<Data>> allData = new ArrayList<List<Data>>();
         for (int i = 0; i < annots.length; i++) {
             List<Data> paramData = getDataObjects(method, i, loadedFileModels);
-            if (offsetAnno != null) {
-                int offset = offsetAnno.value();
+            if (offset > 0) {
                 if (offset < paramData.size()) {
                     paramData = paramData.subList(offset, paramData.size());
                 }
@@ -123,6 +124,10 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         TestData data = loadedFileModels.get(firstSource.uri());
 
         List<TestDataConfiguration> configs = data.getConfigurations();
+        if (offset > 0) {
+            int effectiveOffset = Math.min(offset, configs.size());
+            configs = configs.subList(effectiveOffset, configs.size());
+        }
         for (int i = 0; i < configs.size(); i++) {
             TestDataConfiguration config = configs.get(i);
 
