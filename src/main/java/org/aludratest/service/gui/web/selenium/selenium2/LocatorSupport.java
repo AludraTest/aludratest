@@ -212,7 +212,7 @@ public class LocatorSupport {
             }
         };
         try {
-            return waitFor(condition, timeOutInMillis, NoSuchElementException.class);
+            return waitFor(condition, timeOutInMillis, NoSuchElementException.class, StaleElementReferenceException.class);
         }
         catch (TimeoutException e) {
             throw new AutomationException("Element not found"); // NOSONAR
