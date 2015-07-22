@@ -67,6 +67,8 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RunnerTreeBuilder.class);
 
+    private Class<?> initializer;
+
     private final AtomicLong errorCount = new AtomicLong();
 
     private final AtomicInteger nextLeafId = new AtomicInteger();
@@ -94,6 +96,8 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
     @Override
     public RunnerTree buildRunnerTree(AnnotationBasedExecution executionConfig) {
+        this.initializer = executionConfig.getInitializer();
+
         // find all class files matching the filter
         List<Class<? extends AludraTestCase>> testClasses;
 
@@ -115,8 +119,14 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             throw new PreconditionFailedException("Unknown file type for class root " + searchRoot.getAbsolutePath());
         }
 
+        // construct the RunnerTree
         RunnerTree tree = new RunnerTree();
-        tree.createRoot("All Tests", true);
+        RunnerGroup root = tree.createRoot("All Tests", true);
+
+        Class<?> initializerClass = executionConfig.getInitializer();
+        if (initializerClass != null) {
+            parseTestOrSuiteClass(initializerClass, root, tree);
+        }
 
         CategoryBuilder categoryBuilder;
         if (executionConfig.getGroupingAttributes().isEmpty()) {
@@ -250,19 +260,6 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         return concatAssertionExceptions(iterator, ex);
     }
 
-    /** Parses an AludraTest test class or suite. */
-    private void parseTestOrSuiteClass(Class<?> testClass, RunnerGroup parentGroup, RunnerTree tree) {
-        // check test class type
-        if (isTestSuiteClass(testClass)) {
-            parseSuiteClass(testClass, parentGroup, tree);
-        }
-        else {
-            if (assertTestClass(testClass)) {
-                parseTestClass(testClass, parentGroup, tree);
-            }
-        }
-    }
-
     private boolean isTestSuiteClass(Class<?> testClass) {
         return (testClass.getAnnotation(Suite.class) != null);
     }
@@ -294,36 +291,62 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         return count;
     }
 
-    private void checkAddTestClass(Class<?> clazz) {
+    private boolean checkAddTestClass(Class<?> clazz) {
         if (addedClasses.contains(clazz)) {
-            throw new PreconditionFailedException("The class " + clazz
-                    + " is used in more than one test suite, or part of a test suite recursion.");
+            if (!clazz.equals(initializer)) {
+                throw new PreconditionFailedException("The class " + clazz
+                        + " is used in more than one test suite, or part of a test suite recursion.");
+            }
+            else {
+                return false;
+            }
         }
-        addedClasses.add(clazz);
+        else {
+            addedClasses.add(clazz);
+            return true;
+        }
+    }
+
+    /** Parses an AludraTest test class or suite.
+     * @param testClass the test or suite class to parse
+     * @param parentGroup the RunnerGroup into which to insert the test
+     * @param tree the RunnerTree that holds the test hierarchy */
+    public void parseTestOrSuiteClass(Class<?> testClass, RunnerGroup parentGroup, RunnerTree tree) {
+        // check test class type
+        if (isTestSuiteClass(testClass)) {
+            parseSuiteClass(testClass, parentGroup, tree);
+        }
+        else {
+            if (assertTestClass(testClass)) {
+                parseTestClass(testClass, parentGroup, tree);
+            }
+        }
     }
 
     /** Parses an AludraTest test suite class. */
     private void parseSuiteClass(Class<?> testClass, RunnerGroup parentGroup, RunnerTree tree) {
         LOGGER.debug("Parsing suite class: {}", testClass.getName());
-        checkAddTestClass(testClass);
-        addedClasses.add(testClass);
-        Suite suite = testClass.getAnnotation(Suite.class);
-        if (suite == null) {
-            throw new IllegalArgumentException("Class has no @Suite annotation");
-        }
-        RunnerGroup group = createRunnerGroupForTestClass(testClass, parentGroup, tree);
-        for (Class<?> component : suite.value()) {
-            parseTestOrSuiteClass(component, group, tree);
+        if (checkAddTestClass(testClass)) {
+            addedClasses.add(testClass);
+            Suite suite = testClass.getAnnotation(Suite.class);
+            if (suite == null) {
+                throw new IllegalArgumentException("Class has no @Suite annotation");
+            }
+            RunnerGroup group = createRunnerGroupForTestClass(testClass, parentGroup, tree);
+            for (Class<?> component : suite.value()) {
+                parseTestOrSuiteClass(component, group, tree);
+            }
         }
     }
 
     /** Parses an AludraTest test class. */
     private void parseTestClass(Class<?> testClass, RunnerGroup parentGroup, RunnerTree tree) {
         LOGGER.debug("Parsing test class: {}", testClass.getName());
-        checkAddTestClass(testClass);
-        RunnerGroup classGroup = createRunnerGroupForTestClass(testClass, parentGroup, tree);
-        for (Method method : testClass.getMethods()) {
-            parseMethod(method, testClass, classGroup, tree);
+        if (checkAddTestClass(testClass)) {
+            RunnerGroup classGroup = createRunnerGroupForTestClass(testClass, parentGroup, tree);
+            for (Method method : testClass.getMethods()) {
+                parseMethod(method, testClass, classGroup, tree);
+            }
         }
     }
 
