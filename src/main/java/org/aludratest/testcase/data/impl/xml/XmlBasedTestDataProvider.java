@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,6 +72,10 @@ import org.mozilla.javascript.Undefined;
  * 
  * @author falbrech */
 public class XmlBasedTestDataProvider implements TestDataProvider {
+
+    private static final SimpleDateFormat ISO_DATE = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+    private static final DecimalFormat JAVA_NUMBER = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.US));
 
     @Requirement
     private AludraTestConfig aludraConfig;
@@ -244,6 +249,37 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                         if (field.isScript() && (value instanceof String)) {
                             return new ScriptToEvaluate(value.toString(), fieldMeta.getFormatterPattern(),
                                     toLocale(fieldMeta.getFormatterLocale()));
+                        }
+
+                        // perform auto-conversion based on type
+                        if (value instanceof String) {
+                            switch (fieldMeta.getType()) {
+                                case BOOLEAN:
+                                    value = Boolean.parseBoolean(value.toString());
+                                    break;
+                                case DATE:
+                                    try {
+                                        value = ISO_DATE.parse(value.toString());
+                                    }
+                                    catch (ParseException e) {
+                                        // ignore; value is presented as-is
+                                        return value;
+                                    }
+                                    break;
+                                case NUMBER:
+                                    try {
+                                        value = JAVA_NUMBER.parseObject(value.toString());
+                                    }
+                                    catch (ParseException e) {
+                                        // ignore; value is presented as-is
+                                        return value;
+                                    }
+                                    break;
+                                default:
+                                    // nothing
+                            }
+
+                            return format(value, fieldMeta.getFormatterPattern(), toLocale(fieldMeta.getFormatterLocale()));
                         }
                         return value;
                     }
@@ -443,9 +479,6 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
      *            <code>null</code>.
      * @return */
     public String evaluate(String script, String formatPattern, Locale locale, Map<String, Object> contextVariables) {
-        if (locale == null) {
-            locale = Locale.US;
-        }
         Context context = Context.enter();
 
         try {
@@ -471,20 +504,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                 result = toJavaObject(result);
 
                 // apply patterns, if required
-                if (result instanceof Date) {
-                    if (formatPattern == null) {
-                        formatPattern = "yyyy-MM-dd";
-                    }
-                    SimpleDateFormat sdf = new SimpleDateFormat(formatPattern, locale);
-                    return sdf.format(result);
-                }
-                if (result instanceof Number) {
-                    if (formatPattern == null) {
-                        formatPattern = "#.#";
-                    }
-                    DecimalFormat df = new DecimalFormat(formatPattern, DecimalFormatSymbols.getInstance(locale));
-                    return df.format(result);
-                }
+                result = format(result, formatPattern, locale);
 
                 return result.toString();
             }
@@ -495,6 +515,29 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         finally {
             Context.exit();
         }
+    }
+
+    private Object format(Object object, String formatPattern, Locale locale) {
+        if (locale == null) {
+            locale = Locale.US;
+        }
+
+        if (object instanceof Date) {
+            if (formatPattern == null) {
+                formatPattern = "yyyy-MM-dd";
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat(formatPattern, locale);
+            return sdf.format(object);
+        }
+        if (object instanceof Number) {
+            if (formatPattern == null) {
+                formatPattern = "#.#";
+            }
+            DecimalFormat df = new DecimalFormat(formatPattern, DecimalFormatSymbols.getInstance(locale));
+            return df.format(object);
+        }
+
+        return object;
     }
 
     private Object toJavaObject(Object jsObject) {

@@ -152,6 +152,18 @@ public class XmlBasedTestDataProviderTest {
         assertEquals("Some reason", testData.get(2).getIgnoredReason());
     }
 
+    @Test
+    public void testFormatting() throws Exception {
+        XmlBasedTestDataProvider provider = createProvider();
+        List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
+                "testMethodFormat", ComplexData.class));
+
+        ComplexData cd = (ComplexData) testData.get(0).getData()[0];
+        assertEquals("22. Juli 2015", cd.getName());
+        cd = (ComplexData) testData.get(1).getData()[0];
+        assertEquals("09. Juli 2015", cd.getName());
+    }
+
     public void testMethod1(@Source(uri = "complex.testdata.xml", segment = "complexObject") ComplexData object,
             @Source(uri = "complex.testdata.xml", segment = "stringObject") StringData object2) {
         if (object == null) {
@@ -191,6 +203,12 @@ public class XmlBasedTestDataProviderTest {
     @Ignored("Some reason")
     public void testIgnoredMethod(@Source(uri = "multi.testdata.xml", segment = "complexObject") ComplexData object,
             @Source(uri = "multi.testdata.xml", segment = "stringObject") StringData object2) {
+        if (object == null) {
+            // do nothing
+        }
+    }
+
+    public void testMethodFormat(@Source(uri = "formatting.testdata.xml", segment = "complexObject") ComplexData object) {
         if (object == null) {
             // do nothing
         }
