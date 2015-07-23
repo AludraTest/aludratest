@@ -379,7 +379,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             return data;
         }
         catch (Exception e) {
-            throw new AutomationException("Could create data object for segment " + segmentMeta.getName(), e);
+            throw new AutomationException("Could not create data object for segment " + segmentMeta.getName(), e);
         }
     }
 
