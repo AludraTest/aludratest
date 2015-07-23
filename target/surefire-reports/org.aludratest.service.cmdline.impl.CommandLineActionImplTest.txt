@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.service.cmdline.impl.CommandLineActionImplTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.48 sec - in org.aludratest.service.cmdline.impl.CommandLineActionImplTest

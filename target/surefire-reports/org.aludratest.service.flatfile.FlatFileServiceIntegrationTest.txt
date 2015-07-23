@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.service.flatfile.FlatFileServiceIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.156 sec <<< FAILURE! - in org.aludratest.service.flatfile.FlatFileServiceIntegrationTest
+testAnnotationBeanReader(org.aludratest.service.flatfile.FlatFileServiceIntegrationTest)  Time elapsed: 0.094 sec  <<< FAILURE!
+java.lang.AssertionError: expected:<Alice, 23, 1991-01-06, Miez> but was:<null>
+	at org.junit.Assert.fail(Assert.java:88)
+	at org.junit.Assert.failNotEquals(Assert.java:743)
+	at org.junit.Assert.assertEquals(Assert.java:118)
+	at org.junit.Assert.assertEquals(Assert.java:144)
+	at org.aludratest.service.flatfile.FlatFileServiceIntegrationTest.testAnnotationBeanReader(FlatFileServiceIntegrationTest.java:88)
+

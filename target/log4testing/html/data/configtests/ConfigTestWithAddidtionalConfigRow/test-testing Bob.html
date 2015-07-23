@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+       "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>org.aludratest.data.configtests.ConfigTestWithAddidtionalConfigRow.test-testing Bob</title>
+	<link rel="stylesheet" type="text/css" href="../../../log4testing.css">
+	<script src="../../../jquery.js"></script>
+	<script type="text/javascript">
+	
+	function changeBtnText(id) {
+		var showHideBtn = $("#shbteststepgroup" + id);
+		var showText = '[+]';
+		var hideText = '[-]';
+		if (showHideBtn.text().indexOf(showText) >= 0) {
+			showHideBtn.text(hideText);
+		} else {
+			showHideBtn.text(showText);
+		}
+	};
+	function toggle(id) {
+		$("#teststepgroup" + id).toggle();
+		changeBtnText(id);
+	};
+	</script>
+</head>
+<body>
+	<h1>org.aludratest.data.configtests.ConfigTestWithAddidtionalConfigRow.test-testing Bob</h1>
+	
+	<h2>Summary</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>Starting&nbsp;Time</th>
+				<th>Finishing&nbsp;Time</th>
+				<th>Duration<br/>[hh:mm:ss'ms]</th>
+				<th>Test&nbsp;steps</th>
+				<th>Failed</th>
+				<th>Error&nbsp;Message</th>
+							</tr>
+		</thead>
+		<tbody>
+			<tr class="PASSED">
+				<td>22-Jul-2015 17:12:12:435</td>
+				<td>22-Jul-2015 17:12:12:451</td>
+							    <td>00:00:00'016</td>
+				<td>0</td>
+				<td> 0 </td>
+				<td><a href="#teststep" onClick="$('#ts').parent().show();$('#ts').parent().prev().find('h3 a').text('[-]')"></a></td>
+							</tr>
+		</tbody>
+	</table>
+	
+	<h2>Test Step Groups</h2>
+	<table>
+		<tbody>
+				</tbody>
+	</table>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+       "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>org.aludratest.data.configtests.ConfigTestWithAddidtionalConfigRow.test_error_1</title>
+	<link rel="stylesheet" type="text/css" href="../../../log4testing.css">
+	<script src="../../../jquery.js"></script>
+	<script type="text/javascript">
+	
+	function changeBtnText(id) {
+		var showHideBtn = $("#shbteststepgroup" + id);
+		var showText = '[+]';
+		var hideText = '[-]';
+		if (showHideBtn.text().indexOf(showText) >= 0) {
+			showHideBtn.text(hideText);
+		} else {
+			showHideBtn.text(showText);
+		}
+	};
+	function toggle(id) {
+		$("#teststepgroup" + id).toggle();
+		changeBtnText(id);
+	};
+	</script>
+</head>
+<body>
+	<h1>org.aludratest.data.configtests.ConfigTestWithAddidtionalConfigRow.test_error_1</h1>
+	
+	<h2>Summary</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>Starting&nbsp;Time</th>
+				<th>Finishing&nbsp;Time</th>
+				<th>Duration<br/>[hh:mm:ss'ms]</th>
+				<th>Test&nbsp;steps</th>
+				<th>Failed</th>
+				<th>Error&nbsp;Message</th>
+							</tr>
+		</thead>
+		<tbody>
+			<tr class="FAILEDAUTOMATION">
+				<td>22-Jul-2015 17:12:12:451</td>
+				<td>22-Jul-2015 17:12:12:467</td>
+							    <td>00:00:00'016</td>
+				<td>1</td>
+				<td> 1 </td>
+				<td><a href="#teststep71" onClick="$('#ts71').parent().show();$('#ts71').parent().prev().find('h3 a').text('[-]')">Configuration testing Charly has no data</a></td>
+							</tr>
+		</tbody>
+	</table>
+	
+	<h2>Test Step Groups</h2>
+	<table>
+		<tbody>
+					<tr class="FAILEDAUTOMATION">
+    						<td colspan="11"><h3>
+				<a class="btn small" onClick="toggle(70)" id="shbteststepgroup70">[-]</a>
+				Error<small> (1 test step, error(s) occurred)</small></h3> 
+				</td>
+						</tr>
+						<tbody id="teststepgroup70">
+						<tr class="passed">
+				<th>Started</th>
+				<th>Command</th>
+				<th>Element&nbsp;Type</th>
+				<th>Element&nbsp;Name</th>
+				<th>Data</th>
+				<th>Error&nbsp;Message</th>
+				<th>Attachments</th>
+				<th>Service</th>
+				<th>Technical&nbsp;Locator</th>
+				<th>Technical Arguments</th>
+				<th>Comment</th>
+			</tr>
+			    			<tr class="FAILEDAUTOMATION" id="ts71">
+				<td>0s</td>
+				<td><strong><span id="teststep71">Error report</a></span></strong></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>Configuration testing Charly has no data</td>
+				<td>
+									</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>org.aludratest.exception.AutomationException: Configuration testing Charly has no data<br />	at org.aludratest.testcase.data.impl.TestConfigInfoHelper.parseTestInfos(TestConfigInfoHelper.java:120)<br />	at org.aludratest.testcase.data.impl.TestConfigInfoHelper.testInfos(TestConfigInfoHelper.java:98)<br />	at org.aludratest.testcase.data.impl.DatabeneFormatsTestDataProvider.createTestDataForParameterizedMethod(DatabeneFormatsTestDataProvider.java:123)<br />	at org.aludratest.testcase.data.impl.DatabeneFormatsTestDataProvider.getTestDataSets(DatabeneFormatsTestDataProvider.java:75)<br />	at org.aludratest.testcase.data.impl.DefaultTestDataProvider.getTestDataSets(DefaultTestDataProvider.java:111)<br />	at org.aludratest.scheduler.impl.RunnerTreeBuilderImpl.parseMethod(RunnerTreeBuilderImpl.java:364)<br />	at org.aludratest.scheduler.impl.RunnerTreeBuilderImpl.parseTestClass(RunnerTreeBuilderImpl.java:326)<br />	at org.aludratest.scheduler.impl.RunnerTreeBuilderImpl.parseTestOrSuiteClass(RunnerTreeBuilderImpl.java:261)<br />	at org.aludratest.scheduler.impl.RunnerTreeBuilderImpl.buildRunnerTree(RunnerTreeBuilderImpl.java:86)<br />	at org.aludratest.data.TestConfigInfoProviderTest.runTestsAndWait(TestConfigInfoProviderTest.java:66)<br />	at org.aludratest.data.TestConfigInfoProviderTest.testAdditionalConfigRow(TestConfigInfoProviderTest.java:204)<br />	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)<br />	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)<br />	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)<br />	at java.lang.reflect.Method.invoke(Method.java:597)<br />	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:47)<br />	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)<br />	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:44)<br />	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)<br />	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)<br />	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)<br />	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)<br />	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)<br />	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)<br />	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)<br />	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)<br />	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)<br />	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)<br />	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)<br />	at org.junit.runners.ParentRunner.run(ParentRunner.java:309)<br />	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:264)<br />	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)<br />	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:124)<br />	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:200)<br />	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:153)<br />	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)<br /></td>
+			</tr>
+						</tbody>
+				</tbody>
+	</table>
+</body>
+</html>

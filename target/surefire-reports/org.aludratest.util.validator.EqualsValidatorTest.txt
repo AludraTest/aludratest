@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.util.validator.EqualsValidatorTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.141 sec - in org.aludratest.util.validator.EqualsValidatorTest

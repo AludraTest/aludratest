@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TestSuite>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithProperConfig]]></Name>
+					<TestSuite>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithProperConfig.test]]></Name>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithProperConfig.test-testing Alice]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 31 ms</Duration>
+	<NumberofTestSteps>0</NumberofTestSteps>
+	<NumberofFailedTestSteps>0</NumberofFailedTestSteps>
+	<Status>PASSED</Status>
+	</TestCase>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithProperConfig.test-testing Bob]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 0 ms</Duration>
+	<NumberofTestSteps>0</NumberofTestSteps>
+	<NumberofFailedTestSteps>0</NumberofFailedTestSteps>
+	<Status>PASSED</Status>
+	</TestCase>
+			</TestSuite>
+	</TestSuite>
+

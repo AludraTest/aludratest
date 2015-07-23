@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Out xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../apidocs/org/aludratest/service/cmdline/Out.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   <em class="jxr_comment"> * Copyright (C) 2010-2014 Hamburg Sud and the contributors.</em>
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * Licensed under the Apache License, Version 2.0 (the "License");</em>
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * you may not use this file except in compliance with the License.</em>
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * You may obtain a copy of the License at</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * <a href="http://www.apache.org/licenses/LICENSE-2." target="alexandria_uri">http://www.apache.org/licenses/LICENSE-2.</a>0</em>
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * Unless required by applicable law or agreed to in writing, software</em>
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * distributed under the License is distributed on an "AS IS" BASIS,</em>
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</em>
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * See the License for the specific language governing permissions and</em>
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * limitations under the License.</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> */</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">package</strong> org.aludratest.service.cmdline;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> java.io.ByteArrayOutputStream;
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> java.io.OutputStream;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.aludratest.util.data.ByteArrayData;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.aludratest.util.data.StringData;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.databene.commons.Validator;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment">/** Common parent class for the output streams of a process: stdout and errout.</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> * @author Volker Bergmann */</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/aludratest/service/cmdline/Out.html">Out</a> {
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">final</strong> CommandLineProcess&lt;?&gt; process;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <em class="jxr_comment">// construction ------------------------------------------------------------</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../../org/aludratest/service/cmdline/Out.html">Out</a>(CommandLineProcess&lt;?&gt; process) {
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>          <strong class="jxr_keyword">this</strong>.process = process;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      }
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <em class="jxr_comment">// operational interface ---------------------------------------------------</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>      <em class="jxr_javadoccomment">/** Redirects the process' output to a stream.</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">     * @param textOutput</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">     * @return this */</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/aludratest/service/cmdline/Out.html">Out</a> redirectTo(<a href="../../../../org/aludratest/util/data/StringData.html">StringData</a> textOutput) {
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          <a href="../../../../org/aludratest/util/data/ByteArrayData.html">ByteArrayData</a> buffer = <strong class="jxr_keyword">new</strong> <a href="../../../../org/aludratest/util/data/ByteArrayData.html">ByteArrayData</a>();
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>          redirectTo(buffer);
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          textOutput.setValue(<strong class="jxr_keyword">new</strong> String(buffer.getValue()));
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      }
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <em class="jxr_javadoccomment">/** Redirects the process' stdout to a stream.</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment">     * @param byteOutput</em>
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment">     * @return this */</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/aludratest/service/cmdline/Out.html">Out</a> redirectTo(<a href="../../../../org/aludratest/util/data/ByteArrayData.html">ByteArrayData</a> byteOutput) {
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          ByteArrayOutputStream buffer = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          redirectTo(buffer);
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          byteOutput.setValue(buffer.toByteArray());
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      }
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      <em class="jxr_javadoccomment">/** Redirects the output to a stream.</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">     * @param out the target stream</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">     * @return this */</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <a href="../../../../org/aludratest/service/cmdline/Out.html">Out</a> redirectTo(OutputStream out);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>      <em class="jxr_javadoccomment">/** @return the next line available in this stream */</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/aludratest/service/cmdline/Line.html">Line</a> nextLine() {
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/aludratest/service/cmdline/Line.html">Line</a>(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      }
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>      <em class="jxr_javadoccomment">/** Asserts that the validator matches the next line of the output.</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     * @param validator the matcher</em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     * @return this */</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <a href="../../../../org/aludratest/service/cmdline/Out.html">Out</a> assertNextLineMatches(Validator&lt;String&gt; validator);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>      <em class="jxr_javadoccomment">/** Skips the output lines until a line matches the validator or the end of the file is reached.</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     * @param validator the matcher</em>
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     * @return a Line object for the first matching line */</em>
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <a href="../../../../org/aludratest/service/cmdline/Line.html">Line</a> skipUntilLineMatches(Validator&lt;String&gt; validator);
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <em class="jxr_javadoccomment">/** Asserts that the output stream is empty</em>
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment">     * @return this */</em>
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <a href="../../../../org/aludratest/service/cmdline/Out.html">Out</a> assertEmpty();
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2015 <a href="http://www.aludratest.org/">aludratest.org</a>. All rights reserved.</div>
+</body>
+</html>

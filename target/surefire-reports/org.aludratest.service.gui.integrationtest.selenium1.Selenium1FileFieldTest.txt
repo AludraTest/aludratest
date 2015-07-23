@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.service.gui.integrationtest.selenium1.Selenium1FileFieldTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 4.214 sec - in org.aludratest.service.gui.integrationtest.selenium1.Selenium1FileFieldTest

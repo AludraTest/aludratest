@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.service.gui.integrationtest.selenium1.Selenium1LocatorTest
+-------------------------------------------------------------------------------
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 61.829 sec - in org.aludratest.service.gui.integrationtest.selenium1.Selenium1LocatorTest

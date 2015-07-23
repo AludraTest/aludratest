@@ -1,0 +1,49 @@
+.PASSED {
+	background-color:#BBFFCC;
+}
+.RUNNING {
+	background-color:#FFA500;
+}
+.IGNORED {
+	background-color:#BBBBBB;
+}
+.PENDING {
+	background-color:#FFFFFF;
+}
+.FAILEDPERFORMANCE {
+	background-color:#DDAAFF;
+}
+.FAILEDACCESS {
+	background-color:#EE88FF;
+}
+.FAILED {
+	background-color:#FFAAAA;
+}
+.FAILEDAUTOMATION {
+	background-color:#FFFFAA;
+}
+.INCONCLUSIVE {
+	background-color:#88BBFF;
+}
+body {
+	font-family: "Arial Narrow", Arial, sans-serif;
+}
+table {
+	border-spacing: 0;
+}
+th {
+	background-color:#eee;
+	color:#000;
+	border: 1px solid #888;
+	padding: 0 4px 0 4px;
+}
+td {
+	color:#000;
+	border: 1px solid #888;
+}
+h3 small {
+	color:#000;
+}
+a {
+	cursor:pointer;
+}

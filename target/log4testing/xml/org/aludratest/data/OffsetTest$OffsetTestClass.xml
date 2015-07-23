@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TestSuite>
+	<Name><![CDATA[org.aludratest.data.OffsetTest$OffsetTestClass]]></Name>
+					<TestSuite>
+	<Name><![CDATA[org.aludratest.data.OffsetTest$OffsetTestClass.testOffset0]]></Name>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.OffsetTest$OffsetTestClass.testOffset0-testing Alice]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 281 ms</Duration>
+	<NumberofTestSteps>0</NumberofTestSteps>
+	<NumberofFailedTestSteps>0</NumberofFailedTestSteps>
+	<Status>PASSED</Status>
+	</TestCase>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.OffsetTest$OffsetTestClass.testOffset0-testing Bob]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 16 ms</Duration>
+	<NumberofTestSteps>0</NumberofTestSteps>
+	<NumberofFailedTestSteps>0</NumberofFailedTestSteps>
+	<Status>PASSED</Status>
+	</TestCase>
+			</TestSuite>
+				<TestSuite>
+	<Name><![CDATA[org.aludratest.data.OffsetTest$OffsetTestClass.testOffset1]]></Name>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.OffsetTest$OffsetTestClass.testOffset1-testing Bob]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 16 ms</Duration>
+	<NumberofTestSteps>0</NumberofTestSteps>
+	<NumberofFailedTestSteps>0</NumberofFailedTestSteps>
+	<Status>PASSED</Status>
+	</TestCase>
+			</TestSuite>
+	</TestSuite>
+

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.service.gui.integrationtest.selenium1.Selenium1InputFieldTest
+-------------------------------------------------------------------------------
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 95.527 sec - in org.aludratest.service.gui.integrationtest.selenium1.Selenium1InputFieldTest

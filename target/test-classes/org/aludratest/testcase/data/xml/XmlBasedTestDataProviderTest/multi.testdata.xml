@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<testdata xmlns="http://aludratest.org/testdata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://aludratest.org/testdata http://aludratest.github.io/aludratest/schema/draft/testdata.xsd" 
+	version="1.0">
+    <metadata>
+        <segments>
+        <segment name="complexObject"
+        	dataClassName="org.aludratest.testcase.data.xml.ComplexData">
+        <fields>
+        	<field name="name"/>
+        	<field name="subData" fieldType="OBJECT" subTypeClassName="org.aludratest.util.data.StringData"/>
+        </fields>
+        </segment>
+        <segment name="stringObject"
+        	dataClassName="org.aludratest.util.data.StringData">
+        <fields>
+        	<field name="value"/>
+        </fields>
+        </segment>
+        <segment name="complexObject.subData"
+        	dataClassName="org.aludratest.util.data.StringData">
+        <fields>
+        	<field name="value" fieldType="STRING"/>
+        </fields>
+        </segment>
+        </segments>
+    </metadata>
+
+    <configurations>
+    <configuration name="config1">
+    	<segments>
+    		<segment name="complexObject">
+    			<fieldValues>
+    				<fieldValue name="name">
+    					<value>The Config1</value>
+    				</fieldValue>
+    				<fieldValue name="subData"></fieldValue>
+    			</fieldValues>
+    		</segment>
+    		<segment name="stringObject">
+    			<fieldValues>
+    				<fieldValue name="value">
+    					<value>Some value ending with space </value>
+    				</fieldValue>
+    			</fieldValues>
+    		</segment>
+    		<!-- intentional left out of subData to assert null object -->
+    	</segments>
+    </configuration>
+    <configuration name="config2">
+    	<segments>
+    		<segment name="complexObject">
+    			<fieldValues>
+    				<fieldValue name="name">
+    					<value>The Config2</value>
+    				</fieldValue>
+    				<fieldValue name="subData"></fieldValue>
+    			</fieldValues>
+    		</segment>
+    		<segment name="stringObject">
+    			<fieldValues>
+    				<fieldValue name="value">
+    					<value>Dragons be here</value>
+    				</fieldValue>
+    			</fieldValues>
+    		</segment>
+    		<segment name="complexObject.subData">
+    			<!-- empty, but should still generate empty object. -->
+    			<fieldValues>
+    			</fieldValues>
+    		</segment>
+    	</segments>
+    </configuration>
+    <configuration name="config3" ignored="true" ignoredReason="Ignored for test">
+    	<segments>
+    		<segment name="complexObject">
+    			<fieldValues>
+    				<fieldValue name="name">
+    					<value>The Config2</value>
+    				</fieldValue>
+    				<fieldValue name="subData"></fieldValue>
+    			</fieldValues>
+    		</segment>
+    		<segment name="stringObject">
+    			<fieldValues>
+    				<fieldValue name="value">
+    					<value>Dragons be here</value>
+    				</fieldValue>
+    			</fieldValues>
+    		</segment>
+    		<segment name="complexObject.subData">
+    			<!-- empty, but should still generate empty object. -->
+    			<fieldValues>
+    			<fieldValue name="value"></fieldValue>
+    			</fieldValues>
+    		</segment>
+    	</segments>
+    </configuration>    
+    </configurations>
+</testdata>

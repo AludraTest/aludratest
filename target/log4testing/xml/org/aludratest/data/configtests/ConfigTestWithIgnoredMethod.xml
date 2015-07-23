@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TestSuite>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithIgnoredMethod]]></Name>
+					<TestSuite>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithIgnoredMethod.test]]></Name>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithIgnoredMethod.test-testing Alice]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 31 ms</Duration>
+	<NumberofTestSteps>0</NumberofTestSteps>
+	<NumberofFailedTestSteps>0</NumberofFailedTestSteps>
+	<Status>IGNORED</Status>
+	</TestCase>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithIgnoredMethod.test-testing Bob]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 0 ms</Duration>
+	<NumberofTestSteps>0</NumberofTestSteps>
+	<NumberofFailedTestSteps>0</NumberofFailedTestSteps>
+	<Status>IGNORED</Status>
+	</TestCase>
+			</TestSuite>
+	</TestSuite>
+

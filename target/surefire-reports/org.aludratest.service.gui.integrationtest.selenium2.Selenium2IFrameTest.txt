@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.service.gui.integrationtest.selenium2.Selenium2IFrameTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.304 sec - in org.aludratest.service.gui.integrationtest.selenium2.Selenium2IFrameTest

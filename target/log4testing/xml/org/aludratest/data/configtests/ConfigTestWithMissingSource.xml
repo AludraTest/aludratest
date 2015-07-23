@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TestSuite>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithMissingSource]]></Name>
+					<TestSuite>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithMissingSource.test]]></Name>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithMissingSource.test_error_1]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 32 ms</Duration>
+	<NumberofTestSteps>1</NumberofTestSteps>
+	<NumberofFailedTestSteps>1</NumberofFailedTestSteps>
+	<Status>FAILEDAUTOMATION</Status>
+		<TestStepGroup>
+		<Name><![CDATA[Error]]></Name>
+		<Status>FAILEDAUTOMATION</Status>
+				<TestStep>
+			<Status>FAILEDAUTOMATION</Status>
+			<Command><![CDATA[Error report]]></Command>
+			<Data><![CDATA[$testStep.UsedArguments]]></Data>
+			<ErrorMessage><![CDATA[Error creating test parameters: java.lang.UnsupportedOperationException: No segment specified: ]]></ErrorMessage>
+			<GUIName><![CDATA[$testStep.elementName]]></GUIName>
+			<GUIType><![CDATA[$testStep.elementType]]></GUIType>
+						</TestStep>
+				</TestStepGroup>
+	</TestCase>
+			</TestSuite>
+	</TestSuite>
+

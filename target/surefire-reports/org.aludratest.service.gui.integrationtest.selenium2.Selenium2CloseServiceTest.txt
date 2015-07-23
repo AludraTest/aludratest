@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.service.gui.integrationtest.selenium2.Selenium2CloseServiceTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.424 sec - in org.aludratest.service.gui.integrationtest.selenium2.Selenium2CloseServiceTest

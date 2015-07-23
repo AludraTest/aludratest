@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TestSuite>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithMissingConfigRow]]></Name>
+					<TestSuite>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithMissingConfigRow.test]]></Name>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithMissingConfigRow.test-testing Alice]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 16 ms</Duration>
+	<NumberofTestSteps>0</NumberofTestSteps>
+	<NumberofFailedTestSteps>0</NumberofFailedTestSteps>
+	<Status>PASSED</Status>
+	</TestCase>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithMissingConfigRow.test_error_1]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 16 ms</Duration>
+	<NumberofTestSteps>1</NumberofTestSteps>
+	<NumberofFailedTestSteps>1</NumberofFailedTestSteps>
+	<Status>FAILEDAUTOMATION</Status>
+		<TestStepGroup>
+		<Name><![CDATA[Error]]></Name>
+		<Status>FAILEDAUTOMATION</Status>
+				<TestStep>
+			<Status>FAILEDAUTOMATION</Status>
+			<Command><![CDATA[Error report]]></Command>
+			<Data><![CDATA[$testStep.UsedArguments]]></Data>
+			<ErrorMessage><![CDATA[Test data without test config: #1]]></ErrorMessage>
+			<GUIName><![CDATA[$testStep.elementName]]></GUIName>
+			<GUIType><![CDATA[$testStep.elementType]]></GUIType>
+						</TestStep>
+				</TestStepGroup>
+	</TestCase>
+			</TestSuite>
+	</TestSuite>
+

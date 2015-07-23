@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.service.file.FileTest
+-------------------------------------------------------------------------------
+Tests run: 44, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 22.542 sec - in org.aludratest.service.file.FileTest

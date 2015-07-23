@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.service.flatfile.RowParserTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0 sec <<< FAILURE! - in org.aludratest.service.flatfile.RowParserTest
+testAttributesAndBeanClasses(org.aludratest.service.flatfile.RowParserTest)  Time elapsed: 0 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at org.aludratest.content.flat.webdecs.AnnotationUtil.parseFields(AnnotationUtil.java:106)
+	at org.aludratest.content.flat.webdecs.AnnotationUtil.parseFlatFileColumns(AnnotationUtil.java:58)
+	at org.aludratest.content.flat.webdecs.RowParser.columnFormatFor(RowParser.java:79)
+	at org.aludratest.content.flat.webdecs.RowParser.parseRow(RowParser.java:67)
+	at org.aludratest.service.flatfile.RowParserTest.testAttributesAndBeanClasses(RowParserTest.java:44)
+

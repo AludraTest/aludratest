@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+       "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>org.aludratest.data.configtests.ConfigTestWithIgnoreConfig.test-testing Alice</title>
+	<link rel="stylesheet" type="text/css" href="../../../log4testing.css">
+	<script src="../../../jquery.js"></script>
+	<script type="text/javascript">
+	
+	function changeBtnText(id) {
+		var showHideBtn = $("#shbteststepgroup" + id);
+		var showText = '[+]';
+		var hideText = '[-]';
+		if (showHideBtn.text().indexOf(showText) >= 0) {
+			showHideBtn.text(hideText);
+		} else {
+			showHideBtn.text(showText);
+		}
+	};
+	function toggle(id) {
+		$("#teststepgroup" + id).toggle();
+		changeBtnText(id);
+	};
+	</script>
+</head>
+<body>
+	<h1>org.aludratest.data.configtests.ConfigTestWithIgnoreConfig.test-testing Alice</h1>
+	
+	<h2>Summary</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>Starting&nbsp;Time</th>
+				<th>Finishing&nbsp;Time</th>
+				<th>Duration<br/>[hh:mm:ss'ms]</th>
+				<th>Test&nbsp;steps</th>
+				<th>Failed</th>
+				<th>Error&nbsp;Message</th>
+							</tr>
+		</thead>
+		<tbody>
+			<tr class="IGNORED">
+				<td>22-Jul-2015 17:12:12:513</td>
+				<td>22-Jul-2015 17:12:12:529</td>
+							    <td>00:00:00'016</td>
+				<td>1</td>
+				<td> 0 </td>
+				<td><a href="#teststep" onClick="$('#ts').parent().show();$('#ts').parent().prev().find('h3 a').text('[-]')"></a></td>
+							</tr>
+		</tbody>
+	</table>
+	
+	<h2>Test Step Groups</h2>
+	<table>
+		<tbody>
+					<tr class="IGNORED">
+    						<td colspan="11"><h3>
+				<a class="btn small" onClick="toggle(78)" id="shbteststepgroup78">[+]</a>
+				Error<small> (1 test step)</small></h3> 
+				</td>
+						</tr>
+						<tbody id="teststepgroup78" style="display: none">
+						<tr class="passed">
+				<th>Started</th>
+				<th>Command</th>
+				<th>Element&nbsp;Type</th>
+				<th>Element&nbsp;Name</th>
+				<th>Data</th>
+				<th>Error&nbsp;Message</th>
+				<th>Attachments</th>
+				<th>Service</th>
+				<th>Technical&nbsp;Locator</th>
+				<th>Technical Arguments</th>
+				<th>Comment</th>
+			</tr>
+			    			<tr class="IGNORED" id="ts79">
+				<td>0s</td>
+				<td><strong><span id="teststep79">Error report</a></span></strong></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>Who is Alice?</td>
+				<td>
+									</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>java.lang.RuntimeException: Who is Alice?<br />	at org.aludratest.data.configtests.ConfigTestWithIgnoreConfig.test(ConfigTestWithIgnoreConfig.java:35)<br />	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)<br />	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)<br />	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)<br />	at java.lang.reflect.Method.invoke(Method.java:597)<br />	at org.aludratest.invoker.AludraTestMethodInvoker.invoke(AludraTestMethodInvoker.java:77)<br />	at org.aludratest.scheduler.impl.AludraTestRunnerImpl$RunnerLeafRunnable.call(AludraTestRunnerImpl.java:375)<br />	at org.aludratest.scheduler.impl.AludraTestRunnerImpl$RunnerLeafRunnable.call(AludraTestRunnerImpl.java:321)<br />	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:303)<br />	at java.util.concurrent.FutureTask.run(FutureTask.java:138)<br />	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)<br />	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)<br />	at java.lang.Thread.run(Thread.java:662)<br /></td>
+			</tr>
+						</tbody>
+				</tbody>
+	</table>
+</body>
+</html>

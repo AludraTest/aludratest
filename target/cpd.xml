@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd-cpd>
+   <duplication lines="47" tokens="165">
+      <file line="49"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\FileFieldImpl.java"/>
+      <file line="37"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\InputFieldImpl.java"/>
+      <codefragment><![CDATA[        }
+    }
+
+    @Override
+    public String getText() {
+        return perform().getInputFieldValue(elementType, elementName, getLocator());
+    }
+
+    @Override
+    public void assertTextEquals(String expectedText) {
+        helper.assertTextEquals(expectedText);
+    }
+
+    @Override
+    public void assertTextNotEquals(String expectedText) {
+        helper.assertTextNotEquals(expectedText);
+    }
+
+    @Override
+    public void assertTextContains(String expectedText) {
+        helper.assertTextContains(expectedText);
+    }
+
+    @Override
+    public void assertTextContainsIgnoreCaseTrimmed(String expectedText) {
+        helper.assertTextContainsIgnoreCaseTrimmed(expectedText);
+    }
+
+    @Override
+    public void assertTextEqualsIgnoreCaseTrimmed(String expectedText) {
+        helper.assertTextEqualsIgnoreCaseTrimmed(expectedText);
+    }
+
+    @Override
+    public void assertTextMatches(Validator<String> validator) {
+        helper.assertTextMatches(validator);
+    }
+
+    @Override
+    public void assertValueGreaterThan(String value) {
+        helper.assertValueGreaterThan(value);
+    }
+
+    @Override
+    public void assertValueLessThan(String value) {
+        helper.assertValueLessThan(value);
+    }]]></codefragment>
+   </duplication>
+   <duplication lines="47" tokens="156">
+      <file line="26"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\ButtonImpl.java"/>
+      <file line="24"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\LabelImpl.java"/>
+      <codefragment><![CDATA[    private ValueComponentHelper helper = new ValueComponentHelper(this, true);
+
+    @Override
+    public String getText() {
+        return helper.getText();
+    }
+
+    @Override
+    public void assertTextEquals(String expectedText) {
+        helper.assertTextEquals(expectedText);
+    }
+
+    @Override
+    public void assertTextNotEquals(String expectedText) {
+        helper.assertTextNotEquals(expectedText);
+    }
+
+    @Override
+    public void assertTextContains(String expectedText) {
+        helper.assertTextContains(expectedText);
+    }
+
+    @Override
+    public void assertTextContainsIgnoreCaseTrimmed(String expectedText) {
+        helper.assertTextContainsIgnoreCaseTrimmed(expectedText);
+    }
+
+    @Override
+    public void assertTextEqualsIgnoreCaseTrimmed(String expectedText) {
+        helper.assertTextEqualsIgnoreCaseTrimmed(expectedText);
+    }
+
+    @Override
+    public void assertTextMatches(Validator<String> validator) {
+        helper.assertTextMatches(validator);
+    }
+
+    @Override
+    public void assertValueGreaterThan(String value) {
+        helper.assertValueGreaterThan(value);
+    }
+
+    @Override
+    public void assertValueLessThan(String value) {
+        helper.assertValueLessThan(value);
+    }
+}]]></codefragment>
+   </duplication>
+   <duplication lines="32" tokens="156">
+      <file line="272"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\web\selenium\selenium1\Selenium1Interaction.java"/>
+      <file line="251"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\web\selenium\selenium2\Selenium2Interaction.java"/>
+      <codefragment><![CDATA[    }
+
+    @Override
+    public void wrongPageFlow(String msg) {
+        throw new FunctionalFailure(msg);
+    }
+
+    @Override
+    public void functionalError(String msg) {
+        throw new FunctionalFailure(msg);
+
+    }
+
+    @Override
+    public NodeList evalXPath(XPathLocator locator) {
+        String html = new String(wrapper.getPageSource().getFileData(), DataUtil.UTF_8);
+        return DataUtil.evalXPathInHTML(locator, html);
+    }
+
+    @Override
+    public NodeList evalXPath(String xpath) {
+        String html = new String(wrapper.getPageSource().getFileData(), DataUtil.UTF_8);
+        return DataUtil.evalXPathInHTML(xpath, html);
+    }
+
+    @Override
+    public String evalXPathAsString(String xpath) {
+        String html = new String(wrapper.getPageSource().getFileData(), DataUtil.UTF_8);
+        return DataUtil.evalXPathInHTMLAsString(xpath, html);
+    }
+
+}]]></codefragment>
+   </duplication>
+   <duplication lines="45" tokens="155">
+      <file line="28"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\ButtonImpl.java"/>
+      <file line="26"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\LabelImpl.java"/>
+      <file line="32"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\LinkImpl.java"/>
+      <codefragment><![CDATA[    @Override
+    public String getText() {
+        return helper.getText();
+    }
+
+    @Override
+    public void assertTextEquals(String expectedText) {
+        helper.assertTextEquals(expectedText);
+    }
+
+    @Override
+    public void assertTextNotEquals(String expectedText) {
+        helper.assertTextNotEquals(expectedText);
+    }
+
+    @Override
+    public void assertTextContains(String expectedText) {
+        helper.assertTextContains(expectedText);
+    }
+
+    @Override
+    public void assertTextContainsIgnoreCaseTrimmed(String expectedText) {
+        helper.assertTextContainsIgnoreCaseTrimmed(expectedText);
+    }
+
+    @Override
+    public void assertTextEqualsIgnoreCaseTrimmed(String expectedText) {
+        helper.assertTextEqualsIgnoreCaseTrimmed(expectedText);
+    }
+
+    @Override
+    public void assertTextMatches(Validator<String> validator) {
+        helper.assertTextMatches(validator);
+    }
+
+    @Override
+    public void assertValueGreaterThan(String value) {
+        helper.assertValueGreaterThan(value);
+    }
+
+    @Override
+    public void assertValueLessThan(String value) {
+        helper.assertValueLessThan(value);
+    }
+}]]></codefragment>
+   </duplication>
+   <duplication lines="45" tokens="153">
+      <file line="57"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\flatfile\impl\DefaultFlatFileAction.java"/>
+      <file line="56"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\separatedfile\impl\DefaultSeparatedFileAction.java"/>
+      <codefragment><![CDATA[        this.writers = new HashMap<Object, WriterConfig>();
+    }
+
+    @Override
+    public void setSystemConnector(SystemConnector systemConnector) {
+        // empty implementation
+    }
+    
+    @Override
+    public List<Attachment> createAttachments(Object object, String label) {
+        throw new TechnicalException("Not supported");
+    }
+    
+    /** Empty implementation of the {@link Action} interface returning null. */
+    @Override
+    public List<Attachment> createDebugAttachments() {
+        return null;
+    }
+
+    // general file operations -------------------------------------------------
+
+    @Override
+    public boolean exists(String filePath) {
+        return fileService.check().exists(filePath);
+    }
+
+    @Override
+    public void delete(String filePath) {
+        fileService.perform().delete(filePath);
+    }
+
+    @Override
+    public void waitUntilExists(String elementType, String filePath) {
+        fileService.perform().waitUntilExists(elementType, filePath);
+    }
+
+    @Override
+    public void waitUntilNotExists(String filePath) {
+        fileService.perform().waitUntilNotExists(filePath);
+    }
+
+    // writer operations -------------------------------------------------------
+
+    @Override
+    public Object createWriter(String filePath, boolean overwrite) {]]></codefragment>
+   </duplication>
+   <duplication lines="42" tokens="141">
+      <file line="30"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\ButtonImpl.java"/>
+      <file line="54"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\FileFieldImpl.java"/>
+      <file line="42"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\InputFieldImpl.java"/>
+      <file line="28"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\LabelImpl.java"/>
+      <file line="34"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\LinkImpl.java"/>
+      <codefragment><![CDATA[        return helper.getText();
+    }
+
+    @Override
+    public void assertTextEquals(String expectedText) {
+        helper.assertTextEquals(expectedText);
+    }
+
+    @Override
+    public void assertTextNotEquals(String expectedText) {
+        helper.assertTextNotEquals(expectedText);
+    }
+
+    @Override
+    public void assertTextContains(String expectedText) {
+        helper.assertTextContains(expectedText);
+    }
+
+    @Override
+    public void assertTextContainsIgnoreCaseTrimmed(String expectedText) {
+        helper.assertTextContainsIgnoreCaseTrimmed(expectedText);
+    }
+
+    @Override
+    public void assertTextEqualsIgnoreCaseTrimmed(String expectedText) {
+        helper.assertTextEqualsIgnoreCaseTrimmed(expectedText);
+    }
+
+    @Override
+    public void assertTextMatches(Validator<String> validator) {
+        helper.assertTextMatches(validator);
+    }
+
+    @Override
+    public void assertValueGreaterThan(String value) {
+        helper.assertValueGreaterThan(value);
+    }
+
+    @Override
+    public void assertValueLessThan(String value) {
+        helper.assertValueLessThan(value);
+    }]]></codefragment>
+   </duplication>
+   <duplication lines="25" tokens="118">
+      <file line="37"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\codecheck\rule\pmd\data\DataClassSimpleNameMustBeUnique.java"/>
+      <file line="37"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\codecheck\rule\pmd\page\PageClassSimpleNameMustBeUnique.java"/>
+      <codefragment><![CDATA[	@Override
+	public void start(RuleContext ctx) {
+		ctx.setAttribute(UNIQUE_SIMPLE_NAMES_ATTRIBUTE, new HashSet<String>());
+		super.start(ctx);
+	}
+
+	@Override
+	public void end(RuleContext ctx) {
+		// has already been consumed
+		ctx.removeAttribute(UNIQUE_SIMPLE_NAMES_ATTRIBUTE);
+		super.end(ctx);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Set<String> getUnqiueSimpleNames(Object data) {
+		if (!(data instanceof RuleContext)) {
+			return null;
+		}
+
+		return (Set<String>) ((RuleContext) data).getAttribute(UNIQUE_SIMPLE_NAMES_ATTRIBUTE);
+	}
+
+	@Override
+	public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
+		if (!isDataClass(node)) {]]></codefragment>
+   </duplication>
+   <duplication lines="16" tokens="115">
+      <file line="289"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\component\impl\DefaultGUIComponentFactory.java"/>
+      <file line="94"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\impl\AludraServiceManagerImpl.java"/>
+      <codefragment><![CDATA[    private static ComponentRequirement createComponentRequirement(Field field, Requirement requirement) {
+        ComponentRequirement cr = new ComponentRequirement();
+        cr.setFieldName(field.getName());
+        cr.setOptional(requirement.optional());
+        if (requirement.role() != null && requirement.role() != Object.class) {
+            cr.setRole(requirement.role().getName());
+        }
+        else {
+            cr.setRole(field.getType().getName());
+        }
+        if (requirement.hint() != null) {
+            cr.setRoleHint(requirement.hint());
+        }
+
+        return cr;
+    }]]></codefragment>
+   </duplication>
+   <duplication lines="23" tokens="114">
+      <file line="89"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\web\selenium\selenium1\Selenium1Verification.java"/>
+      <file line="105"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\gui\web\selenium\selenium2\Selenium2Verification.java"/>
+      <codefragment><![CDATA[            wrapper.isElementPresent(locator);
+        }
+        catch (AutomationException e) {
+            // because of ASSERTION, it is a functional failure (expected failure from SUT)
+            throw new FunctionalFailure(e.getMessage());
+        }
+    }
+
+    @Override
+    public void assertChecked(String elementType, String operation, GUIElementLocator locator) {
+        assertChecked(elementType, operation, true, locator);
+    }
+
+    @Override
+    public void assertChecked(String elementType, String operation, boolean expected, GUIElementLocator locator) {
+        if (wrapper.isChecked(locator) != expected) {
+            String message = "Checkbox or Radiobutton is " + (expected ? "unchecked" : "checked");
+            throw new FunctionalFailure(message);
+        }
+    }
+
+    @Override
+    public void assertHasFocus(String elementType, String operation, GUIElementLocator locator) {]]></codefragment>
+   </duplication>
+   <duplication lines="33" tokens="104">
+      <file line="42"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\flatfile\FlatFileWriter.java"/>
+      <file line="48"
+            path="C:\DEV\git\aludratest\src\main\java\org\aludratest\service\separatedfile\SeparatedFileWriter.java"/>
+      <codefragment><![CDATA[        this.writerId = service.perform().createWriter(filePath, overwrite);
+        verifyState(); //NOSONAR
+    }
+
+    /** Formats a bean object as flat file entry and writes it to the associated flat file. */
+    protected E writeRow(C bean) {
+        this.service.perform().writeRow(bean, this.writerId);
+        return this.verifyState();
+    }
+
+    /** Closes the writer. 
+     *  @return a reference to 'this' */
+    public E close() {
+        this.service.perform().closeWriter(this.writerId);
+        return this.verifyState();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public E verifyState() {
+        // no possibility of having an invalid state
+        return (E) this;
+    }
+
+    // java.lang.Object overrides ----------------------------------------------
+
+    /** Creates a string representation of the writer */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "#" + writerId;
+    }
+
+}]]></codefragment>
+   </duplication>
+</pmd-cpd>

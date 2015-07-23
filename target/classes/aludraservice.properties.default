@@ -1,0 +1,13 @@
+org.aludratest.service.gui.web.AludraWebGUI=org.aludratest.service.gui.web.selenium.selenium1.AludraSelenium1
+org.aludratest.service.file.FileService=org.aludratest.service.file.impl.FileServiceImpl
+org.aludratest.service.flatfile.FlatFileService=org.aludratest.service.flatfile.impl.DefaultFlatFileService
+org.aludratest.service.gui.web.selenium.SeleniumResourceService=org.aludratest.service.gui.web.selenium.LocalSeleniumResourceService
+org.aludratest.testcase.data.TestDataProvider=org.aludratest.testcase.data.impl.DefaultTestDataProvider
+org.aludratest.service.edifactfile.EdifactFileService=org.aludratest.service.edifactfile.edifatto.EdifattoFileService
+org.aludratest.content.flat.FlatContent=org.aludratest.content.flat.webdecs.WebdecsFlatContent
+org.aludratest.content.separated.SeparatedContent=org.aludratest.content.separated.webdecs.WebdecsSeparatedContent
+org.aludratest.service.separatedfile.SeparatedFileService=org.aludratest.service.separatedfile.impl.DefaultSeparatedFileService
+org.aludratest.config.AludraTestConfig=org.aludratest.config.impl.AludraTestConfigImpl
+org.aludratest.util.retry.AutoRetry=org.aludratest.util.retry.AutoRetryImpl
+org.aludratest.data.DataConfiguration=org.aludratest.data.DataConfigurationImpl
+org.aludratest.service.cmdline.CommandLineService=org.aludratest.service.cmdline.impl.CommandLineServiceImpl

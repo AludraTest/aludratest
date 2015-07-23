@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.aludratest.codecheck.rule.pmd.uimap.UIMapNoPublicFieldTest" time="0.016" tests="2" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.boot.library.path" value="c:\DEV\Java\JDK1.6.0_30\jre\bin"/>
+    <property name="java.vm.version" value="20.5-b03"/>
+    <property name="java.vm.vendor" value="Sun Microsystems Inc."/>
+    <property name="java.vendor.url" value="http://java.sun.com/"/>
+    <property name="path.separator" value=";"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) Client VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="user.country" value="DE"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value="Service Pack 1"/>
+    <property name="performLocalTests" value="true"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="c:\dev\git\aludratest"/>
+    <property name="java.runtime.version" value="1.6.0_30-b12"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
+    <property name="java.endorsed.dirs" value="c:\DEV\Java\JDK1.6.0_30\jre\lib\endorsed"/>
+    <property name="os.arch" value="x86"/>
+    <property name="java.io.tmpdir" value="C:\Users\falbrech\AppData\Local\Temp\"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="user.variant" value=""/>
+    <property name="os.name" value="Windows 7"/>
+    <property name="net.sourceforge.cobertura.datafile" value="c:\dev\git\aludratest\target\cobertura\cobertura.ser"/>
+    <property name="classworlds.conf" value="c:/dev/apache-maven-3.2.3/bin/m2.conf"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="c:\DEV\Java\JDK1.6.0_30\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;c:\dev\apache-maven-3.2.3\bin;c:\Users\falbrech\bin;.;C:\Program Files (x86)\Git\local\bin;C:\Program Files (x86)\Git\mingw\bin;C:\Program Files (x86)\Git\bin;c:\oracle\product\11.2.0\client_1;c:\WINDOWS\system32;c:\WINDOWS;c:\WINDOWS\System32\Wbem;c:\WINDOWS\System32\WindowsPowerShell\v1.0\;c:\Program Files\support\tools\;c:\Program Files\support\scripts\;c:\Program Files (x86)\Sparx Systems\EA\Java API;c:\Program Files\TortoiseSVN\bin;c:\Program Files\TortoiseGit\bin;c:\dev\GitTools\git-globe;c:\dev\GitTools\Python27;c:\Program Files (x86)\Mozilla Firefox;c:\Program Files (x86)\Citrix\System32\;c:\DEV\Java\JDK1.6.0_30;c:\Program Files (x86)\Selenium;c:\Program Files (x86)\Citrix\ICAService\;c:\Program Files (x86)\apache-maven-3.2.5\bin;c:\Program Files (x86)\Java\jre1.7.0_45\bin;c:\dev\GitTools\Python27;."/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="50.0"/>
+    <property name="sun.management.compiler" value="HotSpot Client Compiler"/>
+    <property name="os.version" value="6.1"/>
+    <property name="user.home" value="C:\Users\falbrech"/>
+    <property name="user.timezone" value="Europe/Berlin"/>
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"/>
+    <property name="java.specification.version" value="1.6"/>
+    <property name="file.encoding" value="Cp1252"/>
+    <property name="user.name" value="falbrech"/>
+    <property name="java.class.path" value="c:/dev/apache-maven-3.2.3/boot/plexus-classworlds-2.5.1.jar"/>
+    <property name="java.vm.specification.version" value="1.0"/>
+    <property name="sun.arch.data.model" value="32"/>
+    <property name="java.home" value="c:\DEV\Java\JDK1.6.0_30\jre"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean post-integration-test site-deploy -P aludratest-github-pages -DperformLocalTests=true"/>
+    <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="user.language" value="de"/>
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="1.6.0_30"/>
+    <property name="java.ext.dirs" value="c:\DEV\Java\JDK1.6.0_30\jre\lib\ext;C:\WINDOWS\Sun\Java\lib\ext"/>
+    <property name="sun.boot.class.path" value="c:\DEV\Java\JDK1.6.0_30\jre\lib\resources.jar;c:\DEV\Java\JDK1.6.0_30\jre\lib\rt.jar;c:\DEV\Java\JDK1.6.0_30\jre\lib\sunrsasign.jar;c:\DEV\Java\JDK1.6.0_30\jre\lib\jsse.jar;c:\DEV\Java\JDK1.6.0_30\jre\lib\jce.jar;c:\DEV\Java\JDK1.6.0_30\jre\lib\charsets.jar;c:\DEV\Java\JDK1.6.0_30\jre\lib\modules\jdk.boot.jar;c:\DEV\Java\JDK1.6.0_30\jre\classes"/>
+    <property name="java.vendor" value="Sun Microsystems Inc."/>
+    <property name="maven.home" value="c:\dev\apache-maven-3.2.3"/>
+    <property name="file.separator" value="\"/>
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="project.build.outputDirectory" value="c:\dev\git\aludratest\target\generated-classes\cobertura"/>
+    <property name="sun.desktop" value="windows"/>
+    <property name="sun.cpu.isalist" value="pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86"/>
+  </properties>
+  <testcase name="testValidClass" classname="org.aludratest.codecheck.rule.pmd.uimap.UIMapNoPublicFieldTest" time="0"/>
+  <testcase name="testInvalidClass" classname="org.aludratest.codecheck.rule.pmd.uimap.UIMapNoPublicFieldTest" time="0.016"/>
+</testsuite>

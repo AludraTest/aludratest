@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.service.gui.integrationtest.selenium1.Selenium1RadioButtonTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.725 sec - in org.aludratest.service.gui.integrationtest.selenium1.Selenium1RadioButtonTest

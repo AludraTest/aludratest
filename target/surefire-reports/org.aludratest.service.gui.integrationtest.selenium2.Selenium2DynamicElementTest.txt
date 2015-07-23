@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.service.gui.integrationtest.selenium2.Selenium2DynamicElementTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 21.313 sec - in org.aludratest.service.gui.integrationtest.selenium2.Selenium2DynamicElementTest

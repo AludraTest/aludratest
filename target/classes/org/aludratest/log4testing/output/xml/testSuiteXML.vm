@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TestSuite>
+	<Name><![CDATA[$!testSuite.Name]]></Name>
+	#foreach($testCase in $!testSuite.testCases)	
+		#TestCase($testCase)
+	#end
+	#foreach($testSuite in $!testSuite.testSuites)
+		#TestSuite($testSuite)
+	#end
+</TestSuite>
+#macro (TestCase $testCase)
+<TestCase>
+	<Name><![CDATA[$!testCase.Name]]></Name>
+	#set ($duration = $testCase.Duration)
+	<Duration>$!duration.Days days $!duration.Hours hours $!duration.Minutes minutes $!duration.Seconds seconds $!duration.millis ms</Duration>
+	<NumberofTestSteps>$!testCase.NumberOfTestSteps</NumberofTestSteps>
+	<NumberofFailedTestSteps>$!testCase.NumberOfFailedTestSteps</NumberofFailedTestSteps>
+	<Status>$!testCase.Status</Status>
+	#foreach($group in $testCase.TestStepGroups)
+	<TestStepGroup>
+		<Name><![CDATA[$group.Name]]></Name>
+		<Status>$group.Status</Status>
+		#foreach($testStep in $group.TestSteps)
+		<TestStep>
+			<Status>$testStep.Status</Status>
+			<Command><![CDATA[$testStep.Command]]></Command>
+			<Data><![CDATA[$testStep.UsedArguments]]></Data>
+			<ErrorMessage><![CDATA[$testStep.ErrorMessage]]></ErrorMessage>
+			<GUIName><![CDATA[$testStep.elementName]]></GUIName>
+			<GUIType><![CDATA[$testStep.elementType]]></GUIType>
+			#if ("$testStep.Attachments.size()" != 0)
+				<Attachments>
+					#foreach($attachment in $testStep.Attachments)
+					<Attachment>
+						<Title><![CDATA[$attachment.Title]]></Title>
+						<FileType><![CDATA[$attachment.FileExtension]]></FileType>
+						<Content><![CDATA[$attachment.FileDataAsBase64String]]></Content>
+					</Attachment>
+					#end
+				</Attachments>
+			#end		
+			</TestStep>
+		#end
+		</TestStepGroup>
+	#end
+</TestCase>
+#end
+
+#macro (TestSuite $testSuite)
+	<TestSuite>
+	<Name><![CDATA[$!testSuite.Name]]></Name>
+	#foreach($testCase in $!testSuite.testCases)	
+		#TestCase($testCase)
+	#end
+	#foreach($testSuite in $!testSuite.testSuites)
+		#TestSuite($testSuite)
+	#end
+	</TestSuite>
+#end

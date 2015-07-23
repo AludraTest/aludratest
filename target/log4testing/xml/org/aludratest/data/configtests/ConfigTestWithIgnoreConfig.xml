@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TestSuite>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithIgnoreConfig]]></Name>
+					<TestSuite>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithIgnoreConfig.test]]></Name>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithIgnoreConfig.test-testing Alice]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 16 ms</Duration>
+	<NumberofTestSteps>1</NumberofTestSteps>
+	<NumberofFailedTestSteps>0</NumberofFailedTestSteps>
+	<Status>IGNORED</Status>
+		<TestStepGroup>
+		<Name><![CDATA[Error]]></Name>
+		<Status>IGNORED</Status>
+				<TestStep>
+			<Status>IGNORED</Status>
+			<Command><![CDATA[Error report]]></Command>
+			<Data><![CDATA[$testStep.UsedArguments]]></Data>
+			<ErrorMessage><![CDATA[Who is Alice?]]></ErrorMessage>
+			<GUIName><![CDATA[$testStep.elementName]]></GUIName>
+			<GUIType><![CDATA[$testStep.elementType]]></GUIType>
+						</TestStep>
+				</TestStepGroup>
+	</TestCase>
+			<TestCase>
+	<Name><![CDATA[org.aludratest.data.configtests.ConfigTestWithIgnoreConfig.test-testing Bob]]></Name>
+		<Duration>0 days 0 hours 0 minutes 0 seconds 16 ms</Duration>
+	<NumberofTestSteps>0</NumberofTestSteps>
+	<NumberofFailedTestSteps>0</NumberofFailedTestSteps>
+	<Status>PASSED</Status>
+	</TestCase>
+			</TestSuite>
+	</TestSuite>
+

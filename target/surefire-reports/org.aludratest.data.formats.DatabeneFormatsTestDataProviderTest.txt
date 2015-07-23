@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.aludratest.data.formats.DatabeneFormatsTestDataProviderTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.92 sec - in org.aludratest.data.formats.DatabeneFormatsTestDataProviderTest
