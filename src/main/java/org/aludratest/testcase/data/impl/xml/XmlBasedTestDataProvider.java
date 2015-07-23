@@ -279,7 +279,8 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                                     // nothing
                             }
 
-                            return format(value, fieldMeta.getFormatterPattern(), toLocale(fieldMeta.getFormatterLocale()));
+                            return format(value, fieldMeta.getFormatterPattern(), toLocale(fieldMeta.getFormatterLocale()))
+                                    .toString();
                         }
                         return value;
                     }
