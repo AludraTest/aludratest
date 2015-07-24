@@ -299,6 +299,20 @@ public class SeleniumWrapper {
         callElementCommand(locator, taskCompletionTimeout, true, false, clickCommand);
     }
 
+    /** Hovers a web GUI element.
+     * @param locator
+     * @param taskCompletionTimeout */
+    public void hover(GUIElementLocator locator, int taskCompletionTimeout) {
+        ElementCommand<Void> clickCommand = new ElementCommand<Void>("hover", true) {
+            @Override
+            public Void call(GUIElementLocator locator) {
+                selenium.hover(locator);
+                return null;
+            }
+        };
+        callElementCommand(locator, taskCompletionTimeout, true, false, clickCommand);
+    }
+
     /** Tells if an element is present.
      *  @param locator
      *  @return true if the element is present, otherwise false */

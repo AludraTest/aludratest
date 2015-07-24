@@ -65,6 +65,9 @@ public interface Element<E extends Element<E>> extends GUIComponent {
     /** Single-clicks the element. */
     public void click();
 
+    /** Hovers the element, i.e. moving the mouse over the element. This may be only emulated by GUI implementation. */
+    public void hover();
+
     /**
      * Selectable click- clicks only when provided string is not null, not marked as null and provided string is "true"
      * @param click -String

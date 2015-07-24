@@ -282,6 +282,12 @@ public class Selenium2Wrapper {
         doAfterDelegate(taskCompletionTimeout, operation);
     }
 
+    public void hover(GUIElementLocator locator, String operation, int taskCompletionTimeout) {
+        WebElement element = doBeforeDelegate(locator, true, true, false);
+        hover(element);
+        doAfterDelegate(taskCompletionTimeout, operation);
+    }
+
     public void select(GUIElementLocator locator, final OptionLocator optionLocator, int taskCompletionTimeout) {
         WebElement element = doBeforeDelegate(locator, true, true, true);
         select(optionLocator, element);
@@ -1105,9 +1111,22 @@ public class Selenium2Wrapper {
         new Actions(driver).doubleClick(element).build().perform();
     }
 
+    private void hover(WebElement element) {
+        LOGGER.debug("hover(WebElement)");
+        try {
+            element = LocatorSupport.unwrap(element);
+            Actions actions = new Actions(driver);
+            actions.moveToElement(element).build().perform();
+        }
+        catch (Exception e) {
+            handleSeleniumException(e);
+        }
+    }
+
     // special handling of some Selenium exceptions ----------------------------
 
     private void handleSeleniumException(Throwable e) {
+        Throwable origException = e;
         String message = e.getMessage();
 
         // check if there is a WebDriverException
@@ -1146,7 +1165,7 @@ public class Selenium2Wrapper {
 
 
         // otherwise, throw a technical exception
-        throw new TechnicalException("Unknown exception when clicking element", e);
+        throw new TechnicalException("Unknown exception when clicking element", origException);
     }
 
 }

@@ -111,6 +111,11 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
     }
 
     @Override
+    public void hover() {
+        perform().hover(elementType, elementName, getLocator(), taskCompletionTimeout);
+    }
+
+    @Override
     public boolean isPresent() {
         return check().isElementPresent(elementType, elementName, getLocator());
     }
