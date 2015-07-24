@@ -236,6 +236,13 @@ public class SeleniumFacade {
         selenium.click(getSeleniumLocatorForClick(locator));
     }
 
+    /** Hovers a web GUI element.
+     * 
+     * @param locator a {@link Locator} of the element to hover */
+    public void hover(GUIElementLocator locator) {
+        selenium.mouseOver(getSeleniumLocatorForClick(locator));
+    }
+
     /** Tells if a web GUI element is editable.
      * 
      * @param locator a {@link Locator} of the element to examine

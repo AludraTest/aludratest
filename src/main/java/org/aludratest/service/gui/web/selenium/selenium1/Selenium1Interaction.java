@@ -91,6 +91,11 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
+    public void hover(String elementType, String elementName, GUIElementLocator locator, int taskCompletionTimeout) {
+        wrapper.hover(locator, taskCompletionTimeout);
+    }
+
+    @Override
     public String getInputFieldValue(String elementType, String operation, final GUIElementLocator locator) {
         wrapper.retryUntilTimeout(new ConditionCheck() {
             @Override

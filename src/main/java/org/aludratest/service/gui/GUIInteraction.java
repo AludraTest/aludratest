@@ -122,6 +122,15 @@ public interface GUIInteraction extends Interaction {
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
+    /** Moves the mouse cursor over the element which is identified by the locator, or emulates such a "hover", depending on the
+     * GUI implementation.
+     * @param elementType the type of the related GUI element to log
+     * @param elementName the name of the related GUI element to log
+     * @param locator which identifies the element which shall be "hovered" with the mouse
+     * @param taskCompletionTimeout */
+    void hover(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
+            @TechnicalArgument int taskCompletionTimeout);
+
     /** Reads the value of an inputfield and returns it as a String without conversion/manipulation.
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log

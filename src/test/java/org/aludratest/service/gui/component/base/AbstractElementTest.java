@@ -16,6 +16,8 @@
 package org.aludratest.service.gui.component.base;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.aludratest.service.gui.web.AludraWebGUI;
 import org.aludratest.service.locator.element.GUIElementLocator;
@@ -267,6 +269,14 @@ public abstract class AbstractElementTest extends GUITest {
     public void clickOnEditableElement() {
         guiTestUIMap.dropDownBox().click();
         checkLastStepStatus(TestStatus.PASSED);
+    }
+
+    @Test
+    public void hoverElement() {
+        assertFalse(guiTestUIMap.hoverValue().isVisible());
+        guiTestUIMap.hoverText().hover();
+        checkLastStepStatus(TestStatus.PASSED);
+        assertTrue(guiTestUIMap.hoverValue().isVisible());
     }
 
     /**

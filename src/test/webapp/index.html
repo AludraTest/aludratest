@@ -94,6 +94,18 @@ Disabled CheckBox<input type="checkbox" title="" onkeypress="action" onfocus="se
 	<input type="submit" value="submit file" id="SubmitFile" />
 </form>
 
+<h3>12. Hover Test</h3>
+<script type="text/javascript">
+  function hover_show(style) {
+	  document.getElementById('hover_hideshow').style.display = style;
+  }
+</script>
+<table style="border: 0">
+	<tr>
+	<td><span onmouseover="hover_show('inline');" onmouseout="hover_show('none');" id="hover_text">Hover me</span></td>
+	<td><span id="hover_hideshow" style="display: none;">Only visible when hovering</span></td>
+	</tr>
+</table>
 
 </body>
 </html>
