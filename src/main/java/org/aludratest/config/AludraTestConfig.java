@@ -31,7 +31,8 @@ package org.aludratest.config;
     @ConfigProperty(name = AludraTestConfig.CONFIG_TAB_REQUIRED_PROP, type = boolean.class, description = "If set to true, a configuration tab is required in Excel files, and its absence will cause an exception.", defaultValue = "false"),
     @ConfigProperty(name = AludraTestConfig.IGNORE_ENABLED_PROP, type = boolean.class, description = "If set to true, test case classes can be marked as ignored. Otherwise, the @Ignored annotation will itself be ignored, causing the marked tests to be executed.", defaultValue = "false"),
     @ConfigProperty(name = AludraTestConfig.NUMERIC_TOLERANCE_PROP, type = double.class, description = "The maximum allowed difference of a current and an expected value. This is for handling rounding issues when dealing with double precision values.", defaultValue = " 0.00000001"),
-    @ConfigProperty(name = AludraTestConfig.DEBUG_ON_FRAMEWORK_EXCEPTION_PROP, type = boolean.class, description = "If set to true, debug attachments (e.g. screenshots) will be created also on framework (blue) errors.", defaultValue = "false") })
+    @ConfigProperty(name = AludraTestConfig.DEBUG_ON_FRAMEWORK_EXCEPTION_PROP, type = boolean.class, description = "If set to true, debug attachments (e.g. screenshots) will be created also on framework (blue) errors.", defaultValue = "false"),
+        @ConfigProperty(name = AludraTestConfig.RUNNER_TREE_SORTER_PROP, type = String.class, description = "A simple or fully qualified name of a Runner Tree Sorter class to use. Default sorter is the Alphabetic sorter. This sorting only applies for filter / grouping execution mode (not for suite-based execution mode).", defaultValue = "Alphabetic") })
 public interface AludraTestConfig extends Configurable {
 
     /** Configuration property name. */
@@ -60,6 +61,9 @@ public interface AludraTestConfig extends Configurable {
 
     /** Configuration property name. */
     public static final String DEBUG_ON_FRAMEWORK_EXCEPTION_PROP = "debug.attachments.on.framework.exception";
+
+    /** Configuration property name. */
+    public static final String RUNNER_TREE_SORTER_PROP = "runner.tree.sorter";
 
     // interface ---------------------------------------------------------------
 
@@ -98,5 +102,11 @@ public interface AludraTestConfig extends Configurable {
      * 
      * @return <code>true</code> if to include debug attachments on Framework Exceptions. */
     public boolean isDebugAttachmentsOnFrameworkException();
+
+    /** Returns the simple or fully qualified name of a Runner Tree Sorter to use. Simple names should be looked up in package
+     * <code>org.aludratest.scheduler.sort</code>.
+     * 
+     * @return The simple or fully qualified name of a Runner Tree Sorter to use. */
+    public String getRunnerTreeSorterName();
 
 }
