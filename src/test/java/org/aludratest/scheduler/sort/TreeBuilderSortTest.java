@@ -19,9 +19,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,47 +58,13 @@ public class TreeBuilderSortTest extends AbstractAludraServiceTest {
         return builder.buildRunnerTree(exec);
     }
 
-    private File getClassRootFolder(Class<?> clazz, ClassLoader cl) {
-        if (cl == null) {
-            cl = clazz.getClassLoader();
-        }
-
-        if (cl instanceof URLClassLoader) {
-            URLClassLoader ucl = (URLClassLoader) cl;
-            URL[] urls = ucl.getURLs();
-            for (URL url : urls) {
-                // try to use as folder
-                try {
-                    File f = new File(url.toURI());
-                    if (f.isDirectory()) {
-                        File fTest = new File(f, clazz.getName().replace('.', '/') + ".class");
-                        if (fTest.isFile()) {
-                            return f;
-                        }
-                    }
-                }
-                catch (URISyntaxException e) {
-                    // ignore this URL
-                }
-            }
-        }
-        else {
-            ClassLoader clParent = cl.getParent();
-            if (clParent != null) {
-                return getClassRootFolder(clazz, clParent);
-            }
-        }
-
-        return null;
-    }
-
     /** Tests that by default, tree is sorted alphabetically
      * @throws Exception */
     @Test
     public void testTreeSortingDefault() throws Exception {
         // calculate location of test class
         ClassLoader cl = TreeBuilderSortTestClass.class.getClassLoader();
-        File classDir = getClassRootFolder(TreeBuilderSortTestClass.class, cl);
+        File classDir = new File(new File("").getAbsoluteFile(), "target/test-classes");
         RunnerTree runnerTree = parseTestFilter(classDir, "testCategory=sorting", Collections.singletonList("testCategory"), cl);
 
         RunnerGroup root = runnerTree.getRoot();
@@ -126,7 +89,7 @@ public class TreeBuilderSortTest extends AbstractAludraServiceTest {
 
         // calculate location of test class
         ClassLoader cl = TreeBuilderSortTestClass.class.getClassLoader();
-        File classDir = getClassRootFolder(TreeBuilderSortTestClass.class, cl);
+        File classDir = new File(new File("").getAbsoluteFile(), "target/test-classes");
         RunnerTree runnerTree = parseTestFilter(classDir, "testCategory=sorting", Collections.singletonList("testCategory"), cl);
 
         RunnerGroup root = runnerTree.getRoot();
@@ -151,7 +114,7 @@ public class TreeBuilderSortTest extends AbstractAludraServiceTest {
 
         // calculate location of test class
         ClassLoader cl = TreeBuilderSortTestClass.class.getClassLoader();
-        File classDir = getClassRootFolder(TreeBuilderSortTestClass.class, cl);
+        File classDir = new File(new File("").getAbsoluteFile(), "target/test-classes");
         RunnerTree runnerTree = parseTestFilter(classDir, "testCategory=sorting", Collections.singletonList("testCategory"), cl);
 
         RunnerGroup root = runnerTree.getRoot();
@@ -183,7 +146,7 @@ public class TreeBuilderSortTest extends AbstractAludraServiceTest {
 
             // calculate location of test class
             ClassLoader cl = TreeBuilderSortTestClass.class.getClassLoader();
-            File classDir = getClassRootFolder(TreeBuilderSortTestClass.class, cl);
+            File classDir = new File(new File("").getAbsoluteFile(), "target/test-classes");
             RunnerTree runnerTree = parseTestFilter(classDir, "testCategory=sorting", Collections.singletonList("testCategory"),
                     cl);
 
