@@ -38,12 +38,6 @@ public interface Element<E extends Element<E>> extends GUIComponent {
      * @return This object. */
     public E waitingUntilTaskCompletion(int waitTime);
 
-    /** Asserts that the element is editable. */
-    public void assertEditable();
-
-    /** Asserts that the element is not editable. */
-    public void assertNotEditable();
-
     /** Asserts that the element is present */
     public void assertPresent();
 
@@ -52,6 +46,12 @@ public interface Element<E extends Element<E>> extends GUIComponent {
 
     /** Asserts that the element is visible */
     public void assertVisible();
+
+    /** Asserts that this element is enabled, i.e. does not have an active "disabled" state. */
+    public void assertEnabled();
+
+    /** Asserts that this element is not enabled, i.e. has an active "disabled" state. */
+    public void assertNotEnabled();
 
     /** Asserts that the element has the focus. */
     public void assertFocus();
@@ -65,27 +65,14 @@ public interface Element<E extends Element<E>> extends GUIComponent {
     /** Single-clicks the element. */
     public void click();
 
+    /** Hovers the element, i.e. moving the mouse over the element. This may be only emulated by GUI implementation. */
+    public void hover();
+
     /**
      * Selectable click- clicks only when provided string is not null, not marked as null and provided string is "true"
      * @param click -String
      */
     public void click(String click);
-
-    /**
-     * Selectable not editable click - clicks only when provided string is not null, not marked as null and provided string is "true"
-     * @param click -String
-     */
-    public void clickNotEditable(String click);
-
-    /**
-     * Click on an element which is not editable (accept the non-editable state)
-     */
-    public void clickNotEditable();
-
-    /**
-     * Double click on an element which is not editable (accept the non-editable state)
-     */
-    public void doubleClickNotEditable();
 
     /** Checks if the specified element is somewhere on the page within the standard timeout.
      * 
@@ -133,4 +120,17 @@ public interface Element<E extends Element<E>> extends GUIComponent {
      * 
      * @return <code>true</code> if the element was found visible during the given timeout, <code>false</code> otherwise. */
     public boolean isVisible(long timeout);
+
+    /** Checks whether this input element is enabled.
+     * 
+     * @return <code>true</code> if the input element is enabled, <code>false</code> otherwise. */
+    public boolean isEnabled();
+
+    /** Checks whether this input element is enabled.
+     * 
+     * @param timeout Max time to wait for this input element to become enabled.
+     * 
+     * @return <code>true</code> if the input element is enabled, <code>false</code> otherwise. */
+    public boolean isEnabled(long timeout);
+
 }

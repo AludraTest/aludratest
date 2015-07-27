@@ -40,6 +40,9 @@
 <h3> 3. Test disabled Textfield </h3>
 <input type="text" value="Text to copy" size="65" onmousedown="this.focus();" name="before:disabled_TextField:after" id="before:disabled_TextField:after" disabled="disabled" class="ftb-dis noerr up">
 
+<h3> 3a. Test enabled, but readonly Textfield </h3>
+<input type="text" readonly value="This is readonly" size="20" name="readonly_TextField" id="readonly_TextField" class="ftb-dis noerr up">
+
 <h3> 4. Test Radio Button </h3>
 <table><tbody>
 <tr><td><input type="radio" value="AND" onkeypress="" name="before:Radio:after" id="before:RadioAnd:after" checked="checked"><label for="before:RadioAnd:after" class="iceSelOneRb frb">AND</label></td></tr>
@@ -91,6 +94,18 @@ Disabled CheckBox<input type="checkbox" title="" onkeypress="action" onfocus="se
 	<input type="submit" value="submit file" id="SubmitFile" />
 </form>
 
+<h3>12. Hover Test</h3>
+<script type="text/javascript">
+  function hover_show(style) {
+	  document.getElementById('hover_hideshow').style.display = style;
+  }
+</script>
+<table style="border: 0">
+	<tr>
+	<td><span onmouseover="hover_show('inline');" onmouseout="hover_show('none');" id="hover_text">Hover me</span></td>
+	<td><span id="hover_hideshow" style="display: none;">Only visible when hovering</span></td>
+	</tr>
+</table>
 
 </body>
 </html>

@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.aludratest.PreconditionFailedException;
+import org.aludratest.config.AludraTestConfig;
 import org.aludratest.dict.Data;
 import org.aludratest.invoker.AludraTestMethodInvoker;
 import org.aludratest.invoker.ErrorReportingInvoker;
@@ -48,6 +50,8 @@ import org.aludratest.scheduler.node.ExecutionMode;
 import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.scheduler.node.RunnerNode;
+import org.aludratest.scheduler.sort.Alphabetic;
+import org.aludratest.scheduler.sort.RunnerTreeSortUtil;
 import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
 import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.Parallel;
@@ -80,6 +84,9 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
     @Requirement
     private TestDataProvider testDataProvider;
 
+    @Requirement
+    private AludraTestConfig aludraConfig;
+
     @Override
     public RunnerTree buildRunnerTree(Class<?> suiteOrTestClass) {
         RunnerTree tree = new RunnerTree();
@@ -89,6 +96,7 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             Iterator<Map.Entry<Class<?>, String>> iter = assertionErrorClasses.entrySet().iterator();
             throw concatAssertionExceptions(iter, null);
         }
+
         return tree;
     }
 
@@ -129,6 +137,26 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
         for (Class<? extends AludraTestCase> clz : testClasses) {
             parseTestClass(clz, categoryBuilder.getParentRunnerGroup(tree, clz), tree);
+        }
+
+        // sort tree according to sort configuration
+        String sortClassName = aludraConfig.getRunnerTreeSorterName();
+        if (sortClassName == null) {
+            sortClassName = Alphabetic.class.getName();
+        }
+
+        if (!sortClassName.contains(".")) {
+            sortClassName = Alphabetic.class.getPackage().getName() + "." + sortClassName;
+        }
+
+        try {
+            Class<?> clz = Class.forName(sortClassName);
+            @SuppressWarnings("unchecked")
+            Comparator<RunnerNode> comparator = (Comparator<RunnerNode>) clz.newInstance();
+            RunnerTreeSortUtil.sortTree(tree, comparator);
+        }
+        catch (Exception e) {
+            LOGGER.error("Could not sort runner tree because comparator could not be created.", e);
         }
 
         return tree;
@@ -364,8 +392,8 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                 List<TestCaseData> invocationParams = testDataProvider.getTestDataSets(method);
                 for (TestCaseData data : invocationParams) {
                     if (data.getException() == null) {
-                        createTestRunnerForMethodInvocation(method, data.getData(), data.getId(), data.isIgnored(), methodGroup,
-                                tree);
+                        createTestRunnerForMethodInvocation(method, data.getData(), data.getId(), data.isIgnored(),
+                                data.getIgnoredReason(), methodGroup, tree);
                     }
                     else {
                         createTestRunnerForErrorReporting(method, data.getException(), methodGroup, tree);
@@ -380,14 +408,14 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
     /** Creates a test runner for a single method invocation */
     private void createTestRunnerForMethodInvocation(Method method, Data[] args, String testInfo, boolean ignore,
-            RunnerGroup methodGroup, RunnerTree tree) {
+            String ignoredReason, RunnerGroup methodGroup, RunnerTree tree) {
         // create log4testing TestCase
         String invocationTestCaseName = createInvocationTestCaseName(testInfo, methodGroup.getName());
         // Create test object
         @SuppressWarnings("unchecked")
         AludraTestCase testObject = BeanUtil.newInstance((Class<? extends AludraTestCase>) method.getDeclaringClass());
         TestInvoker invoker = new AludraTestMethodInvoker(testObject, method, args);
-        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, ignore);
+        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, ignore, ignoredReason);
     }
 
     /** Creates a test runner for error reporting.
@@ -399,13 +427,18 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                 + errorCount.incrementAndGet();
         // Create test object
         TestInvoker invoker = new ErrorReportingInvoker(method, e);
-        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, false);
+        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, false, null);
     }
 
-    private void createRunnerForTestInvoker(TestInvoker invoker, RunnerGroup parentGroup, RunnerTree tree, String testCaseName, boolean ignore) {
+    private void createRunnerForTestInvoker(TestInvoker invoker, RunnerGroup parentGroup, RunnerTree tree, String testCaseName,
+            boolean ignore, String ignoredReason) {
         RunnerLeaf leaf = tree.addLeaf(nextLeafId.incrementAndGet(), invoker, testCaseName, parentGroup);
+
         if (ignore) {
             leaf.setAttribute(CommonRunnerLeafAttributes.IGNORE, Boolean.valueOf(ignore));
+            if (ignoredReason != null) {
+                leaf.setAttribute(CommonRunnerLeafAttributes.IGNORE_REASON, ignoredReason);
+            }
         }
     }
 
@@ -495,13 +528,13 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                     }
                 }
                 if (!found) {
+                    // TODO here would be the place to select execution mode based on whatever information
                     group = tree.createGroup(seg, ExecutionMode.PARALLEL, group);
                 }
             }
 
             return group;
         }
-
     }
 
 }

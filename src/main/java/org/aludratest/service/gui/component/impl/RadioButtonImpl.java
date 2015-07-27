@@ -19,7 +19,7 @@ import org.aludratest.service.gui.component.RadioButton;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 
 /** Default implementation of the RadioButton interface. */
-public class RadioButtonImpl extends AbstractInputComponent<RadioButton> implements RadioButton {
+public class RadioButtonImpl extends AbstractElement<RadioButton> implements RadioButton {
 
     /** Selects this radio button. */
     @Override

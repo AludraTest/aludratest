@@ -193,8 +193,6 @@ public final class AludraTest {
                 AnnotationBasedExecution.parseFilterString(filterString), categories, classLoader);
 
         RunnerTree runnerTree = builder.buildRunnerTree(exec);
-        // This would SORT the tree
-        // RunnerTreeSorter.sortTree(runnerTree, new Alphabetic());
 
         AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
         runner.runAludraTests(runnerTree);

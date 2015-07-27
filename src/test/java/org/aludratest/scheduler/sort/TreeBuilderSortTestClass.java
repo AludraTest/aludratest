@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.testcase;
+package org.aludratest.scheduler.sort;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.aludratest.testcase.AludraTestCase;
+import org.aludratest.testcase.Test;
+import org.aludratest.testcase.TestAttribute;
 
-/**
- * Annotates a test method to be evaluated as ignored.
- * @author Volker Bergmann
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Ignored {
+@TestAttribute(name = "testCategory", value = "sorting")
+public class TreeBuilderSortTestClass extends AludraTestCase {
 
-    /** The optional reason why the test method has been marked as ignored.
-     * 
-     * @return The optional reason why the test method has been marked as ignored. */
-    public String value() default "";
+    @Test
+    public void myTestMethod() {
+    }
+
+    @Test
+    public void coolTestMethod() {
+    }
+
+    @Test
+    public void anotherTestMethod() {
+    }
 
 }

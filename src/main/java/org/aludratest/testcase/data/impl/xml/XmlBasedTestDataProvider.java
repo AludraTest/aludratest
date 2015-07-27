@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +40,7 @@ import java.util.Map;
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.dict.Data;
 import org.aludratest.exception.AutomationException;
+import org.aludratest.testcase.Ignored;
 import org.aludratest.testcase.Offset;
 import org.aludratest.testcase.data.Source;
 import org.aludratest.testcase.data.TestCaseData;
@@ -71,6 +73,10 @@ import org.mozilla.javascript.Undefined;
  * @author falbrech */
 public class XmlBasedTestDataProvider implements TestDataProvider {
 
+    private static final SimpleDateFormat ISO_DATE = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+    private static final DecimalFormat JAVA_NUMBER = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.US));
+
     @Requirement
     private AludraTestConfig aludraConfig;
 
@@ -87,6 +93,16 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         Annotation[][] annots = method.getParameterAnnotations();
 
         Offset offsetAnno = method.getAnnotation(Offset.class);
+        int offset = (offsetAnno != null ? offsetAnno.value() : 0);
+
+        boolean ignored = method.getAnnotation(Ignored.class) != null;
+        String ignoredReason = null;
+        if (ignored) {
+            ignoredReason = method.getAnnotation(Ignored.class).value();
+            if ("".equals(ignoredReason)) {
+                ignoredReason = null;
+            }
+        }
 
         List<TestCaseData> result = new ArrayList<TestCaseData>();
 
@@ -96,9 +112,8 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         // load param by param; transpose into test case data afterwards
         List<List<Data>> allData = new ArrayList<List<Data>>();
         for (int i = 0; i < annots.length; i++) {
-            List<Data> paramData = getDataObjects(method, i, loadedFileModels, result);
-            if (offsetAnno != null) {
-                int offset = offsetAnno.value();
+            List<Data> paramData = getDataObjects(method, i, loadedFileModels);
+            if (offset > 0) {
                 if (offset < paramData.size()) {
                     paramData = paramData.subList(offset, paramData.size());
                 }
@@ -114,6 +129,10 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         TestData data = loadedFileModels.get(firstSource.uri());
 
         List<TestDataConfiguration> configs = data.getConfigurations();
+        if (offset > 0) {
+            int effectiveOffset = Math.min(offset, configs.size());
+            configs = configs.subList(effectiveOffset, configs.size());
+        }
         for (int i = 0; i < configs.size(); i++) {
             TestDataConfiguration config = configs.get(i);
 
@@ -132,16 +151,20 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             }
 
             if (dataForConfig != null) {
-                result.add(new TestCaseData(getNextAutoId(result, false), config.getName(), dataForConfig.toArray(new Data[0]),
-                        config.isIgnored()));
+                if (ignored) {
+                    result.add(new TestCaseData(config.getName(), null, dataForConfig.toArray(new Data[0]), true, ignoredReason));
+                }
+                else {
+                    result.add(new TestCaseData(config.getName(), null, dataForConfig.toArray(new Data[0]), config.isIgnored(),
+                            config.isIgnored() ? config.getIgnoredReason() : null));
+                }
             }
         }
 
         return result;
     }
 
-    private List<Data> getDataObjects(Method method, int paramIndex, Map<String, TestData> loadedFileModels,
-            List<TestCaseData> allTestCaseDatas) {
+    private List<Data> getDataObjects(Method method, int paramIndex, Map<String, TestData> loadedFileModels) {
         Annotation[][] annots = method.getParameterAnnotations();
         String paramName = method.getName() + " param #" + paramIndex;
         Source src = getRequiredSourceAnnotation(annots[paramIndex], paramName);
@@ -173,7 +196,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                 loadedFileModels.put(uri, testData);
             }
             catch (Exception e) {
-                throw new AutomationException("Could not read test data XML", e);
+                throw new AutomationException("Could not read test data XML at " + uri, e);
             }
             finally {
                 IOUtils.closeQuietly(in);
@@ -226,6 +249,38 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                         if (field.isScript() && (value instanceof String)) {
                             return new ScriptToEvaluate(value.toString(), fieldMeta.getFormatterPattern(),
                                     toLocale(fieldMeta.getFormatterLocale()));
+                        }
+
+                        // perform auto-conversion based on type
+                        if (value instanceof String) {
+                            switch (fieldMeta.getType()) {
+                                case BOOLEAN:
+                                    value = Boolean.parseBoolean(value.toString());
+                                    break;
+                                case DATE:
+                                    try {
+                                        value = ISO_DATE.parse(value.toString());
+                                    }
+                                    catch (ParseException e) {
+                                        // ignore; value is presented as-is
+                                        return value;
+                                    }
+                                    break;
+                                case NUMBER:
+                                    try {
+                                        value = JAVA_NUMBER.parseObject(value.toString());
+                                    }
+                                    catch (ParseException e) {
+                                        // ignore; value is presented as-is
+                                        return value;
+                                    }
+                                    break;
+                                default:
+                                    // nothing
+                            }
+
+                            return format(value, fieldMeta.getFormatterPattern(), toLocale(fieldMeta.getFormatterLocale()))
+                                    .toString();
                         }
                         return value;
                     }
@@ -325,7 +380,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             return data;
         }
         catch (Exception e) {
-            throw new AutomationException("Could create data object for segment " + segmentMeta.getName(), e);
+            throw new AutomationException("Could not create data object for segment " + segmentMeta.getName(), e);
         }
     }
 
@@ -425,9 +480,6 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
      *            <code>null</code>.
      * @return */
     public String evaluate(String script, String formatPattern, Locale locale, Map<String, Object> contextVariables) {
-        if (locale == null) {
-            locale = Locale.US;
-        }
         Context context = Context.enter();
 
         try {
@@ -453,20 +505,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                 result = toJavaObject(result);
 
                 // apply patterns, if required
-                if (result instanceof Date) {
-                    if (formatPattern == null) {
-                        formatPattern = "yyyy-MM-dd";
-                    }
-                    SimpleDateFormat sdf = new SimpleDateFormat(formatPattern, locale);
-                    return sdf.format(result);
-                }
-                if (result instanceof Number) {
-                    if (formatPattern == null) {
-                        formatPattern = "#.#";
-                    }
-                    DecimalFormat df = new DecimalFormat(formatPattern, DecimalFormatSymbols.getInstance(locale));
-                    return df.format(result);
-                }
+                result = format(result, formatPattern, locale);
 
                 return result.toString();
             }
@@ -477,6 +516,29 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         finally {
             Context.exit();
         }
+    }
+
+    private Object format(Object object, String formatPattern, Locale locale) {
+        if (locale == null) {
+            locale = Locale.US;
+        }
+
+        if (object instanceof Date) {
+            if (formatPattern == null) {
+                formatPattern = "yyyy-MM-dd";
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat(formatPattern, locale);
+            return sdf.format(object);
+        }
+        if (object instanceof Number) {
+            if (formatPattern == null) {
+                formatPattern = "#.#";
+            }
+            DecimalFormat df = new DecimalFormat(formatPattern, DecimalFormatSymbols.getInstance(locale));
+            return df.format(object);
+        }
+
+        return object;
     }
 
     private Object toJavaObject(Object jsObject) {

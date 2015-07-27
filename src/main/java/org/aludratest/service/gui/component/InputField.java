@@ -22,7 +22,7 @@ import org.aludratest.service.gui.component.impl.ValueComponent;
  * @author Joerg Langnickel
  * @author Volker Bergmann
  */
-public interface InputField extends InputComponent<InputField>, ValueComponent {
+public interface InputField extends Element<InputField>, ValueComponent {
 
     /**
      * Enters text in the InputField.
@@ -31,5 +31,12 @@ public interface InputField extends InputComponent<InputField>, ValueComponent {
      * @param text the text to enter in the input field
      */
     public void enter(String text);
+
+    /** Asserts that the element is editable, i.e. text can be entered. */
+    public void assertEditable();
+
+    /** Asserts that the element is not editable, i.e. no text can be entered. Disabled controls are also treated as
+     * "not editable". */
+    public void assertNotEditable();
 
 }

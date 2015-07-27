@@ -16,6 +16,7 @@
 package org.aludratest.service.gui.web.selenium.selenium2;
 
 import org.aludratest.exception.AludraTestException;
+import org.aludratest.exception.AutomationException;
 import org.aludratest.service.gui.web.WebGUICondition;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.window.WindowLocator;
@@ -43,7 +44,13 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
             wrapper.waitUntilPresent(locator, timeout);
             return true;
         }
+        catch (AutomationException e) {
+            // expected exception: "Element not found"
+            return false;
+        }
         catch (AludraTestException e) {
+            // other exceptions are not expected here
+            logger.error("Unexpected exception during check which will be ignored", e);
             return false;
         }
         catch (Exception e) { // NOSONAR
@@ -80,7 +87,27 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
     @Override
     public boolean isElementEnabled(String elementType, String operation, GUIElementLocator locator, long timeout) {
         try {
-            wrapper.waitUntilClickable(locator, timeout);
+            wrapper.waitUntilEnabled(locator, timeout);
+            return true;
+        }
+        catch (AludraTestException e) {
+            return false;
+        }
+        catch (Exception e) { // NOSONAR
+            logger.error("Unexpected exception during check which will be ignored", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isElementEditable(String elementType, String operation, GUIElementLocator locator) {
+        return isElementEditable(elementType, operation, locator, getTimeout());
+    }
+
+    @Override
+    public boolean isElementEditable(String elementType, String elementName, GUIElementLocator locator, long timeout) {
+        try {
+            wrapper.waitUntilEditable(locator, timeout);
             return true;
         }
         catch (AludraTestException e) {

@@ -91,20 +91,14 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
-    public void clickNotEditable(String elementType, String operation, GUIElementLocator locator, int taskCompletionTimeout) {
-        wrapper.clickNotEditable(locator, taskCompletionTimeout);
-    }
-
-    @Override
     public String clickForDownload(String elementType, String elementName, GUIElementLocator locator, int taskCompletionTimeout) {
         // unsupported operation for Selenium 1
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void doubleClickNotEditable(String elementType, String elementName, GUIElementLocator locator,
-            int taskCompletionTimeout) {
-        wrapper.doubleClickNotEditable(locator, taskCompletionTimeout);
+    public void hover(String elementType, String elementName, GUIElementLocator locator, int taskCompletionTimeout) {
+        wrapper.hover(locator, taskCompletionTimeout);
     }
 
     @Override

@@ -30,6 +30,8 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
 
     private Boolean configTabRequired;
 
+    private String sorterName;
+
     public AludraTestingTestConfigImpl() {
         super();
         testInstance = this;
@@ -97,6 +99,18 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
             return configTabRequired.booleanValue();
         }
         return super.isConfigTabRequired();
+    }
+
+    public void setRunnerTreeSorterName(String sorterName) {
+        this.sorterName = sorterName;
+    }
+
+    @Override
+    public String getRunnerTreeSorterName() {
+        if (sorterName != null) {
+            return sorterName;
+        }
+        return super.getRunnerTreeSorterName();
     }
 
 }

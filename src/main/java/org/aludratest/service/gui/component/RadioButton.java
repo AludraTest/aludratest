@@ -21,7 +21,7 @@ package org.aludratest.service.gui.component;
  * @author Joerg Langnickel
  * @author Volker Bergmann
  */
-public interface RadioButton extends InputComponent<RadioButton> {
+public interface RadioButton extends Element<RadioButton> {
 
     /** Selects this radio button. */
     public void select();

@@ -59,27 +59,20 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
     // click operations --------------------------------------------------------
 
     @Override
-    public void click(String elementType, String operation, GUIElementLocator locator,
+    public void click(String elementType, String elementName, GUIElementLocator locator,
             int taskCompletionTimeout) {
-        wrapper.click(locator, operation, taskCompletionTimeout);
+        wrapper.click(locator, elementName, taskCompletionTimeout);
     }
 
     @Override
-    public void clickNotEditable(String elementType, String operation, GUIElementLocator locator,
+    public void doubleClick(String elementType, String elementName, GUIElementLocator locator,
             int taskCompletionTimeout) {
-        wrapper.clickNotEditable(locator, operation, taskCompletionTimeout);
+        wrapper.doubleClick(locator, elementName, taskCompletionTimeout);
     }
 
     @Override
-    public void doubleClickNotEditable(String elementType, String elementName, GUIElementLocator locator,
-            int taskCompletionTimeout) {
-        wrapper.doubleClickNotEditable(locator, elementName, taskCompletionTimeout);
-    }
-
-    @Override
-    public void doubleClick(String elementType, String operation, GUIElementLocator locator,
-            int taskCompletionTimeout) {
-        wrapper.doubleClick(locator, operation, taskCompletionTimeout);
+    public void hover(String elementType, String elementName, GUIElementLocator locator, int taskCompletionTimeout) {
+        wrapper.hover(locator, elementName, taskCompletionTimeout);
     }
 
     @Override

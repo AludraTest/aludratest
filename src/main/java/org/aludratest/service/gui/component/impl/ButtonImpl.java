@@ -21,7 +21,7 @@ import org.databene.commons.Validator;
 /** Default implementation of the Button interface.
  * 
  * @author falbrech */
-public class ButtonImpl extends AbstractInputComponent<Button> implements Button {
+public class ButtonImpl extends AbstractElement<Button> implements Button {
 
     private ValueComponentHelper helper = new ValueComponentHelper(this, true);
 

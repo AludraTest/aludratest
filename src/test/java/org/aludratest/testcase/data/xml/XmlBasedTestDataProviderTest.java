@@ -16,6 +16,7 @@
 package org.aludratest.testcase.data.xml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -27,6 +28,8 @@ import java.util.Map;
 import org.aludratest.config.impl.AludraTestConfigImpl;
 import org.aludratest.config.impl.DefaultConfigurator;
 import org.aludratest.exception.AutomationException;
+import org.aludratest.testcase.Ignored;
+import org.aludratest.testcase.Offset;
 import org.aludratest.testcase.data.Source;
 import org.aludratest.testcase.data.TestCaseData;
 import org.aludratest.testcase.data.impl.xml.DefaultScriptLibrary;
@@ -88,14 +91,38 @@ public class XmlBasedTestDataProviderTest {
         XmlBasedTestDataProvider provider = createProvider();
         List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
                 "testMethod2", ComplexData.class, StringData.class));
-        assertEquals(2, testData.size());
+        assertEquals(3, testData.size());
         assertEquals(2, testData.get(0).getData().length);
         assertEquals(2, testData.get(1).getData().length);
+        assertEquals(2, testData.get(2).getData().length);
+        assertFalse(testData.get(0).isIgnored());
+        assertFalse(testData.get(1).isIgnored());
+        assertTrue(testData.get(2).isIgnored());
+        assertEquals("Ignored for test", testData.get(2).getIgnoredReason());
 
         ComplexData cd = (ComplexData) testData.get(0).getData()[0];
         assertNull(cd.getSubData());
 
         cd = (ComplexData) testData.get(1).getData()[0];
+        assertNotNull(cd.getSubData());
+        assertNull(cd.getSubData().getValue());
+
+        assertEquals("The Config2", cd.getName());
+    }
+
+    @Test
+    public void testMultiWithOffset() throws Exception {
+        XmlBasedTestDataProvider provider = createProvider();
+        List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
+                "testMethod2WithOffset", ComplexData.class, StringData.class));
+        assertEquals(2, testData.size());
+        assertEquals(2, testData.get(0).getData().length);
+        assertEquals(2, testData.get(1).getData().length);
+        assertFalse(testData.get(0).isIgnored());
+        assertTrue(testData.get(1).isIgnored());
+        assertEquals("Ignored for test", testData.get(1).getIgnoredReason());
+
+        ComplexData cd = (ComplexData) testData.get(1).getData()[0];
         assertNotNull(cd.getSubData());
         assertNull(cd.getSubData().getValue());
 
@@ -109,6 +136,32 @@ public class XmlBasedTestDataProviderTest {
                 "testInvalidMethod", ComplexData.class, StringData.class));
         assertNull(testData.get(0).getException());
         assertTrue(testData.get(1).getException() instanceof AutomationException);
+    }
+
+    @Test
+    public void testIgnoredMethod() throws Exception {
+        XmlBasedTestDataProvider provider = createProvider();
+        List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
+                "testIgnoredMethod", ComplexData.class, StringData.class));
+        assertNull(testData.get(0).getException());
+        assertTrue(testData.get(0).isIgnored());
+        assertTrue(testData.get(1).isIgnored());
+        assertTrue(testData.get(2).isIgnored());
+        assertEquals("Some reason", testData.get(0).getIgnoredReason());
+        assertEquals("Some reason", testData.get(1).getIgnoredReason());
+        assertEquals("Some reason", testData.get(2).getIgnoredReason());
+    }
+
+    @Test
+    public void testFormatting() throws Exception {
+        XmlBasedTestDataProvider provider = createProvider();
+        List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
+                "testMethodFormat", ComplexData.class));
+
+        ComplexData cd = (ComplexData) testData.get(0).getData()[0];
+        assertEquals("22. Juli 2015", cd.getName());
+        cd = (ComplexData) testData.get(1).getData()[0];
+        assertEquals("09. Juli 2015", cd.getName());
     }
 
     public void testMethod1(@Source(uri = "complex.testdata.xml", segment = "complexObject") ComplexData object,
@@ -125,6 +178,14 @@ public class XmlBasedTestDataProviderTest {
         }
     }
 
+    @Offset(1)
+    public void testMethod2WithOffset(@Source(uri = "multi.testdata.xml", segment = "complexObject") ComplexData object,
+            @Source(uri = "multi.testdata.xml", segment = "stringObject") StringData object2) {
+        if (object == null) {
+            // do nothing
+        }
+    }
+
     public void testMethod3(@Source(uri = "referencing.testdata.xml", segment = "complexObject") ComplexData object,
             @Source(uri = "referencing.testdata.xml", segment = "stringObject") StringData object2) {
         if (object == null) {
@@ -134,6 +195,20 @@ public class XmlBasedTestDataProviderTest {
 
     public void testInvalidMethod(@Source(uri = "multi.testdata.xml", segment = "complexObject") ComplexData object,
             @Source(uri = "complex.testdata.xml", segment = "stringObject") StringData object2) {
+        if (object == null) {
+            // do nothing
+        }
+    }
+
+    @Ignored("Some reason")
+    public void testIgnoredMethod(@Source(uri = "multi.testdata.xml", segment = "complexObject") ComplexData object,
+            @Source(uri = "multi.testdata.xml", segment = "stringObject") StringData object2) {
+        if (object == null) {
+            // do nothing
+        }
+    }
+
+    public void testMethodFormat(@Source(uri = "formatting.testdata.xml", segment = "complexObject") ComplexData object) {
         if (object == null) {
             // do nothing
         }

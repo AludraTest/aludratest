@@ -32,6 +32,9 @@ public class TestDataConfiguration {
     @XmlAttribute(name = "ignored")
     private Boolean ignored;
 
+    @XmlAttribute(name = "ignoredReason")
+    private String ignoredReason;
+
     @XmlElementWrapper(namespace = "http://aludratest.org/testdata", name = "segments")
     @XmlElement(namespace = "http://aludratest.org/testdata", name = "segment", type = TestDataConfigurationSegment.class)
     private List<TestDataConfigurationSegment> segments;
@@ -46,6 +49,10 @@ public class TestDataConfiguration {
 
     public boolean isIgnored() {
         return ignored == null ? false : ignored.booleanValue();
+    }
+
+    public String getIgnoredReason() {
+        return ignoredReason;
     }
 
 }

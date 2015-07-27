@@ -22,6 +22,6 @@ import org.aludratest.service.gui.component.impl.ValueComponent;
  * @author Joerg Langnickel
  * @author Volker Bergmann
  */
-public interface Button extends InputComponent<Button>, ValueComponent {
+public interface Button extends Element<Button>, ValueComponent {
 
 }

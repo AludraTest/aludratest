@@ -20,7 +20,7 @@ import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.databene.commons.Validator;
 
 /** Default implementation of the InputField interface. */
-public class InputFieldImpl extends AbstractInputComponent<InputField> implements ValueComponent, InputField {
+public class InputFieldImpl extends AbstractElement<InputField> implements ValueComponent, InputField {
 
     private ValueComponentHelper helper = new ValueComponentHelper(this, true);
 
@@ -80,6 +80,18 @@ public class InputFieldImpl extends AbstractInputComponent<InputField> implement
     @Override
     public void assertValueLessThan(String value) {
         helper.assertValueLessThan(value);
+    }
+
+    /** Asserts that the element is editable. */
+    @Override
+    public void assertEditable() {
+        verify().assertEditable(elementType, elementName, getLocator());
+    }
+
+    /** Asserts that the element is not editable. */
+    @Override
+    public void assertNotEditable() {
+        verify().assertNotEditable(elementType, elementName, getLocator());
     }
 
 }
