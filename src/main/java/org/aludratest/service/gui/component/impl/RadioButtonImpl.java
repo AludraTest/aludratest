@@ -21,16 +21,11 @@ import org.aludratest.util.data.helper.DataMarkerCheck;
 /** Default implementation of the RadioButton interface. */
 public class RadioButtonImpl extends AbstractElement<RadioButton> implements RadioButton {
 
-    /** Selects this radio button. */
     @Override
     public void select() {
         perform().selectRadiobutton(elementType, elementName, getLocator(), taskCompletionTimeout);
     }
 
-    /** Selects this radio button if and only if the passed string parameter has the value <code>"true"</code>. In every other
-     * case, no action is performed.
-     * 
-     * @param value String parameter to indicate if a select operation shall be performed on this radio button. */
     @Override
     public void select(String value) {
         if (!DataMarkerCheck.isNull(value)) {
@@ -40,17 +35,11 @@ public class RadioButtonImpl extends AbstractElement<RadioButton> implements Rad
         }
     }
 
-    /** Asserts that the radio button is checked */
     @Override
     public void assertChecked() {
         verify().assertChecked(elementType, elementName, getLocator());
     }
 
-    /** Asserts that this Radio button is in the expected state, passed by expected string. If the expected string is null or
-     * marked as null, no operation will be executed.
-     * 
-     * @param expected <code>"true"</code> or <code>"false"</code>, or <code>null</code> or marked as null to not perform any
-     *            assertion. */
     @Override
     public void assertChecked(String expected) {
         if (!DataMarkerCheck.isNull(expected)) {
@@ -58,4 +47,8 @@ public class RadioButtonImpl extends AbstractElement<RadioButton> implements Rad
         }
     }
 
+    @Override
+    public boolean isChecked() {
+        return check().isElementChecked(elementType, elementName, getLocator());
+    }
 }
