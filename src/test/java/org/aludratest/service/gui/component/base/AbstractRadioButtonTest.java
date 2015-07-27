@@ -15,6 +15,9 @@
  */
 package org.aludratest.service.gui.component.base;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.aludratest.service.gui.web.AludraWebGUI;
 import org.aludratest.testcase.TestStatus;
 import org.junit.Test;
@@ -34,6 +37,16 @@ public abstract class AbstractRadioButtonTest extends GUITest {
         checkLastStepStatus(TestStatus.PASSED);
         guiTestUIMap.orRadioButton().assertChecked();
         checkLastStepStatus(TestStatus.PASSED);
+    }
+
+    @Test
+    public void isCheckedOnCheckedRadioButton() {
+        assertTrue(guiTestUIMap.andRadioButton().isChecked());
+    }
+
+    @Test
+    public void isCheckedOnUncheckedRadioButton() {
+        assertFalse(guiTestUIMap.orRadioButton().isChecked());
     }
 
 }
