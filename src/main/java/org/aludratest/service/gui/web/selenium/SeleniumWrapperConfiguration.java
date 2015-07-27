@@ -236,4 +236,12 @@ public final class SeleniumWrapperConfiguration {
         return Boolean.valueOf(configuration.getStringValue("use.remotedriver", "false")).booleanValue();
     }
 
+    /** Returns, for Selenium 2, the number of milliseconds to wait after text has been entered into an input field, but before the
+     * TAB key is sent.
+     * 
+     * @return The number of milliseconds to wait after text has been entered into an input field, but before the TAB key is sent. */
+    public int getInputEnterLatency() {
+        return configuration.getIntValue("input.enter.latency", 0);
+    }
+
 }
