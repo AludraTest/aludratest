@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.aludratest.PreconditionFailedException;
+import org.aludratest.config.AludraTestConfig;
 import org.aludratest.dict.Data;
 import org.aludratest.invoker.AludraTestMethodInvoker;
 import org.aludratest.invoker.ErrorReportingInvoker;
@@ -48,6 +50,8 @@ import org.aludratest.scheduler.node.ExecutionMode;
 import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.scheduler.node.RunnerNode;
+import org.aludratest.scheduler.sort.Alphabetic;
+import org.aludratest.scheduler.sort.RunnerTreeSortUtil;
 import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
 import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.Parallel;
@@ -80,6 +84,9 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
     @Requirement
     private TestDataProvider testDataProvider;
 
+    @Requirement
+    private AludraTestConfig aludraConfig;
+
     @Override
     public RunnerTree buildRunnerTree(Class<?> suiteOrTestClass) {
         RunnerTree tree = new RunnerTree();
@@ -89,6 +96,7 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             Iterator<Map.Entry<Class<?>, String>> iter = assertionErrorClasses.entrySet().iterator();
             throw concatAssertionExceptions(iter, null);
         }
+
         return tree;
     }
 
@@ -129,6 +137,26 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
         for (Class<? extends AludraTestCase> clz : testClasses) {
             parseTestClass(clz, categoryBuilder.getParentRunnerGroup(tree, clz), tree);
+        }
+
+        // sort tree according to sort configuration
+        String sortClassName = aludraConfig.getRunnerTreeSorterName();
+        if (sortClassName == null) {
+            sortClassName = Alphabetic.class.getName();
+        }
+
+        if (!sortClassName.contains(".")) {
+            sortClassName = Alphabetic.class.getPackage().getName() + "." + sortClassName;
+        }
+
+        try {
+            Class<?> clz = Class.forName(sortClassName);
+            @SuppressWarnings("unchecked")
+            Comparator<RunnerNode> comparator = (Comparator<RunnerNode>) clz.newInstance();
+            RunnerTreeSortUtil.sortTree(tree, comparator);
+        }
+        catch (Exception e) {
+            LOGGER.error("Could not sort runner tree because comparator could not be created.", e);
         }
 
         return tree;
@@ -405,6 +433,7 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
     private void createRunnerForTestInvoker(TestInvoker invoker, RunnerGroup parentGroup, RunnerTree tree, String testCaseName,
             boolean ignore, String ignoredReason) {
         RunnerLeaf leaf = tree.addLeaf(nextLeafId.incrementAndGet(), invoker, testCaseName, parentGroup);
+
         if (ignore) {
             leaf.setAttribute(CommonRunnerLeafAttributes.IGNORE, Boolean.valueOf(ignore));
             if (ignoredReason != null) {
@@ -499,13 +528,13 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                     }
                 }
                 if (!found) {
+                    // TODO here would be the place to select execution mode based on whatever information
                     group = tree.createGroup(seg, ExecutionMode.PARALLEL, group);
                 }
             }
 
             return group;
         }
-
     }
 
 }

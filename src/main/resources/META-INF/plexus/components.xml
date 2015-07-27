@@ -64,6 +64,11 @@
           <role-hint></role-hint>
           <field-name>testDataProvider</field-name>
         </requirement>
+        <requirement>
+          <role>org.aludratest.config.AludraTestConfig</role>
+          <role-hint></role-hint>
+          <field-name>aludraConfig</field-name>
+        </requirement>
       </requirements>
     </component>
     <component>

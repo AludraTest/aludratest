@@ -22,6 +22,7 @@ import org.aludratest.config.Configurable;
 import org.aludratest.config.ConfigurationException;
 import org.aludratest.config.MutablePreferences;
 import org.aludratest.config.Preferences;
+import org.aludratest.scheduler.sort.Alphabetic;
 import org.aludratest.service.Implementation;
 import org.databene.commons.StringUtil;
 import org.databene.commons.version.VersionInfo;
@@ -65,6 +66,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
     private String version;
 
     private boolean debugAttachmentsOnFrameworkException;
+
+    private String sorterName;
 
 
     // constructor -------------------------------------------------------------
@@ -145,6 +148,11 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         return numericTolerance;
     }
 
+    @Override
+    public String getRunnerTreeSorterName() {
+        return sorterName;
+    }
+
     // private helper methods --------------------------------------------------
 
     private void readAludraTestVersion() {
@@ -187,6 +195,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         this.numericTolerance = config.getDoubleValue(NUMERIC_TOLERANCE_PROP, 0.000001);
 
         this.debugAttachmentsOnFrameworkException = config.getBooleanValue(DEBUG_ON_FRAMEWORK_EXCEPTION_PROP, false);
+
+        this.sorterName = config.getStringValue(RUNNER_TREE_SORTER_PROP, Alphabetic.class.getSimpleName());
     }
 
 }

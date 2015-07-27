@@ -27,9 +27,9 @@ import org.aludratest.scheduler.node.RunnerNode;
 /** Helper class for sorting Runner Trees with the help of a Comparator.
  * 
  * @author falbrech */
-public final class RunnerTreeSorter {
+public final class RunnerTreeSortUtil {
 
-    private RunnerTreeSorter() {
+    private RunnerTreeSortUtil() {
     }
 
     /** Sorts the given RunnerTree's nodes according to the given comparator. Starting on the lowest levels, every group's children
