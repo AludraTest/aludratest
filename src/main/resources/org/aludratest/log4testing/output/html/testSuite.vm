@@ -74,14 +74,20 @@
 				<th>Duration $time.header</th>
 				<th>Test Steps</th>
 				<th>Comment</th>
+				#if ($testSuite.NumberOfIgnoredTestCases > 0)
+					<th>Reason for Skipping</th>
+				#end	
 			</tr>
 			#foreach($testCase in $testSuite.TestCases)
 			<tr class="$testCase.Status">
 				<td><a href="${testSuite.getTag("HTMLPathToBaseDir")}/${testCase.getTag("HTMLPathFromBaseDir")}">$name.format($testCase)</a></td>
 				#set ($duration = $testCase.Duration)
-				    <td align="center">$time.format($duration)</td>
-					<td align="center">$testCase.NumberOfTestSteps</td>
-					<td align="center">#if($testCase.IgnoredAndPassed)Skipped though successful#end</td>
+				<td align="center">$time.format($duration)</td>
+				<td align="center">$testCase.NumberOfTestSteps</td>
+				<td align="center">#if($testCase.IgnoredAndPassed)Skipped though successful#end</td>
+				#if ($testSuite.NumberOfIgnoredTestCases > 0)
+					<td align="center">$!{testCase.IgnoredReason}</td>
+				#end
 			</tr>
 			#end
 		</table>
