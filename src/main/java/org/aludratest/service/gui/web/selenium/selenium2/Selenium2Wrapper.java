@@ -1066,15 +1066,6 @@ public class Selenium2Wrapper {
         }
         sendKeys(element, value);
 
-        if (configuration.getInputEnterLatency() > 0) {
-            try {
-                Thread.sleep(configuration.getInputEnterLatency());
-            }
-            catch (InterruptedException e) {
-                return;
-            }
-        }
-
         try {
             sendKeys(element, Keys.TAB);
         }
