@@ -206,7 +206,7 @@ public class AludraSeleniumHttpCommandExecutor implements CommandExecutor, Needs
                     .setSocketTimeout(requestTimeout).build();
             ((HttpRequestBase) httpMethod).setConfig(requestConfig);
         }
-        else {
+        else if (httpMethod instanceof HttpRequestBase) {
             // ensure Selenium Standard is set
             RequestConfig requestConfig = RequestConfig.custom().setConnectionRequestTimeout(60000).setConnectTimeout(60000)
                     .setSocketTimeout(THREE_HOURS).build();

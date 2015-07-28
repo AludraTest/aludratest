@@ -75,6 +75,11 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
         wrapper.hover(locator, elementName, taskCompletionTimeout);
     }
 
+    @Override
+    public String clickForDownload(String elementType, String elementName, GUIElementLocator locator, int taskCompletionTimeout) {
+        return wrapper.clickForDownload(locator, taskCompletionTimeout);
+    }
+
     // radio button selection --------------------------------------------------
 
     @Override

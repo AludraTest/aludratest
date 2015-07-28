@@ -91,6 +91,12 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
+    public String clickForDownload(String elementType, String elementName, GUIElementLocator locator, int taskCompletionTimeout) {
+        // unsupported operation for Selenium 1
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void hover(String elementType, String elementName, GUIElementLocator locator, int taskCompletionTimeout) {
         wrapper.hover(locator, taskCompletionTimeout);
     }
