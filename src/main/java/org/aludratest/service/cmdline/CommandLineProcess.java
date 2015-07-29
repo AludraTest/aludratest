@@ -15,7 +15,6 @@
  */
 package org.aludratest.service.cmdline;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -50,6 +49,7 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> {
         this.service = service;
         this.commands = commands;
         this.processId = service.perform().create(processType, processName, processTimeout, responseTimeout, commands);
+        setRelativeWorkingDirectory(".");
     }
 
     /** Sets the working directory of the process

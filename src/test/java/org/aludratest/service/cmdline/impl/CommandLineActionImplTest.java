@@ -18,6 +18,7 @@ package org.aludratest.service.cmdline.impl;
 import static org.junit.Assert.assertEquals;
 
 import org.aludratest.AludraTest;
+import org.aludratest.config.impl.SimplePreferences;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.service.cmdline.CommandLineProcess;
 import org.aludratest.service.cmdline.CommandLineService;
@@ -175,6 +176,9 @@ public class CommandLineActionImplTest {
 
     private CommandLineService getCommandLineService() {
         CommandLineServiceImpl service = new CommandLineServiceImpl();
+        SimplePreferences preferences = new SimplePreferences();
+        preferences.setValue(CommandLineServiceConfiguration.BASE_DIRECTORY, ".");
+        service.configure(preferences);
         service.init(null);
         return service;
     }

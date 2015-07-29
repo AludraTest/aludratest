@@ -25,6 +25,9 @@ import org.apache.commons.vfs2.FileSystemException;
  * @author Volker Bergmann */
 public class CommandLineServiceConfiguration implements AludraCloseable {
 
+    /** property name of the base directory for the CommandLineService */
+    public static final String BASE_DIRECTORY = "base.directory";
+
     private ValidatingPreferencesWrapper configuration;
 
     /** Creates a new FileServiceConfiguration object which wraps the given Preferences object.
@@ -36,7 +39,7 @@ public class CommandLineServiceConfiguration implements AludraCloseable {
 
     /** @return the root folder of the service. */
     public final String getBaseDirectory() {
-        return configuration.getRequiredStringValue("base.directory");
+        return configuration.getRequiredStringValue(BASE_DIRECTORY);
     }
 
     @Override
