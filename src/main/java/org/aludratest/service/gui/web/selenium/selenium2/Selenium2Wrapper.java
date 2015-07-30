@@ -920,6 +920,31 @@ public class Selenium2Wrapper {
         return attachment;
     }
 
+    public List<Attachment> getWindowsScreenshots() {
+        LOGGER.debug("getWindowsScreenshots()");
+        Base64 base64 = new Base64();
+
+        Set<String> windowHandles = getWindowHandles();
+        String activeHandle = getWindowHandle();
+
+        List<Attachment> result = new ArrayList<Attachment>();
+
+        int index = 0;
+        for (String handle : windowHandles) {
+            driver.switchTo().window(handle);
+            String data = captureActiveWindowScreenshotToString();
+            byte[] decodedData = base64.decode(data);
+            String title = driver.getTitle();
+
+            result.add(new BinaryAttachment("Screenshot-" + (title == null ? "" + (++index) : title), decodedData, configuration
+                    .getScreenshotAttachmentExtension()));
+        }
+
+        driver.switchTo().window(activeHandle);
+
+        return result;
+    }
+
     private String captureScreenshotToString() {
         // use Selenium1 interface to capture full screen
         String url = seleniumUrl.toString();
@@ -944,6 +969,23 @@ public class Selenium2Wrapper {
             }
         }
 
+        WebDriver screenshotDriver;
+        if (RemoteWebDriver.class.isAssignableFrom(driver.getClass())) {
+            screenshotDriver = new Augmenter().augment(driver);
+        }
+        else {
+            screenshotDriver = driver;
+        }
+        if (screenshotDriver instanceof TakesScreenshot) {
+            TakesScreenshot tsDriver = (TakesScreenshot) screenshotDriver;
+            return tsDriver.getScreenshotAs(OutputType.BASE64);
+        }
+        else {
+            throw new UnsupportedOperationException(driver.getClass() + " does not implement TakeScreenshot");
+        }
+    }
+
+    private String captureActiveWindowScreenshotToString() {
         WebDriver screenshotDriver;
         if (RemoteWebDriver.class.isAssignableFrom(driver.getClass())) {
             screenshotDriver = new Augmenter().augment(driver);

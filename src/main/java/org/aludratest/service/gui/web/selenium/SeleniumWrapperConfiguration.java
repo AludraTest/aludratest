@@ -236,4 +236,12 @@ public final class SeleniumWrapperConfiguration {
         return Boolean.valueOf(configuration.getStringValue("use.remotedriver", "false")).booleanValue();
     }
 
+    /** Returns, for Selenium 2, if screenshots shall be taken per window (resulting in N attachments for N open windows), or of
+     * the whole screen (the default).
+     * 
+     * @return <code>true</code> if screenshots shall be taken per window, <code>false</code> for the whole screen. */
+    public boolean isScreenshotPerWindow() {
+        return Boolean.valueOf(configuration.getStringValue("screenshot.per.window", "false")).booleanValue();
+    }
+
 }
