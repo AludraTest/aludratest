@@ -1146,14 +1146,19 @@ public class Selenium2Wrapper {
     private void select(final OptionLocator optionLocator, WebElement element) {
         LOGGER.debug("select({}, WebElement)", optionLocator);
         Select select = new Select(element);
-        if (optionLocator instanceof org.aludratest.service.locator.option.LabelLocator) {
-            select.selectByVisibleText(((org.aludratest.service.locator.option.LabelLocator) optionLocator).getLabel());
+        try {
+            if (optionLocator instanceof org.aludratest.service.locator.option.LabelLocator) {
+                select.selectByVisibleText(((org.aludratest.service.locator.option.LabelLocator) optionLocator).getLabel());
+            }
+            else if (optionLocator instanceof IndexLocator) {
+                select.selectByIndex(((IndexLocator) optionLocator).getIndex());
+            }
+            else {
+                throw ServiceUtil.newUnsupportedLocatorException(optionLocator);
+            }
         }
-        else if (optionLocator instanceof IndexLocator) {
-            select.selectByIndex(((IndexLocator) optionLocator).getIndex());
-        }
-        else {
-            throw ServiceUtil.newUnsupportedLocatorException(optionLocator);
+        catch (NoSuchElementException e) {
+            throw new AutomationException("Selection Item not found");
         }
     }
 
