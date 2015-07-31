@@ -21,14 +21,25 @@ import org.openqa.selenium.WebElement;
 
 public class ElementEnabledCondition extends WebElementCondition {
 
+    private boolean enabled = true;
+
+    public ElementEnabledCondition(GUIElementLocator locator, LocatorSupport locatorSupport, boolean enabled) {
+        this(locator, locatorSupport);
+        this.enabled = enabled;
+    }
+
     public ElementEnabledCondition(GUIElementLocator locator, LocatorSupport locatorSupport) {
         super(locator, locatorSupport);
     }
 
     @Override
     protected WebElement applyOnElement(WebElement element) {
-        if (!element.isEnabled()) {
+        if (enabled && !element.isEnabled()) {
             this.message = "Element not enabled";
+            return null;
+        }
+        if (!enabled && element.isEnabled()) {
+            this.message = "Element enabled";
             return null;
         }
 
