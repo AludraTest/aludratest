@@ -741,6 +741,17 @@ public class Selenium2Wrapper {
     }
 
     @SuppressWarnings("unchecked")
+    public WebElement waitUntilNotEnabled(GUIElementLocator locator, long timeOutInMillis) {
+        ElementEnabledCondition condition = new ElementEnabledCondition(locator, locatorSupport, false);
+        try {
+            return waitFor(condition, timeOutInMillis, NoSuchElementException.class);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage()); // NOSONAR
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     public WebElement waitUntilEditable(GUIElementLocator locator, long timeOutInMillis) {
         ElementEditableCondition condition = new ElementEditableCondition(locator, locatorSupport);
         try {

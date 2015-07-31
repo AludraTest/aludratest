@@ -87,14 +87,10 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
     @Override
     public void assertNotEnabled(String elementType, String elementName, GUIElementLocator locator) {
         try {
-            wrapper.waitUntilEnabled(locator, getTimeout());
-            throw new FunctionalFailure("Element not expected to be enabled");
-        }
-        catch (FunctionalFailure e) {
-            throw e;
+            wrapper.waitUntilNotEnabled(locator, getTimeout());
         }
         catch (AutomationException e) { // NOSONAR
-            // this is the desired outcome
+            throw new FunctionalFailure(e.getMessage());
         }
     }
 
