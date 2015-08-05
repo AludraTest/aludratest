@@ -706,8 +706,11 @@ public class Selenium2Wrapper {
         catch (SeleniumException e) {
             String message = e.getMessage();
             if (message != null && message.contains("Timed out")) {
-                throw new PerformanceFailure("Timed out opening '" + url + "': " + e);
+                throw new PerformanceFailure("Timed out opening '" + url + "': " + e.getMessage(), e);
             }
+        }
+        catch (TimeoutException e) {
+            throw new PerformanceFailure("Timed out opening '" + url + "': " + e.getMessage(), e);
         }
     }
 
