@@ -47,6 +47,9 @@ public interface Element<E extends Element<E>> extends GUIComponent {
     /** Asserts that the element is visible */
     public void assertVisible();
 
+    /** Asserts that the element is not visible */
+    public void assertNotVisible();
+
     /** Asserts that this element is enabled, i.e. does not have an active "disabled" state. */
     public void assertEnabled();
 

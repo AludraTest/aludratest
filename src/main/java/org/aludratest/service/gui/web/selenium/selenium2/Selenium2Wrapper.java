@@ -49,6 +49,7 @@ import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownOptio
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementEditableCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementEnabledCondition;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementNotVisibleCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementValuePresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.MixedElementCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.NotCondition;
@@ -772,6 +773,16 @@ public class Selenium2Wrapper {
                     NoSuchElementException.class);
         } catch (TimeoutException e) {
             throw new AutomationException("The element is not visible."); // NOSONAR
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void waitUntilNotVisible(GUIElementLocator locator, long timeOutInMillis) {
+        try {
+            waitFor(new ElementNotVisibleCondition(locator, locatorSupport), timeOutInMillis, NoSuchElementException.class);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException("The element is unexpectedly visible."); // NOSONAR
         }
     }
 

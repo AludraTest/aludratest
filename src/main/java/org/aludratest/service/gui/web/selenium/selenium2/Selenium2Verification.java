@@ -51,6 +51,16 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
     }
 
     @Override
+    public void assertNotVisible(String elementType, String elementName, GUIElementLocator locator) {
+        try {
+            wrapper.waitUntilNotVisible(locator, getTimeout());
+        }
+        catch (AutomationException e) {
+            throw new FunctionalFailure(e.getMessage());
+        }
+    }
+
+    @Override
     public void assertEditable(String elementType, String operation, GUIElementLocator locator) {
         try {
             wrapper.waitUntilEditable(locator, getTimeout());

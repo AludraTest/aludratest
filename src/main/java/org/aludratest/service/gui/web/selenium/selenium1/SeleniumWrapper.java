@@ -218,6 +218,33 @@ public class SeleniumWrapper {
         }
     }
 
+    /** Waits until an element is not visible.
+     * @param locator a {@link GUIElementLocator} of the target element */
+    public void waitForNotVisible(GUIElementLocator locator) {
+        waitForNotVisible(locator, getTimeout());
+    }
+
+    /** Waits until an element is not visible.
+     * @param locator a {@link GUIElementLocator} of the target element
+     * @param timeout the maximum time to wait */
+    public void waitForNotVisible(final GUIElementLocator locator, long timeout) {
+        if (!isCalledByLink()) {
+            if ((locator instanceof ElementLocatorsGUI) && ((ElementLocatorsGUI) locator).getUsedOption() == null) {
+                throw new AutomationException("ElementLocatorsGUI must have usedOption set before waiting for not visible");
+            }
+
+            ConditionCheck invisibilityCheck = new ConditionCheck() {
+                @Override
+                public boolean eval() {
+                    return !selenium.isVisible(locator);
+                }
+            };
+            if (!retryUntilTrueOrTimeout(invisibilityCheck, timeout)) {
+                throw new AutomationException("The element is unexpectedly visible.");
+            }
+        }
+    }
+
     /** Waits until an element is enabled.
      *  @param locator a {@link GUIElementLocator} of the target element */
     public void waitForEnabled(GUIElementLocator locator) {
