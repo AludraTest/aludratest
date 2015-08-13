@@ -252,7 +252,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                         }
 
                         // perform auto-conversion based on type
-                        if (value instanceof String) {
+                        if (value instanceof String && !"".equals(value)) {
                             switch (fieldMeta.getType()) {
                                 case BOOLEAN:
                                     value = Boolean.parseBoolean(value.toString());
@@ -281,6 +281,9 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
 
                             return format(value, fieldMeta.getFormatterPattern(), toLocale(fieldMeta.getFormatterLocale()))
                                     .toString();
+                        }
+                        else if ("".equals(value)) {
+                            return null;
                         }
                         return value;
                     }
