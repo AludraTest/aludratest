@@ -244,4 +244,12 @@ public final class SeleniumWrapperConfiguration {
         return Boolean.valueOf(configuration.getStringValue("screenshot.per.window", "false")).booleanValue();
     }
 
+    /** Returns, for Selenium 2, the TCP timeout to use. If the Selenium Client does not respond within this period of time, the
+     * request is aborted, and a SocketTimeoutException will be raised.
+     * 
+     * @return TCP timeout to use, in milliseconds. */
+    public int getTcpTimeout() {
+        return configuration.getIntValue("tcp.timeout", 5000);
+    }
+
 }
