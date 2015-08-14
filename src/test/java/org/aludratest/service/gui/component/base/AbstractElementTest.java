@@ -132,6 +132,19 @@ public abstract class AbstractElementTest extends GUITest {
         checkLastStepErrorMessage("The element is not visible.");
     }
 
+    @Test
+    public void assertNotVisibleOnHiddenElement() {
+        guiTestUIMap.hiddenButton().assertNotVisible();
+        checkLastStepStatus(TestStatus.PASSED);
+    }
+
+    @Test
+    public void assertNotVisibleOnVisibleElement() {
+        guiTestUIMap.findButton().assertNotVisible();
+        checkLastStepStatus(TestStatus.FAILED);
+        checkLastStepErrorMessage("The element is unexpectedly visible.");
+    }
+
     /**
      * positive case to test method {@link org.aludratest.service.gui.component.Element#assertFocus()}
      * <br/> test focus text field,

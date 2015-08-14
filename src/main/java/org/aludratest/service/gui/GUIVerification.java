@@ -54,6 +54,14 @@ public interface GUIVerification extends Verification {
     void assertVisible(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator);
 
+    /** Verifies for an element identified by a locator that it is <b>not</b> visible. Elements being visible will raise an
+     * exception which will be handled by the test framework.
+     * @param elementType Type of the element, depending on the implementation.
+     * @param elementName Name of the element.
+     * @param locator Locator of the element. */
+    void assertNotVisible(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator);
+
     /** Verifies for an element identified by a locator that it is editable. Read-only elements will raise an exception which will
      * be handled by the test framework. <br>
      * Usually, an "editable" state only applies to text input components, which can have a "read-only" state. Other components

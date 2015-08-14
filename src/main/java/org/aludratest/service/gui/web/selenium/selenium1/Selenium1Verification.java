@@ -56,6 +56,17 @@ public class Selenium1Verification extends AbstractSeleniumAction implements Web
     }
 
     @Override
+    public void assertNotVisible(String elementType, String elementName, GUIElementLocator locator) {
+        try {
+            wrapper.waitForNotVisible(locator);
+        }
+        catch (AutomationException e) {
+            // because of ASSERTION, it is a functional failure (expected failure from SUT)
+            throw new FunctionalFailure(e.getMessage());
+        }
+    }
+
+    @Override
     public void assertEditable(String elementType, String operation, GUIElementLocator locator) {
         if (!wrapper.isEditable(locator)) {
             throw new FunctionalFailure("Element not editable");

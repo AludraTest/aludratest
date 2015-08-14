@@ -71,6 +71,11 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
     }
 
     @Override
+    public void assertNotVisible() {
+        verify().assertNotVisible(elementType, elementName, getLocator());
+    }
+
+    @Override
     public void assertEnabled() {
         verify().assertEnabled(elementType, elementName, getLocator());
 
