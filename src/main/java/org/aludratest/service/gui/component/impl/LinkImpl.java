@@ -16,6 +16,7 @@
 package org.aludratest.service.gui.component.impl;
 
 import org.aludratest.service.gui.component.Link;
+import org.aludratest.service.gui.component.ValueComponent;
 import org.databene.commons.Validator;
 
 /** Default implementation of the Link interface. */

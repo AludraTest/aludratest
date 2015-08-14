@@ -21,9 +21,9 @@ import java.io.Reader;
 import java.util.List;
 
 import org.aludratest.exception.AutomationException;
-import org.aludratest.impl.log4testing.ElementType;
-import org.aludratest.impl.log4testing.TechnicalLocator;
+import org.aludratest.service.ElementType;
 import org.aludratest.service.Interaction;
+import org.aludratest.service.TechnicalLocator;
 
 /**
  * {@link Interaction} interface of the {@link FileService}.

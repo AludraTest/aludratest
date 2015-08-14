@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.file.util;
+package org.aludratest.service;
 
-import org.aludratest.exception.AutomationException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import org.aludratest.testcase.event.TestStepArgumentMarker;
 
 /**
- * Provides file-related utility methods.
+ * Marks a service method argument to be logged as element type. 
  * @author Volker Bergmann
  */
-public class FileUtil {
-
-    private FileUtil() { }
-
-    /** Requires a file path not to be empty or null.
-     *  @param filePath */
-    public static void verifyFilePath(String filePath) {
-        if (filePath == null || filePath.length() == 0) {
-            throw new AutomationException("File path is empty or null");
-        }
-    }
+@Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+@Target(java.lang.annotation.ElementType.PARAMETER)
+@TestStepArgumentMarker
+public @interface ElementType {
 
 }

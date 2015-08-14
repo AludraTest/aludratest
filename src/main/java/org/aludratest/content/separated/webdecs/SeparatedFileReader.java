@@ -20,8 +20,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.aludratest.content.flat.data.RowTypeData;
-import org.aludratest.content.flat.webdecs.FlatFileBeanReader;
 import org.aludratest.content.separated.data.SeparatedFileBeanData;
 import org.aludratest.content.separated.util.SeparatedUtil;
 import org.aludratest.exception.TechnicalException;
@@ -34,31 +32,27 @@ import org.slf4j.LoggerFactory;
 /**
  * Reads data from a separated file.
  * @author Volker Bergmann
- * @param <E> 
+ * @param <E>
  */
 public class SeparatedFileReader<E extends SeparatedFileBeanData> implements Closeable {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(FlatFileBeanReader.class);
 
-    /** the reader that provides the flat file's character data. */
+    private static final Logger LOGGER = LoggerFactory.getLogger(SeparatedFileReader.class);
+
+    /** the reader that provides the separated file's character data. */
     private CSVToJavaBeanMapper<E> rowIterator;
-    
-    /**
-     * Constructor of the WebdecsBeanFlatFileReader.
-     * @param source the reader that provides the flat file's character data.
-     * @param beanType 
-     * @param separator 
-     * @throws IOException 
-     */
+
+    /** Constructor of the SeparatedFileReader.
+     * @param source the reader that provides the separated file's character data.
+     * @param beanType
+     * @param separator
+     * @throws IOException */
     public SeparatedFileReader(Reader source, Class<E> beanType, char separator) throws IOException {
         String[] featureNames = SeparatedUtil.featureNames(beanType);
         this.rowIterator = new CSVToJavaBeanMapper<E>(bufferedReader(source), beanType, separator, null, featureNames);
     }
 
-    /** 
-     * Reads a single text row of the flat file, determines its FlatFileBean type 
-     * using the configured {@link RowTypeData}s and creates a FlatFileBean instance 
-     * configured by the row data. 
+    /** Reads a single text row of the separated file and creates a {@link SeparatedFileBeanData} instance configured by the row
+     * data.
      * @return a {@link SeparatedFileBeanData} object representing the next row of the source document
      * @throws IOException */
     public E readRow() throws IOException {
@@ -72,7 +66,7 @@ public class SeparatedFileReader<E extends SeparatedFileBeanData> implements Clo
         LOGGER.debug("Imported data row: {}", rowData);
         return rowData.getData();
     }
-    
+
     protected String[] readRaw() {
         if (this.rowIterator == null) {
             throw new TechnicalException("Row iterator has already been closed: " + this);
@@ -97,7 +91,7 @@ public class SeparatedFileReader<E extends SeparatedFileBeanData> implements Clo
 
     // private helper ----------------------------------------------------------
 
-    /** Wraps a {@link Reader} with a {@link BufferedReader} if it is no instance of BufferedReader. 
+    /** Wraps a {@link Reader} with a {@link BufferedReader} if it is no instance of BufferedReader.
      *  @return a BufferedReader that provides the content of the Reader provided. */
     private static BufferedReader bufferedReader(Reader reader) {
         if (reader instanceof BufferedReader) {

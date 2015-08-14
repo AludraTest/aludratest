@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<conqat-architecture xmlns="http://conqat.cs.tum.edu/ns/architecture" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" policy="deny">
+   <component dim="171,40" name="mozilla rhino" pos="1280,670">
+      <code-mapping regex="org\.mozilla\.javascript\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="plexus" pos="1060,120">
+      <code-mapping regex="org\.codehaus\.plexus\..*" type="include"/>
+   </component>
+   <component dim="170,40" name="freemarker" pos="1280,870" stereotype="public">
+      <code-mapping regex="freemarker\..*" type="include"/>
+   </component>
+   <component dim="170,40" name="velocity" pos="1280,820" stereotype="public">
+      <code-mapping regex="org\.apache\.velocity\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="apache commons codec" pos="1070,570" stereotype="public">
+      <code-mapping regex="org\.apache\.commons\.codec\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="joda time" pos="1070,670" stereotype="public">
+      <code-mapping regex="org\.joda\..*" type="include"/>
+   </component>
+   <component dim="170,40" name="dom4j" pos="1280,970" stereotype="public">
+      <code-mapping regex="org\.dom4j\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="apache commons lang" pos="1070,720" stereotype="public">
+      <code-mapping regex="org\.apache\.commons\.lang\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="apache http" pos="1070,820" stereotype="public">
+      <code-mapping regex="org\.apache\.http\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="apache vfs2" pos="1070,920" stereotype="public">
+      <code-mapping regex="org\.apache\.commons\.vfs2\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="apache commons io" pos="1070,1020" stereotype="public">
+      <code-mapping regex="org\.apache\.commons\.io\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="databene commons" pos="1070,870" stereotype="public">
+      <code-mapping regex="org\.databene\.commons\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="databene formats" pos="1070,770" stereotype="public">
+      <code-mapping regex="org\.databene\.formats\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="edifatto" pos="1070,520" stereotype="public">
+      <code-mapping regex="org\.databene\.edifatto\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="pmd" pos="1060,300">
+      <code-mapping regex="net\.sourceforge\.pmd\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="poi" pos="1280,720" stereotype="public">
+      <code-mapping regex="org\.apache\.poi\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="json" pos="1070,470" stereotype="public">
+      <code-mapping regex="org\.json\..*" type="include"/>
+   </component>
+   <component dim="1001,1051" name="aludratest" pos="10,10">
+      <component dim="171,40" name="testcase implementation" pos="750,260">
+         <code-mapping regex="org\.aludratest\.testcase\.impl\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.testcase\.data\.impl\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.testcase\.event\.impl\..*" type="include"/>
+      </component>
+      <component dim="120, 40" name="applications" pos="610,50">
+         <code-mapping regex="org\.aludratest\.app\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.AludraTest" type="include"/>
+      </component>
+      <component dim="120, 40" name="junit adapter" pos="860,50">
+         <code-mapping regex="org\.aludratest\.junit\..*" type="include"/>
+      </component>
+      <component dim="140,40" name="pmd rule checks" pos="600,290">
+         <code-mapping regex="org\.aludratest\.codecheck.rule.pmd\..*" type="include"/>
+      </component><!--  config -->
+      <component dim="161,40" name="config interface" pos="750,160" stereotype="public">
+         <code-mapping regex="org\.aludratest\.config\.[^\.]*" type="include"/>
+      </component>
+      <component dim="161,41" name="config implementation" pos="750,210">
+         <code-mapping regex="org\.aludratest\.config\.impl\..*" type="include"/>
+      </component>
+      <component dim="481,300" name="content" pos="20,90">
+         <component dim="190,40" name="content interface" pos="30,40" stereotype="public">
+            <code-mapping regex="org\.aludratest\.content\.[^\.]*" type="include"/>
+         </component><!-- edifact content -->
+         <component dim="190,40" name="edifact content interface" pos="30,90">
+            <code-mapping regex="org\.aludratest\.content\.edifact\.[^\.]*" type="include"/>
+         </component>
+         <component dim="201,40" name="edifact content implementation" pos="250,90">
+            <code-mapping regex="org\.aludratest\.content\.edifact\.edifatto\..*" type="include"/>
+         </component><!-- flat content -->
+         <component dim="190,40" name="flat content interface" pos="30,140">
+            <code-mapping regex="org\.aludratest\.content\.flat\.[^\.]*" type="include"/>
+            <code-mapping regex="org\.aludratest\.content\.flat.data\..*" type="include"/>
+         </component>
+         <component dim="201,40" name="flat content implementation" pos="250,140">
+            <code-mapping regex="org\.aludratest\.content\.flat\.webdecs\..*" type="include"/>
+         </component><!-- separated content -->
+         <component dim="190,40" name="separated content interface" pos="30,190">
+            <code-mapping regex="org\.aludratest\.content\.separated\.[^\.]*" type="include"/>
+            <code-mapping regex="org\.aludratest\.content\.separated\.data\..*" type="include"/>
+         </component>
+         <component dim="201,40" name="separated content implementation" pos="250,190">
+            <code-mapping regex="org\.aludratest\.content\.separated\.util\..*" type="include"/>
+            <code-mapping regex="org\.aludratest\.content\.separated\.webdecs\..*" type="include"/>
+         </component><!-- XML content -->
+         <component dim="190,40" name="xml content interface" pos="30,240">
+            <code-mapping regex="org\.aludratest\.content.xml\.[^\.]*" type="include"/>
+         </component>
+         <component dim="201,40" name="xml content implementation" pos="250,240">
+            <code-mapping regex="org\.aludratest\.content\.xml\.impl\..*" type="include"/>
+         </component>
+      </component><!-- service -->
+      <component dim="951,631" name="service" pos="20,400">
+         <component dim="141,40" name="service interface" pos="20,50" stereotype="public">
+            <code-mapping regex="org\.aludratest\.service\.[^\.]*" type="include"/>
+            <code-mapping regex="org\.aludratest\.service\.locator\..*" type="include"/>
+         </component>
+         <component dim="171,40" name="service manager" pos="20,110">
+            <code-mapping regex="org\.aludratest\.service\.impl\.[^\.]*" type="include"/>
+         </component>
+         <component dim="120, 40" name="service utilities" pos="200,110" stereotype="public">
+            <code-mapping regex="org\.aludratest\.service\.util\.[^\.]*" type="include"/>
+         </component><!-- command line service -->
+         <component dim="241,40" name="command line service interface" pos="600,60">
+            <code-mapping regex="org\.aludratest\.service\.cmdline\.[^\.]*" type="include"/>
+         </component>
+         <component dim="241,40" name="command line service implementation" pos="600,120">
+            <code-mapping regex="org\.aludratest\.service\.cmdline\.impl\..*" type="include"/>
+         </component><!-- edifact file service -->
+         <component dim="221,40" name="edifact file service interface" pos="270,190">
+            <code-mapping regex="org\.aludratest\.service\.edifactfile\.[^\.]*" type="include"/>
+            <code-mapping regex="org\.aludratest\.service\.edifactfile\.data\.[^\.]*" type="include"/>
+         </component>
+         <component dim="221,40" name="edifact file service implementation" pos="270,250">
+            <code-mapping regex="org\.aludratest\.service\.edifactfile\.edifatto\..*" type="include"/>
+         </component><!-- file service -->
+         <component dim="181,40" name="file service interface" pos="400,60">
+            <code-mapping regex="org\.aludratest\.service\.file\.[^\.]*" type="include"/>
+            <code-mapping regex="org\.aludratest\.service\.file\.data\.[^\.]*" type="include"/>
+            <code-mapping regex="org\.aludratest\.service\.file\.filter\.[^\.]*" type="include"/>
+         </component>
+         <component dim="181,40" name="file service implementation" pos="400,120">
+            <code-mapping regex="org\.aludratest\.service\.file\.util\.[^\.]*" type="include"/><!-- TODO remove FileUtil -->
+            <code-mapping regex="org\.aludratest\.service\.file\.impl\..*" type="include"/>
+         </component><!-- flat file service -->
+         <component dim="200,40" name="flat file service interface" pos="490,400">
+            <code-mapping regex="org\.aludratest\.service\.flatfile\.[^\.]*" type="include"/>
+         </component>
+         <component dim="201,40" name="flat file service implementation" pos="490,460">
+            <code-mapping regex="org\.aludratest\.service\.flatfile\.impl\..*" type="include"/>
+         </component>
+         <component dim="131,40" name="git client service" pos="600,190">
+            <code-mapping regex="org\.aludratest\.service\.gitclient\..*" type="include"/>
+         </component><!-- separated file service -->
+         <component dim="241,40" name="separated file service interface" pos="690,260">
+            <code-mapping regex="org\.aludratest\.service\.separatedfile\.[^\.]*" type="include"/>
+         </component>
+         <component dim="241,40" name="separated file service implementation" pos="690,330">
+            <code-mapping regex="org\.aludratest\.service\.separatedfile\.impl\..*" type="include"/>
+         </component><!-- gui services -->
+         <component dim="441,301" name="gui service" pos="10,310">
+            <component dim="151,40" name="gui service interface" pos="10,40">
+               <code-mapping regex="org\.aludratest\.service\.gui\.[^\.]*" type="include"/>
+               <code-mapping regex="org\.aludratest\.service\.gui\.component\.[^\.]*" type="include"/>
+            </component>
+            <component dim="181,41" name="gui service implementation" pos="180,40">
+               <code-mapping regex="org\.aludratest\.service.gui.component.impl\..*" type="include"/>
+            </component>
+            <component dim="421,201" name="web gui service" pos="10,90">
+               <component dim="171,40" name="web gui service interface" pos="10,40">
+                  <code-mapping regex="org\.aludratest\.service\.gui\.web\.[^\.]*" type="include"/>
+                  <code-mapping regex="org\.aludratest\.service\.gui\.web\.page\..*" type="include"/>
+                  <code-mapping regex="org\.aludratest\.service\.gui\.web\.uimap\..*" type="include"/>
+               </component>
+               <component dim="120, 40" name="web gui utilities" pos="140,90"><!-- TODO move general web utilities here -->
+                  <code-mapping regex="org\.aludratest\.service\.gui\.web\.util\..*" type="include"/>
+               </component>
+               <component dim="130,40" name="selenium utilities" pos="130,150"><!-- TODO separate general web utilities from Selenium utilities -->
+                  <code-mapping regex="org\.aludratest\.service\.gui\.web\.selenium\.[^\.]*" type="include"/>
+               </component>
+               <component dim="120, 40" name="selenium 1 service implementation" pos="10,90">
+                  <code-mapping regex="org\.aludratest\.service\.gui\.web\.selenium\.selenium1\..*" type="include"/>
+               </component>
+               <component dim="120, 40" name="selenium 2 service implementation" pos="270,90">
+                  <code-mapping regex="org\.aludratest\.service\.gui\.web\.selenium\.selenium2\..*" type="include"/>
+               </component>
+               <component dim="151,40" name="authenticating proxy" pos="260,40">
+                  <code-mapping regex="org\.aludratest\.service\.gui\.web\.selenium\.httpproxy\..*" type="include"/>
+               </component>
+            </component>
+         </component><!-- jms service -->
+         <component dim="120, 40" name="jms service" pos="20,230">
+            <code-mapping regex="org\.aludratest\.service.jms\..*" type="include"/>
+         </component>
+      </component>
+      <component dim="120, 40" name="engine" pos="610,120">
+         <code-mapping regex="org\.aludratest\.impl\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.scheduler\.impl\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.scheduler\.util\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.invoker\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.impl\.plexus\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.impl\.log4testing\..*" type="exclude"/>
+      </component>
+      <component dim="120, 40" name="utilities" pos="190,40" stereotype="public">
+         <code-mapping regex="org\.aludratest\.util\..*" type="include"/>
+      </component>
+      <component dim="151,40" name="aludratest interface" pos="20,40" stereotype="public"><!-- TODO more detail -->
+         <code-mapping regex="org\.aludratest\.[^\.]*" type="include"/>
+         <code-mapping regex="org\.aludratest\.AludraTest" type="exclude"/>
+         <code-mapping regex="org\.aludratest\.exception\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.dict\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.data\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.PreconditionFailedException\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.testcase\..*" type="include"/>
+         <code-mapping regex="org\.aludratest\.scheduler\.[^\.]*" type="include"/>
+         <code-mapping regex="org\.aludratest\.scheduler\.node\.[^\.]*" type="include"/>
+         <code-mapping regex="org\.aludratest\.scheduler\.sort\.[^\.]*" type="include"/>
+         <code-mapping regex="org\.aludratest\.testcase\.impl\..*" type="exclude"/>
+         <code-mapping regex="org\.aludratest\.testcase\..*\.impl\..*" type="exclude"/>
+      </component>
+      <component dim="171,40" name="log4testing" pos="780,340">
+         <code-mapping regex="org\.aludratest\.impl\.log4testing\..*" type="include"/>
+      </component>
+   </component>
+   <component dim="170,40" name="jdk" pos="1280,1020" stereotype="public">
+      <code-mapping regex="java\..*" type="include"/>
+      <code-mapping regex="javax\..*" type="include"/>
+      <code-mapping regex="org\.w3c\..*" type="include"/>
+      <code-mapping regex="org\.xml\..*" type="include"/>
+   </component>
+   <component dim="120, 40" name="selenium 1" pos="60,1090">
+      <code-mapping regex="com\.thoughtworks\.selenium\..*" type="include"/>
+   </component>
+   <component dim="120, 40" name="selenium 2" pos="320,1090">
+      <code-mapping regex="org\.openqa\.selenium\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="junit" pos="1060,60">
+      <code-mapping regex="org\.junit\..*" type="include"/>
+      <code-mapping regex="junit\.framework\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="google common base" pos="1070,970" stereotype="public">
+      <code-mapping regex="com\.google\.common\.base\..*" type="include"/>
+   </component>
+   <component dim="171,40" name="jaxen" pos="1280,920" stereotype="public">
+      <code-mapping regex="org\.jaxen\..*" type="include"/>
+   </component>
+   <component dim="170,40" name="slf4j logging" pos="1280,770" stereotype="public">
+      <code-mapping regex="org\.slf4j\..*" type="include"/>
+   </component><!-- Policies that specify allowed any denied dependencies between components -->
+   <allow source="applications" target="engine"/>
+   <allow source="applications" target="plexus"/>
+   <allow source="engine" target="pmd rule checks"/>
+   <allow source="engine" target="service manager"/>
+   <allow source="engine" target="plexus"/>
+   <allow source="config interface" target="plexus"/>
+   <allow source="junit adapter" target="junit"/>
+   <allow source="junit adapter" target="applications"/>
+   <allow source="junit adapter" target="engine"/>
+   <allow source="flat content implementation" target="flat content interface"/>
+   <allow source="separated content implementation" target="separated content interface"/>
+   <allow source="xml content implementation" target="xml content interface"/>
+   <allow source="edifact content implementation" target="edifact content interface"/>
+   <allow source="service manager" target="plexus"/>
+   <allow source="command line service implementation" target="command line service interface"/>
+   <allow source="git client service" target="command line service interface"/>
+   <allow source="file service implementation" target="file service interface"/>
+   <allow source="gui service implementation" target="gui service interface"/>
+   <allow source="gui service implementation" target="plexus"/>
+   <allow source="web gui service interface" target="gui service interface"/>
+   <allow source="selenium utilities" target="web gui service interface"/>
+   <allow source="selenium utilities" target="gui service implementation"/>
+   <allow source="selenium 1 service implementation" target="selenium 1"/>
+   <allow source="selenium 1 service implementation" target="web gui service interface"/>
+   <allow source="selenium 1 service implementation" target="selenium utilities"/>
+   <allow source="selenium 1 service implementation" target="gui service implementation"/>
+   <allow source="selenium 2 service implementation" target="web gui service interface"/>
+   <allow source="selenium 2 service implementation" target="selenium 2"/>
+   <allow source="selenium 2 service implementation" target="selenium utilities"/>
+   <allow source="selenium 2 service implementation" target="authenticating proxy"/>
+   <allow source="edifact file service interface" target="edifact content interface"/>
+   <allow source="edifact file service interface" target="file service interface"/>
+   <allow source="edifact file service implementation" target="file service interface"/>
+   <allow source="edifact file service implementation" target="edifact content interface"/>
+   <allow source="edifact file service implementation" target="edifact file service interface"/>
+   <allow source="flat file service interface" target="file service interface"/>
+   <allow source="flat file service interface" target="flat content interface"/>
+   <allow source="flat file service implementation" target="file service interface"/>
+   <allow source="flat file service implementation" target="flat content interface"/>
+   <allow source="flat file service implementation" target="flat file service interface"/>
+   <allow source="separated file service interface" target="file service interface"/>
+   <allow source="separated file service interface" target="separated content interface"/>
+   <allow source="separated file service implementation" target="file service interface"/>
+   <allow source="separated file service implementation" target="separated content interface"/>
+   <allow source="separated file service implementation" target="separated file service interface"/>
+   <allow source="pmd rule checks" target="pmd"/>
+   <allow source="pmd rule checks" target="gui service interface"/>
+   <allow source="pmd rule checks" target="web gui service interface"/>
+   <allow source="testcase implementation" target="plexus"/>
+</conqat-architecture>

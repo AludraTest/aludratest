@@ -21,8 +21,8 @@ import java.io.OutputStream;
 import javax.xml.namespace.QName;
 
 import org.aludratest.content.ContentHandler;
-import org.aludratest.impl.log4testing.TechnicalArgument;
-import org.aludratest.impl.log4testing.TechnicalLocator;
+import org.aludratest.service.TechnicalArgument;
+import org.aludratest.service.TechnicalLocator;
 import org.w3c.dom.Document;
 
 public interface XMLContent extends ContentHandler {

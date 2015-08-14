@@ -15,9 +15,9 @@
  */
 package org.aludratest.service.edifactfile;
 
-import org.aludratest.impl.log4testing.ElementName;
-import org.aludratest.impl.log4testing.ElementType;
-import org.aludratest.impl.log4testing.TechnicalArgument;
+import org.aludratest.service.ElementName;
+import org.aludratest.service.ElementType;
+import org.aludratest.service.TechnicalArgument;
 import org.aludratest.service.Verification;
 import org.databene.edifatto.ComparisonSettings;
 import org.databene.edifatto.compare.ComparisonModel;
