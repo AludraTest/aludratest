@@ -42,6 +42,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.CommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -122,8 +123,11 @@ public class LocatorSupport {
             driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
             if (driver instanceof RemoteWebDriver) {
                 // also reduce timeout for TCP connection, in case remote hangs
-                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(config
-                        .getTcpTimeout());
+                CommandExecutor executor = ((RemoteWebDriver) driver).getCommandExecutor();
+                if (executor instanceof AludraSeleniumHttpCommandExecutor) {
+                    ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor())
+                            .setRequestTimeout(config.getTcpTimeout());
+                }
             }
 
             return findElement(locator, config.getTimeout());
@@ -132,7 +136,10 @@ public class LocatorSupport {
             driver.manage().timeouts().implicitlyWait(DEFAULT_IMPLICIT_WAIT_MILLIS, TimeUnit.MILLISECONDS);
             if (driver instanceof RemoteWebDriver) {
                 // restore defaults
-                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(0);
+                CommandExecutor executor = ((RemoteWebDriver) driver).getCommandExecutor();
+                if (executor instanceof AludraSeleniumHttpCommandExecutor) {
+                    ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(0);
+                }
             }
         }
     }
