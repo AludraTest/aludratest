@@ -17,7 +17,7 @@ package org.aludratest.service.util;
 
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.SystemConnectorInterface;
-import org.aludratest.util.ControlFlowHandler;
+import org.aludratest.testcase.event.impl.ControlFlowHandler;
 
 /** Permits separation of an {@link SystemConnector} reference and its implementation. This is used by the
  * {@link ControlFlowHandler} in order to enable dynamic change of the SystemConnector for existing proxy instances.

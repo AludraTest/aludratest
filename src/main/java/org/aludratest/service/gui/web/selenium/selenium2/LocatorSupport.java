@@ -33,7 +33,7 @@ import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.IdLocator;
 import org.aludratest.service.locator.element.LabelLocator;
 import org.aludratest.service.locator.element.XPathLocator;
-import org.aludratest.util.AludraTestUtil;
+import org.aludratest.testcase.event.impl.AludraTestUtil;
 import org.aludratest.util.retry.RetryService;
 import org.aludratest.util.timeout.TimeoutService;
 import org.openqa.selenium.By;

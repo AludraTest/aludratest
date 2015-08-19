@@ -40,6 +40,7 @@ import org.aludratest.service.util.AbstractSystemConnector;
 import org.aludratest.service.util.DirectLogTestListener;
 import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.event.attachment.Attachment;
+import org.aludratest.testcase.event.impl.AludraTestUtil;
 import org.aludratest.testcase.impl.AludraTestContextImpl;
 import org.junit.Before;
 import org.junit.Test;

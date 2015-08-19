@@ -26,8 +26,6 @@ import org.aludratest.service.ComponentId;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.util.SystemConnectorProxy;
 import org.aludratest.testcase.AludraTestContext;
-import org.aludratest.util.AludraTestUtil;
-import org.aludratest.util.ControlFlowHandler;
 
 /** {@link InvocationHandler} implementation for the dynamic proxy API. It is intended to wrap {@link AludraService} objects X and
  * add features in an aspect-like way to them: Any object Y returned by from a call to X' methods perform(), verify() or check()

@@ -15,13 +15,14 @@
  */
 package org.aludratest.util;
 
-import static org.aludratest.util.AludraTestUtil.nullOrPrimitiveDefault;
-import static org.aludratest.util.AludraTestUtil.unwrapInvocationTargetException;
+import static org.aludratest.testcase.event.impl.AludraTestUtil.nullOrPrimitiveDefault;
+import static org.aludratest.testcase.event.impl.AludraTestUtil.unwrapInvocationTargetException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.aludratest.testcase.event.impl.AludraTestUtil;
 import org.junit.Test;
 
 /**

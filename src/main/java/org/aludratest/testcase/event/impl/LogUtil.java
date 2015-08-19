@@ -20,7 +20,6 @@ import org.aludratest.scheduler.RunnerListenerRegistry;
 import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.testcase.AludraTestContext;
 import org.aludratest.testcase.TestStatus;
-import org.aludratest.util.AludraTestUtil;
 import org.aludratest.util.FlowController;
 
 public class LogUtil {

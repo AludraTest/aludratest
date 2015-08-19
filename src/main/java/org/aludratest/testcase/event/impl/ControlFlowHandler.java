@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.util;
+package org.aludratest.testcase.event.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -33,7 +33,7 @@ import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.event.ErrorReport;
 import org.aludratest.testcase.event.SystemErrorReporter;
 import org.aludratest.testcase.event.attachment.Attachment;
-import org.aludratest.testcase.event.impl.TestStepInfoBean;
+import org.aludratest.util.FlowController;
 import org.aludratest.util.retry.AutoRetry;
 import org.databene.commons.Assert;
 import org.slf4j.Logger;
