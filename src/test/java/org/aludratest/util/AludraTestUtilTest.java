@@ -15,13 +15,13 @@
  */
 package org.aludratest.util;
 
-import static org.aludratest.util.AludraTestUtil.nullOrPrimitiveDefault;
-import static org.aludratest.util.AludraTestUtil.unwrapInvocationTargetException;
+import static org.aludratest.testcase.event.impl.AludraTestUtil.nullOrPrimitiveDefault;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.aludratest.testcase.event.impl.AludraTestUtil;
 import org.junit.Test;
 
 /**
@@ -65,21 +65,21 @@ public class AludraTestUtilTest {
         // if an InvocationTargetException has a cause, the cause shall be returned
         RuntimeException rte = new RuntimeException();
         InvocationTargetException iteWithCause = new InvocationTargetException(rte);
-        assertTrue(rte == unwrapInvocationTargetException(iteWithCause));
+        assertTrue(rte == ExceptionUtil.unwrapInvocationTargetException(iteWithCause));
     }
 
     @Test
     public void testUnwrapInvocationTargetExceptionWithOtherException() {
         // any exception that is no InvocationTargetException shall be returned itself
         RuntimeException rte = new RuntimeException();
-        assertTrue(rte == unwrapInvocationTargetException(rte));
+        assertTrue(rte == ExceptionUtil.unwrapInvocationTargetException(rte));
     }
 
     @Test
     public void testUnwrapInvocationTargetExceptionWithoutCause() {
         // if an InvocationTargetException has no cause, it should be returned itself
         InvocationTargetException iteWithoutCause = new InvocationTargetException(null);
-        assertTrue(iteWithoutCause == unwrapInvocationTargetException(iteWithoutCause));
+        assertTrue(iteWithoutCause == ExceptionUtil.unwrapInvocationTargetException(iteWithoutCause));
     }
 
 }

@@ -20,7 +20,7 @@ import org.aludratest.scheduler.RunnerListenerRegistry;
 import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.testcase.AludraTestContext;
 import org.aludratest.testcase.TestStatus;
-import org.aludratest.util.AludraTestUtil;
+import org.aludratest.util.ExceptionUtil;
 import org.aludratest.util.FlowController;
 
 public class LogUtil {
@@ -32,7 +32,7 @@ public class LogUtil {
         listenerRegistry.fireNewTestStepGroup(leaf, "Error");
         TestStepInfoBean info = new TestStepInfoBean();
         info.setCommand("Error report");
-        info.setError(AludraTestUtil.unwrapInvocationTargetException(t));
+        info.setError(ExceptionUtil.unwrapInvocationTargetException(t));
         info.setErrorMessage(info.getError().getMessage());
 
         if (info.getError() instanceof AludraTestException) {
@@ -53,7 +53,7 @@ public class LogUtil {
         testContext.newTestStepGroup("Error");
         TestStepInfoBean info = new TestStepInfoBean();
         info.setCommand("Error report");
-        info.setError(AludraTestUtil.unwrapInvocationTargetException(t));
+        info.setError(ExceptionUtil.unwrapInvocationTargetException(t));
         info.setErrorMessage(errorMessage);
 
         if (info.getError() instanceof AludraTestException) {

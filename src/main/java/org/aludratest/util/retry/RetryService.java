@@ -17,7 +17,7 @@ package org.aludratest.util.retry;
 
 import java.util.concurrent.Callable;
 
-import org.aludratest.util.AludraTestUtil;
+import org.aludratest.util.ExceptionUtil;
 import org.databene.commons.Assert;
 
 /** Invokes a method on an object with the provided arguments. If an exception of a tolerated exception type occurs, the the
@@ -52,7 +52,7 @@ public class RetryService {
             }
             catch (Exception e) { // NOSONAR
                 // handle exceptions
-                Throwable t = AludraTestUtil.unwrapInvocationTargetException(e);
+                Throwable t = ExceptionUtil.unwrapInvocationTargetException(e);
                 recentException = t;
                 if (toleratedThrowable != null && toleratedThrowable.isAssignableFrom(e.getClass()) && retryCount < maxRetries) {
                     doRetry = true;

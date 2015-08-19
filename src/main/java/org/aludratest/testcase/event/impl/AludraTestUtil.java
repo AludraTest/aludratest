@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.util;
+package org.aludratest.testcase.event.impl;
 
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
@@ -118,17 +117,6 @@ public class AludraTestUtil {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /** Unwraps the root cause of an exception.
-     * @param t the Throwable to examine
-     * @return If the argument is an {@link InvocationTargetException} with a non-null cause, the method returns that cause
-     *         exception, otherwise the {@link Throwable} object itself */
-    public static Throwable unwrapInvocationTargetException(Throwable t) {
-        while (t instanceof InvocationTargetException && t.getCause() != null) {
-            t = t.getCause();
-        }
-        return t;
     }
 
     /** Returns a specific the stack trace element of the current invocation stack.
