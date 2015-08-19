@@ -248,6 +248,11 @@ public class Selenium1Interaction extends AbstractSeleniumAction implements WebG
     }
 
     @Override
+    public void waitForAjaxOperationEnd(String frameworkName, int maxWaitTime) {
+        wrapper.waitForAjaxOperationEnd(frameworkName, maxWaitTime);
+    }
+
+    @Override
     public void addCustomHttpHeaderCommand(String key, String value) {
         wrapper.addCustomRequestHeader(key, value);
     }

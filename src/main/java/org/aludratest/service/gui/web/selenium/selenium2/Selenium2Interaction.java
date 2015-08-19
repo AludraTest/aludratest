@@ -242,6 +242,11 @@ public class Selenium2Interaction extends AbstractSelenium2Action implements Web
         wrapper.waitForWindowToBeClosed(locator, taskCompletionTimeout);
     }
 
+    @Override
+    public void waitForAjaxOperationEnd(String frameworkName, int maxWaitTime) {
+        wrapper.waitForAjaxOperationEnd(frameworkName, maxWaitTime);
+    }
+
     // special features --------------------------------------------------------
 
     @Override

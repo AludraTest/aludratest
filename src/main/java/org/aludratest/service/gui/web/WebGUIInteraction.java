@@ -96,4 +96,15 @@ public interface WebGUIInteraction extends GUIInteraction {
     String clickForDownload(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator, @TechnicalArgument int taskCompletionTimeout);
 
+    /** Waits for an AJAX operation to be finished. This is usually done with some JavaScript querying a variable of a known
+     * JavaScript framework (e.g. jQuery). <br>
+     * The framework may or may not be supported by the web GUI implementation. If it is not supported, an AutomationException is
+     * thrown. <br>
+     * If the maximum waiting time is reached without the Ajax operation being finished, a PerformanceException is thrown.
+     * 
+     * @param frameworkName Name of the JavaScript framework to check, e.g. "jquery". Implementations should convert this
+     *            parameter to lowercase before checking it, so case does not matter for the caller.
+     * @param maxWaitTime Maximum time, in milliseconds, to wait for the AJAX operation to be finished. */
+    void waitForAjaxOperationEnd(@TechnicalArgument String frameworkName, @TechnicalArgument int maxWaitTime);
+
 }
