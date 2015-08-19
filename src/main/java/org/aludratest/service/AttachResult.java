@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.impl.log4testing;
+package org.aludratest.service;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.aludratest.testcase.event.TestStepArgumentMarker;
-
 /**
- * Marks a service method argument to be logged as technical locator. 
+ * Annotates a method that its result values are logged as Attachment.
  * @author Volker Bergmann
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
-@TestStepArgumentMarker
-public @interface TechnicalLocator {
-
+@Target(ElementType.METHOD)
+public @interface AttachResult {
+    
+    /** The label to use for the attachment in the log file. */
+    String value();
+    
 }

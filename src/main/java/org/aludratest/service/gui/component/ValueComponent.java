@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.component.impl;
+package org.aludratest.service.gui.component;
 
 import org.databene.commons.Validator;
 

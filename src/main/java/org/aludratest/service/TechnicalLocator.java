@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.impl.log4testing;
+package org.aludratest.service;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.aludratest.testcase.event.TestStepArgumentMarker;
 
 /**
- * Marks a service method argument to be logged as element name. 
+ * Marks a service method argument to be logged as technical locator. 
  * @author Volker Bergmann
  */
-@Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-@Target(java.lang.annotation.ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
 @TestStepArgumentMarker
-public @interface ElementName {
+public @interface TechnicalLocator {
 
 }

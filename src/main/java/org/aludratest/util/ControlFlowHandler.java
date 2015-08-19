@@ -22,10 +22,10 @@ import java.util.List;
 
 import org.aludratest.exception.AludraTestException;
 import org.aludratest.exception.TechnicalException;
-import org.aludratest.impl.log4testing.AttachParameter;
-import org.aludratest.impl.log4testing.AttachResult;
 import org.aludratest.service.Action;
 import org.aludratest.service.AludraService;
+import org.aludratest.service.AttachParameter;
+import org.aludratest.service.AttachResult;
 import org.aludratest.service.ComponentId;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.testcase.AludraTestContext;

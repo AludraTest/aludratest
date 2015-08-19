@@ -23,6 +23,7 @@ import java.io.InputStream;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.service.gui.component.FileField;
+import org.aludratest.service.gui.component.ValueComponent;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.databene.commons.IOUtil;
 import org.databene.commons.Validator;

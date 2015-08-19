@@ -18,13 +18,13 @@ package org.aludratest.service.edifactfile;
 import java.io.OutputStream;
 import java.util.Map;
 
-import org.aludratest.impl.log4testing.AttachParameter;
-import org.aludratest.impl.log4testing.AttachResult;
-import org.aludratest.impl.log4testing.ElementName;
-import org.aludratest.impl.log4testing.ElementType;
-import org.aludratest.impl.log4testing.TechnicalArgument;
-import org.aludratest.impl.log4testing.TechnicalLocator;
+import org.aludratest.service.AttachParameter;
+import org.aludratest.service.AttachResult;
+import org.aludratest.service.ElementName;
+import org.aludratest.service.ElementType;
 import org.aludratest.service.Interaction;
+import org.aludratest.service.TechnicalArgument;
+import org.aludratest.service.TechnicalLocator;
 import org.databene.edifatto.EdiFormatSymbols;
 import org.databene.edifatto.model.Interchange;
 

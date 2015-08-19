@@ -51,6 +51,7 @@ import org.w3c.dom.Element;
  * @author Volker Bergmann
  */
 public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVerification, EdifactFileCondition {
+    // TODO this class does not depend on Edifatto any more and should be renamed to EdifactFileAction in package impl
 
     /** A reference to the underlying FileService. */
     private FileService fileService;

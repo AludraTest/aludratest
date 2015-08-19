@@ -15,7 +15,7 @@
  */
 package org.aludratest.service.file;
 
-import org.aludratest.impl.log4testing.TechnicalLocator;
+import org.aludratest.service.TechnicalLocator;
 import org.aludratest.service.Verification;
 
 /**

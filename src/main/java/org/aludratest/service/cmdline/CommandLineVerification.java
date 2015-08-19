@@ -15,9 +15,9 @@
  */
 package org.aludratest.service.cmdline;
 
-import org.aludratest.impl.log4testing.ElementName;
-import org.aludratest.impl.log4testing.ElementType;
-import org.aludratest.impl.log4testing.TechnicalLocator;
+import org.aludratest.service.ElementName;
+import org.aludratest.service.ElementType;
+import org.aludratest.service.TechnicalLocator;
 import org.aludratest.service.Verification;
 import org.databene.commons.Validator;
 

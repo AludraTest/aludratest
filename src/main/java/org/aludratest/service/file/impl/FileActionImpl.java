@@ -36,6 +36,7 @@ import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
+import org.aludratest.service.file.File;
 import org.aludratest.service.file.FileCondition;
 import org.aludratest.service.file.FileFilter;
 import org.aludratest.service.file.FileInfo;
@@ -43,7 +44,6 @@ import org.aludratest.service.file.FileInteraction;
 import org.aludratest.service.file.FileService;
 import org.aludratest.service.file.FileVerification;
 import org.aludratest.service.file.filter.RegexFilePathFilter;
-import org.aludratest.service.file.util.FileUtil;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.util.poll.PollService;
 import org.aludratest.util.poll.PolledTask;
@@ -93,21 +93,21 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     /** Lists all child elements of the given folder. */
     @Override
     public final List<String> getChildren(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         return getChildren(filePath, (FileFilter) null);
     }
 
     /** Lists all child elements of the given folder which match the given regular expression. */
     @Override
     public List<String> getChildren(String filePath, String filterRegex) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         return getChildren(filePath, new RegexFilePathFilter(filterRegex));
     }
 
     /** Lists all child elements of the given folder which match the filter. */
     @Override
     public List<String> getChildren(String filePath, FileFilter filter) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         try {
             FileObject parent = configuration.getFileObject(filePath);
             parent.refresh();
@@ -135,7 +135,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     @Override
     public void createDirectory(String filePath) {
         assertWritingPermitted("createDirectory()");
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         try {
             getFileObject(filePath).createFolder();
             LOGGER.debug("Created directory {}", filePath);
@@ -153,8 +153,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     @Override
     public boolean move(String fromPath, String toPath, boolean overwrite) {
         assertWritingPermitted("move()");
-        FileUtil.verifyFilePath(fromPath);
-        FileUtil.verifyFilePath(toPath);
+        File.verifyFilePath(fromPath);
+        File.verifyFilePath(toPath);
         FileObject target = getFileObject(toPath);
         boolean existedBefore = checkWritable(target, overwrite);
         try {
@@ -176,8 +176,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     @Override
     public boolean copy(String fromPath, String toPath, boolean overwrite) {
         assertWritingPermitted("copy()");
-        FileUtil.verifyFilePath(fromPath);
-        FileUtil.verifyFilePath(toPath);
+        File.verifyFilePath(fromPath);
+        File.verifyFilePath(toPath);
         FileObject target = getFileObject(toPath);
         boolean existedBefore = checkWritable(target, overwrite);
         try {
@@ -195,7 +195,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     @Override
     public void delete(String filePath) {
         assertWritingPermitted("delete()");
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         try {
             getFileObject(filePath).delete(new AllFileSelector());
             LOGGER.debug("Deleted {}", filePath);
@@ -213,7 +213,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     @Override
     public boolean writeTextFile(String filePath, String content, boolean overwrite) {
         assertWritingPermitted("writeTextFile()");
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         return writeTextFile(filePath, new StringReader(content), overwrite);
     }
 
@@ -226,7 +226,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     @Override
     public boolean writeTextFile(String filePath, Reader source, boolean overwrite) {
         assertWritingPermitted("writeTextFile()");
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         String encoding = configuration.getEncoding();
         Writer writer = null;
         BufferedReader reader = null;
@@ -279,7 +279,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     @Override
     public boolean writeBinaryFile(String filePath, InputStream source, boolean overwrite) {
         assertWritingPermitted("writeBinaryFile()");
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         OutputStream out = null;
         try {
             FileObject target = getFileObject(filePath);
@@ -298,7 +298,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     /** Reads a text file and provides its content as String. */
     @Override
     public String readTextFile(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         BufferedReader reader = null;
         try {
             StringWriter writer = new StringWriter();
@@ -325,7 +325,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     /** Creates a {@link Reader} for accessing the content of a text file. */
     @Override
     public BufferedReader getReaderForTextFile(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         String encoding = configuration.getEncoding();
         try {
             LOGGER.debug("Providing reader for text file: {}", filePath);
@@ -338,7 +338,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     /** Reads a binary file and provides its content as an array of bytes. */
     @Override
     public byte[] readBinaryFile(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         InputStream in = null;
         try {
             in = getInputStreamForFile(filePath);
@@ -356,7 +356,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     /** Creates an {@link InputStream} for accessing the content of a file. */
     @Override
     public InputStream getInputStreamForFile(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         FileObject file = getFileObject(filePath);
         try {
             LOGGER.debug("Providing InputStream for binary file: {}", filePath);
@@ -372,7 +372,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
      *  @throws FunctionalFailure if the file was not found within the timeout */
     @Override
     public void waitUntilExists(String elementType, String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         pollService.poll(new WaitForFileTask(filePath, true));
     }
 
@@ -382,7 +382,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
      *  @throws FunctionalFailure if the file was not found within the timeout */
     @Override
     public void waitUntilNotExists(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         pollService.poll(new WaitForFileTask(filePath, false));
     }
 
@@ -392,7 +392,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
      *  @throws AutomationException if the file was not found within the timeout */
     @Override
     public String waitForFirstMatch(String parentPath, FileFilter filter) {
-        FileUtil.verifyFilePath(parentPath);
+        File.verifyFilePath(parentPath);
         if (!exists(parentPath)) {
             throw new AutomationException("Directory not found: " + parentPath);
         }
@@ -409,7 +409,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
      *  @throws AutomationException if the file was not found. */
     @Override
     public void assertPresence(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         if (!exists(filePath)) {
             throw new AutomationException("Expected file not present: " + filePath);
         } else {
@@ -422,7 +422,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
      *  @throws AutomationException if the file was encountered. */
     @Override
     public void assertAbsence(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         if (exists(filePath)) {
             throw new AutomationException("File expected to be absent: " + filePath);
         } else {
@@ -433,7 +433,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     /** Tells if a file or folder with the given path exists. */
     @Override
     public boolean exists(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         try {
             FileObject file = getFileObject(filePath);
             file.refresh();
@@ -447,7 +447,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
 
     @Override
     public void assertFile(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         assertPresence(filePath);
         if (isDirectory(filePath)) {
             throw new FunctionalFailure("Not a file: " + filePath);
@@ -458,7 +458,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
 
     @Override
     public void assertDirectory(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         assertPresence(filePath);
         if (!isDirectory(filePath)) {
             throw new FunctionalFailure("Not a directory: " + filePath);
@@ -470,7 +470,7 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     /** Tells if the given path represents a directory. */
     @Override
     public boolean isDirectory(String filePath) {
-        FileUtil.verifyFilePath(filePath);
+        File.verifyFilePath(filePath);
         try {
             boolean result = getFileObject(filePath).getType() == FileType.FOLDER;
             LOGGER.debug("{} is {}", filePath, (result ? "a folder" : "not a folder"));

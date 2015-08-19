@@ -15,6 +15,7 @@
  */
 package org.aludratest.service.gui.component.impl;
 
+import org.aludratest.service.gui.component.ValueComponent;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.aludratest.util.validator.ContainsIgnoreCaseTrimmedValidator;
 import org.aludratest.util.validator.ContainsValidator;

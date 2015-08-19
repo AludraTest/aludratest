@@ -15,10 +15,10 @@
  */
 package org.aludratest.service.util;
 
-import org.aludratest.impl.log4testing.ElementName;
-import org.aludratest.impl.log4testing.ElementType;
-import org.aludratest.impl.log4testing.TechnicalLocator;
 import org.aludratest.impl.log4testing.data.TestCaseLog;
+import org.aludratest.service.ElementName;
+import org.aludratest.service.ElementType;
+import org.aludratest.service.TechnicalLocator;
 import org.aludratest.testcase.event.InternalTestListener;
 import org.aludratest.testcase.event.TestStepInfo;
 import org.aludratest.testcase.event.attachment.Attachment;

@@ -32,8 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import junit.framework.AssertionFailedError;
-
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.PerformanceFailure;
@@ -856,7 +854,7 @@ public class Selenium2Wrapper {
             waitFor(condition, configuration.getTimeout(), NoSuchElementException.class, StaleElementReferenceException.class);
         }
         catch (TimeoutException e) {
-            throw new AssertionFailedError(condition.getMessage());
+            throw new AutomationException(condition.getMessage());
         }
     }
 

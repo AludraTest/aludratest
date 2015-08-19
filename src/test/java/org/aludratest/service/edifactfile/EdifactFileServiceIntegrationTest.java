@@ -40,7 +40,9 @@ public class EdifactFileServiceIntegrationTest extends AbstractAludraServiceTest
 
     @After
     public void tearDown() {
-        this.service.close();
+        if (this.service != null) {
+            this.service.close();
+        }
     }
 
     @Test
