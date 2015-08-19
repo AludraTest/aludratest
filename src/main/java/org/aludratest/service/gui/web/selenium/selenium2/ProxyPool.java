@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.service.gui.web.selenium;
+package org.aludratest.service.gui.web.selenium.selenium2;
 
 import org.aludratest.service.gui.web.selenium.httpproxy.AuthenticatingHttpProxy;
 import org.aludratest.util.ObjectPool;
