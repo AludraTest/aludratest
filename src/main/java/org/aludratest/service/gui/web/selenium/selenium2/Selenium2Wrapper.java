@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -43,6 +44,7 @@ import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
 import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
 import org.aludratest.service.gui.web.selenium.SystemDownloadProvider;
 import org.aludratest.service.gui.web.selenium.httpproxy.AuthenticatingHttpProxy;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.AbstractAjaxIdleCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.AnyDropDownOptions;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownBoxOptionLabelsPresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownOptionLocatable;
@@ -51,9 +53,12 @@ import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementEditab
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementEnabledCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementNotVisibleCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementValuePresence;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.IceFacesAjaxIdleCondition;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.JQueryAjaxIdleCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.MixedElementCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.NotCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.OptionSelected;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.PrimeFacesAjaxIdleCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ValidatingCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.WindowPresence;
 import org.aludratest.service.locator.element.GUIElementLocator;
@@ -93,7 +98,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.thoughtworks.selenium.Selenium;
-import com.thoughtworks.selenium.SeleniumException;
 
 /** Wraps an instance of the {@link Selenium2Facade} and provides methods for accessing UI elements and timing.
  * @author Volker Bergmann
@@ -704,14 +708,14 @@ public class Selenium2Wrapper {
         try {
             driver.get(mapUrl(url));
         }
-        catch (SeleniumException e) {
+        catch (TimeoutException e) {
+            throw new PerformanceFailure("Timed out opening '" + url + "': " + e.getMessage(), e);
+        }
+        catch (WebDriverException e) {
             String message = e.getMessage();
             if (message != null && message.contains("Timed out")) {
                 throw new PerformanceFailure("Timed out opening '" + url + "': " + e.getMessage(), e);
             }
-        }
-        catch (TimeoutException e) {
-            throw new PerformanceFailure("Timed out opening '" + url + "': " + e.getMessage(), e);
         }
     }
 
@@ -923,6 +927,34 @@ public class Selenium2Wrapper {
         }
         catch (TimeoutException e) {
             throw new PerformanceFailure("Window was not closed within timeout");
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void waitForAjaxOperationEnd(String frameworkName, int maxWaitTime) {
+        frameworkName = frameworkName.toLowerCase(Locale.US);
+        AbstractAjaxIdleCondition condition = null;
+
+        if ("jquery".equals(frameworkName)) {
+            condition = new JQueryAjaxIdleCondition();
+        }
+        else if ("primefaces".equals(frameworkName)) {
+            condition = new PrimeFacesAjaxIdleCondition();
+        }
+        else if ("icefaces".equals(frameworkName)) {
+            condition = new IceFacesAjaxIdleCondition();
+        }
+
+        if (condition != null) {
+            try {
+                waitFor(condition, maxWaitTime);
+            }
+            catch (TimeoutException e) {
+                throw new PerformanceFailure("AJAX operation was not finished within timeout");
+            }
+        }
+        else {
+            throw new AutomationException("Unsupported JavaScript framework for AJAX check: " + frameworkName);
         }
     }
 

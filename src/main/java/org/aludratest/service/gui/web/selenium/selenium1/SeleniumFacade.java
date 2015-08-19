@@ -401,6 +401,10 @@ public class SeleniumFacade {
         }
     }
 
+    boolean isJavaScriptExpressionTrue(String script) {
+        return "true".equals(selenium.getEval(script));
+    }
+
     /**
      * @param locator
      *            {@link Locator} of the GUI element to examine

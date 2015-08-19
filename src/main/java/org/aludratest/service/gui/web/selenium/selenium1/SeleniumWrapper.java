@@ -15,6 +15,8 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium1;
 
+import java.util.Locale;
+
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.PerformanceFailure;
@@ -37,6 +39,7 @@ import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.BinaryAttachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.apache.commons.codec.binary.Base64;
+import org.openqa.selenium.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -873,6 +876,22 @@ public class SeleniumWrapper {
         }
         if (!windowIsGone) {
             throw new PerformanceFailure("Window not closed within timeout");
+        }
+    }
+
+    public void waitForAjaxOperationEnd(String frameworkName, int maxWaitTime) {
+        frameworkName = frameworkName.toLowerCase(Locale.US);
+        if ("jquery".equals(frameworkName)) {
+            try {
+                retryUntilTrueOrTimeout(new org.aludratest.service.gui.web.selenium.selenium1.JQueryAjaxIdleCondition(selenium),
+                        maxWaitTime);
+            }
+            catch (TimeoutException e) {
+                throw new PerformanceFailure("AJAX operation was not finished within timeout");
+            }
+        }
+        else {
+            throw new AutomationException("Unsupported JavaScript framework for AJAX check: " + frameworkName);
         }
     }
 
