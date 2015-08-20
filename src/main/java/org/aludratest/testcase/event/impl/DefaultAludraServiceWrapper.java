@@ -20,7 +20,6 @@ import org.aludratest.service.AludraService;
 import org.aludratest.service.ComponentId;
 import org.aludratest.service.ServiceWrapper;
 import org.aludratest.testcase.AludraTestContext;
-import org.aludratest.util.AludraTestUtil;
 import org.codehaus.plexus.component.annotations.Component;
 
 @Component(role = ServiceWrapper.class, hint = "aludra")

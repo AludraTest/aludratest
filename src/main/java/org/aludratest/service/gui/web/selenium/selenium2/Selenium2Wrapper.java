@@ -37,7 +37,6 @@ import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.PerformanceFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
-import org.aludratest.service.gui.web.selenium.ProxyPool;
 import org.aludratest.service.gui.web.selenium.SeleniumResourceService;
 import org.aludratest.service.gui.web.selenium.SeleniumWrapperConfiguration;
 import org.aludratest.service.gui.web.selenium.SystemDownloadProvider;

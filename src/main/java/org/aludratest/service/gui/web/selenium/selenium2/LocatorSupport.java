@@ -33,7 +33,7 @@ import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.IdLocator;
 import org.aludratest.service.locator.element.LabelLocator;
 import org.aludratest.service.locator.element.XPathLocator;
-import org.aludratest.util.AludraTestUtil;
+import org.aludratest.util.ExceptionUtil;
 import org.aludratest.util.retry.RetryService;
 import org.aludratest.util.timeout.TimeoutService;
 import org.openqa.selenium.By;
@@ -126,7 +126,7 @@ public class LocatorSupport {
                 CommandExecutor executor = ((RemoteWebDriver) driver).getCommandExecutor();
                 if (executor instanceof AludraSeleniumHttpCommandExecutor) {
                     ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor())
-                            .setRequestTimeout(config.getTcpTimeout());
+                    .setRequestTimeout(config.getTcpTimeout());
                 }
             }
 
@@ -302,7 +302,7 @@ public class LocatorSupport {
                     return method.invoke(realElement, args);
                 }
                 catch (InvocationTargetException invocationEx) {
-                    Throwable cause = AludraTestUtil.unwrapInvocationTargetException(invocationEx);
+                    Throwable cause = ExceptionUtil.unwrapInvocationTargetException(invocationEx);
                     if (cause instanceof StaleElementReferenceException) {
                         // ... on stale refs, catch and store the exception...
                         staleEx = (StaleElementReferenceException) cause;

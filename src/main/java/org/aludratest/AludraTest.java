@@ -28,16 +28,19 @@ import java.util.List;
 
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.config.impl.DefaultConfigurator;
-import org.aludratest.impl.log4testing.data.TestLogger;
-import org.aludratest.impl.log4testing.data.TestSuiteLog;
 import org.aludratest.impl.plexus.AludraTestClosePhase;
 import org.aludratest.impl.plexus.AludraTestComponentDiscoverer;
 import org.aludratest.impl.plexus.AludraTestConfigurationPhase;
+import org.aludratest.scheduler.AbstractRunnerListener;
 import org.aludratest.scheduler.AludraTestRunner;
 import org.aludratest.scheduler.AnnotationBasedExecution;
+import org.aludratest.scheduler.RunnerListenerRegistry;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.RunnerTreeBuilder;
+import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.service.AludraServiceManager;
+import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.event.TestStepInfo;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
@@ -71,6 +74,8 @@ public final class AludraTest {
     /** The IoC container for AludraTest. */
     private final PlexusContainer iocContainer;
 
+    private SuccessRunnerListener runnerListener;
+
     private static AludraTest instance;
 
     private AludraTest() {
@@ -82,6 +87,9 @@ public final class AludraTest {
         catch (ComponentLookupException e) {
             throw new RuntimeException("Could not create AludraServiceManager instance", e);
         }
+        this.runnerListener = new SuccessRunnerListener();
+        RunnerListenerRegistry registry = serviceManager.newImplementorInstance(RunnerListenerRegistry.class);
+        registry.addRunnerListener(this.runnerListener);
     }
 
     /** Starts the AludraTest framework
@@ -197,9 +205,7 @@ public final class AludraTest {
         AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
         runner.runAludraTests(runnerTree);
 
-        int failures = TestLogger.getTestSuite(runnerTree.getRoot().getName()).getNumberOfFailedTestCases();
-        int exitCode = (failures > 0 ? EXIT_EXECUTION_FAILURE : EXIT_NORMAL);
-        return exitCode;
+        return exitCode();
     }
 
     /** Parses the test class/suite, executes it and waits until all tests are finished.
@@ -216,7 +222,7 @@ public final class AludraTest {
         AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
         runner.runAludraTests(runnerTree);
 
-        return exitCode(testClass);
+        return exitCode();
     }
 
     /** implements the functionality of the class' main method without calling {@link System#exit(int)}, but providing the
@@ -255,11 +261,25 @@ public final class AludraTest {
         return serviceManager.newImplementorInstance(AludraTestConfig.class);
     }
 
-    private static int exitCode(Class<?> testClass) {
-        TestSuiteLog suite = TestLogger.getTestSuite(testClass);
-        int failures = suite.getNumberOfFailedTestCases();
-        int exitCode = (failures > 0 ? EXIT_EXECUTION_FAILURE : EXIT_NORMAL);
-        return exitCode;
+    private int exitCode() {
+        return (runnerListener.wasSuccessful() ? EXIT_NORMAL : EXIT_EXECUTION_FAILURE);
+    }
+
+    static class SuccessRunnerListener extends AbstractRunnerListener {
+
+        private boolean success = true;
+
+        @Override
+        public void newTestStep(RunnerLeaf runnerLeaf, TestStepInfo testStepInfo) {
+            TestStatus status = testStepInfo.getTestStatus();
+            if (status != TestStatus.IGNORED && status != TestStatus.PASSED) {
+                this.success = false;
+            }
+        }
+
+        boolean wasSuccessful() {
+            return success;
+        }
     }
 
     // main method -------------------------------------------------------------

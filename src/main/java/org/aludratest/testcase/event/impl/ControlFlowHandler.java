@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.util;
+package org.aludratest.testcase.event.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -33,7 +33,8 @@ import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.event.ErrorReport;
 import org.aludratest.testcase.event.SystemErrorReporter;
 import org.aludratest.testcase.event.attachment.Attachment;
-import org.aludratest.testcase.event.impl.TestStepInfoBean;
+import org.aludratest.util.ExceptionUtil;
+import org.aludratest.util.FlowController;
 import org.aludratest.util.retry.AutoRetry;
 import org.databene.commons.Assert;
 import org.slf4j.Logger;
@@ -215,7 +216,7 @@ public class ControlFlowHandler implements InvocationHandler {
     }
 
     private void handleException(Exception e, TestStepInfoBean currentTestStep) {
-        Throwable t = AludraTestUtil.unwrapInvocationTargetException(e);
+        Throwable t = ExceptionUtil.unwrapInvocationTargetException(e);
         setErrorAndStatus(currentTestStep, e);
         if (systemConnector != null && requiresErrorChecking(t)) {
             if (this.exceptionUnderErrorChecking != null) {
@@ -309,7 +310,7 @@ public class ControlFlowHandler implements InvocationHandler {
                 return method.invoke(target, args);
             }
             catch (Exception e) { // NOSONAR
-                Throwable t = AludraTestUtil.unwrapInvocationTargetException(e);
+                Throwable t = ExceptionUtil.unwrapInvocationTargetException(e);
                 recentException = t;
 
                 AutoRetry retry = testContext.newComponentInstance(AutoRetry.class);
@@ -338,7 +339,7 @@ public class ControlFlowHandler implements InvocationHandler {
     }
 
     private void setErrorAndStatus(TestStepInfoBean testStep, Throwable t) {
-        t = AludraTestUtil.unwrapInvocationTargetException(t);
+        t = ExceptionUtil.unwrapInvocationTargetException(t);
         testStep.setError(t);
         testStep.setErrorMessage(t.getMessage());
         if (t instanceof AludraTestException && !(t instanceof TechnicalException)) {
