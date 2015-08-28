@@ -196,6 +196,23 @@
 			<artifactId>selenium-java-client-driver</artifactId>
 			<version>1.0.2</version>
 		</dependency>
+		
+		<!-- for Selenium services (PhantomJS driver) -->
+		<dependency>
+			<groupId>com.codeborne</groupId>
+			<artifactId>phantomjsdriver</artifactId>
+			<version>1.2.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-remote-driver</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-java</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>		
 
 		<!-- for Selenium services (XPath lookup helper) -->
 		<dependency>

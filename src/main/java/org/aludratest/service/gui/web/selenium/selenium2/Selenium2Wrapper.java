@@ -88,6 +88,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.remote.CommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
@@ -144,8 +145,11 @@ public class Selenium2Wrapper {
                 this.proxy = getProxyPool().acquire();
                 this.proxy.start();
             }
-            this.usedSeleniumHost = resourceService.acquire();
-            this.seleniumUrl = new URL(usedSeleniumHost + "/wd/hub");
+
+            if (configuration.isUsingRemoteDriver()) {
+                this.usedSeleniumHost = resourceService.acquire();
+                this.seleniumUrl = new URL(usedSeleniumHost + "/wd/hub");
+            }
             this.driver = newDriver();
             this.driver.manage().timeouts().pageLoadTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS);
             this.locatorSupport = new LocatorSupport(this.driver, configuration);
@@ -608,7 +612,10 @@ public class Selenium2Wrapper {
         try {
             if (driver instanceof RemoteWebDriver) {
                 // also reduce timeout for TCP connection, in case remote hangs
-                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(5000);
+                CommandExecutor executor = ((RemoteWebDriver) driver).getCommandExecutor();
+                if (executor instanceof AludraSeleniumHttpCommandExecutor) {
+                    ((AludraSeleniumHttpCommandExecutor) executor).setRequestTimeout(5000);
+                }
             }
             return RetryService.call(callable, WebDriverException.class, 2);
         }
@@ -619,7 +626,10 @@ public class Selenium2Wrapper {
         finally {
             if (driver instanceof RemoteWebDriver) {
                 // also reduce timeout for TCP connection, in case remote hangs
-                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(0);
+                CommandExecutor executor = ((RemoteWebDriver) driver).getCommandExecutor();
+                if (executor instanceof AludraSeleniumHttpCommandExecutor) {
+                    ((AludraSeleniumHttpCommandExecutor) executor).setRequestTimeout(0);
+                }
             }
         }
     }
