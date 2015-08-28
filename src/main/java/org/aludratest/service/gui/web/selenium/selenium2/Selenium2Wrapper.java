@@ -83,11 +83,13 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnsupportedCommandException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.remote.CommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Select;
@@ -144,8 +146,11 @@ public class Selenium2Wrapper {
                 this.proxy = getProxyPool().acquire();
                 this.proxy.start();
             }
-            this.usedSeleniumHost = resourceService.acquire();
-            this.seleniumUrl = new URL(usedSeleniumHost + "/wd/hub");
+
+            if (configuration.isUsingRemoteDriver()) {
+                this.usedSeleniumHost = resourceService.acquire();
+                this.seleniumUrl = new URL(usedSeleniumHost + "/wd/hub");
+            }
             this.driver = newDriver();
             this.driver.manage().timeouts().pageLoadTimeout(configuration.getTimeout(), TimeUnit.MILLISECONDS);
             this.locatorSupport = new LocatorSupport(this.driver, configuration);
@@ -608,7 +613,10 @@ public class Selenium2Wrapper {
         try {
             if (driver instanceof RemoteWebDriver) {
                 // also reduce timeout for TCP connection, in case remote hangs
-                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(5000);
+                CommandExecutor executor = ((RemoteWebDriver) driver).getCommandExecutor();
+                if (executor instanceof AludraSeleniumHttpCommandExecutor) {
+                    ((AludraSeleniumHttpCommandExecutor) executor).setRequestTimeout(5000);
+                }
             }
             return RetryService.call(callable, WebDriverException.class, 2);
         }
@@ -619,7 +627,10 @@ public class Selenium2Wrapper {
         finally {
             if (driver instanceof RemoteWebDriver) {
                 // also reduce timeout for TCP connection, in case remote hangs
-                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(0);
+                CommandExecutor executor = ((RemoteWebDriver) driver).getCommandExecutor();
+                if (executor instanceof AludraSeleniumHttpCommandExecutor) {
+                    ((AludraSeleniumHttpCommandExecutor) executor).setRequestTimeout(0);
+                }
             }
         }
     }
@@ -986,12 +997,18 @@ public class Selenium2Wrapper {
         int index = 0;
         for (String handle : windowHandles) {
             driver.switchTo().window(handle);
-            String data = captureActiveWindowScreenshotToString();
-            byte[] decodedData = base64.decode(data);
-            String title = driver.getTitle();
+            try {
+                String data = captureActiveWindowScreenshotToString();
+                byte[] decodedData = base64.decode(data);
+                String title = driver.getTitle();
 
-            result.add(new BinaryAttachment("Screenshot-" + (title == null ? "" + (++index) : title), decodedData, configuration
-                    .getScreenshotAttachmentExtension()));
+                result.add(new BinaryAttachment("Screenshot-" + (title == null ? "" + (++index) : title), decodedData,
+                        configuration.getScreenshotAttachmentExtension()));
+            }
+            catch (UnsupportedOperationException e) {
+                // OK, no screenshot available
+                LOGGER.warn("Web driver is not able to take screenshots; no screenshots available");
+            }
         }
 
         driver.switchTo().window(activeHandle);
@@ -1188,6 +1205,15 @@ public class Selenium2Wrapper {
         catch (StaleElementReferenceException e) {
             // ignore; key could have caused page change
             LOGGER.debug("Could not fire change event for element because element is now stale.");
+        }
+        catch (UnsupportedCommandException e) {
+            // of course, PhantomJS does NOT throw a StaleElementReferenceException, but some evil error...
+            if (e.getMessage() != null && e.getMessage().contains("'undefined' is not a function")) {
+                LOGGER.debug("Could not fire change event for element because element is now stale.");
+            }
+            else {
+                throw e;
+            }
         }
     }
 

@@ -15,17 +15,21 @@
  */
 package org.aludratest.service.gui.web.selenium.selenium2;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.databene.commons.BeanUtil;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.LocalFileDetector;
@@ -53,7 +57,7 @@ public class Selenium2Driver {
 
     /** HTMLUnit driver */
     public static Selenium2Driver HTML_UNIT = new Selenium2Driver("HTML_UNIT", BrowserType.HTMLUNIT, HtmlUnitDriver.class,
-            DesiredCapabilities.htmlUnit());
+            createHtmlUnitCaps());
 
     /** Google Chrome driver */
     public static Selenium2Driver CHROME = new Selenium2Driver("CHROME", BrowserType.GOOGLECHROME, ChromeDriver.class, createChromeCaps());
@@ -62,8 +66,8 @@ public class Selenium2Driver {
     public static Selenium2Driver SAFARI = new Selenium2Driver("SAFARI", BrowserType.SAFARI, SafariDriver.class, DesiredCapabilities.safari());
 
     /** PhantomJS driver */
-    public static Selenium2Driver PHANTOMJS = new Selenium2Driver("PHANTOMJS", BrowserType.PHANTOMJS, RemoteWebDriver.class,
-            DesiredCapabilities.phantomjs());
+    public static Selenium2Driver PHANTOMJS = new Selenium2Driver("PHANTOMJS", BrowserType.PHANTOMJS, PhantomJSDriver.class,
+            createPhantomJsCaps());
 
     // attributes --------------------------------------------------------------
 
@@ -90,7 +94,40 @@ public class Selenium2Driver {
 
     /** @return a freshly created instance of the related WebDriver class */
     public WebDriver newLocalDriver() {
-        return BeanUtil.newInstance(driverClass);
+        Constructor<?> cstr = null;
+        try {
+            cstr = driverClass.getConstructor(DesiredCapabilities.class);
+        }
+        catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
+        catch (NoSuchMethodException e) {
+            try {
+                cstr = driverClass.getConstructor(Capabilities.class);
+            }
+            catch (SecurityException e1) {
+                throw new WebDriverException(e1);
+            }
+            catch (NoSuchMethodException e1) {
+                throw new WebDriverException(e1);
+            }
+        }
+
+        try {
+            return (WebDriver) cstr.newInstance(capabilities);
+        }
+        catch (IllegalArgumentException e) {
+            throw new WebDriverException(e);
+        }
+        catch (InstantiationException e) {
+            throw new WebDriverException(e);
+        }
+        catch (IllegalAccessException e) {
+            throw new WebDriverException(e);
+        }
+        catch (InvocationTargetException e) {
+            throw new WebDriverException(e);
+        }
     }
 
     /** @param url the URL for which to create a WebDriver instance.
@@ -133,6 +170,22 @@ public class Selenium2Driver {
         ChromeOptions opts = new ChromeOptions();
         opts.addArguments("--disable-extensions");
         caps.setCapability(ChromeOptions.CAPABILITY, opts);
+        return caps;
+    }
+
+    private static DesiredCapabilities createPhantomJsCaps() {
+        DesiredCapabilities caps = DesiredCapabilities.phantomjs();
+        caps.setJavascriptEnabled(true);
+        caps.setCapability("takesScreenshot", true);
+        caps.setCapability("phantomjs.cli.args", new String[] { "--web-security=no", "--ssl-protocol=any",
+        "--ignore-ssl-errors=yes" });
+        return caps;
+    }
+
+    private static DesiredCapabilities createHtmlUnitCaps() {
+        DesiredCapabilities caps = DesiredCapabilities.htmlUnit();
+        caps.setJavascriptEnabled(true);
+        caps.setBrowserName(BrowserType.CHROME);
         return caps;
     }
 
