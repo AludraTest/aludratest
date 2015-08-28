@@ -212,7 +212,14 @@
 					<artifactId>selenium-java</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>		
+		</dependency>
+		
+		<!-- for Selenium services (use later HtmlUnit version than referenced in 2.42.2) -->
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>2.15</version>
+		</dependency>
 
 		<!-- for Selenium services (XPath lookup helper) -->
 		<dependency>

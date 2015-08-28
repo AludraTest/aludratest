@@ -83,6 +83,7 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.UnsupportedCommandException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -996,12 +997,18 @@ public class Selenium2Wrapper {
         int index = 0;
         for (String handle : windowHandles) {
             driver.switchTo().window(handle);
-            String data = captureActiveWindowScreenshotToString();
-            byte[] decodedData = base64.decode(data);
-            String title = driver.getTitle();
+            try {
+                String data = captureActiveWindowScreenshotToString();
+                byte[] decodedData = base64.decode(data);
+                String title = driver.getTitle();
 
-            result.add(new BinaryAttachment("Screenshot-" + (title == null ? "" + (++index) : title), decodedData, configuration
-                    .getScreenshotAttachmentExtension()));
+                result.add(new BinaryAttachment("Screenshot-" + (title == null ? "" + (++index) : title), decodedData,
+                        configuration.getScreenshotAttachmentExtension()));
+            }
+            catch (UnsupportedOperationException e) {
+                // OK, no screenshot available
+                LOGGER.warn("Web driver is not able to take screenshots; no screenshots available");
+            }
         }
 
         driver.switchTo().window(activeHandle);
@@ -1198,6 +1205,15 @@ public class Selenium2Wrapper {
         catch (StaleElementReferenceException e) {
             // ignore; key could have caused page change
             LOGGER.debug("Could not fire change event for element because element is now stale.");
+        }
+        catch (UnsupportedCommandException e) {
+            // of course, PhantomJS does NOT throw a StaleElementReferenceException, but some evil error...
+            if (e.getMessage() != null && e.getMessage().contains("'undefined' is not a function")) {
+                LOGGER.debug("Could not fire change event for element because element is now stale.");
+            }
+            else {
+                throw e;
+            }
         }
     }
 
