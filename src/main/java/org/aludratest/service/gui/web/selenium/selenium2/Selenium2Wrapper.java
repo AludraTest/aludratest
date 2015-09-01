@@ -557,16 +557,21 @@ public class Selenium2Wrapper {
     /** @see Selenium#getTitle() */
     public String getTitle() {
         LOGGER.debug("getTitle()");
+        AludraSeleniumHttpCommandExecutor executor = null;
         if (driver instanceof RemoteWebDriver) {
-            // also reduce timeout for TCP connection, in case remote hangs
-            ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(5000);
+            CommandExecutor ce = ((RemoteWebDriver) driver).getCommandExecutor();
+            if (ce instanceof AludraSeleniumHttpCommandExecutor) {
+                executor = (AludraSeleniumHttpCommandExecutor) ce;
+                // also reduce timeout for TCP connection, in case remote hangs
+                executor.setRequestTimeout(5000);
+            }
         }
         try {
             return driver.getTitle();
         }
         finally {
-            if (driver instanceof RemoteWebDriver) {
-                ((AludraSeleniumHttpCommandExecutor) ((RemoteWebDriver) driver).getCommandExecutor()).setRequestTimeout(0);
+            if (executor != null) {
+                executor.setRequestTimeout(0);
             }
         }
     }
