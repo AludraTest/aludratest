@@ -107,6 +107,8 @@ public class AludraSeleniumHttpCommandExecutor implements CommandExecutor, Needs
 
     private int requestTimeout;
 
+    private HttpResponse lastResponse;
+
     /** Constructs a new HttpCommandExecutor for the given remote server.
      * 
      * @param addressOfRemoteServer Remove server, or <code>null</code> to fall back to the System property
@@ -170,6 +172,10 @@ public class AludraSeleniumHttpCommandExecutor implements CommandExecutor, Needs
         return remoteServer;
     }
 
+    public HttpResponse getLastResponse() {
+        return lastResponse;
+    }
+
     @Override
     public Response execute(Command command) throws IOException {
         HttpContext context = new BasicHttpContext();
@@ -219,6 +225,7 @@ public class AludraSeleniumHttpCommandExecutor implements CommandExecutor, Needs
             log(LogType.PROFILER, new HttpProfilerLogEntry(command.getName(), false));
 
             response = followRedirects(client, context, response, /* redirect count */0);
+            lastResponse = response;
 
             return createResponse(response, context);
         }
