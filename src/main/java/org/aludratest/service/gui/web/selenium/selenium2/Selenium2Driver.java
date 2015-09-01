@@ -35,6 +35,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
+import org.slf4j.LoggerFactory;
 
 /** Enumerates the available web drivers for Selenium 2.
  * @author Volker Bergmann */
@@ -145,9 +146,16 @@ public class Selenium2Driver {
             }
         }
 
-        RemoteWebDriver driver = new RemoteWebDriver(executor, caps);
-        driver.setFileDetector(new LocalFileDetector());
-        return driver;
+        try {
+            RemoteWebDriver driver = new RemoteWebDriver(executor, caps);
+            driver.setFileDetector(new LocalFileDetector());
+            return driver;
+        }
+        catch (WebDriverException e) {
+            LoggerFactory.getLogger(Selenium2Driver.class).error(
+                    "Could not create remote web driver. Last remote HTTP response: " + executor.getLastResponse());
+            throw e;
+        }
     }
 
     // public static interface -------------------------------------------------
