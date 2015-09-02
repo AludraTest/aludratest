@@ -140,9 +140,11 @@ public class Selenium2Driver {
         DesiredCapabilities caps = capabilities;
         if (arguments != null && arguments.length > 0) {
             caps = new DesiredCapabilities(capabilities);
-            ChromeOptions opts = (ChromeOptions) caps.getCapability(ChromeOptions.CAPABILITY);
+            // this looks strange, but is the only way to avoid having all Threads sharing the same ChromeOptions object
+            ChromeOptions opts = (ChromeOptions) createChromeCaps().getCapability(ChromeOptions.CAPABILITY);
             if (opts != null) {
                 opts.addArguments(arguments);
+                caps.setCapability(ChromeOptions.CAPABILITY, opts);
             }
         }
 
