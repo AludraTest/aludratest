@@ -73,7 +73,6 @@ import org.openqa.selenium.logging.NeedsLocalLogs;
 import org.openqa.selenium.logging.profiler.HttpProfilerLogEntry;
 import org.openqa.selenium.remote.Command;
 import org.openqa.selenium.remote.CommandExecutor;
-import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.HttpSessionId;
 import org.openqa.selenium.remote.Response;
 import org.openqa.selenium.remote.SessionNotFoundException;
@@ -126,7 +125,7 @@ public class AludraSeleniumHttpCommandExecutor implements CommandExecutor, Needs
         commandCodec = new JsonHttpCommandCodec();
         responseCodec = new JsonHttpResponseCodec();
 
-        synchronized (HttpCommandExecutor.class) {
+        synchronized (AludraSeleniumHttpCommandExecutor.class) {
             if (httpClientFactory == null) {
                 httpClientFactory = new HttpClientFactory();
             }
@@ -224,6 +223,7 @@ public class AludraSeleniumHttpCommandExecutor implements CommandExecutor, Needs
             HttpResponse response = fallBackExecute(context, httpMethod);
             log(LogType.PROFILER, new HttpProfilerLogEntry(command.getName(), false));
 
+            lastResponse = response;
             response = followRedirects(client, context, response, /* redirect count */0);
             lastResponse = response;
 

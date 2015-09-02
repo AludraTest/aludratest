@@ -992,6 +992,12 @@ public class Selenium2Wrapper {
 
     public List<Attachment> getWindowsScreenshots() {
         LOGGER.debug("getWindowsScreenshots()");
+
+        // if close() already has been called, no screenshots available
+        if (driver == null) {
+            return Collections.emptyList();
+        }
+
         Base64 base64 = new Base64();
 
         Set<String> windowHandles = getWindowHandles();
