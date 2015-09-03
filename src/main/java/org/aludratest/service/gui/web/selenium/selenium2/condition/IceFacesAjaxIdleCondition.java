@@ -32,10 +32,10 @@ package org.aludratest.service.gui.web.selenium.selenium2.condition;
 public class IceFacesAjaxIdleCondition extends AbstractAjaxIdleCondition {
 
     // as IceFaces does not have something we could check for active AJAX request, we have to hook into AJAX events...
-    private static final String ICE_FACES_AJAX_CHECK_SCRIPT = "if (typeof(ajaxActive124) === 'undefined') "
-            + "{ var ajaxActive124 = 0; jsf.ajax.addOnEvent(function(data) { switch(data.status) { "
-            + "case 'begin': ajaxActive124 += 1; break; case 'success': ajaxActive124 -= 1; break; } }) } "
-            + "return ajaxActive124 == 0;";
+    private static final String ICE_FACES_AJAX_CHECK_SCRIPT = "if (typeof(window['ajaxActive124']) === 'undefined') "
+            + "{ window['ajaxActive124'] = 0; jsf.ajax.addOnEvent(function(data) { switch(data.status) { "
+            + "case 'begin': window['ajaxActive124'] += 1; break; case 'success': window['ajaxActive124'] -= 1; break; } }) } "
+            + "return window['ajaxActive124'] == 0;";
 
     @Override
     protected String getBooleanAjaxIdleScript() {
