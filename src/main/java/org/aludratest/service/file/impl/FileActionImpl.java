@@ -53,6 +53,7 @@ import org.apache.commons.vfs2.FileSelector;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.databene.commons.IOUtil;
+import org.databene.commons.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -299,6 +300,10 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     @Override
     public String readTextFile(String filePath) {
         File.verifyFilePath(filePath);
+        if (!exists(filePath) || isDirectory(filePath)) {
+            throw new AutomationException("No file exists at the given file path");
+        }
+
         BufferedReader reader = null;
         try {
             StringWriter writer = new StringWriter();
@@ -339,6 +344,10 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
     @Override
     public byte[] readBinaryFile(String filePath) {
         File.verifyFilePath(filePath);
+        if (!exists(filePath) || isDirectory(filePath)) {
+            throw new AutomationException("No file exists at the given file path");
+        }
+
         InputStream in = null;
         try {
             in = getInputStreamForFile(filePath);
@@ -415,7 +424,6 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         } else {
             LOGGER.debug("File exists as expected: {}", filePath);
         }
-
     }
 
     /** Expects a file to be absent.
@@ -427,6 +435,14 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
             throw new AutomationException("File expected to be absent: " + filePath);
         } else {
             LOGGER.debug("File is absent as expected: {}", filePath);
+        }
+    }
+
+    @Override
+    public void assertTextContentMatches(String filePath, Validator<String> validator) {
+        String contents = readTextFile(filePath);
+        if (!validator.valid(contents)) {
+            throw new FunctionalFailure("The text contents of the file do not match the given validator.");
         }
     }
 
