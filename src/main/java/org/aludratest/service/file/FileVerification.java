@@ -17,6 +17,7 @@ package org.aludratest.service.file;
 
 import org.aludratest.service.TechnicalLocator;
 import org.aludratest.service.Verification;
+import org.databene.commons.Validator;
 
 /**
  * {@link Verification} interface of the {@link FileService}.
@@ -26,30 +27,30 @@ public interface FileVerification extends Verification {
 
     /** Expects a file to exist.
      *  @param filePath the path of the file of which to assert presence
-     *  @throws org.aludratest.service.file.exception.FileAbsentException if the file was not found. 
      */
     void assertPresence(@TechnicalLocator String filePath);
 
     /** Expects a file to be absent.
-     *  @param filePath the path of the file of which to assert absence 
-     *  @throws org.aludratest.service.file.exception.FilePresentException if the file was encountered. 
+     *  @param filePath the path of the file of which to assert absence
      */
     void assertAbsence(@TechnicalLocator String filePath);
 
     /**
      * Asserts that the file object at the given location is not a directory
      * @param filePath
-     * @throws org.aludratest.service.file.exception.NotAFileException 
-     * 		if the file object located at the given path is a directory 
      */
     void assertFile(@TechnicalLocator String filePath);
 
     /**
      * Asserts that the file object at the given location is a directory
      * @param filePath
-     * @throws org.aludratest.service.file.exception.NotADirectoryException
-     * 		if the file object located at the given path is not a directory
      */
     void assertDirectory(@TechnicalLocator String filePath);
+
+    /** Asserts that the contents of a text file at the given location match the given validator.
+     * 
+     * @param filePath Path of the text file.
+     * @param validator Validator to validate the text contents against. */
+    void assertTextContentMatches(@TechnicalLocator String filePath, Validator<String> validator);
 
 }
