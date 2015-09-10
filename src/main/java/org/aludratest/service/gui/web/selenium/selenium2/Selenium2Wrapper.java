@@ -216,7 +216,6 @@ public class Selenium2Wrapper {
                 }
             }
             quit();
-            this.driver = null;
         }
         if (this.usedSeleniumHost != null) {
             resourceService.release(this.usedSeleniumHost);
