@@ -20,9 +20,7 @@ import java.util.Map;
 
 import org.aludratest.testcase.TestStatus;
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
-import org.joda.time.Period;
-import org.joda.time.ReadablePeriod;
+import org.joda.time.Duration;
 
 /**
  * Every test object even if it is a simple test step or a complex test suite
@@ -105,15 +103,15 @@ public abstract class TestObject {
      * 
      * @return duration duration between starting and finishing time
      */
-    public ReadablePeriod getDuration() {
+    public Duration getDuration() {
         DateTime startingTime = getStartingTime();
         DateTime finishingTime = getFinishingTime();
-        ReadablePeriod duration = new Period();
+        Duration duration = new Duration(0);
         if (startingTime != null) {
             if (finishingTime == null) {
                 finishingTime = new DateTime(); // if the object is still running, provide the currently elapsed time
             }
-            duration = new Interval(startingTime, finishingTime).toPeriod();
+            duration = new Duration(startingTime, finishingTime);
         }
         return duration;
     }

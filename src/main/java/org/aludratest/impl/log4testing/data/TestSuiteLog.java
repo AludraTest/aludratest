@@ -23,6 +23,7 @@ import org.aludratest.impl.log4testing.observer.TestObserver;
 import org.aludratest.impl.log4testing.observer.TestObserverManager;
 import org.aludratest.testcase.TestStatus;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 
 /**
  * Class which represents a TestSuite. 
@@ -247,6 +248,18 @@ public class TestSuiteLog extends TestSuiteLogComponent {
     @Override
     public DateTime getFinishingTime() {
         return finishingTime;
+    }
+
+    /** @return the aggregate sum of all test case durations reported by all recursive child components. */
+    public Duration getWork() {
+        long millis = 0;
+        for (TestSuiteLog childSuite : testSuites) {
+            millis += childSuite.getWork().getMillis();
+        }
+        for (TestCaseLog childCase : testCases) {
+            millis += childCase.getDuration().getMillis();
+        }
+        return new Duration(millis);
     }
 
     /** @return the status of the test suite */
