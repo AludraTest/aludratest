@@ -1218,7 +1218,7 @@ public class Selenium2Wrapper {
         }
         catch (UnsupportedCommandException e) {
             // of course, PhantomJS does NOT throw a StaleElementReferenceException, but some evil error...
-            if (e.getMessage() != null && e.getMessage().contains("'undefined' is not a function")) {
+            if (e.getMessage() != null && e.getMessage().contains("'undefined' is not a")) {
                 LOGGER.debug("Could not fire change event for element because element is now stale.");
             }
             else {
