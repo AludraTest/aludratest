@@ -1217,7 +1217,7 @@ public class Selenium2Wrapper {
         }
         catch (WebDriverException e) {
             // of course, PhantomJS does NOT throw a StaleElementReferenceException, but some evil error...
-            if (e.getMessage() != null && e.getMessage().matches(".*'?undefined'? is not a .*")) {
+            if (e.getMessage() != null && e.getMessage().matches("(?s).*'?undefined'? is not a .*")) {
                 LOGGER.debug("Could not fire change event for element because element is now stale.");
             }
             else {
