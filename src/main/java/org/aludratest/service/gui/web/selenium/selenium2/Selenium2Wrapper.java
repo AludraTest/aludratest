@@ -83,7 +83,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.UnsupportedCommandException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -1216,9 +1215,9 @@ public class Selenium2Wrapper {
             // ignore; key could have caused page change
             LOGGER.debug("Could not fire change event for element because element is now stale.");
         }
-        catch (UnsupportedCommandException e) {
+        catch (WebDriverException e) {
             // of course, PhantomJS does NOT throw a StaleElementReferenceException, but some evil error...
-            if (e.getMessage() != null && e.getMessage().contains("'undefined' is not a")) {
+            if (e.getMessage() != null && e.getMessage().matches(".*'?undefined'? is not a .*")) {
                 LOGGER.debug("Could not fire change event for element because element is now stale.");
             }
             else {
