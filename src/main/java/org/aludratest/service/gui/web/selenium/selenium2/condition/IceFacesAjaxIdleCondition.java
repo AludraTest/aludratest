@@ -34,7 +34,8 @@ public class IceFacesAjaxIdleCondition extends AbstractAjaxIdleCondition {
     // as IceFaces does not have something we could check for active AJAX request, we have to hook into AJAX events...
     private static final String ICE_FACES_AJAX_CHECK_SCRIPT = "if (typeof(window['ajaxActive124']) === 'undefined') "
             + "{ window['ajaxActive124'] = 0; jsf.ajax.addOnEvent(function(data) { switch(data.status) { "
-            + "case 'begin': window['ajaxActive124'] += 1; break; case 'success': window['ajaxActive124'] -= 1; break; } }) } "
+            + "case 'begin': window['ajaxActive124'] += 1; break; case 'success': window['ajaxActive124'] -= 1; break; } }); "
+            + "jsf.ajax.addOnError(function(data) { window['ajaxActive124'] -= 1; }); } "
             + "return window['ajaxActive124'] == 0;";
 
     @Override
