@@ -261,9 +261,11 @@ public class Selenium2Wrapper {
         }
     }
 
-    private void doAfterDelegate(int taskCompletionTimeout, String failureMessage) {
+    private void doAfterDelegate(int taskCompletionTimeout, String operation) {
         if (taskCompletionTimeout >= 0) {
             int timeout = (taskCompletionTimeout == 0 ? configuration.getTaskCompletionTimeout() : taskCompletionTimeout);
+            String failureMessage = "After operation " + operation + "() the system remained busy exceeding the timeout of "
+                    + taskCompletionTimeout + " ms";
             TaskCompletionUtil.waitForActivityAndCompletion(systemConnector, failureMessage, configuration.getTaskStartTimeout(),
                     timeout, configuration.getTaskPollingInterval());
         }
@@ -271,8 +273,10 @@ public class Selenium2Wrapper {
 
     private void waitUntilNotBusy() {
         if (this.systemConnector != null) {
-            TaskCompletionUtil.waitUntilNotBusy(this.systemConnector, configuration.getTaskCompletionTimeout(),
-                    configuration.getTaskPollingInterval(), "System not available");
+            int taskCompletionTimeout = configuration.getTaskCompletionTimeout();
+            TaskCompletionUtil.waitUntilNotBusy(this.systemConnector, taskCompletionTimeout,
+                    configuration.getTaskPollingInterval(), "System not available within the timeout of " + taskCompletionTimeout
+                            + " ms");
         }
     }
 
@@ -937,7 +941,7 @@ public class Selenium2Wrapper {
                     : taskCompletionTimeout);
         }
         catch (TimeoutException e) {
-            throw new PerformanceFailure("Window was not closed within timeout");
+            throw new PerformanceFailure("Window was not closed within the timeout of " + taskCompletionTimeout + " ms");
         }
     }
 
@@ -961,7 +965,7 @@ public class Selenium2Wrapper {
                 waitFor(condition, maxWaitTime);
             }
             catch (TimeoutException e) {
-                throw new PerformanceFailure("AJAX operation was not finished within timeout");
+                throw new PerformanceFailure("AJAX operation was not finished within the timeout of " + maxWaitTime + " ms");
             }
         }
         else {
