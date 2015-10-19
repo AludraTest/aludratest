@@ -47,8 +47,7 @@
 			<tr class="$testCase.Status">
 				<td>$!testCase.StartingTime.toString($dateFormat)</td>
 				<td>$!testCase.FinishingTime.toString($dateFormat)</td>
-				#set ($duration = $testCase.Duration)
-			    <td>$time.format($duration)</td>
+			    <td>$time.format($testCase.Duration.toPeriod())</td>
 				<td>$testCase.NumberOfTestSteps</td>
 				<td>#if ($testCase.isFailed()) 1 #else 0 #end</td>
 				<td><a href="#teststep$!{testCase.LastFailed.Id}" onClick="$('#ts$!{testCase.LastFailed.Id}').parent().show();$('#ts$!{testCase.LastFailed.Id}').parent().prev().find('h3 a').text('[-]')">$!testCase.LastFailed.ErrorMessage</a></td>
