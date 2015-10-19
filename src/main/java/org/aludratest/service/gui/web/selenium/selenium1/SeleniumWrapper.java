@@ -785,9 +785,11 @@ public class SeleniumWrapper {
         highlight(locator);
     }
 
-    private void doAfterDelegate(int taskCompletionTimeout, String failureMessage) {
+    private void doAfterDelegate(int taskCompletionTimeout, String operation) {
         if (taskCompletionTimeout >= 0) {
             int timeout = (taskCompletionTimeout == 0 ? configuration.getTaskCompletionTimeout() : taskCompletionTimeout);
+            String failureMessage = "After operation " + operation + "() the system remained busy exceeding the timeout of "
+                    + taskCompletionTimeout + " ms";
             TaskCompletionUtil.waitForActivityAndCompletion(systemConnector, failureMessage,
                     configuration.getTaskStartTimeout(), timeout, configuration.getTaskPollingInterval());
         }
@@ -875,7 +877,7 @@ public class SeleniumWrapper {
             windowIsGone = retryUntilTimeout(check);
         }
         if (!windowIsGone) {
-            throw new PerformanceFailure("Window not closed within timeout");
+            throw new PerformanceFailure("Window not closed within the timeout of " + taskCompletionTimeout + " ms");
         }
     }
 
@@ -887,7 +889,7 @@ public class SeleniumWrapper {
                         maxWaitTime);
             }
             catch (TimeoutException e) {
-                throw new PerformanceFailure("AJAX operation was not finished within timeout");
+                throw new PerformanceFailure("AJAX operation was not finished within timeout of " + maxWaitTime + " ms");
             }
         }
         else {
