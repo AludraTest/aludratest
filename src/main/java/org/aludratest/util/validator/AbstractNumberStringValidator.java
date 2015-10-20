@@ -25,6 +25,7 @@ import org.aludratest.util.data.helper.DataMarkerCheck;
 public abstract class AbstractNumberStringValidator extends AbstractNullStringValidator {
 
     protected final double tolerance;
+    private final Double expected;
 
     /** Constructor.
      *  @param validationTerm the reference value
@@ -32,9 +33,22 @@ public abstract class AbstractNumberStringValidator extends AbstractNullStringVa
     public AbstractNumberStringValidator(String validationTerm, double tolerance) {
         super(validationTerm);
         this.tolerance = tolerance;
+        this.expected = parseDouble(validationTerm);
     }
 
-    protected static Double parseDouble(String value, boolean gui) {
+    @Override
+    protected final boolean validImpl(String text) {
+        if (expected == null) {
+            return true;
+        }
+
+        Double actual = parseDouble(text);
+        return actual != null && validImpl(expected.doubleValue(), actual.doubleValue());
+    }
+
+    protected abstract boolean validImpl(double validationTerm, double value);
+
+    protected static Double parseDouble(String value) {
         if (value == null || DataMarkerCheck.isNull(value)) {
             return null;
         }
