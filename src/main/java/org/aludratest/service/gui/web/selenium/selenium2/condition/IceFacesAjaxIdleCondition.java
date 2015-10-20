@@ -35,7 +35,7 @@ public class IceFacesAjaxIdleCondition extends AbstractAjaxIdleCondition {
     private static final String ICE_FACES_AJAX_CHECK_SCRIPT = "if (typeof(window['ajaxActive124']) === 'undefined') "
             + "{ window['ajaxActive124'] = 0; jsf.ajax.addOnEvent(function(data) { switch(data.status) { "
             + "case 'begin': window['ajaxActive124'] += 1; break; case 'success': window['ajaxActive124'] -= 1; break; } }); "
-            + "jsf.ajax.addOnError(function(data) { window['ajaxActive124'] -= 1; }); } "
+            + "jsf.ajax.addOnError(function(data) { window['ajaxActive124'] -= 1; if (window['ajaxActive124'] < 0) window['ajaxActive124'] = 0; }); } "
             + "return window['ajaxActive124'] == 0;";
 
     @Override
