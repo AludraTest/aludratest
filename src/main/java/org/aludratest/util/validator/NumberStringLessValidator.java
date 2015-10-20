@@ -21,21 +21,18 @@ package org.aludratest.util.validator;
  */
 public class NumberStringLessValidator extends AbstractNumberStringValidator {
 
-    private final Double expected;
-
     /** Constructor.
      *  @param validationTerm
      *  @param tolerance */
     public NumberStringLessValidator(String validationTerm, double tolerance) {
         super(validationTerm, tolerance);
-        this.expected = parseDouble(validationTerm, false);
     }
 
     @Override
-    protected boolean validImpl(String text) {
-        Double actual = parseDouble(text, true);
-        return (actual - expected < tolerance);
+    protected boolean validImpl(double validationTerm, double value) {
+        return (value - validationTerm < tolerance);
     }
+
 
     @Override
     protected String descriptionImpl() {
