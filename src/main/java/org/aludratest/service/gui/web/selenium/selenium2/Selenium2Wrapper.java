@@ -48,6 +48,7 @@ import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownOptio
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementEditableCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementEnabledCondition;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementNotEditableCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementNotVisibleCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementValuePresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.IceFacesAjaxIdleCondition;
@@ -276,7 +277,7 @@ public class Selenium2Wrapper {
             int taskCompletionTimeout = configuration.getTaskCompletionTimeout();
             TaskCompletionUtil.waitUntilNotBusy(this.systemConnector, taskCompletionTimeout,
                     configuration.getTaskPollingInterval(), "System not available within the timeout of " + taskCompletionTimeout
-                            + " ms");
+                    + " ms");
         }
     }
 
@@ -777,6 +778,17 @@ public class Selenium2Wrapper {
     @SuppressWarnings("unchecked")
     public WebElement waitUntilEditable(GUIElementLocator locator, long timeOutInMillis) {
         ElementEditableCondition condition = new ElementEditableCondition(locator, locatorSupport);
+        try {
+            return waitFor(condition, timeOutInMillis, NoSuchElementException.class);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage()); // NOSONAR
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public WebElement waitUntilNotEditable(GUIElementLocator locator, long timeOutInMillis) {
+        ElementNotEditableCondition condition = new ElementNotEditableCondition(locator, locatorSupport);
         try {
             return waitFor(condition, timeOutInMillis, NoSuchElementException.class);
         }
