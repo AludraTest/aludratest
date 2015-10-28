@@ -81,6 +81,9 @@ public class TestStepLog extends TestObject {
     /** The arguments used in the operation. */
     private String usedArguments = NOT_SET;
 
+    /** The result of the corresponding method call */
+    private String result;
+
     private String errorMessage = "";
 
     private Throwable error;
@@ -103,10 +106,6 @@ public class TestStepLog extends TestObject {
         this.parent = parent;
         this.error = null;
         start();
-    }
-
-    public TestStepLog() {
-
     }
 
     // interface ---------------------------------------------------------------
@@ -317,6 +316,16 @@ public class TestStepLog extends TestObject {
     public TestStepLog setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
         return this;
+    }
+
+    /** @return the {@link #result} */
+    public String getResult() {
+        return result;
+    }
+
+    /** @param result the result of the corresponding method call */
+    public void setResult(String result) {
+        this.result = result;
     }
 
     /** @return the {@link #error} */

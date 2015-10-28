@@ -19,24 +19,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aludratest.exception.FunctionalFailure;
-import org.aludratest.exception.TechnicalException;
+import org.aludratest.service.ElementName;
+import org.aludratest.service.ElementType;
 import org.aludratest.service.SystemConnector;
+import org.aludratest.service.TechnicalLocator;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
+import org.databene.commons.ObjectNotFoundException;
 
 /**
  * Pseudo interaction implementation for testing.
  * @author Volker Bergmann
  */
 public class ThePseudoInteraction implements PseudoInteraction {
-    
+
     private SystemConnector systemConnector;
 
     @Override
     public List<Attachment> createAttachments(Object object, String label) {
-        throw new TechnicalException("Not supported");
+        List<Attachment> result = new ArrayList<Attachment>();
+        result.add(new StringAttachment(label, String.valueOf(object), "txt"));
+        return result;
     }
-    
+
     /** Creates a simple text file in replacement of real debugging information. */
     @Override
     public List<Attachment> createDebugAttachments() {
@@ -47,8 +52,15 @@ public class ThePseudoInteraction implements PseudoInteraction {
 
     /** Empty service method implementation. */
     @Override
-    public void succeed(String elementType, String elementName, String locator) {
-        // nothing to do
+    public String succeed(String elementType, String elementName, String locator) {
+        return "It worked!";
+    }
+
+    /** A service that is expected to succeed and of which the result shall be logged in an attachment. */
+    @Override
+    public String succeedWithAttachments(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator String locator) {
+        return "It worked!";
     }
 
     /** Service method which throws an {@link ObjectNotFoundException}. */
@@ -66,7 +78,7 @@ public class ThePseudoInteraction implements PseudoInteraction {
     public SystemConnector getSystemConnector() {
         return systemConnector;
     }
-    
+
     @Override
     public void setSystemConnector(SystemConnector systemConnector) {
         this.systemConnector = systemConnector;

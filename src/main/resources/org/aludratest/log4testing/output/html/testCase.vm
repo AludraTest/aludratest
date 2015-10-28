@@ -84,7 +84,7 @@
 				<th>Element&nbsp;Name</th>
 				<th>Data</th>
 				<th>Error&nbsp;Message</th>
-				<th>Attachments</th>
+				<th>Result / Attachments</th>
 				<th>Service</th>
 				<th>Technical&nbsp;Locator</th>
 				<th>Technical Arguments</th>
@@ -99,6 +99,9 @@
 				<td>$!testStep.UsedArguments</td>
 				<td>$!testStep.ErrorMessage</td>
 				<td>
+					#if ($testStep.Result)
+						$testStep.Result<br/>
+					#end
 					#foreach($attachment in $testStep.Attachments)
 						&gt;&gt;&nbsp;
 						#if (${attachment.FileName})

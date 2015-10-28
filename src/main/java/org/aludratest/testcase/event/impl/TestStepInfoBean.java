@@ -54,6 +54,8 @@ public final class TestStepInfoBean implements TestStepInfo {
 
     private DateTime finishingTime;
 
+    private String result;
+
     private String errorMessage;
 
     private Throwable error;
@@ -131,6 +133,14 @@ public final class TestStepInfoBean implements TestStepInfo {
 
     public void setServiceId(ComponentId<? extends AludraService> serviceId) {
         this.serviceId = serviceId;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 
     @Override
