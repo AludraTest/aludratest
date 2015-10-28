@@ -19,8 +19,6 @@ import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.service.gui.web.WebGUIVerification;
 import org.aludratest.service.locator.element.GUIElementLocator;
-import org.aludratest.util.DataUtil;
-import org.databene.commons.StringUtil;
 import org.databene.commons.Validator;
 
 /**
@@ -45,7 +43,7 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
         try {
             wrapper.waitUntilVisible(locator, getTimeout());
         }
-        catch (AutomationException e) {
+        catch (AutomationException e) { // NOSONAR
             throw new FunctionalFailure(e.getMessage());
         }
     }
@@ -55,7 +53,7 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
         try {
             wrapper.waitUntilNotVisible(locator, getTimeout());
         }
-        catch (AutomationException e) {
+        catch (AutomationException e) { // NOSONAR
             throw new FunctionalFailure(e.getMessage());
         }
     }
@@ -106,8 +104,7 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
             long timeout = getConfiguration().getTimeout();
             wrapper.waitUntilPresent(locator, timeout);
         }
-        catch (AutomationException e) {
-            // because of ASSERTION, it is a functional failure (expected failure from SUT)
+        catch (AutomationException e) { // NOSONAR
             throw new FunctionalFailure(e.getMessage());
         }
     }
@@ -134,18 +131,20 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
     }
 
     @Override
-    public void assertHasValues(String elementType, String operation, GUIElementLocator locator, String[] expectedValues) {
-        final String[] actualValues = wrapper.getSelectOptions(locator);
-        final String mismatches = DataUtil.expectEqualArrays(expectedValues, actualValues);
-        if (!StringUtil.isEmpty(mismatches)) {
-            throw new FunctionalFailure("The actual values are not as expected. " +
-                    "As follows the unequal pairs (expected!=actual): " + mismatches);
+    public void assertHasValues(String elementType, String operation, GUIElementLocator locator, String[] expectedValues,
+            boolean checkOrder) {
+        try {
+            wrapper.waitForDropDownValues(locator, expectedValues, false, checkOrder);
+        }
+        catch (AutomationException e) { // NOSONAR
+            throw new FunctionalFailure(e.getMessage());
         }
     }
 
     @Override
-    public void assertHasLabels(String elementType, String operation, GUIElementLocator locator, String[] expectedLabels) {
-        checkLabels(expectedLabels, locator, false);
+    public void assertHasLabels(String elementType, String operation, GUIElementLocator locator, String[] expectedLabels,
+            boolean checkOrder) {
+        checkLabels(expectedLabels, locator, false, checkOrder);
     }
 
     @Override
@@ -156,7 +155,17 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
 
     @Override
     public void assertContainsLabels(String elementType, String operation, GUIElementLocator locator, String[] labels) {
-        checkLabels(labels, locator, true);
+        checkLabels(labels, locator, true, false);
+    }
+
+    @Override
+    public void assertContainsValues(String elementType, String elementName, GUIElementLocator locator, String[] values) {
+        try {
+            wrapper.waitForDropDownValues(locator, values, true, false);
+        }
+        catch (AutomationException e) { // NOSONAR
+            throw new FunctionalFailure(e.getMessage());
+        }
     }
 
     @Override
@@ -164,8 +173,7 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
         try {
             wrapper.waitUntilElementNotPresent(locator, getTimeout());
         }
-        catch (AutomationException e) {
-            // because of ASSERTION, it is a functional failure (expected failure from SUT)
+        catch (AutomationException e) { // NOSONAR
             throw new FunctionalFailure(e.getMessage());
         }
     }
@@ -176,11 +184,11 @@ public class Selenium2Verification extends AbstractSelenium2Action implements We
         wrapper.waitForSelectedLabelValidity(locator, validator);
     }
 
-    private void checkLabels(String[] labels, GUIElementLocator dropDownLocator, boolean contains) {
+    private void checkLabels(String[] labels, GUIElementLocator dropDownLocator, boolean contains, boolean checkOrder) {
         try {
-            wrapper.waitForDropDownEntries(dropDownLocator, labels, contains);
+            wrapper.waitForDropDownEntries(dropDownLocator, labels, contains, checkOrder);
         }
-        catch (AssertionError e) {
+        catch (AutomationException e) { // NOSONAR
             throw new FunctionalFailure(e.getMessage());
         }
     }

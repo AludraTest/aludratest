@@ -19,11 +19,9 @@ import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.service.gui.web.WebGUIVerification;
 import org.aludratest.service.locator.element.GUIElementLocator;
-import org.aludratest.util.DataUtil;
 import org.aludratest.util.PolledValidationTask;
 import org.aludratest.util.Provider;
 import org.aludratest.util.poll.PollService;
-import org.databene.commons.StringUtil;
 import org.databene.commons.Validator;
 
 /**
@@ -126,18 +124,15 @@ public class Selenium1Verification extends AbstractSeleniumAction implements Web
     }
 
     @Override
-    public void assertHasValues(String elementType, String operation, GUIElementLocator locator, String[] expectedValues) {
-        String[] actualValues = wrapper.getSelectOptions(locator);
-        String mismatches = DataUtil.expectEqualArrays(expectedValues, actualValues);
-        if (!StringUtil.isEmpty(mismatches)) {
-            throw new FunctionalFailure("The actual values are not as expected. " +
-                    "As follows the unequal pairs (expected!=actual): " + mismatches);
-        }
+    public void assertHasLabels(String elementType, String elementName, GUIElementLocator locator, String[] expectedLabels,
+            boolean checkOrder) {
+        checkLabels(expectedLabels, locator, false, checkOrder);
     }
 
     @Override
-    public void assertHasLabels(String elementType, String operation, GUIElementLocator locator, String[] expectedLabels) {
-        checkLabels(expectedLabels, locator, false);
+    public void assertHasValues(String elementType, String elementName, GUIElementLocator locator, String[] expectedValues,
+            boolean checkOrder) {
+        checkValues(expectedValues, locator, false, checkOrder);
     }
 
     @Override
@@ -147,7 +142,12 @@ public class Selenium1Verification extends AbstractSeleniumAction implements Web
 
     @Override
     public void assertContainsLabels(String elementType, String operation, GUIElementLocator locator, String[] labels) {
-        checkLabels(labels, locator, true);
+        checkLabels(labels, locator, true, false);
+    }
+
+    @Override
+    public void assertContainsValues(String elementType, String elementName, GUIElementLocator locator, String[] values) {
+        checkValues(values, locator, true, false);
     }
 
     @Override
@@ -168,8 +168,8 @@ public class Selenium1Verification extends AbstractSeleniumAction implements Web
 
     // private helper methods --------------------------------------------------
 
-    private void checkLabels(String[] labels, GUIElementLocator elementLocator, boolean contains) {
-        CheckLabelCondition condition = new CheckLabelCondition(contains, labels, wrapper, elementLocator);
+    private void checkLabels(String[] labels, GUIElementLocator elementLocator, boolean contains, boolean checkOrder) {
+        CheckLabelCondition condition = new CheckLabelCondition(contains, checkOrder, labels, wrapper, elementLocator);
         wrapper.retryUntilTimeout(condition);
         String mismatches = condition.getMismatches();
         if (mismatches.length() > 0) {
@@ -178,9 +178,22 @@ public class Selenium1Verification extends AbstractSeleniumAction implements Web
                         "in the actual labels. Following Label(s) is/are missing: " +
                         mismatches);
             } else {
-                throw new FunctionalFailure("The actual labels are not equal " +
-                        "to the expected ones. As follows the unequal pairs " +
-                        "(expected!=actual): " + mismatches);
+                throw new FunctionalFailure("The actual labels are not equal to the expected ones. " + mismatches);
+            }
+        }
+    }
+
+    private void checkValues(String[] values, GUIElementLocator elementLocator, boolean contains, boolean checkOrder) {
+        CheckValuesCondition condition = new CheckValuesCondition(contains, checkOrder, values, wrapper, elementLocator);
+        wrapper.retryUntilTimeout(condition);
+        String mismatches = condition.getMismatches();
+        if (mismatches.length() > 0) {
+            if (contains) {
+                throw new FunctionalFailure("The expected values are not contained "
+                        + "in the actual values. Following Label(s) is/are missing: " + mismatches);
+            }
+            else {
+                throw new FunctionalFailure("The actual values are not equal to the expected ones. " + mismatches);
             }
         }
     }

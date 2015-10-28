@@ -175,56 +175,82 @@ public abstract class AbstractDropdownboxTest extends GUITest {
 
     @Test
     public void hasValues_multiarg() {
-        // FIXME shouldn't these be the VALUES of the option tags? Please clarify.
         // positive test
-        guiTestUIMap.dropDownBox().assertHasValues("Partner Name", "Partner Short Name", "City", "State", "Country", "Sales Rep",
-                "Partner Number", "District", "Customer Facility Code", "Equipment Customer", "Non Globe BP", "Creation SOU",
-                "<EMPTY>", "Disabled entry");
+        guiTestUIMap.dropDownBox().assertHasValues(true, "Partner_Name_value", "Partner Short Name_value", "City_value",
+                "State_value",
+                "Country_value", "Sales Rep_value", "Partner Number_value", "District_value", "Customer Facility Code_value",
+                "Equipment Customer_value", "Non Globe BP_value", "Creation SOU_value", "empty_value", "Disabled entry_value");
         checkLastStepStatus(TestStatus.PASSED);
+
+        // positive test with shuffled data and ignore order
+        guiTestUIMap.dropDownBox().assertHasValues(false, "District_value", "Partner_Name_value", "Partner Short Name_value",
+                "City_value", "State_value", "Country_value", "Sales Rep_value", "Partner Number_value",
+                "Customer Facility Code_value", "Equipment Customer_value", "Non Globe BP_value", "Creation SOU_value",
+                "empty_value", "Disabled entry_value");
+        checkLastStepStatus(TestStatus.PASSED);
+
         // negative test with multiple values
-        guiTestUIMap.dropDownBox().assertHasValues("Partner Name", "Partner Short Name");
+        guiTestUIMap.dropDownBox().assertHasValues(true, "Partner_Name_value", "Partner Short Name_value");
         checkLastStepStatus(TestStatus.FAILED);
     }
 
     @Test
     public void hasValues_singlearg() {
-        guiTestUIMap.dropDownBox().assertHasValues("Partner Name");
+        guiTestUIMap.dropDownBox().assertHasValues(true, new String[] { null });
+        checkLastStepStatus(TestStatus.PASSED);
+        guiTestUIMap.dropDownBox().assertHasValues(true, "Partner_Name_value");
         checkLastStepStatus(TestStatus.FAILED);
     }
 
     @Test
     public void hasLabels_multiarg() {
         // positive test
-        guiTestUIMap.dropDownBox().assertHasLabels("Partner Name", "Partner Short Name", "City", "State", "Country", "Sales Rep",
+        guiTestUIMap.dropDownBox().assertHasLabels(true, "Partner Name", "Partner Short Name", "City", "State", "Country",
+                "Sales Rep",
                 "Partner Number", "District", "Customer Facility Code", "Equipment Customer", "Non Globe BP", "Creation SOU",
                 "<EMPTY>", "Disabled entry");
         checkLastStepStatus(TestStatus.PASSED);
+
+        // positive test with shuffled data and ignore order
+        guiTestUIMap.dropDownBox().assertHasLabels(false, "Partner Name", "Equipment Customer", "Partner Short Name", "City",
+                "State", "Disabled entry", "Country", "Sales Rep", "Partner Number", "District", "Customer Facility Code",
+                "Non Globe BP", "Creation SOU", "<EMPTY>");
+        checkLastStepStatus(TestStatus.PASSED);
+
         // negative test with multiple values
-        guiTestUIMap.dropDownBox().assertHasLabels("Partner Name", "Partner Short Name");
+        guiTestUIMap.dropDownBox().assertHasLabels(true, "Partner Name", "Partner Short Name");
         checkLastStepStatus(TestStatus.FAILED);
     }
 
     @Test
-    public void equalsLabels_multiarg() {
+    public void checkHasLabels_multiarg() {
         // positive test
-        boolean checkValue = guiTestUIMap.dropDownBox().checkEqualsLabels("Partner Name", "Partner Short Name", "City", "State",
+        boolean checkValue = guiTestUIMap.dropDownBox().checkHasLabels(true, "Partner Name", "Partner Short Name", "City",
+                "State",
                 "Country", "Sales Rep", "Partner Number", "District", "Customer Facility Code", "Equipment Customer",
                 "Non Globe BP", "Creation SOU", "<EMPTY>", "Disabled entry");
         Assert.assertTrue(checkValue);
+
+        // positive test with shuffled data and ignore order
+        checkValue = guiTestUIMap.dropDownBox().checkHasLabels(false, "Partner Name", "Partner Short Name", "City", "State",
+                "Country", "Sales Rep", "Partner Number", "District", "Equipment Customer", "Non Globe BP", "Creation SOU",
+                "<EMPTY>", "Disabled entry", "Customer Facility Code");
+        Assert.assertTrue(checkValue);
+
         // negative test with multiple values
-        checkValue = guiTestUIMap.dropDownBox().checkEqualsLabels("Partner Name", "Partner Short Name");
+        checkValue = guiTestUIMap.dropDownBox().checkHasLabels(false, "Partner Name", "Partner Short Name");
         Assert.assertFalse(checkValue);
     }
 
     @Test
     public void hasLabels_singlearg() {
-        guiTestUIMap.dropDownBox().assertHasLabels("Partner Name");
+        guiTestUIMap.dropDownBox().assertHasLabels(true, "Partner Name");
         checkLastStepStatus(TestStatus.FAILED);
     }
 
     @Test
-    public void equalsLabels_singlearg() {
-        boolean checkValue = guiTestUIMap.dropDownBox().checkEqualsLabels("Partner Name");
+    public void checkHasLabels_singlearg() {
+        boolean checkValue = guiTestUIMap.dropDownBox().checkHasLabels(false, "Partner Name");
         Assert.assertFalse(checkValue);
     }
 
@@ -239,6 +265,24 @@ public abstract class AbstractDropdownboxTest extends GUITest {
         checkLastStepStatus(TestStatus.PASSED);
         // negative test with multiple values
         guiTestUIMap.dropDownBox().assertContainsLabels("Partner Name", "xxx");
+        checkLastStepStatus(TestStatus.FAILED);
+    }
+
+    @Test
+    public void containsValues() {
+        // positive test with whole, but shuffled list
+        guiTestUIMap.dropDownBox().assertContainsValues("District_value", "Partner_Name_value", "Partner Short Name_value",
+                "City_value", "State_value", "Country_value", "Sales Rep_value", "Partner Number_value",
+                "Customer Facility Code_value", "Equipment Customer_value", "Non Globe BP_value", "Creation SOU_value",
+                "empty_value", "Disabled entry_value");
+        checkLastStepStatus(TestStatus.PASSED);
+
+        // positive test with partial list
+        guiTestUIMap.dropDownBox().assertContainsValues("District_value", "Partner_Name_value");
+        checkLastStepStatus(TestStatus.PASSED);
+
+        // negative test
+        guiTestUIMap.dropDownBox().assertContainsValues("Some_value");
         checkLastStepStatus(TestStatus.FAILED);
     }
 

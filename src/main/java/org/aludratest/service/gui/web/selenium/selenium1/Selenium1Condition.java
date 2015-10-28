@@ -243,15 +243,32 @@ public class Selenium1Condition extends AbstractSeleniumAction implements WebGUI
 
     @Override
     public boolean containsLabels(String elementType, String elementName, GUIElementLocator locator, String... labels) {
-        CheckLabelCondition condition = new CheckLabelCondition(true, labels, wrapper, locator);
+        CheckLabelCondition condition = new CheckLabelCondition(true, false, labels, wrapper, locator);
         wrapper.retryUntilTimeout(condition);
         return StringUtil.isEmpty(condition.getMismatches());
     }
 
     @Override
-    public boolean equalsLabels(String elementType, String elementName, GUIElementLocator locator, String... labels) {
-        CheckLabelCondition condition = new CheckLabelCondition(false, labels, wrapper, locator);
+    public boolean containsValues(String elementType, String elementName, GUIElementLocator locator, String... values) {
+        CheckValuesCondition condition = new CheckValuesCondition(true, false, values, wrapper, locator);
         wrapper.retryUntilTimeout(condition);
         return StringUtil.isEmpty(condition.getMismatches());
     }
+
+    @Override
+    public boolean hasLabels(String elementType, String elementName, GUIElementLocator locator, boolean checkOrder,
+            String... labels) {
+        CheckLabelCondition condition = new CheckLabelCondition(false, checkOrder, labels, wrapper, locator);
+        wrapper.retryUntilTimeout(condition);
+        return StringUtil.isEmpty(condition.getMismatches());
+    }
+
+    @Override
+    public boolean hasValues(String elementType, String elementName, GUIElementLocator locator, boolean checkOrder,
+            String... values) {
+        CheckValuesCondition condition = new CheckValuesCondition(false, checkOrder, values, wrapper, locator);
+        wrapper.retryUntilTimeout(condition);
+        return StringUtil.isEmpty(condition.getMismatches());
+    }
+
 }

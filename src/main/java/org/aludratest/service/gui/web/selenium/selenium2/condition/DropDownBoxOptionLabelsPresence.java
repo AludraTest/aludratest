@@ -16,6 +16,8 @@
 package org.aludratest.service.gui.web.selenium.selenium2.condition;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
@@ -31,19 +33,22 @@ public class DropDownBoxOptionLabelsPresence implements ExpectedCondition<Boolea
     private final AnyDropDownOptions dropDownBoxOptions;
     private final String[] expectedLabels;
     private final boolean contained;
+    private final boolean checkOrder;
     private String message;
 
     /** Constructor.
      * @param dropDownLocator
      * @param expectedLabels
      * @param contained
+     * @param checkOrder
      * @param locatorSupport
      * @param wrapper */
     public DropDownBoxOptionLabelsPresence(GUIElementLocator dropDownLocator, String[] expectedLabels, boolean contained,
-            LocatorSupport locatorSupport) {
+            boolean checkOrder, LocatorSupport locatorSupport) {
         this.dropDownBoxOptions = AnyDropDownOptions.createLabelCondition(dropDownLocator, locatorSupport);
         this.expectedLabels = expectedLabels;
         this.contained = contained;
+        this.checkOrder = checkOrder;
     }
 
     /** @return the {@link #message} which has been set if the condition did not match */
@@ -76,13 +81,43 @@ public class DropDownBoxOptionLabelsPresence implements ExpectedCondition<Boolea
             }
         }
         else {
-            String mismatches = DataUtil.expectEqualArrays(expectedLabels, actualLabels);
-            if (mismatches.length() == 0) {
+            // only in this case, checkOrder matters
+            if (checkOrder) {
+                String mismatches = DataUtil.expectEqualArrays(expectedLabels, actualLabels);
+                if (mismatches.length() == 0) {
+                    return true;
+                }
+                else {
+                    this.message = "The actual labels are not equal to the expected ones. As follows the unequal pairs "
+                            + "(expected!=actual): " + mismatches;
+                    return false;
+                }
+            }
+            else {
+                Set<String> sActualLabels = new HashSet<String>(Arrays.asList(actualLabels));
+                Set<String> sExpectedLabels = new HashSet<String>(Arrays.asList(expectedLabels));
+                Set<String> missingLabels = new HashSet<String>(sExpectedLabels);
+                missingLabels.removeAll(sActualLabels);
+                Set<String> sflousLabels = new HashSet<String>(sActualLabels);
+                sflousLabels.removeAll(sExpectedLabels);
+
+                if (!missingLabels.isEmpty() || !sflousLabels.isEmpty()) {
+                    StringBuilder sbMessage = new StringBuilder("The actual labels are not equal to the expected ones. ");
+                    if (!missingLabels.isEmpty()) {
+                        sbMessage.append("The following expected labels are NOT contained in the Dropdownbox: "
+                                + missingLabels.toString()
+                                + " ");
+                    }
+                    if (!sflousLabels.isEmpty()) {
+                        sbMessage.append("The following labels are contained in the Dropdownbox, but not expected: "
+                                + sflousLabels.toString());
+                    }
+
+                    this.message = sbMessage.toString();
+                    return false;
+                }
+
                 return true;
-            } else {
-                this.message = "The actual labels are not equal to the expected ones. As follows the unequal pairs "
-                        + "(expected!=actual): " + mismatches;
-                return false;
             }
         }
     }
