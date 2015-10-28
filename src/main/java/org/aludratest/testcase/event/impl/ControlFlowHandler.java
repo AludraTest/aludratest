@@ -159,7 +159,7 @@ public class ControlFlowHandler implements InvocationHandler {
             Object result = forwardWithRetry(method, args, testStep, outArr);
             testStep = outArr[0];
             if (logTestSteps) {
-                attachResultIfAttachable(testStep, method, result);
+                handleResult(testStep, method, result);
                 testContext.fireTestStep(testStep);
             }
             return result;
@@ -179,18 +179,26 @@ public class ControlFlowHandler implements InvocationHandler {
         }
     }
 
-    private void attachResultIfAttachable(TestStepInfoBean testStep, Method method, Object result) {
+    private void handleResult(TestStepInfoBean testStep, Method method, Object result) {
+        // handle only Action results
         if (!(target instanceof Action)) {
             return;
         }
         Action action = (Action) target;
 
+        // Check whether to attach or log the result
         AttachResult attachResult = method.getAnnotation(AttachResult.class);
         if (attachResult != null) {
+            // attach the result
             List<Attachment> attachments = action.createAttachments(result, attachResult.value());
             for (Attachment attachment : attachments) {
                 testStep.addAttachment(attachment);
             }
+        }
+        else {
+            // log result
+            String resultString = (method.getReturnType().equals(Void.class) ? null : String.valueOf(result));
+            testStep.setResult(resultString);
         }
     }
 

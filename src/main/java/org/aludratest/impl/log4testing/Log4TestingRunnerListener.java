@@ -38,6 +38,8 @@ import org.aludratest.testcase.event.TestStepInfo;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.codehaus.plexus.component.annotations.Component;
 
+/** TODO FAL javadoc
+ * @author falbrech */
 @Component(role = RunnerListener.class, hint = "log4testing")
 public class Log4TestingRunnerListener extends AbstractRunnerListener {
 
@@ -102,6 +104,7 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
             log.getLastTestStep().addAttachment(a);
         }
 
+        log.getLastTestStep().setResult(testStepInfo.getResult());
         log.getLastTestStep().setError(testStepInfo.getError());
         log.getLastTestStep().setErrorMessage(testStepInfo.getErrorMessage());
 

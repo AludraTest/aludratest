@@ -17,8 +17,6 @@ package org.aludratest.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -35,7 +33,6 @@ import org.aludratest.service.Condition;
 import org.aludratest.service.Interaction;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.Verification;
-import org.aludratest.service.file.FileService;
 import org.aludratest.service.util.AbstractSystemConnector;
 import org.aludratest.service.util.DirectLogTestListener;
 import org.aludratest.testcase.TestStatus;
@@ -97,16 +94,6 @@ public class ControlFlowHandlerTest extends AbstractAludraServiceTest {
         // force test context to be closed (to write logs)
         context.closeServices();
         assertEquals(TestStatus.IGNORED, testCase.getLastTestStep().getStatus());
-    }
-
-    @Test
-    public void testIgnoreConditionLog() {
-        // use FileService, because works different than other tests
-        FileService fileService = getLoggingService(FileService.class, "logtest");
-        fileService.check().exists("nonexisting");
-        assertNull(testCase.getLastTestStep());
-        fileService.verify().assertDirectory("nonexisting");
-        assertNotNull(testCase.getLastTestStep());
     }
 
     // helper methods ----------------------------------------------------------

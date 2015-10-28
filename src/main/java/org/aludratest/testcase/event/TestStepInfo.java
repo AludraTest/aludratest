@@ -23,21 +23,27 @@ import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.joda.time.DateTime;
 
+/** TODO FAL javadoc
+ * @author falbrech */
 public interface TestStepInfo {
 
-    public int getId();
+    int getId();
 
-    public DateTime getStartingTime();
+    DateTime getStartingTime();
 
-    public DateTime getFinishingTime();
+    DateTime getFinishingTime();
 
-    public TestStatus getTestStatus();
+    TestStatus getTestStatus();
 
-    public ComponentId<? extends AludraService> getServiceId();
+    ComponentId<? extends AludraService> getServiceId();
 
-    public String getCommand();
+    String getCommand();
 
-    public Throwable getError();
+    /** Returns the result of the corresponding method call.
+     * @return the result of the corresponding method call */
+    String getResult();
+
+    Throwable getError();
 
     public String getErrorMessage();
 
