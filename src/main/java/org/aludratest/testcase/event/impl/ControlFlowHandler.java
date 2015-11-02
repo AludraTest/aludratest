@@ -197,7 +197,7 @@ public class ControlFlowHandler implements InvocationHandler {
         }
         else {
             // log result
-            String resultString = (method.getReturnType().equals(Void.class) ? null : String.valueOf(result));
+            String resultString = (method.getReturnType().equals(Void.class) ? "" : String.valueOf(result));
             testStep.setResult(resultString);
         }
     }
