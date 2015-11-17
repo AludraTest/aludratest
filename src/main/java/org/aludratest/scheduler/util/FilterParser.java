@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.scheduler.impl;
+package org.aludratest.scheduler.util;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -23,6 +23,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.aludratest.scheduler.TestClassFilter;
+import org.aludratest.scheduler.impl.AndTestClassFilter;
+import org.aludratest.scheduler.impl.AttributeBasedTestClassFilter;
+import org.aludratest.scheduler.impl.OrTestClassFilter;
 
 /** Parses a filter string.
  * 

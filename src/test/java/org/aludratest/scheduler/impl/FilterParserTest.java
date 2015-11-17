@@ -23,6 +23,10 @@ import static org.junit.Assert.fail;
 import java.text.ParseException;
 
 import org.aludratest.scheduler.TestClassFilter;
+import org.aludratest.scheduler.impl.AndTestClassFilter;
+import org.aludratest.scheduler.impl.AttributeBasedTestClassFilter;
+import org.aludratest.scheduler.impl.OrTestClassFilter;
+import org.aludratest.scheduler.util.FilterParser;
 import org.junit.Test;
 
 /** Tests FilterParser class.
