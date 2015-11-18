@@ -22,11 +22,19 @@ import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.TestAttribute;
 import org.aludratest.testcase.TestAttributes;
 
+/** Helper class for dealing with {@link TestAttribute} annotations.
+ * 
+ * @author falbrech */
 public final class TestAttributeUtil {
 
     private TestAttributeUtil() {
     }
 
+    /** Determines all test attributes of the given test case class.
+     * 
+     * @param testClass Test case class.
+     * 
+     * @return All test attributes of the given test case class. */
     public static Map<String, String> getTestAttributes(Class<? extends AludraTestCase> testClass) {
         TestAttribute attr = testClass.getAnnotation(TestAttribute.class);
         TestAttributes attrs = testClass.getAnnotation(TestAttributes.class);
