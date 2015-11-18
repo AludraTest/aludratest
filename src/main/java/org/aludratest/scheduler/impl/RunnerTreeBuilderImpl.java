@@ -56,6 +56,7 @@ import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
 import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.Parallel;
 import org.aludratest.testcase.Sequential;
+import org.aludratest.testcase.SequentialGroup;
 import org.aludratest.testcase.Suite;
 import org.aludratest.testcase.Test;
 import org.aludratest.testcase.data.TestCaseData;
@@ -66,6 +67,9 @@ import org.databene.commons.BeanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** Default implementation of the RunnerTreeBuilder component interface.
+ * 
+ * @author falbrech */
 @Component(role = RunnerTreeBuilder.class, instantiationStrategy = "per-lookup")
 public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
@@ -368,6 +372,9 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             mode = ExecutionMode.INHERITED;
         }
         RunnerGroup group = tree.createGroup(testClass.getName(), mode, parentGroup);
+
+        addSequentialGroupAttributes(group, testClass);
+
         return group;
     }
 
@@ -439,6 +446,14 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             if (ignoredReason != null) {
                 leaf.setAttribute(CommonRunnerLeafAttributes.IGNORE_REASON, ignoredReason);
             }
+        }
+    }
+
+    private void addSequentialGroupAttributes(RunnerGroup group, Class<?> testClass) {
+        SequentialGroup annot = testClass.getAnnotation(SequentialGroup.class);
+        if (annot != null) {
+            group.setAttribute(CommonRunnerLeafAttributes.SEQUENTIAL_GROUP_NAME, annot.groupName());
+            group.setAttribute(CommonRunnerLeafAttributes.SEQUENTIAL_GROUP_INDEX, Integer.valueOf(annot.index()));
         }
     }
 

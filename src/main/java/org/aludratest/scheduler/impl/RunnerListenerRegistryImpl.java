@@ -27,83 +27,94 @@ import org.aludratest.testcase.event.TestStepInfo;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 
+/** Default implementation of {@link RunnerListenerRegistry} interface.
+ * 
+ * @author falbrech */
 @Component(role = RunnerListenerRegistry.class)
 public class RunnerListenerRegistryImpl implements RunnerListenerRegistry {
 
     @Requirement(role = RunnerListener.class)
-    private List<RunnerListener> listeners = new ArrayList<RunnerListener>();
+    private List<RunnerListener> listeners;
+
+    private void ensureListenersEditable() {
+        if (!listeners.getClass().getSimpleName().equals("ArrayList")) {
+            listeners = new ArrayList<RunnerListener>(listeners);
+        }
+    }
 
     @Override
     public synchronized void addRunnerListener(RunnerListener listener) {
+        ensureListenersEditable();
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
     }
 
+
     @Override
     public synchronized void removeRunnerListener(RunnerListener listener) {
+        ensureListenersEditable();
         listeners.remove(listener);
+    }
+
+    private synchronized List<RunnerListener> getListeners() {
+        return new ArrayList<RunnerListener>(listeners);
     }
 
     @Override
     public void fireStartingTestProcess(RunnerTree runnerTree) {
-        for (RunnerListener listener : listeners) {
+        for (RunnerListener listener : getListeners()) {
             listener.startingTestProcess(runnerTree);
         }
     }
 
     @Override
     public void fireStartingTestGroup(RunnerGroup runnerGroup) {
-        for (RunnerListener listener : listeners) {
+        for (RunnerListener listener : getListeners()) {
             listener.startingTestGroup(runnerGroup);
         }
     }
 
     @Override
     public void fireStartingTestLeaf(RunnerLeaf runnerLeaf) {
-        for (RunnerListener listener : listeners) {
+        for (RunnerListener listener : getListeners()) {
             listener.startingTestLeaf(runnerLeaf);
         }
     }
 
     @Override
     public void fireFinishedTestLeaf(RunnerLeaf runnerLeaf) {
-        for (RunnerListener listener : listeners) {
+        for (RunnerListener listener : getListeners()) {
             listener.finishedTestLeaf(runnerLeaf);
         }
     }
 
     @Override
     public void fireFinishedTestGroup(RunnerGroup runnerGroup) {
-        for (RunnerListener listener : listeners) {
+        for (RunnerListener listener : getListeners()) {
             listener.finishedTestGroup(runnerGroup);
         }
     }
 
     @Override
     public void fireFinishedTestProcess(RunnerTree runnerTree) {
-        for (RunnerListener listener : listeners) {
+        for (RunnerListener listener : getListeners()) {
             listener.finishedTestProcess(runnerTree);
         }
     }
 
     @Override
     public void fireNewTestStepGroup(RunnerLeaf leaf, String groupName) {
-        for (RunnerListener listener : listeners) {
+        for (RunnerListener listener : getListeners()) {
             listener.newTestStepGroup(leaf, groupName);
         }
     }
 
     @Override
     public void fireNewTestStep(RunnerLeaf leaf, TestStepInfo testStep) {
-        for (RunnerListener listener : listeners) {
+        for (RunnerListener listener : getListeners()) {
             listener.newTestStep(leaf, testStep);
         }
     }
 
-    @Override
-    public String toString() {
-        // TODO Auto-generated method stub
-        return super.toString();
-    }
 }
