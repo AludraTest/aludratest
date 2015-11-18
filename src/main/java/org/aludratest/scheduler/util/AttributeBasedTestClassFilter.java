@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.scheduler.impl;
+package org.aludratest.scheduler.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.aludratest.scheduler.TestClassFilter;
+import org.aludratest.scheduler.impl.TestAttributeUtil;
 import org.aludratest.testcase.AludraTestCase;
 
 public final class AttributeBasedTestClassFilter implements TestClassFilter {

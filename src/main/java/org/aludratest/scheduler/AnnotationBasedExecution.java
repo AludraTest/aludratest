@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.aludratest.scheduler.impl.FilterParser;
+import org.aludratest.scheduler.util.FilterParser;
 
 /** Configuration class for invoking {@link RunnerTreeBuilder#buildRunnerTree(AnnotationBasedExecution)}. Instances of this class
  * specify where to search for classes, which filter and grouping to use, and which class loader (if any) to use. <br>

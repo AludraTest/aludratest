@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.scheduler.impl;
+package org.aludratest.scheduler.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -23,6 +23,10 @@ import static org.junit.Assert.fail;
 import java.text.ParseException;
 
 import org.aludratest.scheduler.TestClassFilter;
+import org.aludratest.scheduler.util.AndTestClassFilter;
+import org.aludratest.scheduler.util.AttributeBasedTestClassFilter;
+import org.aludratest.scheduler.util.FilterParser;
+import org.aludratest.scheduler.util.OrTestClassFilter;
 import org.junit.Test;
 
 /** Tests FilterParser class.
