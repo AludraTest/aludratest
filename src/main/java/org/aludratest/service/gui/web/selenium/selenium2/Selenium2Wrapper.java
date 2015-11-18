@@ -44,6 +44,7 @@ import org.aludratest.service.gui.web.selenium.httpproxy.AuthenticatingHttpProxy
 import org.aludratest.service.gui.web.selenium.selenium2.condition.AbstractAjaxIdleCondition;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.AnyDropDownOptions;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownBoxOptionLabelsPresence;
+import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownBoxOptionValuesPresence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.DropDownOptionLocatable;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementAbsence;
 import org.aludratest.service.gui.web.selenium.selenium2.condition.ElementEditableCondition;
@@ -300,7 +301,6 @@ public class Selenium2Wrapper {
     }
 
     public String clickForDownload(GUIElementLocator locator, int taskCompletionTimeout) {
-        // FIXME temporarily set "enabled" to false due to img used in GLOBE for tests. Change after tests.
         WebElement element = doBeforeDelegate(locator, true, false, true);
         // get System Connector for download
         SystemDownloadProvider downloader = systemConnector.getConnector(SystemDownloadProvider.class);
@@ -876,9 +876,21 @@ public class Selenium2Wrapper {
     }
 
     @SuppressWarnings("unchecked")
-    public void waitForDropDownEntries(GUIElementLocator dropDownLocator, String[] labels, boolean contains) {
+    public void waitForDropDownEntries(GUIElementLocator dropDownLocator, String[] labels, boolean contains, boolean checkOrder) {
         DropDownBoxOptionLabelsPresence condition = new DropDownBoxOptionLabelsPresence(dropDownLocator, labels, contains,
-                locatorSupport);
+                checkOrder, locatorSupport);
+        try {
+            waitFor(condition, configuration.getTimeout(), NoSuchElementException.class, StaleElementReferenceException.class);
+        }
+        catch (TimeoutException e) {
+            throw new AutomationException(condition.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void waitForDropDownValues(GUIElementLocator dropDownLocator, String[] values, boolean contains, boolean checkOrder) {
+        DropDownBoxOptionValuesPresence condition = new DropDownBoxOptionValuesPresence(dropDownLocator, values, contains,
+                checkOrder, locatorSupport);
         try {
             waitFor(condition, configuration.getTimeout(), NoSuchElementException.class, StaleElementReferenceException.class);
         }

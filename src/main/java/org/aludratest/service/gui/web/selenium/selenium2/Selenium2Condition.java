@@ -187,17 +187,39 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
 
     @Override
     public boolean containsLabels(String elementType, String elementName, GUIElementLocator locator, String... labels) {
-        return checkLabels(labels, locator, true);
+        return checkLabels(labels, locator, true, false);
     }
 
     @Override
-    public boolean equalsLabels(String elementType, String elementName, GUIElementLocator locator, String... labels) {
-        return checkLabels(labels, locator, false);
+    public boolean hasLabels(String elementType, String elementName, GUIElementLocator locator, boolean checkOrder,
+            String... labels) {
+        return checkLabels(labels, locator, false, checkOrder);
     }
 
-    private boolean checkLabels(String[] labels, GUIElementLocator elementLocator, boolean contains) {
+    @Override
+    public boolean containsValues(String elementType, String elementName, GUIElementLocator locator, String... values) {
+        return checkValues(values, locator, true, false);
+    }
+
+    @Override
+    public boolean hasValues(String elementType, String elementName, GUIElementLocator locator, boolean checkOrder,
+            String... values) {
+        return checkValues(values, locator, false, checkOrder);
+    }
+
+    private boolean checkLabels(String[] labels, GUIElementLocator elementLocator, boolean contains, boolean checkOrder) {
         try {
-            wrapper.waitForDropDownEntries(elementLocator, labels, contains);
+            wrapper.waitForDropDownEntries(elementLocator, labels, contains, checkOrder);
+            return true;
+        }
+        catch (AssertionError e) {
+            return false;
+        }
+    }
+
+    private boolean checkValues(String[] values, GUIElementLocator elementLocator, boolean contains, boolean checkOrder) {
+        try {
+            wrapper.waitForDropDownValues(elementLocator, values, contains, checkOrder);
             return true;
         }
         catch (AssertionError e) {

@@ -18,6 +18,9 @@ package org.aludratest.util;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -57,7 +60,7 @@ public class DataUtil {
      * @param actualStrings an array of the actual strings
      * @return a message of the differences or an empty string if the arrays are equal
      */
-    public static String expectEqualArrays(Object[] expectedStrings, Object[] actualStrings) {
+    public static String expectEqualArrays(String[] expectedStrings, String[] actualStrings) {
         // ENHANCE apply ArrayComparator to recognize missing or added elements
         if (actualStrings == null || expectedStrings == null) {
             return "No Values found for comparison. ";
@@ -67,6 +70,37 @@ public class DataUtil {
                     "but found " + Arrays.toString(actualStrings) + ". ";
         }
         return "";
+    }
+
+    /** Compares two string arrays, ignoring the order of elements.
+     * @param expectedStrings an array of the expected strings
+     * @param actualStrings an array of the actual strings
+     * @return a message of the differences or an empty string if the arrays are equal */
+    public static String expectEqualArraysIgnoreOrder(String[] expectedStrings, String[] actualStrings) {
+        if (actualStrings == null || expectedStrings == null) {
+            return "No Values found for comparison. ";
+        }
+
+        List<String> lsExpected = Arrays.asList(expectedStrings);
+        List<String> lsActual = Arrays.asList(actualStrings);
+
+        Set<String> missing = new HashSet<String>(lsExpected);
+        missing.removeAll(lsActual);
+        Set<String> sflous = new HashSet<String>(lsActual);
+        sflous.removeAll(lsExpected);
+
+        StringBuilder sb = new StringBuilder();
+        if (!missing.isEmpty()) {
+            sb.append("Following items were missing: " + missing);
+        }
+        if (!sflous.isEmpty()) {
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append("Following items were found, but not expected: " + sflous);
+        }
+
+        return sb.toString();
     }
 
     /**

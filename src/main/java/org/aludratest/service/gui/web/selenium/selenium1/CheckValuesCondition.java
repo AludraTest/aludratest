@@ -21,34 +21,34 @@ import org.aludratest.util.DataUtil;
 import org.databene.commons.StringUtil;
 
 /** Package visible helper class for both Selenium1Condition and Selenium1Verification. */
-class CheckLabelCondition implements ConditionCheck {
+class CheckValuesCondition implements ConditionCheck {
     private boolean contains;
     private boolean checkOrder;
-    private String[] labels;
+    private String[] values;
     private String mismatches;
     private SeleniumWrapper wrapper;
     private GUIElementLocator elementLocator;
 
-    CheckLabelCondition(boolean contains, boolean checkOrder, String[] labels, SeleniumWrapper wrapper,
+    CheckValuesCondition(boolean contains, boolean checkOrder, String[] values, SeleniumWrapper wrapper,
             GUIElementLocator elementLocator) {
         this.contains = contains;
         this.checkOrder = checkOrder;
-        this.labels = (labels != null ? labels.clone() : null);
+        this.values = (values != null ? values.clone() : null);
         this.wrapper = wrapper;
         this.elementLocator = elementLocator;
     }
 
     @Override
     public boolean eval() {
-        String[] actualLabels = wrapper.getLabels(elementLocator);
+        String[] actualValues = wrapper.getValues(elementLocator);
         if (contains) {
-            mismatches = DataUtil.containsStrings(labels, actualLabels);
+            mismatches = DataUtil.containsStrings(values, actualValues);
         } else {
             if (checkOrder) {
-                mismatches = DataUtil.expectEqualArrays(labels, actualLabels);
+                mismatches = DataUtil.expectEqualArrays(values, actualValues);
             }
             else {
-                mismatches = DataUtil.expectEqualArraysIgnoreOrder(labels, actualLabels);
+                mismatches = DataUtil.expectEqualArraysIgnoreOrder(values, actualValues);
             }
         }
         return (StringUtil.isEmpty(mismatches));
