@@ -48,6 +48,7 @@ import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.lifecycle.UndefinedLifecycleHandlerException;
+import org.databene.commons.BeanUtil;
 import org.databene.commons.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,9 @@ public final class AludraTest {
      * The name of the System Property which is checked for the environment name to use.
      */
     public static final String ENVIRONMENT_NAME_PROPERTY = "aludraTest.environment";
+
+    /** The name of the System Property which is checked for the initializer class to use. */
+    private static final String ALUDRATEST_INITIALIZER_PROPERTY = "aludraTest.initializer";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AludraTest.class);
 
@@ -197,8 +201,11 @@ public final class AludraTest {
         else {
             categories = Collections.emptyList();
         }
+
+        String initializerSpec = System.getProperty(ALUDRATEST_INITIALIZER_PROPERTY);
+        Class<?> initializer = (StringUtil.isEmpty(initializerSpec) ? null: BeanUtil.forName(initializerSpec));
         AnnotationBasedExecution exec = new AnnotationBasedExecution(jarOrClassRoot,
-                AnnotationBasedExecution.parseFilterString(filterString), categories, classLoader);
+                AnnotationBasedExecution.parseFilterString(filterString), categories, initializer, classLoader);
 
         RunnerTree runnerTree = builder.buildRunnerTree(exec);
 
