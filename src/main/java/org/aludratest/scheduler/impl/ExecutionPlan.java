@@ -199,7 +199,8 @@ public class ExecutionPlan {
                 return result;
             }
             else {
-                return calculateFinishPrecondition(g.getChildren().get(g.getChildren().size() - 1));
+                return g.getChildren().isEmpty() ? Collections.<ExecutionPlanEntry> emptyList() : calculateFinishPrecondition(g
+                        .getChildren().get(g.getChildren().size() - 1));
             }
         }
     }
