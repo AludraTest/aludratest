@@ -208,8 +208,8 @@ public class ExecutionPlan {
                 return result;
             }
             else {
-                return g.getChildren().isEmpty() ? Collections.<ExecutionPlanEntry> emptyList() : calculateFinishPrecondition(g
-                        .getChildren().get(g.getChildren().size() - 1));
+                return g.getChildren().isEmpty() ? Collections.<ExecutionPlanEntry> emptyList()
+                        : calculateFinishPrecondition(findPrecedingNonEmptyNode(g.getChildren(), g.getChildren().size()));
             }
         }
     }
@@ -220,12 +220,24 @@ public class ExecutionPlan {
             if (node instanceof RunnerLeaf) {
                 return node;
             }
-            else if (!((RunnerGroup) node).getChildren().isEmpty()) {
+            else if (containsLeafs((RunnerGroup) node)) {
                 return node;
             }
         }
 
         return null;
+    }
+
+    private boolean containsLeafs(RunnerGroup group) {
+        for (RunnerNode node : group.getChildren()) {
+            if (node instanceof RunnerLeaf) {
+                return true;
+            }
+            if (containsLeafs((RunnerGroup) node)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private ExecutionPlanEntry findEntry(RunnerLeaf leaf) {
