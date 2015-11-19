@@ -138,6 +138,19 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
         }
     }
 
+    private void executeEmptyGroups(RunnerGroup group) {
+        if (group.getChildren().isEmpty()) {
+            listenerRegistry.fireStartingTestGroup(group);
+            listenerRegistry.fireFinishedTestGroup(group);
+        }
+
+        for (RunnerNode node : group.getChildren()) {
+            if (node instanceof RunnerGroup) {
+                executeEmptyGroups((RunnerGroup) node);
+            }
+        }
+    }
+
     /** Prints the sub tree of a node to a {@link Logger} in DEBUG level. Applied to the root node, it logs the full tree hierarchy
      * @param node
      * @param indent */
@@ -206,6 +219,8 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
 
                 for (RunnerGroup g : toFire) {
                     listenerRegistry.fireStartingTestGroup(g);
+                    // find all empty groups and fire start and finish for them
+                    executeEmptyGroups(g);
                 }
 
                 listenerRegistry.fireStartingTestLeaf(leaf);
