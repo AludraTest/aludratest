@@ -158,7 +158,10 @@ public class ExecutionPlan {
             List<RunnerNode> ls = sequentialGroups.get(groupName);
             int index = ls.indexOf(node);
             if (index > 0) {
-                result.addAll(calculateFinishPrecondition(ls.get(index - 1)));
+                RunnerNode precNode = findPrecedingNonEmptyNode(ls, index);
+                if (precNode != null) {
+                    result.addAll(calculateFinishPrecondition(precNode));
+                }
             }
         }
 
@@ -177,8 +180,14 @@ public class ExecutionPlan {
                 result.addAll(findPreconditions(parent));
             }
             else {
-                // otherwise, finishing the previous sibling is our precondition
-                result.addAll(calculateFinishPrecondition(nodes.get(index - 1)));
+                // otherwise, finishing the previous (non-empty) sibling is our precondition
+                RunnerNode precNode = findPrecedingNonEmptyNode(nodes, index);
+                if (precNode == null) {
+                    result.addAll(findPreconditions(parent));
+                }
+                else {
+                    result.addAll(calculateFinishPrecondition(precNode));
+                }
             }
         }
 
@@ -199,11 +208,25 @@ public class ExecutionPlan {
                 return result;
             }
             else {
-                return calculateFinishPrecondition(g.getChildren().get(g.getChildren().size() - 1));
+                return g.getChildren().isEmpty() ? Collections.<ExecutionPlanEntry> emptyList() : calculateFinishPrecondition(g
+                        .getChildren().get(g.getChildren().size() - 1));
             }
         }
     }
 
+    private RunnerNode findPrecedingNonEmptyNode(List<? extends RunnerNode> list, int index) {
+        for (int i = index - 1; i >= 0; i--) {
+            RunnerNode node = list.get(i);
+            if (node instanceof RunnerLeaf) {
+                return node;
+            }
+            else if (!((RunnerGroup) node).getChildren().isEmpty()) {
+                return node;
+            }
+        }
+
+        return null;
+    }
 
     private ExecutionPlanEntry findEntry(RunnerLeaf leaf) {
         for (ExecutionPlanEntry entry : entries) {
