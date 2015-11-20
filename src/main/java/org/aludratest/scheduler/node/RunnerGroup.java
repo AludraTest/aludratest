@@ -103,6 +103,9 @@ public class RunnerGroup extends RunnerNode {
 
         List<RunnerNode> checkChildren;
         synchronized (children) {
+            if (children.isEmpty()) {
+                return RunStatus.FINISHED;
+            }
             checkChildren = new ArrayList<RunnerNode>(children);
         }
         for (RunnerNode child : checkChildren) {

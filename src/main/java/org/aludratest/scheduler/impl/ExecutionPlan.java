@@ -28,7 +28,6 @@ import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.scheduler.node.RunnerNode;
 import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
-import org.databene.commons.depend.CyclicDependencyException;
 
 /** Class to calculate an execution plan based on a {@link RunnerTree} and its internal execution dependencies (sequential nodes,
  * or <code>@SequentialGroup</code> annotations). It collects all test cases contained in the tree and calculates the execution
@@ -54,8 +53,6 @@ public class ExecutionPlan {
         // collect all nodes; for each node, determine dependencies
         collectEntries(tree.getRoot());
         calculateDependencies();
-        calculateEntryScores();
-        Collections.sort(entries);
     }
 
     /** Determines whether there are any more items available in this execution plan, i.e. if a call to
@@ -118,12 +115,6 @@ public class ExecutionPlan {
         }
     }
 
-    private void calculateEntryScores() {
-        for (ExecutionPlanEntry entry : entries) {
-            entry.scoreDependencies(new ArrayList<ExecutionPlanEntry>());
-        }
-    }
-
     private void findSequentialGroups(RunnerNode node, Map<String, List<RunnerNode>> buildList) {
         String groupName = (String) node.getAttribute(CommonRunnerLeafAttributes.SEQUENTIAL_GROUP_NAME);
         if (groupName != null) {
@@ -150,68 +141,41 @@ public class ExecutionPlan {
         }
     }
 
-    private List<ExecutionPlanEntry> findPreconditions(RunnerNode node) {
-        List<ExecutionPlanEntry> result = new ArrayList<ExecutionPlanEntry>();
+    private List<RunnerNode> findPreconditions(RunnerNode node) {
+        List<RunnerNode> result = new ArrayList<RunnerNode>();
 
         if (node.getAttribute(CommonRunnerLeafAttributes.SEQUENTIAL_GROUP_NAME) != null) {
             String groupName = (String) node.getAttribute(CommonRunnerLeafAttributes.SEQUENTIAL_GROUP_NAME);
             List<RunnerNode> ls = sequentialGroups.get(groupName);
             int index = ls.indexOf(node);
-            if (index > 0) {
-                RunnerNode precNode = findPrecedingNonEmptyNode(ls, index);
-                if (precNode != null) {
-                    result.addAll(calculateFinishPrecondition(precNode));
-                }
+            RunnerNode precNode = findPrecedingNonEmptyNode(ls, index);
+            if (precNode != null) {
+                result.add(precNode);
             }
         }
 
         RunnerGroup parent = node.getParent();
-        if (parent == null) {
-            return result;
-        }
-
-        if (parent.isParallel()) {
-            result.addAll(findPreconditions(parent));
-        }
-        else {
-            List<RunnerNode> nodes = parent.getChildren();
-            int index = nodes.indexOf(node);
-            if (index == 0) {
+        if (parent != null) {
+            if (parent.isParallel()) {
                 result.addAll(findPreconditions(parent));
             }
             else {
-                // otherwise, finishing the previous (non-empty) sibling is our precondition
+                List<RunnerNode> nodes = parent.getChildren();
+                int index = nodes.indexOf(node);
+
+                // finishing the previous (non-empty) sibling is our precondition
+                // if we are first, null will be returned
                 RunnerNode precNode = findPrecedingNonEmptyNode(nodes, index);
                 if (precNode == null) {
                     result.addAll(findPreconditions(parent));
                 }
                 else {
-                    result.addAll(calculateFinishPrecondition(precNode));
+                    result.add(precNode);
                 }
             }
         }
 
         return result;
-    }
-
-    private List<ExecutionPlanEntry> calculateFinishPrecondition(RunnerNode finishNode) {
-        if (finishNode instanceof RunnerLeaf) {
-            return Collections.singletonList(findEntry((RunnerLeaf) finishNode));
-        }
-        else {
-            RunnerGroup g = (RunnerGroup) finishNode;
-            if (g.isParallel()) {
-                List<ExecutionPlanEntry> result = new ArrayList<ExecutionPlanEntry>();
-                for (RunnerNode node : g.getChildren()) {
-                    result.addAll(calculateFinishPrecondition(node));
-                }
-                return result;
-            }
-            else {
-                return g.getChildren().isEmpty() ? Collections.<ExecutionPlanEntry> emptyList()
-                        : calculateFinishPrecondition(findPrecedingNonEmptyNode(g.getChildren(), g.getChildren().size()));
-            }
-        }
     }
 
     private RunnerNode findPrecedingNonEmptyNode(List<? extends RunnerNode> list, int index) {
@@ -250,13 +214,11 @@ public class ExecutionPlan {
         return null;
     }
 
-    private static class ExecutionPlanEntry implements Comparable<ExecutionPlanEntry> {
+    private static class ExecutionPlanEntry {
 
         private RunnerLeaf leaf;
 
-        private List<ExecutionPlanEntry> dependencies;
-
-        private int dependentCount;
+        private List<RunnerNode> dependencies;
 
         private boolean started;
 
@@ -264,37 +226,20 @@ public class ExecutionPlan {
             this.leaf = leaf;
         }
 
-        private void addDependency(ExecutionPlanEntry dependency) {
+        private void addDependency(RunnerNode dependency) {
             if (dependency != null) {
                 if (dependencies == null) {
-                    dependencies = new ArrayList<ExecutionPlanEntry>();
+                    dependencies = new ArrayList<RunnerNode>();
                 }
                 dependencies.add(dependency);
             }
         }
 
-        private void addDependencies(List<ExecutionPlanEntry> dependencies) {
+        private void addDependencies(List<RunnerNode> dependencies) {
             if (dependencies != null) {
-                for (ExecutionPlanEntry entry : dependencies) {
-                    addDependency(entry);
+                for (RunnerNode node : dependencies) {
+                    addDependency(node);
                 }
-            }
-        }
-
-        private void scoreDependencies(List<ExecutionPlanEntry> callerStack) {
-            if (dependencies == null) {
-                return;
-            }
-
-            if (callerStack.contains(this)) {
-                throw new CyclicDependencyException("Cyclic dependency detected in execution graph: " + toString(callerStack));
-            }
-            callerStack.add(this);
-
-            for (ExecutionPlanEntry dep : dependencies) {
-                dep.dependentCount++;
-                // transitive scoring to make transitive depdencies more important
-                dep.scoreDependencies(callerStack);
             }
         }
 
@@ -303,32 +248,14 @@ public class ExecutionPlan {
                 return true;
             }
 
-            for (ExecutionPlanEntry dep : dependencies) {
-                if (dep.leaf.getRunStatus() != RunStatus.FINISHED) {
+            for (RunnerNode node : dependencies) {
+                if (node.getRunStatus() != RunStatus.FINISHED) {
                     return false;
                 }
             }
 
             return true;
         }
-
-        @Override
-        public int compareTo(ExecutionPlanEntry o) {
-            return o.dependentCount - dependentCount;
-        }
-
-        private static String toString(List<ExecutionPlanEntry> stack) {
-            StringBuilder sb = new StringBuilder();
-            for (ExecutionPlanEntry entry : stack) {
-                if (sb.length() > 0) {
-                    sb.append(" -> ");
-                }
-                sb.append(entry.leaf.getName());
-            }
-
-            return sb.toString();
-        }
-
     }
 
 }
