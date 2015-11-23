@@ -17,6 +17,6 @@ package org.aludratest.scheduler;
 
 public enum RunStatus {
 
-    WAITING, RUNNING, FINISHED
+    WAITING, RUNNING, FINISHED, EMPTY
 
 }

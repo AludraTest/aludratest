@@ -104,12 +104,17 @@ public class RunnerGroup extends RunnerNode {
         List<RunnerNode> checkChildren;
         synchronized (children) {
             if (children.isEmpty()) {
-                return RunStatus.FINISHED;
+                return RunStatus.EMPTY;
             }
             checkChildren = new ArrayList<RunnerNode>(children);
         }
         for (RunnerNode child : checkChildren) {
             allStates.add(child.getRunStatus());
+        }
+
+        // ignore empty ones for status calculation
+        if (allStates.size() > 1) {
+            allStates.remove(RunStatus.EMPTY);
         }
 
         if (allStates.size() == 1) {
