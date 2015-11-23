@@ -145,7 +145,7 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
         }
 
         for (RunnerNode node : group.getChildren()) {
-            if (node instanceof RunnerGroup) {
+            if (node instanceof RunnerGroup && node.getRunStatus() == RunStatus.EMPTY) {
                 executeEmptyGroups((RunnerGroup) node);
             }
         }
