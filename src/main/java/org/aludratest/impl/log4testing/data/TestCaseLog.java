@@ -101,7 +101,7 @@ public class TestCaseLog extends TestSuiteLogComponent {
     /** Returns the number of all TestSteps in the TestStepGroups */
     @Override
     public int getNumberOfTestSteps() {
-        int numberOfTestSteps = getNumberOfTestSteps(groups);
+        int numberOfTestSteps = getNumberOfTestSteps(getTestStepGroups());
         return numberOfTestSteps;
     }
 
@@ -109,7 +109,7 @@ public class TestCaseLog extends TestSuiteLogComponent {
      *  @return the total number of failed TestSteps in the TestStepGroups */
     public int getNumberOfFailedTestSteps() {
         int result = 0;
-        for (TestStepGroup group : groups) {
+        for (TestStepGroup group : getTestStepGroups()) {
             result += group.getNumberOfFailedTestSteps();
         }
         return result;
@@ -117,6 +117,7 @@ public class TestCaseLog extends TestSuiteLogComponent {
 
     /** @return the last test step that has a failure state. */
     public TestStepLog getLastFailed() {
+        List<TestStepGroup> groups = getTestStepGroups();
         for (int i = groups.size() - 1; i >= 0; i--) {
             TestStepGroup group = groups.get(i);
             TestStepLog lastFailed = group.getLastFailed();
@@ -129,6 +130,7 @@ public class TestCaseLog extends TestSuiteLogComponent {
 
     /** @return the first TestStep of the first TestStepGroup */
     public TestStepLog getFirstTestStep() {
+        List<TestStepGroup> groups = getTestStepGroups();
         if (groups.size() > 0) {
             return groups.get(0).getFirstTestStep();
         } else {
@@ -138,6 +140,7 @@ public class TestCaseLog extends TestSuiteLogComponent {
 
     /** @return the last TestStep of the last TestStepGroup */
     public TestStepLog getLastTestStep() {
+        List<TestStepGroup> groups = getTestStepGroups();
         if (groups.size() > 0) {
             return groups.get(groups.size() - 1).getLastTestStep();
         } else {

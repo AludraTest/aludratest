@@ -20,7 +20,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 import org.aludratest.impl.log4testing.configuration.Log4TestingConfiguration;
 import org.aludratest.impl.log4testing.data.TestCaseLog;
@@ -31,9 +37,12 @@ import org.aludratest.impl.log4testing.data.TestSuiteLogComponent;
 import org.aludratest.impl.log4testing.output.util.OutputUtil;
 import org.aludratest.impl.log4testing.output.writer.VelocityTestCaseWriter;
 import org.aludratest.impl.log4testing.output.writer.VelocityTestSuiteWriter;
+import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.databene.commons.IOUtil;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +62,11 @@ public class HTMLReportObserver extends VelocityReportTestObserver {
     private boolean abbreviating;
     private boolean shortTimeFormat;
     private boolean openBrowser;
+    private String commandRegexp;
 
     private AtomicInteger attachmentCount;
+
+    private Map<TestSuiteLogComponent, LogPathInfo> logFiles = new HashMap<TestSuiteLogComponent, LogPathInfo>();
 
     /** Public default constructor. */
     public HTMLReportObserver() {
@@ -86,6 +98,20 @@ public class HTMLReportObserver extends VelocityReportTestObserver {
      *  @param openBrowser the value to set */
     public void setOpenBrowser(String openBrowser) {
         this.openBrowser = Boolean.parseBoolean(openBrowser);
+    }
+
+    /** Sets the Regular Expression for commands to log. If not set or <code>null</code>, all commands are logged.
+     * 
+     * @param commandRegexp Regular Expression for commands to log. */
+    public void setCommandRegexp(String commandRegexp) {
+        this.commandRegexp = commandRegexp;
+    }
+
+    /** Returns the Regular Expression for commands to log.
+     * 
+     * @return The Regular Expression for commands to log. */
+    public String getCommandRegexp() {
+        return commandRegexp;
     }
 
     // TestObserver interface implementation -----------------------------------
@@ -173,7 +199,22 @@ public class HTMLReportObserver extends VelocityReportTestObserver {
 
     @Override
     protected String filePathOf(TestSuiteLogComponent component) {
-        return component.getTag("HTMLPath");
+        LogPathInfo f = logFiles.get(component);
+        if (f == null) {
+            configureHtmlPaths(component);
+        }
+        return logFiles.get(component).getLogFile().getAbsolutePath();
+    }
+
+    @Override
+    protected void writeSuite(TestSuiteLog testSuite) {
+        if (testSuite != null && testSuiteWriter != null) {
+            waitUntilInitialized();
+            synchronized (testSuite) {
+                testSuiteWriter.write(testSuite, filePathOf(testSuite),
+                        Collections.<String, Object> singletonMap("pathHelper", new LogPathHelper()));
+            }
+        }
     }
 
     @Override
@@ -183,7 +224,14 @@ public class HTMLReportObserver extends VelocityReportTestObserver {
         synchronized (testSuite) {
             File targetFolder = new File(filePathOf(testCase)).getParentFile();
             writeAttachments(testCase, targetFolder);
-            super.writeCase(testCase);
+            if (commandRegexp != null && commandRegexp.length() > 0) {
+                testCase = filter(testCase);
+            }
+        }
+        // inject path helper into VM context
+        synchronized (testCase) {
+            testCaseWriter.write(testCase, filePathOf(testCase),
+                    Collections.<String, Object> singletonMap("pathHelper", new LogPathHelper()));
         }
     }
 
@@ -201,13 +249,12 @@ public class HTMLReportObserver extends VelocityReportTestObserver {
     private void configureHtmlPaths(TestSuiteLogComponent component) {
         File outputFile = OutputUtil.outputFile(component.getName(), "html",
                 ignoreableRoot, abbreviating, outputDir);
-        component.setTag("HTMLPath", outputFile.getAbsolutePath());
-        component.setTag("HTMLPathFromBaseDir", OutputUtil.pathFromBaseDir(outputFile, new File(outputDir)));
-        component.setTag("HTMLPathToBaseDir", OutputUtil.pathToBaseDir(outputFile, new File(outputDir)));
+        logFiles.put(component, new LogPathInfo(outputFile,  OutputUtil.pathFromBaseDir(outputFile, new File(outputDir)), OutputUtil.pathToBaseDir(outputFile, new File(outputDir))));
     }
 
     private void openBrowserWithRootSuiteReport(TestSuiteLog rootSuite) {
-        String url = "file://" + System.getProperty("user.dir") + '/' + outputDir + '/' + rootSuite.getTag("HTMLPath");
+        String url = "file://" + System.getProperty("user.dir") + '/' + outputDir + '/'
+                + new LogPathHelper().getPathFromBaseDir(rootSuite);
         url = url.replace('\\', '/');
         if (url.endsWith(XML_SUFFIX)) {
             url = url.substring(0, url.length() - XML_SUFFIX.length()) + ".html";
@@ -251,6 +298,244 @@ public class HTMLReportObserver extends VelocityReportTestObserver {
             data = output.getBytes(UTF_8);
         }
         return data;
+    }
+
+    private TestCaseLog filter(TestCaseLog log) {
+        return new FilteredTestCaseLog(log, Pattern.compile(commandRegexp));
+    }
+
+    private static class LogPathInfo {
+
+        private File logFile;
+
+        private String pathFromBaseDir;
+
+        private String pathToBaseDir;
+
+        public LogPathInfo(File logFile, String pathFromBaseDir, String pathToBaseDir) {
+            this.logFile = logFile;
+            this.pathFromBaseDir = pathFromBaseDir;
+            this.pathToBaseDir = pathToBaseDir;
+        }
+
+        public File getLogFile() {
+            return logFile;
+        }
+
+        public String getPathFromBaseDir() {
+            return pathFromBaseDir;
+        }
+
+        public String getPathToBaseDir() {
+            return pathToBaseDir;
+        }
+
+    }
+
+    private static class FilteredTestCaseLog extends TestCaseLog {
+
+        private TestCaseLog delegate;
+
+        private List<TestStepGroup> filteredGroups = new ArrayList<TestStepGroup>();
+
+        protected FilteredTestCaseLog(TestCaseLog delegate, Pattern commandPattern) {
+            super(delegate.getName());
+            this.delegate = delegate;
+            for (TestStepGroup group : delegate.getTestStepGroups()) {
+                filteredGroups.add(new FilteredTestStepGroup(group, commandPattern));
+            }
+        }
+
+        @Override
+        public TestSuiteLog getParent() {
+            return delegate.getParent();
+        }
+
+        @Override
+        public String getName() {
+            return delegate.getName();
+        }
+
+        @Override
+        public List<TestStepGroup> getTestStepGroups() {
+            return filteredGroups;
+        }
+
+        @Override
+        public boolean isFailed() {
+            return delegate.isFailed();
+        }
+
+        @Override
+        public String getId() {
+            return delegate.getId();
+        }
+
+        @Override
+        public Duration getDuration() {
+            return delegate.getDuration();
+        }
+
+        @Override
+        public String getComment() {
+            return delegate.getComment();
+        }
+
+        @Override
+        public boolean isIgnored() {
+            return delegate.isIgnored();
+        }
+
+        @Override
+        public String getIgnoredReason() {
+            return delegate.getIgnoredReason();
+        }
+
+        @Override
+        public boolean isIgnoredAndPassed() {
+            return delegate.isIgnoredAndPassed();
+        }
+
+        @Override
+        public boolean isIgnoredAndFailed() {
+            return delegate.isIgnoredAndFailed();
+        }
+
+        @Override
+        public boolean isFinished() {
+            return delegate.isFinished();
+        }
+
+        @Override
+        public Iterable<TestStepGroup> getTestSuites() {
+            return filteredGroups;
+        }
+
+        @Override
+        public DateTime getStartingTime() {
+            return delegate.getStartingTime();
+        }
+
+        @Override
+        public DateTime getFinishingTime() {
+            return delegate.getFinishingTime();
+        }
+
+        @Override
+        public TestStatus getStatus() {
+            return delegate.getStatus();
+        }
+    }
+
+    private static class FilteredTestStepGroup extends TestStepGroup {
+
+        private TestStepGroup delegate;
+
+        private List<TestStepLog> filteredSteps = new ArrayList<TestStepLog>();
+
+        protected FilteredTestStepGroup(TestStepGroup delegate, Pattern commandFilter) {
+            super(delegate.getName(), delegate.getParent());
+            this.delegate = delegate;
+            for (TestStepLog step : delegate.getTestSteps()) {
+                if (step.getCommand() == null || commandFilter.matcher(step.getCommand()).matches() || step.isFailed()) {
+                    filteredSteps.add(step);
+                }
+            }
+        }
+
+        @Override
+        public String getName() {
+            return delegate.getName();
+        }
+
+        @Override
+        public TestCaseLog getParent() {
+            return delegate.getParent();
+        }
+
+        @Override
+        public boolean isFailed() {
+            return delegate.isFailed();
+        }
+
+        @Override
+        public String getId() {
+            return delegate.getId();
+        }
+
+        @Override
+        public List<TestStepLog> getTestSteps() {
+            return filteredSteps;
+        }
+
+        @Override
+        public Duration getDuration() {
+            return delegate.getDuration();
+        }
+
+        @Override
+        public DateTime getStartingTime() {
+            return delegate.getStartingTime();
+        }
+
+        @Override
+        public DateTime getFinishingTime() {
+            return delegate.getFinishingTime();
+        }
+
+        @Override
+        public TestStatus getStatus() {
+            return delegate.getStatus();
+        }
+
+        @Override
+        public String getComment() {
+            return delegate.getComment();
+        }
+
+    }
+
+    /** Helper class of which an instance is passed to Velocitymacro context.
+     * 
+     * @author falbrech */
+    public class LogPathHelper {
+
+        /** Returns the path from output base directory to given component's log.
+         * @param component
+         * @return */
+        public String getPathFromBaseDir(TestSuiteLogComponent component) {
+            LogPathInfo info = logFiles.get(component);
+            if (info == null) {
+                configureHtmlPaths(component);
+                info = logFiles.get(component);
+            }
+            return info.getPathFromBaseDir();
+        }
+
+        /** Returns the path from given component's log to output base directory.
+         * @param component
+         * @return */
+        public String getPathToBaseDir(TestSuiteLogComponent component) {
+            LogPathInfo info = logFiles.get(component);
+            if (info == null) {
+                configureHtmlPaths(component);
+                info = logFiles.get(component);
+            }
+            return info.getPathToBaseDir();
+        }
+
+        /** Returns absolute path of component's log.
+         * @param component
+         * @return */
+        public String getPath(TestSuiteLogComponent component) {
+            LogPathInfo info = logFiles.get(component);
+            if (info == null) {
+                configureHtmlPaths(component);
+                info = logFiles.get(component);
+            }
+            return info.getLogFile().getAbsolutePath();
+        }
+
     }
 
 }
