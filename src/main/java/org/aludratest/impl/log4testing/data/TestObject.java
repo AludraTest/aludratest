@@ -15,9 +15,6 @@
  */
 package org.aludratest.impl.log4testing.data;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.aludratest.testcase.TestStatus;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -38,8 +35,6 @@ public abstract class TestObject {
      * people who will read test results.
      */
     private String comment = null;
-
-    private Map<String, String> tags = new HashMap<String, String>();
 
     /**
      * Each TestObject has a unique id. On the next creation of a TestObject the
@@ -138,18 +133,9 @@ public abstract class TestObject {
         return comment;
     }
 
-    /** Returns the value of a tag
-     *  @param key the key of the requested tag
-     *  @return the value of the tag or null if it has not been defined */
-    public String getTag(String key) {
-        return this.tags.get(key);
-    }
-
-    /** Sets a tag
-     *  @param key
-     *  @param value */
-    public void setTag(String key, String value) {
-        this.tags.put(key, value);
+    @Override
+    public int hashCode() {
+        return id == null ? 0 : id.hashCode();
     }
 
 }

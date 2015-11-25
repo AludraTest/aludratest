@@ -51,12 +51,13 @@ public class TestStepGroup extends TestStepContainer {
     /** @return the number of TestSteps */
     @Override
     public int getNumberOfTestSteps() {
-        return testSteps.size();
+        return getTestSteps().size();
     }
 
     /** @return the number of Failed TestSteps  */
     public int getNumberOfFailedTestSteps() {
         int numberOfFailed = 0;
+        List<TestStepLog> testSteps = getTestSteps();
         for (TestStepLog testStep : testSteps) {
             if (testStep.isFailed()) {
                 ++numberOfFailed;
@@ -103,6 +104,7 @@ public class TestStepGroup extends TestStepContainer {
 
     /** @return the last failed step of the group. */
     public TestStepLog getLastFailed() {
+        List<TestStepLog> testSteps = getTestSteps();
         for (int i = testSteps.size() - 1; i >= 0; i--) {
             TestStepLog step = testSteps.get(i);
             if (step.isFailed()) {
@@ -121,7 +123,7 @@ public class TestStepGroup extends TestStepContainer {
     /** Returns the last TestStep
      *  @return the last TestStep */
     public TestStepLog getLastTestStep() {
-        return getTestStep(testSteps.size() - 1);
+        return getTestStep(getNumberOfTestSteps() - 1);
     }
 
     /**
@@ -130,6 +132,7 @@ public class TestStepGroup extends TestStepContainer {
      * @return TestStep at the Position or <code> null </code> if not found
      */
     public TestStepLog getTestStep(int index) {
+        List<TestStepLog> testSteps = getTestSteps();
         if (testSteps.size() > index && index >= 0) {
             return testSteps.get(index);
         } else {
@@ -139,6 +142,7 @@ public class TestStepGroup extends TestStepContainer {
 
     @Override
     public DateTime getStartingTime() {
+        List<TestStepLog> testSteps = getTestSteps();
         if (testSteps.size() > 0) {
             return testSteps.get(0).getStartingTime();
         } else {
@@ -148,6 +152,7 @@ public class TestStepGroup extends TestStepContainer {
 
     @Override
     public DateTime getFinishingTime() {
+        List<TestStepLog> testSteps = getTestSteps();
         if (testSteps.size() > 0) {
             return testSteps.get(testSteps.size() - 1).getFinishingTime();
         } else {
@@ -157,6 +162,7 @@ public class TestStepGroup extends TestStepContainer {
 
     @Override
     public TestStatus getStatus() {
+        List<TestStepLog> testSteps = getTestSteps();
         TestStepLog lastFailed = getLastFailed();
         if (lastFailed != null) {
             return lastFailed.getStatus();

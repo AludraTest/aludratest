@@ -5,8 +5,8 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>$!testCase.Name</title>
-	<link rel="stylesheet" type="text/css" href="${testCase.getTag("HTMLPathToBaseDir")}/log4testing.css">
-	<script src="${testCase.getTag("HTMLPathToBaseDir")}/jquery.js"></script>
+	<link rel="stylesheet" type="text/css" href="${pathHelper.getPathToBaseDir($testCase)}/log4testing.css">
+	<script src="${pathHelper.getPathToBaseDir($testCase)}/jquery.js"></script>
 	<script type="text/javascript">
 	
 	function changeBtnText(id) {
