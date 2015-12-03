@@ -24,24 +24,24 @@ import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.aludratest.content.edifact.EdifactContent;
+import org.aludratest.content.xml.AggregateXmlDiff;
+import org.aludratest.content.xml.XmlComparisonSettings;
+import org.aludratest.content.xml.util.DatabeneXmlComparisonSettings;
+import org.aludratest.content.xml.util.DatabeneXmlUtil;
 import org.aludratest.exception.TechnicalException;
 import org.databene.commons.SystemInfo;
-import org.databene.edifatto.ComparisonSettings;
 import org.databene.edifatto.EdiChecker;
 import org.databene.edifatto.EdiFormatSymbols;
 import org.databene.edifatto.EdiGenerator;
 import org.databene.edifatto.EdiWriter;
 import org.databene.edifatto.Edifatto;
-import org.databene.edifatto.compare.AggregateDiff;
-import org.databene.edifatto.compare.ComparisonModel;
 import org.databene.edifatto.model.Interchange;
+import org.databene.edifatto.util.TypeBasedXMLComparisonModel;
 import org.databene.edifatto.xml.NameBasedEdiToXMLConverter;
-import org.w3c.dom.Element;
+import org.databene.formats.compare.AggregateDiff;
 
-/**
- * Parses and saves EDIFACT and X12 documents from and to streams.
- * @author Volker Bergmann
- */
+/** Parses and saves EDIFACT and X12 documents from and to streams.
+ * @author Volker Bergmann */
 public class EdifattoContent implements EdifactContent {
 
     /** Constructor. */
@@ -49,6 +49,7 @@ public class EdifattoContent implements EdifactContent {
     }
 
     /** Parses an EDIFACT or X12 interchange available in an {@link InputStream}. */
+    @Override
     public Interchange readInterchange(InputStream in) {
         try {
             return Edifatto.parseEdiFile(in);
@@ -58,6 +59,7 @@ public class EdifattoContent implements EdifactContent {
     }
 
     /** Writes an EDIFACT or X12 interchange to an {@link OutputStream}. */
+    @Override
     public void writeInterchange(Interchange interchange, OutputStream out, boolean useLinefeed) {
         try {
             String lineFeed = (useLinefeed ? SystemInfo.getLineSeparator() : null);
@@ -76,16 +78,14 @@ public class EdifattoContent implements EdifactContent {
         }
     }
 
-    /** 
-     * Creates an XML representation of the interchange and performs an XPath query on it.
+    /** Creates an XML representation of the interchange and performs an XPath query on it.
      * @param interchange the interchange to query
      * @param expression the XPath query to perform
-     * @param returnType determines the type of the returned object: 
-     *   {@link javax.xml.xpath.XPathConstants#STRING} for a single {@link java.lang.String},
-     *   {@link javax.xml.xpath.XPathConstants#NODE} for a single {@link org.w3c.dom.Element},
-     *   {@link javax.xml.xpath.XPathConstants#NODESET} for a {@link org.w3c.dom.NodeList}
-     * @return the found nodes of the interchange in the form of XML elements
-     */
+     * @param returnType determines the type of the returned object: {@link javax.xml.xpath.XPathConstants#STRING} for a single
+     *            {@link java.lang.String}, {@link javax.xml.xpath.XPathConstants#NODE} for a single {@link org.w3c.dom.Element},
+     *            {@link javax.xml.xpath.XPathConstants#NODESET} for a {@link org.w3c.dom.NodeList}
+     * @return the found nodes of the interchange in the form of XML elements */
+    @Override
     public Object queryXML(Interchange interchange, String expression, QName returnType) {
         try {
             return Edifatto.queryXML(interchange, expression, returnType);
@@ -94,25 +94,32 @@ public class EdifattoContent implements EdifactContent {
         }
     }
 
-    /** Finds out the differences between two EDIFACT or X12 interchanges, 
-     *  ignoring elements that are tolerated by the {@link ComparisonSettings}.
-     *  @param expected 
-     *  @param actual 
-     *  @return an {@link AggregateDiff} between the documents */
-    public AggregateDiff diff(Interchange expected, Interchange actual, 
-            ComparisonSettings settings, ComparisonModel<Element> model) {
+    /** @return an instance of the {@link XmlComparisonSettings} appropriate for comparing EDIFACT or X12 interchanges */
+    @Override
+    public XmlComparisonSettings createDefaultComparisonSettings() {
+        return new DatabeneXmlComparisonSettings(new TypeBasedXMLComparisonModel());
+    }
+
+    /** Finds out the differences between two EDIFACT or X12 interchanges, ignoring elements that are tolerated by the
+     * {@link XmlComparisonSettings}.
+     * @param expected
+     * @param actual
+     * @return an {@link AggregateDiff} between the documents */
+    @Override
+    public AggregateXmlDiff compare(Interchange expected, Interchange actual, XmlComparisonSettings settings) {
         try {
             NameBasedEdiToXMLConverter converter = new NameBasedEdiToXMLConverter();
-            EdiChecker checker = new EdiChecker(settings, model, converter);
-            return checker.diff(expected, actual);
+            EdiChecker checker = new EdiChecker((DatabeneXmlComparisonSettings) settings, converter);
+            AggregateDiff diff = checker.diff(expected, actual);
+            return DatabeneXmlUtil.toXmlDiff(diff);
         } catch (Exception e) {
             throw new TechnicalException("Error comparing Edifact interchanges", e);
         }
     }
 
     /** Formats a full interchange structure recursively as String.
-     *  @param interchange the Edifact interchange to format
-     *  @return a string representation of the interchange */
+     * @param interchange the Edifact interchange to format
+     * @return a string representation of the interchange */
     @Override
     public String formatRecursively(Interchange interchange) {
         return Edifatto.formatRecursively(interchange);
