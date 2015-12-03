@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
+import java.util.Collections;
+import java.util.Map;
 
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.impl.log4testing.data.TestObject;
@@ -43,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @param <T> The type of test step container to write
  */
 public abstract class VelocityWriter<T extends TestStepContainer> extends FileWriter<T> {
-    
+
     private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     private static volatile VelocityEngine engine;
@@ -91,10 +93,17 @@ public abstract class VelocityWriter<T extends TestStepContainer> extends FileWr
         super.validate();
     }
 
-    @Override
-    public File write(T testStepContainer, String path) {
+    /** Writes the log for the given test object to the given path. Allows for passing additional context objects to the
+     * Velocitymacro context.
+     * 
+     * @param testStepContainer Test object to write.
+     * @param path Path to write log to.
+     * @param additionalContextObjects Additional objects to add to the Velocitymacro context.
+     * 
+     * @return The created log file. */
+    public File write(T testStepContainer, String path, Map<String, Object> additionalContextObjects) {
         try {
-            String content = format(testStepContainer);
+            String content = format(testStepContainer, additionalContextObjects);
             File file = new File(path);
             IOUtil.writeBytes(content.getBytes(UTF_8), file);
             return file;
@@ -103,10 +112,15 @@ public abstract class VelocityWriter<T extends TestStepContainer> extends FileWr
         }
     }
 
+    @Override
+    public File write(T testStepContainer, String path) {
+        return write(testStepContainer, path, Collections.<String, Object> emptyMap());
+    }
+
 
     // private methods ---------------------------------------------------------
 
-    private String format(TestObject testObject) {
+    private String format(TestObject testObject, Map<String, Object> additionalContextObjects) {
         StringWriter buffer = new StringWriter();
         String templateFileName = getTemplate();
         try {
@@ -117,19 +131,23 @@ public abstract class VelocityWriter<T extends TestStepContainer> extends FileWr
             synchronized (ve) {
                 templateInstance = ve.getTemplate(templateFileName);
             }
-            templateInstance.merge(createContext(testObject), buffer);
+            templateInstance.merge(createContext(testObject, additionalContextObjects), buffer);
         } catch (Exception e) {
             logger.error("Problem while merging an test object with the template " + templateFileName + ".", e);
         }
         return buffer.toString();
     }
 
-    private VelocityContext createContext(TestObject testObject) {
+    private VelocityContext createContext(TestObject testObject, Map<String, Object> additionalContextObjects) {
         VelocityContext context = new VelocityContext();
         context.put(getVariable(), testObject);
         context.put("name", new NameFormat());
         context.put("time", new TimeFormat());
         context.put("html", new HtmlFormat());
+        for (Map.Entry<String, Object> entry : additionalContextObjects.entrySet()) {
+            context.put(entry.getKey(), entry.getValue());
+        }
+
         return context;
     }
 

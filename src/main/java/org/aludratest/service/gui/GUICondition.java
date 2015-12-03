@@ -149,16 +149,39 @@ public interface GUICondition extends Condition {
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument String... labels);
 
-    /** Determines if the speficied element contains the given labels (and only these), in the same order as specified.
+    /** Determines if the speficied element contains the given labels (and only these), optionally with checking the order.
      * 
      * @param elementType Type of the element.
      * @param elementName Name of the element.
      * @param locator Locator of the element.
+     * @param checkOrder If <code>true</code>, order of elements is important, otherwise, it is ignored.
      * @param labels Labels which are expected in the element.
      * 
      * @return <code>true</code> if the labels equal all labels found in the element, <code>false</code> otherwise. */
-    boolean equalsLabels(@ElementType String elementType, @ElementName String elementName,
-            @TechnicalLocator GUIElementLocator locator,
-            @TechnicalArgument String... labels);
+    boolean hasLabels(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator, boolean checkOrder, String... labels);
+
+    /** Determines if the speficied element contains the given values (and possibly more).
+     * 
+     * @param elementType Type of the element.
+     * @param elementName Name of the element.
+     * @param locator Locator of the element.
+     * @param values Values which are expected in the element.
+     * 
+     * @return <code>true</code> if the values were found in the element, <code>false</code> otherwise. */
+    boolean containsValues(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator, @TechnicalArgument String... values);
+
+    /** Determines if the speficied element contains the given values (and only these), optionally with checking the order.
+     * 
+     * @param elementType Type of the element.
+     * @param elementName Name of the element.
+     * @param locator Locator of the element.
+     * @param checkOrder If <code>true</code>, order of elements is important, otherwise, it is ignored.
+     * @param values Values which are expected in the element.
+     * 
+     * @return <code>true</code> if the values equal all values found in the element, <code>false</code> otherwise. */
+    boolean hasValues(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator, boolean checkOrder, String... values);
 
 }

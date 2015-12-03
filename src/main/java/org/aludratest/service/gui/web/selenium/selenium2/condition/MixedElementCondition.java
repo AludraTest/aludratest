@@ -18,6 +18,7 @@ package org.aludratest.service.gui.web.selenium.selenium2.condition;
 import org.aludratest.service.gui.web.selenium.selenium2.LocatorSupport;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 /** Performs a combination of checks on a web GUI element: It always checks for presence and if it is in foreground and can be
  * configured to check for visibility additionally. If one of the internal checks fails, the failure message is reported in the
@@ -51,8 +52,19 @@ public class MixedElementCondition extends WebElementCondition {
         }
         // check visibility if required
         if (visible && !element.isDisplayed()) {
-            this.message = "Element not visible";
-            return null;
+            // try to scroll to element
+            try {
+                Actions actions = new Actions(locatorSupport.getDriver());
+                actions.moveToElement(LocatorSupport.unwrap(element)).perform();
+            }
+            catch (Throwable t) {
+                // ignore
+            }
+
+            if (!element.isDisplayed()) {
+                this.message = "Element not visible";
+                return null;
+            }
         }
         if (enabled && !element.isEnabled()) {
             this.message = "Element not enabled";

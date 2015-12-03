@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.scheduler.impl;
+package org.aludratest.scheduler.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,11 +22,11 @@ import java.util.List;
 import org.aludratest.scheduler.TestClassFilter;
 import org.aludratest.testcase.AludraTestCase;
 
-public class OrTestClassFilter implements TestClassFilter {
+public class AndTestClassFilter implements TestClassFilter {
 
     private List<TestClassFilter> filters;
 
-    public OrTestClassFilter(List<? extends TestClassFilter> filters) {
+    public AndTestClassFilter(List<? extends TestClassFilter> filters) {
         this.filters = Collections.unmodifiableList(new ArrayList<TestClassFilter>(filters));
     }
 
@@ -37,12 +37,12 @@ public class OrTestClassFilter implements TestClassFilter {
     @Override
     public boolean matches(Class<? extends AludraTestCase> testClass) {
         for (TestClassFilter filter : filters) {
-            if (filter.matches(testClass)) {
-                return true;
+            if (!filter.matches(testClass)) {
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
 }

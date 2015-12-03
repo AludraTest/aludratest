@@ -36,6 +36,7 @@ import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerNode;
 import org.aludratest.scheduler.test.annot.AnnotatedTestClass1;
 import org.aludratest.scheduler.test.annot.AnnotatedTestClass2;
+import org.aludratest.scheduler.util.FilterParser;
 import org.aludratest.service.AbstractAludraServiceTest;
 import org.aludratest.suite.DuplicateChildSuite;
 import org.aludratest.suite.ParallelTestClass;

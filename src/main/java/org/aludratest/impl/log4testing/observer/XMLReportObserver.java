@@ -16,6 +16,8 @@
 package org.aludratest.impl.log4testing.observer;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.aludratest.impl.log4testing.data.TestCaseLog;
 import org.aludratest.impl.log4testing.data.TestSuiteLog;
@@ -23,17 +25,19 @@ import org.aludratest.impl.log4testing.data.TestSuiteLogComponent;
 import org.aludratest.impl.log4testing.output.util.OutputUtil;
 import org.aludratest.impl.log4testing.output.writer.VelocityTestSuiteWriter;
 
-/** 
+/**
  * Exports the complete test suite structure to a single XML file.
  * @author Volker Bergmann
  * @author Joerg Langnickel
  */
 public class XMLReportObserver extends VelocityReportTestObserver {
 
+    private Map<TestSuiteLogComponent, File> logFiles = new HashMap<TestSuiteLogComponent, File>();
+
     /** Default constructor. */
     public XMLReportObserver() {
     }
-    
+
     @Override
     public void finishedTestProcess(TestSuiteLog rootSuite) {
         writeSuite(rootSuite);
@@ -50,7 +54,7 @@ public class XMLReportObserver extends VelocityReportTestObserver {
         this.testSuiteWriter.setTemplate(testSuiteTemplate);
         this.testSuiteWriter.setVariable("testSuite");
     }
-    
+
     @Override
     protected void configurePaths(TestSuiteLog testSuite) {
         super.configurePaths(testSuite);
@@ -63,14 +67,19 @@ public class XMLReportObserver extends VelocityReportTestObserver {
         }
     }
 
+
     private void configureXmlPaths(TestSuiteLogComponent component) {
         File outputFile = OutputUtil.outputFile(component.getName(), "xml", null, false, outputDir);
-        component.setTag("XMLPath", outputFile.getAbsolutePath());
+        logFiles.put(component, outputFile);
     }
 
     @Override
     protected String filePathOf(TestSuiteLogComponent component) {
-        return component.getTag("XMLPath");
+        File f = logFiles.get(component);
+        if (f == null) {
+            configureXmlPaths(component);
+        }
+        return logFiles.get(component).getAbsolutePath();
     }
 
 }
