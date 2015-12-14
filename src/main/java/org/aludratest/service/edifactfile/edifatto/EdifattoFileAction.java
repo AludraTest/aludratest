@@ -25,6 +25,10 @@ import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
 import org.aludratest.content.edifact.EdifactContent;
+import org.aludratest.content.xml.AggregateXmlDiff;
+import org.aludratest.content.xml.XmlComparisonSettings;
+import org.aludratest.content.xml.XmlDiffDetail;
+import org.aludratest.content.xml.util.DatabeneXmlComparisonSettings;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
@@ -35,23 +39,19 @@ import org.aludratest.service.file.FileService;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.databene.commons.SystemInfo;
-import org.databene.edifatto.ComparisonSettings;
 import org.databene.edifatto.EdiFormatSymbols;
-import org.databene.edifatto.compare.AggregateDiff;
-import org.databene.edifatto.compare.ComparisonModel;
-import org.databene.edifatto.compare.Diff;
 import org.databene.edifatto.compare.HTMLDiffFormatter;
 import org.databene.edifatto.format.StandardInterchangeFormatter;
 import org.databene.edifatto.format.TextTreeInterchangeFormatter;
 import org.databene.edifatto.model.Interchange;
-import org.w3c.dom.Element;
+import org.databene.formats.compare.AggregateDiff;
+import org.databene.formats.xml.compare.DefaultXMLComparisonModel;
 
 /**
  * Action class for {@link EdifattoFileService}, implementing all Edifact action interfaces.
  * @author Volker Bergmann
  */
 public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVerification, EdifactFileCondition {
-    // TODO this class does not depend on Edifatto any more and should be renamed to EdifactFileAction in package impl
 
     /** A reference to the underlying FileService. */
     private FileService fileService;
@@ -135,16 +135,17 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
     @Override
     public void assertInterchangesMatch(String elementType, String elementName,
             Interchange expected, Interchange actual,
-            ComparisonSettings settings, ComparisonModel<Element> model) {
-        AggregateDiff diffs = contentHandler.diff(expected, actual, settings, model);
+            XmlComparisonSettings settings) {
+        AggregateXmlDiff diffs = contentHandler.compare(expected, actual, settings);
         memorizeInterchanges(expected, actual, diffs);
-        if (diffs.getDetailCount() > 0) {
+        int detailCount = diffs.getXmlDetails().size();
+        if (detailCount > 0) {
             String lf = SystemInfo.getLineSeparator();
-            StringBuilder message = new StringBuilder("Interchanges do not match. Found " + diffs.getDetailCount() + " difference");
-            if (diffs.getDetailCount() > 1) {
+            StringBuilder message = new StringBuilder("Interchanges do not match. Found " + detailCount + " difference");
+            if (detailCount > 1) {
                 message.append("s");
             }
-            for (Diff<?> diff : diffs.getDetails()) {
+            for (XmlDiffDetail diff : diffs.getXmlDetails()) {
                 message.append(lf).append(diff);
             }
             throw new FunctionalFailure(message.toString());
@@ -168,6 +169,11 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
         return contentHandler.queryXML(interchange, expression, returnType);
     }
 
+    @Override
+    public XmlComparisonSettings createDefaultComparisonSettings() {
+        return new DatabeneXmlComparisonSettings(new DefaultXMLComparisonModel());
+    }
+
     /** Finds out the differences between two EDIFACT or X12 interchanges,
      *  ignoring elements that match the XPath exclusion paths.
      *  @param elementType
@@ -178,11 +184,11 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
      *  @param model
      *  @return an {@link AggregateDiff} of the interchanges */
     @Override
-    public AggregateDiff diff(String elementType, String elementName, Interchange expected, Interchange actual,
-            ComparisonSettings settings, ComparisonModel<Element> model) {
+    public AggregateXmlDiff diff(String elementType, String elementName, Interchange expected, Interchange actual,
+            XmlComparisonSettings settings) {
         try {
             memorizeInterchanges(expected, actual, null);
-            return contentHandler.diff(expected, actual, settings, model);
+            return contentHandler.compare(expected, actual, settings);
         } catch (Exception e) {
             throw new TechnicalException("Error comparing Edifact interchanges", e);
         }
@@ -224,10 +230,10 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
 
     /** saves the most recently used interchange(s)
      * in order to provide them as attachment on request. */
-    private void memorizeInterchanges(Interchange expected, Interchange actual, AggregateDiff diff) {
+    private void memorizeInterchanges(Interchange expected, Interchange actual, AggregateXmlDiff diff) {
         this.recentExpectedInterchange = expected;
         this.recentActualInterchange = actual;
-        this.recentDiff = diff;
+        this.recentDiff = (AggregateDiff) diff;
     }
 
     /** Creates an attachment that contains the provides EDIFACT or X12 interchange. */

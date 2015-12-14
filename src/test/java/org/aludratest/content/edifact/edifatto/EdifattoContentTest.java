@@ -18,14 +18,11 @@ package org.aludratest.content.edifact.edifatto;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.aludratest.content.edifact.edifatto.EdifattoContent;
 import org.databene.commons.IOUtil;
-import org.databene.edifatto.ComparisonSettings;
 import org.databene.edifatto.model.Interchange;
-import org.databene.edifatto.util.NameBasedXMLComparisonModel;
 import org.junit.Test;
 
-/** 
+/**
  * Tests the {@link EdifattoContent}
  * @author Volker Bergmann
  */
@@ -39,7 +36,7 @@ public class EdifattoContentTest {
         Interchange interchange1 = handler.readInterchange(in1);
         InputStream in2 = IOUtil.getInputStreamForURI("ediTest/IFTDGN_2.edi");
         Interchange interchange2 = handler.readInterchange(in2);
-        handler.diff(interchange1, interchange2, new ComparisonSettings(), new NameBasedXMLComparisonModel());
+        handler.compare(interchange1, interchange2, handler.createDefaultComparisonSettings());
     }
 
 }
