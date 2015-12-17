@@ -422,7 +422,7 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         @SuppressWarnings("unchecked")
         AludraTestCase testObject = BeanUtil.newInstance((Class<? extends AludraTestCase>) method.getDeclaringClass());
         TestInvoker invoker = new AludraTestMethodInvoker(testObject, method, args);
-        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, ignore, ignoredReason);
+        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, ignore, ignoredReason, false);
     }
 
     /** Creates a test runner for error reporting.
@@ -434,11 +434,11 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                 + errorCount.incrementAndGet();
         // Create test object
         TestInvoker invoker = new ErrorReportingInvoker(method, e);
-        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, false, null);
+        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, false, null, true);
     }
 
     private void createRunnerForTestInvoker(TestInvoker invoker, RunnerGroup parentGroup, RunnerTree tree, String testCaseName,
-            boolean ignore, String ignoredReason) {
+            boolean ignore, String ignoredReason, boolean error) {
         RunnerLeaf leaf = tree.addLeaf(nextLeafId.incrementAndGet(), invoker, testCaseName, parentGroup);
 
         if (ignore) {
@@ -446,6 +446,9 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             if (ignoredReason != null) {
                 leaf.setAttribute(CommonRunnerLeafAttributes.IGNORE_REASON, ignoredReason);
             }
+        }
+        if (error) {
+            leaf.setAttribute(CommonRunnerLeafAttributes.BUILDER_ERROR, Boolean.TRUE);
         }
     }
 

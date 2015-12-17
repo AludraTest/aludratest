@@ -37,7 +37,10 @@ import org.aludratest.scheduler.AnnotationBasedExecution;
 import org.aludratest.scheduler.RunnerListenerRegistry;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.RunnerTreeBuilder;
+import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerLeaf;
+import org.aludratest.scheduler.node.RunnerNode;
+import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
 import org.aludratest.service.AludraServiceManager;
 import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.event.TestStepInfo;
@@ -65,6 +68,9 @@ public final class AludraTest {
      * The name of the System Property which is checked for the environment name to use.
      */
     public static final String ENVIRONMENT_NAME_PROPERTY = "aludraTest.environment";
+
+    /** The name of the System Property which is checked for the dry run indicator. */
+    private static final String DRY_RUN_PROPERTY = "aludraTest.dryRun";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AludraTest.class);
 
@@ -167,6 +173,11 @@ public final class AludraTest {
         return "LOCAL";
     }
 
+    private static boolean isDryRun() {
+        String propValue = System.getProperty(DRY_RUN_PROPERTY);
+        return "true".equals(propValue);
+    }
+
     /** Returns the service manager of AludraTest. This can be used for service and component lookups. If you have a context
      * available (an AludraTestContext or an AludraServiceContext), you should prefer to call its methods for these lookups.
      * 
@@ -202,8 +213,13 @@ public final class AludraTest {
 
         RunnerTree runnerTree = builder.buildRunnerTree(exec);
 
-        AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
-        runner.runAludraTests(runnerTree);
+        if (!isDryRun()) {
+            AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
+            runner.runAludraTests(runnerTree);
+        }
+        else {
+            checkForBuilderErrors(runnerTree.getRoot());
+        }
 
         return exitCode();
     }
@@ -212,15 +228,19 @@ public final class AludraTest {
      * @param testClass The AludraTest class or test suite to run
      * @return the resulting exit code */
     public int run(Class<?> testClass) {
-
         RunnerTreeBuilder builder = serviceManager.newImplementorInstance(RunnerTreeBuilder.class);
         RunnerTree runnerTree = builder.buildRunnerTree(testClass);
 
         // This would SORT the tree
         // RunnerTreeSorter.sortTree(runnerTree, new Alphabetic());
 
-        AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
-        runner.runAludraTests(runnerTree);
+        if (!isDryRun()) {
+            AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
+            runner.runAludraTests(runnerTree);
+        }
+        else {
+            checkForBuilderErrors(runnerTree.getRoot());
+        }
 
         return exitCode();
     }
@@ -263,6 +283,23 @@ public final class AludraTest {
 
     private int exitCode() {
         return (runnerListener.wasSuccessful() ? EXIT_NORMAL : EXIT_EXECUTION_FAILURE);
+    }
+
+    private void checkForBuilderErrors(RunnerGroup group) {
+        for (RunnerNode node : group.getChildren()) {
+            if (node instanceof RunnerGroup) {
+                checkForBuilderErrors((RunnerGroup) node);
+            }
+            else if (Boolean.TRUE.equals(node.getAttribute(CommonRunnerLeafAttributes.BUILDER_ERROR))) {
+                // fire the error
+                try {
+                    ((RunnerLeaf) node).getTestInvoker().invoke();
+                }
+                catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     static class SuccessRunnerListener extends AbstractRunnerListener {
