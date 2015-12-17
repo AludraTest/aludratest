@@ -25,4 +25,8 @@ public interface CommonRunnerLeafAttributes {
 
     public static final String SEQUENTIAL_GROUP_INDEX = "SEQUENTIAL_GROUP_INDEX";
 
+    /** Attribute which is set to <code>true</code> when the RunnerTreeBuilder could not build the runner leaf's invoker, e.g. due
+     * to data errors. */
+    public static final String BUILDER_ERROR = "BUILDER_ERROR";
+
 }
