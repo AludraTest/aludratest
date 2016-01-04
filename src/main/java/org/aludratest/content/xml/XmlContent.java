@@ -37,9 +37,9 @@ public interface XmlContent extends ContentHandler {
 
     /** Saves an XML document in a stream.
      * @param document the XML {@link Document} to write
-     * @param ecoding the encoding to apply
+     * @param encoding the encoding to apply
      * @param out the OutputStream to which to write the XML text */
-    void writeDocument(Document document, String ecoding, OutputStream out);
+    void writeDocument(Document document, String encoding, OutputStream out);
 
     /** Formats a full XML document structure recursively as String.
      * @param document the {@link Document} to format
@@ -95,7 +95,7 @@ public interface XmlContent extends ContentHandler {
 
     /** Uses a FreeMarker template to create an XML document based on the content of a variables map.
      * @param templateUri the URI of the template to apply
-     * @param encoding the encoding to be used in the created document
+     * @param encoding the encoding of the template file
      * @param variables values to provide as template variables
      * @return an XML {@link Document} with the data configured in the variables map */
     Document createDocument(String templateUri, String encoding, Map<String, Object> variables);
