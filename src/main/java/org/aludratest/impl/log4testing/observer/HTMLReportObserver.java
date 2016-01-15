@@ -156,6 +156,7 @@ public class HTMLReportObserver extends VelocityReportTestObserver {
             String outputDirUri = outputDir.replace('\\', '/');
             IOUtil.copyFile("org/aludratest/log4testing/output/html/log4testing.css", outputDirUri + "/log4testing.css");
             IOUtil.copyFile("org/aludratest/log4testing/output/html/jquery.js", outputDirUri + "/jquery.js");
+            IOUtil.copyFile("org/aludratest/log4testing/output/html/testcase.js", outputDirUri + "/testcase.js");
         } catch (IOException e) {
             LOGGER.error("Error copying resource files", e);
         }
