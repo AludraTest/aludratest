@@ -16,6 +16,7 @@
 package org.aludratest.service.gui.web.selenium.selenium2;
 
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -1064,7 +1065,10 @@ public class Selenium2Wrapper {
             InputStream in = null;
             try {
                 in = new URL(screenshotUrl).openStream();
-                in.read(new byte[3]); // read away "OK,"
+                // read away "OK,"
+                if (in.read(new byte[3]) < 3) {
+                    throw new EOFException();
+                }
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 IOUtils.copy(in, baos);
                 return new String(baos.toByteArray(), "UTF-8");
