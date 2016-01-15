@@ -7,23 +7,7 @@
 	<title>$!testCase.Name</title>
 	<link rel="stylesheet" type="text/css" href="${pathHelper.getPathToBaseDir($testCase)}/log4testing.css">
 	<script src="${pathHelper.getPathToBaseDir($testCase)}/jquery.js"></script>
-	<script type="text/javascript">
-	
-	function changeBtnText(id) {
-		var showHideBtn = $("#shbteststepgroup" + id);
-		var showText = '[+]';
-		var hideText = '[-]';
-		if (showHideBtn.text().indexOf(showText) >= 0) {
-			showHideBtn.text(hideText);
-		} else {
-			showHideBtn.text(showText);
-		}
-	};
-	function toggle(id) {
-		$("#teststepgroup" + id).toggle();
-		changeBtnText(id);
-	};
-	</script>
+	<script type="text/javascript" src="${pathHelper.getPathToBaseDir($testCase)}/testcase.js"></script>
 </head>
 <body>
 	<h1>$!testCase.Name</h1>
