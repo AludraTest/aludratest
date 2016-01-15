@@ -133,9 +133,4 @@ public abstract class TestObject {
         return comment;
     }
 
-    @Override
-    public int hashCode() {
-        return id == null ? 0 : id.hashCode();
-    }
-
 }
