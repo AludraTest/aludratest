@@ -30,6 +30,7 @@ import javax.xml.xpath.XPathFactory;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.service.locator.element.XPathLocator;
 import org.databene.commons.ParseUtil;
+import org.databene.commons.StringUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.tidy.Tidy;
@@ -47,9 +48,9 @@ public class DataUtil {
     private DataUtil() {
     }
 
-    /** Parses a boolean value in a string ("tru" or "false").
-     *  @param text the text to parse
-     *  @return <code>true</code> or <code>false</code> */
+    /** Parses a boolean value in a string ("true" or "false").
+     * @param text the text to parse
+     * @return <code>true</code> or <code>false</code> */
     public static boolean parseBoolean(String text) {
         return ParseUtil.parseBoolean(text);
     }
@@ -103,43 +104,24 @@ public class DataUtil {
         return sb.toString();
     }
 
-    /**
-     * Verifies that each expected string is found in the array of actual strings.
+    /** Verifies that each expected string is found in the array of actual strings.
      * @param expectedStrings
      * @param actualStrings
-     * @return a String with a diff message, or an empty string if all strings were contained.
-     */
+     * @return a String listing all strings which were NOT found in the array of actual strings. */
     public static String containsStrings(String[] expectedStrings, String[] actualStrings) {
-        StringBuilder mismatches = new StringBuilder();
-        StringBuilder actualString = new StringBuilder();
-        String combinedActualString = null;
-        for (int i = 0; i < actualStrings.length; i++) {
-            actualString.append(actualStrings[i]).append(",");
-        }
-        combinedActualString = actualString.toString();
-        for (int i = 0; i < expectedStrings.length; i++) {
-            if (!(combinedActualString.contains(expectedStrings[i]))) {
-                mismatches.append(expectedStrings[i]).append(" ");
-            }
-        }
-        return mismatches.toString();
+        Set<String> mismatches = new HashSet<String>(Arrays.asList(expectedStrings));
+        mismatches.removeAll(Arrays.asList(actualStrings));
+        return StringUtil.concat(' ', mismatches.toArray(new String[0]));
     }
 
+    /** Verifies that the expected string is found in the array of actual strings.
+     * @param expectedString
+     * @param actualStrings
+     * @return The expected String, if not found in the array, or an empty string, if found. */
     public static String containsString(String expectedString, String[] actualStrings) {
-        boolean found = false;
-        String actualStringUpperCase = null;
-        String expectedStringUpperCase = expectedString.toUpperCase();
-        for (int i = 0; i < actualStrings.length; i++) {
-            actualStringUpperCase = actualStrings[i].toUpperCase();
-            if (actualStringUpperCase.equals(expectedStringUpperCase)) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            return expectedString;
-        }
-        return "";
+        // elements were converted to uppercase before, but it is nowhere stated that this would be expected,
+        // and containsStrings() also did not convert to uppercase.
+        return Arrays.asList(actualStrings).contains(expectedString) ? "" : expectedString;
     }
 
     private static final MostRecentUseCache.Factory<String, Document> docFactory = new MostRecentUseCache.Factory<String, Document>() {

@@ -65,13 +65,13 @@ public class DropDownOptionLocatable implements ExpectedCondition<Boolean> {
         }
         if (entryLocator instanceof LabelLocator) {
             String expectedLabel = ((LabelLocator) entryLocator).getLabel();
-            String mismatches = DataUtil.containsString(expectedLabel, actualLabels);
-            if (mismatches.length() == 0) {
+            String mismatch = DataUtil.containsString(expectedLabel, actualLabels);
+            if (mismatch.length() == 0) {
                 return true;
             }
             else {
-                this.message = "The expected labels are not contained "
-                        + "in the actual labels. Following Label(s) is/are missing: " + mismatches;
+                this.message = "The expected labels are not contained in the actual labels. Following Label is missing: "
+                        + mismatch;
                 return false;
             }
 
