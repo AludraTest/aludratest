@@ -208,31 +208,41 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         List<Class<? extends AludraTestCase>> result = new ArrayList<Class<? extends AludraTestCase>>();
 
         JarFile jf = new JarFile(jarFile);
-        Enumeration<JarEntry> entries = jf.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry je = entries.nextElement();
-            Matcher m = classPattern.matcher(je.getName());
-            if (m.matches()) {
-                String pkgName = m.group(1).replace('/', '.');
-                String className = m.group(2);
-                if (!"".equals(pkgName)) {
-                    className = pkgName + "." + className;
-                }
-                try {
-                    Class<?> clz;
-                    if (classLoader != null) {
-                        clz = classLoader.loadClass(className);
+        try {
+            Enumeration<JarEntry> entries = jf.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry je = entries.nextElement();
+                Matcher m = classPattern.matcher(je.getName());
+                if (m.matches()) {
+                    String pkgName = m.group(1).replace('/', '.');
+                    String className = m.group(2);
+                    if (!"".equals(pkgName)) {
+                        className = pkgName + "." + className;
                     }
-                    else {
-                        clz = Class.forName(className);
+                    try {
+                        Class<?> clz;
+                        if (classLoader != null) {
+                            clz = classLoader.loadClass(className);
+                        }
+                        else {
+                            clz = Class.forName(className);
+                        }
+                        if (AludraTestCase.class.isAssignableFrom(clz) && filter.matches((Class<? extends AludraTestCase>) clz)) {
+                            result.add((Class<? extends AludraTestCase>) clz);
+                        }
                     }
-                    if (AludraTestCase.class.isAssignableFrom(clz) && filter.matches((Class<? extends AludraTestCase>) clz)) {
-                        result.add((Class<? extends AludraTestCase>) clz);
+                    catch (Throwable t) {
+                        // ignore that class
                     }
                 }
-                catch (Throwable t) {
-                    // ignore that class
-                }
+            }
+        }
+        finally {
+            try {
+                jf.close();
+            }
+            catch (IOException e) {
+                // ignore
             }
         }
 
