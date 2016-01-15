@@ -359,7 +359,7 @@ public class HTMLReportObserver extends VelocityReportTestObserver {
 
         @Override
         public List<TestStepGroup> getTestStepGroups() {
-            return filteredGroups;
+            return Collections.unmodifiableList(filteredGroups);
         }
 
         @Override
@@ -405,11 +405,6 @@ public class HTMLReportObserver extends VelocityReportTestObserver {
         @Override
         public boolean isFinished() {
             return delegate.isFinished();
-        }
-
-        @Override
-        public Iterable<TestStepGroup> getTestSuites() {
-            return filteredGroups;
         }
 
         @Override

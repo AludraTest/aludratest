@@ -16,6 +16,7 @@
 package org.aludratest.impl.log4testing.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.aludratest.testcase.TestStatus;
@@ -52,7 +53,7 @@ public class TestCaseLog extends TestSuiteLogComponent {
 
     /** @return the TestStepGroups Array as Iterable */
     public List<TestStepGroup> getTestStepGroups() {
-        return groups;
+        return Collections.unmodifiableList(groups);
     }
 
     /** Creates a new TestStepGroup with the given name
@@ -214,11 +215,6 @@ public class TestCaseLog extends TestSuiteLogComponent {
     public void clear() {
         groups.clear();
         this.state = State.NEW;
-    }
-
-    /** @return an Iterable of {@link TestStepGroup}s of this {@link TestCaseLog} */
-    public Iterable<TestStepGroup> getTestSuites() {
-        return groups;
     }
 
     /** Returns the time point at which the test case was started. */
