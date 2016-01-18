@@ -21,81 +21,13 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import org.codehaus.plexus.DefaultPlexusContainer;
-import org.codehaus.plexus.PlexusContainerException;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /** Helper class and entry point to AludraTest Configuration Service.
  * 
  * @author falbrech */
 public class ComponentConfigurator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ComponentConfigurator.class);
-
-    private static Configurator configurator;
-
     private ComponentConfigurator() {
-    }
-
-    private static Configurator getConfigurator() {
-        if (configurator == null) {
-            // use on-the-fly Plexus to get instance
-            DefaultPlexusContainer container = null;
-            try {
-                container = new DefaultPlexusContainer();
-                configurator = container.lookup(Configurator.class);
-            }
-            catch (PlexusContainerException e) {
-                LOGGER.error("Could not create on-the-fly IoC container", e);
-            }
-            catch (ComponentLookupException e) {
-                LOGGER.error("Could not find configurator implementation", e);
-            }
-            finally {
-                if (container != null) {
-                    container.dispose();
-                }
-            }
-        }
-        return configurator;
-    }
-
-    /** Configures the given configurable object.
-     * 
-     * @param configurable Object to configure.
-     * 
-     * @deprecated Please prefer one of these methods to configure your objects:
-     *             <ol>
-     *             <li>Retrieve your objects via <code>AludraServiceManager</code>, <code>AludraTestContext</code> or
-     *             <code>AludraServiceContext</code>, and their methods to instantiate new objects. These will automatically
-     *             configure the objects.</li>
-     *             <li>If you require to directly configure an object, retrieve an {@link Configurator} instance from one of the
-     *             mentioned classes, and use it to configure your object.</li>
-     *             </ol> */
-    @Deprecated
-    public static void configure(Configurable configurable) {
-        getConfigurator().configure(configurable);
-    }
-
-    /** Configures the given configurable object, instantiated for the given instance name.
-     * 
-     * @param instanceName Name of the instance, which is used for configuration lookup.
-     * @param configurable Object to configure.
-     * 
-     * @deprecated Please prefer one of these methods to configure your objects:
-     *             <ol>
-     *             <li>Retrieve your objects via <code>AludraServiceManager</code>, <code>AludraTestContext</code> or
-     *             <code>AludraServiceContext</code>, and their methods to instantiate new objects. These will automatically
-     *             configure the objects.</li>
-     *             <li>If you require to directly configure an object, retrieve an {@link Configurator} instance from one of the
-     *             mentioned classes, and use it to configure your object.</li>
-     *             </ol> */
-    @Deprecated
-    public static void configure(String instanceName, Configurable configurable) {
-        getConfigurator().configure(instanceName, configurable);
     }
 
     /** Fills the given Preferences object with the Properties loaded from a given resource name. This is useful to implement
