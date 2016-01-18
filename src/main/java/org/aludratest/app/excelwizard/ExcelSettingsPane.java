@@ -40,7 +40,7 @@ import org.databene.commons.ui.swing.AlignedPane;
  * Main pane of the ExcelWizard.
  * @author Volker Bergmann
  */
-public class ExcelSettingsPane extends AlignedPane {
+public final class ExcelSettingsPane extends AlignedPane {
 
     private static final long serialVersionUID = 1L;
 
