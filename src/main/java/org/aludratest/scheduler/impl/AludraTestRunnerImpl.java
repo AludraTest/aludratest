@@ -255,7 +255,7 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
                 finally {
                     executionPlan.removeFinishedRunnerLeaf(leaf);
                     synchronized (executorService) {
-                        executorService.notify();
+                        executorService.notifyAll();
                     }
                 }
             }
