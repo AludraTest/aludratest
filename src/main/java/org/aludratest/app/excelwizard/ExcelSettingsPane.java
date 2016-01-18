@@ -138,7 +138,7 @@ public final class ExcelSettingsPane extends AlignedPane {
         }
 
         private void displayCreatedFiles(Collection<WorkbookTracker> workbooks) {
-            if (workbooks.size() > 0) {
+            if (!workbooks.isEmpty()) {
                 List<Object> message = new ArrayList<Object>(workbooks.size() + 1);
                 message.add("Processed Files:");
                 for (WorkbookTracker workbook : workbooks) {
