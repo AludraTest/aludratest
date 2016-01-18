@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class TimeoutServiceTest {
         TimeoutService.call(new Target(4000), 1000);
     }
 
-    @Test(expected = IOException.class)
+    @Test(expected = ExecutionException.class)
     public void testException() throws Exception {
         Callable<String> target = new Callable<String>() {
             @Override
