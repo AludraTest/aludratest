@@ -49,25 +49,29 @@ public class Selenium2Driver {
     // Constants for the instances ---------------------------------------------
 
     /** Firefox driver */
-    public static Selenium2Driver FIREFOX = new Selenium2Driver("FIREFOX", BrowserType.FIREFOX, FirefoxDriver.class,
+    public static final Selenium2Driver FIREFOX = new Selenium2Driver("FIREFOX", BrowserType.FIREFOX, FirefoxDriver.class,
             DesiredCapabilities.firefox());
 
     /** Internet Explorer driver */
-    public static Selenium2Driver INTERNET_EXPLORER = new Selenium2Driver("INTERNET_EXPLORER", BrowserType.IE, InternetExplorerDriver.class,
+    public static final Selenium2Driver INTERNET_EXPLORER = new Selenium2Driver("INTERNET_EXPLORER", BrowserType.IE,
+            InternetExplorerDriver.class,
             DesiredCapabilities.internetExplorer());
 
     /** HTMLUnit driver */
-    public static Selenium2Driver HTML_UNIT = new Selenium2Driver("HTML_UNIT", BrowserType.HTMLUNIT, HtmlUnitDriver.class,
+    public static final Selenium2Driver HTML_UNIT = new Selenium2Driver("HTML_UNIT", BrowserType.HTMLUNIT, HtmlUnitDriver.class,
             createHtmlUnitCaps());
 
     /** Google Chrome driver */
-    public static Selenium2Driver CHROME = new Selenium2Driver("CHROME", BrowserType.GOOGLECHROME, ChromeDriver.class, createChromeCaps());
+    public static final Selenium2Driver CHROME = new Selenium2Driver("CHROME", BrowserType.GOOGLECHROME, ChromeDriver.class,
+            createChromeCaps());
 
     /** Safari driver */
-    public static Selenium2Driver SAFARI = new Selenium2Driver("SAFARI", BrowserType.SAFARI, SafariDriver.class, DesiredCapabilities.safari());
+    public static final Selenium2Driver SAFARI = new Selenium2Driver("SAFARI", BrowserType.SAFARI, SafariDriver.class,
+            DesiredCapabilities.safari());
 
     /** PhantomJS driver */
-    public static Selenium2Driver PHANTOMJS = new Selenium2Driver("PHANTOMJS", BrowserType.PHANTOMJS, PhantomJSDriver.class,
+    public static final Selenium2Driver PHANTOMJS = new Selenium2Driver("PHANTOMJS", BrowserType.PHANTOMJS,
+            PhantomJSDriver.class,
             createPhantomJsCaps());
 
     // attributes --------------------------------------------------------------
@@ -100,7 +104,7 @@ public class Selenium2Driver {
             cstr = driverClass.getConstructor(DesiredCapabilities.class);
         }
         catch (SecurityException e) {
-            throw new RuntimeException(e);
+            throw new WebDriverException(e);
         }
         catch (NoSuchMethodException e) {
             try {
