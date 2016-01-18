@@ -100,7 +100,7 @@ public class NoTrailingCommaInAnnotationArray extends AbstractJavaRule {
             StringBuilder sbContent = new StringBuilder();
             for (int line = beginLine; line <= endLine; line++) {
                 if (line > lines.size()) {
-                    throw new IOException("Unexpected end of file " + file.getAbsolutePath());
+                    throw new IOException("Unexpected end of file " + (file != null ? file.getAbsolutePath() : ""));
                 }
 
                 String toAppend = null;

@@ -49,7 +49,7 @@ public class Abbreviator {
         return out;
     }
 
-    private static void load() {
+    private static synchronized void load() {
         BufferedReader reader = null;
         try {
             abbreviations = new ArrayList<Abbreviation>();

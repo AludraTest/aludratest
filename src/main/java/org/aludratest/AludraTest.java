@@ -91,7 +91,7 @@ public final class AludraTest {
             serviceManager = iocContainer.lookup(AludraServiceManager.class);
         }
         catch (ComponentLookupException e) {
-            throw new RuntimeException("Could not create AludraServiceManager instance", e);
+            throw new GenericExecutionException("Could not create AludraServiceManager instance", e);
         }
         this.runnerListener = new SuccessRunnerListener();
         RunnerListenerRegistry registry = serviceManager.newImplementorInstance(RunnerListenerRegistry.class);
@@ -100,7 +100,7 @@ public final class AludraTest {
 
     /** Starts the AludraTest framework
      * @return the freshly created instance */
-    public static AludraTest startFramework() {
+    public static synchronized AludraTest startFramework() {
         AludraTest framework = new AludraTest();
 
         // get environment
@@ -114,10 +114,14 @@ public final class AludraTest {
         return framework;
     }
 
+    private static synchronized void internalStopFramework() {
+        instance = null;
+    }
+
     /** Stops the AludraTest framework */
     public void stopFramework() {
         iocContainer.dispose();
-        instance = null;
+        internalStopFramework();
     }
 
     /** Returns the current AludraTest instance. This method will only return a non-null value between calls to
@@ -285,7 +289,7 @@ public final class AludraTest {
         return (runnerListener.wasSuccessful() ? EXIT_NORMAL : EXIT_EXECUTION_FAILURE);
     }
 
-    private void checkForBuilderErrors(RunnerGroup group) {
+    private void checkForBuilderErrors(RunnerGroup group) throws InvalidTestException {
         for (RunnerNode node : group.getChildren()) {
             if (node instanceof RunnerGroup) {
                 checkForBuilderErrors((RunnerGroup) node);
@@ -296,7 +300,7 @@ public final class AludraTest {
                     ((RunnerLeaf) node).getTestInvoker().invoke();
                 }
                 catch (Throwable e) {
-                    throw new RuntimeException(e);
+                    throw new InvalidTestException(e);
                 }
             }
         }

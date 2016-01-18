@@ -75,6 +75,9 @@ public class ElementLocators implements Iterable<GUIElementLocator> {
         if (this == obj) {
             return true;
         }
+        if (obj == null) {
+            return false;
+        }
         if (!super.equals(obj) || getClass() != obj.getClass()) {
             return false;
         }
@@ -148,6 +151,9 @@ public class ElementLocators implements Iterable<GUIElementLocator> {
         public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
+            }
+            if (obj == null) {
+                return false;
             }
             if (!super.equals(obj) || getClass() != obj.getClass()) {
                 return false;

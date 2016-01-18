@@ -129,7 +129,7 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
                     executorService.awaitTermination(1, TimeUnit.MINUTES);
                 }
                 catch (InterruptedException e) {
-                    return;
+                    // ignore
                 }
             }
         }
@@ -255,7 +255,7 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
                 finally {
                     executionPlan.removeFinishedRunnerLeaf(leaf);
                     synchronized (executorService) {
-                        executorService.notify();
+                        executorService.notifyAll();
                     }
                 }
             }

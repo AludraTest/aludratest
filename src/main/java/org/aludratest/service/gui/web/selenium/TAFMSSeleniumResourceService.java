@@ -185,7 +185,7 @@ public class TAFMSSeleniumResourceService implements SeleniumResourceService, Co
             return null;
         }
         catch (JSONException e) {
-            LOG.error("Invalid JSON received from TAFMS server." + (message != null ? " JSON message was: " + message : ""), e);
+            LOG.error("Invalid JSON received from TAFMS server. JSON message was: " + message, e);
             return null;
         }
         finally {
