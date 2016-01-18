@@ -79,8 +79,8 @@ public class PollService {
                 LOGGER.debug("Timeout exceeded while executing task {}", task);
                 break;
             }
-            catch (Exception e) {
-                throw new AutomationException("Unexpected error executing task " + task, e);
+            catch (AutomationException e) {
+                throw e;
             }
             if (result != null) {
                 LOGGER.debug("Task {} finished successfully, result: {}", task, result);
@@ -102,14 +102,22 @@ public class PollService {
         return task.timedOut();
     }
 
-    private static <T> T invokeWithTimeout(final PolledTask<T> task, long timeout) throws Exception {
+    private static <T> T invokeWithTimeout(final PolledTask<T> task, long timeout) throws TimeoutException {
         Callable<T> callable = new Callable<T>() {
             @Override
             public T call() throws Exception {
                 return task.run();
             }
         };
-        return TimeoutService.call(callable, timeout);
+        try {
+            return TimeoutService.call(callable, timeout);
+        }
+        catch (TimeoutException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new AutomationException("Unexpected error executing task " + task, e);
+        }
     }
 
 }

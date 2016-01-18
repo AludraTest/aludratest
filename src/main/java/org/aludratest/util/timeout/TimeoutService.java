@@ -33,8 +33,11 @@ public class TimeoutService {
      * @param callable the {@link Callable} to call
      * @param timeout the maximum tolerated execution time in milliseconds
      * @return the result of the callable's {@link Callable#call()} method invocation
-     * @throws Exception */
-    public static <T> T call(Callable<T> callable, long timeout) throws Exception {
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException */
+    public static <T> T call(Callable<T> callable, long timeout) throws InterruptedException, TimeoutException,
+            ExecutionException {
         Future<T> handler = null;
         try {
             handler = EXECUTOR_SERVICE.submit(callable);
@@ -45,15 +48,6 @@ public class TimeoutService {
             // check Thread's interrupted state.
             handler.cancel(true);
             throw e;
-        }
-        catch (ExecutionException e) {
-            // unwrap execution exception if the cause resolves to an a child class of Exception
-            if (e.getCause() instanceof Exception) {
-                throw (Exception) e.getCause();
-            }
-            else {
-                throw e;
-            }
         }
     }
 

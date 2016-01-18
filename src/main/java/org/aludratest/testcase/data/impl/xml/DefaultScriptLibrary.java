@@ -19,11 +19,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.aludratest.exception.TechnicalException;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.component.annotations.Component;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
+/** Default JavaScript library shipped with AludraTest.
+ * 
+ * @author falbrech */
 @Component(role = ScriptLibrary.class, hint = "default")
 public final class DefaultScriptLibrary implements ScriptLibrary {
 
@@ -47,7 +51,7 @@ public final class DefaultScriptLibrary implements ScriptLibrary {
             context.evaluateReader(scope, reader, jsResourceName, 1, null);
         }
         catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new TechnicalException("Could not read date-format.js resource", e);
         }
         finally {
             IOUtils.closeQuietly(in);

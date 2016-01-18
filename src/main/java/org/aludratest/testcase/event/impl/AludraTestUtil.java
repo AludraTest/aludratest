@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.exception.AludraTestException;
+import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.AludraContext;
 import org.aludratest.service.AludraService;
 import org.aludratest.service.ComponentId;
@@ -114,7 +115,7 @@ public class AludraTestUtil {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             return (T) Proxy.newProxyInstance(classLoader, new Class[] { interfaceType }, invocationHandler);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new TechnicalException("Could not create dynamic proxy", e);
         }
     }
 
