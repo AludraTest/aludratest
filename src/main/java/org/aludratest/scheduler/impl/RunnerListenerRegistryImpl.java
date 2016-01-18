@@ -37,7 +37,7 @@ public class RunnerListenerRegistryImpl implements RunnerListenerRegistry {
     private List<RunnerListener> listeners;
 
     private void ensureListenersEditable() {
-        if (!listeners.getClass().getSimpleName().equals("ArrayList")) {
+        if (!(listeners instanceof ArrayList)) {
             listeners = new ArrayList<RunnerListener>(listeners);
         }
     }
