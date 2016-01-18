@@ -33,7 +33,7 @@ import org.databene.commons.BeanUtil;
  */
 // JList classes are parameterized since Java 7, but we want to be backwards compatible to 6
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class TestClassList extends JList {
+public final class TestClassList extends JList {
 
     private static final long serialVersionUID = 1L;
 
