@@ -25,8 +25,8 @@ import javax.swing.JComboBox;
  * @author Volker Bergmann
  */
 // JList classes are parameterized since Java 7, but we want to be backwards compatible to 6
-@SuppressWarnings({ "rawtypes", "unchecked" })
-public class MethodSelector extends JComboBox {
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public final class MethodSelector extends JComboBox {
 
     private static final long serialVersionUID = 1L;
 
