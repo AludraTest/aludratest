@@ -202,7 +202,9 @@ public abstract class VelocityWriter<T extends TestStepContainer> extends FileWr
          * @return the text representation of the period */
         public String format(Period period) {
             if (isShortTimeFormat()) {
-                return nf2.format(period.getDays() * HOURS_PER_DAY + period.getHours()) + ":" + nf2.format(period.getMinutes()) + ":" + nf2.format(period.getSeconds()) + "'" + nf3.format(period.getMillis());
+                return nf2.format((long) period.getDays() * HOURS_PER_DAY + period.getHours()) + ":"
+                        + nf2.format(period.getMinutes()) + ":" + nf2.format(period.getSeconds()) + "'"
+                        + nf3.format(period.getMillis());
             } else {
                 return period.getDays() + " days " + period.getHours() + " hours " + period.getMinutes() + " minutes " + period.getSeconds() + " seconds " + period.getMillis() + " ms";
             }
