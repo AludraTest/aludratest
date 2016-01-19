@@ -24,9 +24,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import junit.framework.TestCase;
 
-import org.aludratest.impl.log4testing.data.TestCaseLog;
-import org.aludratest.impl.log4testing.data.TestStepLog;
-import org.aludratest.impl.log4testing.data.TestSuiteLog;
 import org.aludratest.testcase.TestStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,9 +72,9 @@ public class TestCaseTest {
         assertEquals(0, testCase.getNumberOfTestSteps());
         testCase.newTestStep().setStatus(TestStatus.PASSED);
         assertEquals(1, testCase.getNumberOfTestSteps());
-        assertEquals(true, testCase.getTestStepGroups().iterator().hasNext());
+        assertTrue(testCase.getTestStepGroups().iterator().hasNext());
         testCase.clear();
-        assertEquals(false, testCase.getTestStepGroups().iterator().hasNext());
+        assertFalse(testCase.getTestStepGroups().iterator().hasNext());
         assertEquals(0, testCase.getNumberOfTestSteps());
     }
 

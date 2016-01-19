@@ -46,7 +46,7 @@ public class ComponentConfiguratorTest {
         MutablePreferences prefs = confComp.getDefaultPreferences();
 
         assertEquals(1, prefs.getIntValue("testvalue1"));
-        assertEquals(true, prefs.getBooleanValue("testvalue2"));
+        assertTrue(prefs.getBooleanValue("testvalue2"));
         assertFalse(Arrays.asList(prefs.getKeyNames()).contains("testvalue3"));
         assertEquals("TEST", prefs.getStringValue("atestvalue"));
         assertEquals(2.0, prefs.getFloatValue("implProp"), 0.01);

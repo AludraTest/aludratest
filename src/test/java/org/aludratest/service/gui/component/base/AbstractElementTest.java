@@ -298,7 +298,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void isPresentOnExistingElement() {
-        assertEquals(true, guiTestUIMap.dropDownBox().isPresent());
+        assertTrue(guiTestUIMap.dropDownBox().isPresent());
     }
 
     /**
@@ -307,7 +307,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void isPresentOnHiddenElement() {
-        assertEquals(true, guiTestUIMap.hiddenButton().isPresent());
+        assertTrue(guiTestUIMap.hiddenButton().isPresent());
     }
 
     /**
@@ -316,7 +316,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void isPresentOnHiddenElementInDiv() {
-        assertEquals(true, guiTestUIMap.hiddenButton().isPresent());
+        assertTrue(guiTestUIMap.hiddenButton().isPresent());
     }
 
     /**
@@ -325,7 +325,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void isPresentOnNotExistingElement() {
-        assertEquals(false, guiTestUIMap.notExistingButton().isPresent());
+        assertFalse(guiTestUIMap.notExistingButton().isPresent());
     }
 
     /**
@@ -334,7 +334,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void isPresentOnExistingElementWithTimeout() {
-        assertEquals(true, guiTestUIMap.dropDownBox().isPresent(DEFAULT_TIMEOUT));
+        assertTrue(guiTestUIMap.dropDownBox().isPresent(DEFAULT_TIMEOUT));
     }
 
     /**
@@ -343,7 +343,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void isPresentOnHiddenElementWithTimeout() {
-        assertEquals(true, guiTestUIMap.hiddenButton().isPresent(DEFAULT_TIMEOUT));
+        assertTrue(guiTestUIMap.hiddenButton().isPresent(DEFAULT_TIMEOUT));
     }
 
     /**
@@ -352,7 +352,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void isPresentOnHiddenElementInDivWithTimeout() {
-        assertEquals(true, guiTestUIMap.hiddenButton().isPresent(DEFAULT_TIMEOUT));
+        assertTrue(guiTestUIMap.hiddenButton().isPresent(DEFAULT_TIMEOUT));
     }
 
     /**
@@ -361,7 +361,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void isPresentOnNotExistingElementWithTimeout() {
-        assertEquals(false, guiTestUIMap.notExistingButton().isPresent(DEFAULT_TIMEOUT));
+        assertFalse(guiTestUIMap.notExistingButton().isPresent(DEFAULT_TIMEOUT));
     }
 
     /**
@@ -370,7 +370,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void notPresentOnNotExistingElement() {
-        assertEquals(true, guiTestUIMap.notExistingButton().isNotPresent());
+        assertTrue(guiTestUIMap.notExistingButton().isNotPresent());
     }
 
     /**
@@ -379,7 +379,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void notPresentOnHiddenElement() {
-        assertEquals(false, guiTestUIMap.hiddenButton().isNotPresent());
+        assertFalse(guiTestUIMap.hiddenButton().isNotPresent());
     }
 
     /**
@@ -388,7 +388,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void notPresentOnHiddenElementInDiv() {
-        assertEquals(false, guiTestUIMap.hiddenButton().isNotPresent());
+        assertFalse(guiTestUIMap.hiddenButton().isNotPresent());
     }
 
     /**
@@ -397,7 +397,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void notPresentOnExistingElement() {
-        assertEquals(false, guiTestUIMap.dropDownBox().isNotPresent());
+        assertFalse(guiTestUIMap.dropDownBox().isNotPresent());
     }
 
     /**
@@ -406,7 +406,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void notPresentOnNotExistingElementWithTimeout() {
-        assertEquals(true, guiTestUIMap.notExistingButton().isNotPresent(DEFAULT_TIMEOUT));
+        assertTrue(guiTestUIMap.notExistingButton().isNotPresent(DEFAULT_TIMEOUT));
     }
 
     /**
@@ -415,7 +415,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void notPresentOnHiddenElementWithTimeout() {
-        assertEquals(false, guiTestUIMap.hiddenButton().isNotPresent(DEFAULT_TIMEOUT));
+        assertFalse(guiTestUIMap.hiddenButton().isNotPresent(DEFAULT_TIMEOUT));
     }
 
     /**
@@ -424,7 +424,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void notPresentOnHiddenElementInDivWithTimeout() {
-        assertEquals(false, guiTestUIMap.hiddenButton().isNotPresent(DEFAULT_TIMEOUT));
+        assertFalse(guiTestUIMap.hiddenButton().isNotPresent(DEFAULT_TIMEOUT));
     }
 
     /**
@@ -433,7 +433,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void notPresentOnExistingElementWithTimeout() {
-        assertEquals(false, guiTestUIMap.dropDownBox().isNotPresent(DEFAULT_TIMEOUT));
+        assertFalse(guiTestUIMap.dropDownBox().isNotPresent(DEFAULT_TIMEOUT));
     }
 
     /**
@@ -442,7 +442,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void visibleOnExistingElement() {
-        assertEquals(true, guiTestUIMap.dropDownBox().isVisible());
+        assertTrue(guiTestUIMap.dropDownBox().isVisible());
     }
 
     /**
@@ -451,7 +451,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void visibleOnNotExistingElement() {
-        assertEquals(false, guiTestUIMap.notExistingButton().isVisible());
+        assertFalse(guiTestUIMap.notExistingButton().isVisible());
     }
 
     /**
@@ -460,7 +460,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void visibleOnHiddenElement() {
-        assertEquals(false, guiTestUIMap.hiddenButton().isVisible());
+        assertFalse(guiTestUIMap.hiddenButton().isVisible());
     }
 
     /**
@@ -469,7 +469,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void visibleOnHiddenElementInDiv() {
-        assertEquals(false, guiTestUIMap.hiddenButton().isVisible());
+        assertFalse(guiTestUIMap.hiddenButton().isVisible());
     }
 
     /**
@@ -478,7 +478,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void visibleOnExistingElementWithTimeout() {
-        assertEquals(true, guiTestUIMap.dropDownBox().isVisible(DEFAULT_TIMEOUT));
+        assertTrue(guiTestUIMap.dropDownBox().isVisible(DEFAULT_TIMEOUT));
     }
 
     /**
@@ -487,7 +487,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void visibleOnNotExistingElementWithTimeout() {
-        assertEquals(false, guiTestUIMap.notExistingButton().isVisible(DEFAULT_TIMEOUT));
+        assertFalse(guiTestUIMap.notExistingButton().isVisible(DEFAULT_TIMEOUT));
     }
 
     /**
@@ -496,7 +496,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void visibleOnHiddenElementWithTimeoutt() {
-        assertEquals(false, guiTestUIMap.hiddenButton().isVisible(DEFAULT_TIMEOUT));
+        assertFalse(guiTestUIMap.hiddenButton().isVisible(DEFAULT_TIMEOUT));
     }
 
     /**
@@ -505,7 +505,7 @@ public abstract class AbstractElementTest extends GUITest {
      */
     @Test
     public void visibleOnHiddenElementInDivWithTimeout() {
-        assertEquals(false, guiTestUIMap.hiddenButton().isVisible(DEFAULT_TIMEOUT));
+        assertFalse(guiTestUIMap.hiddenButton().isVisible(DEFAULT_TIMEOUT));
     }
 
     @Test

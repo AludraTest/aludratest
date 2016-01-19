@@ -16,7 +16,9 @@
 package org.aludratest.impl.log4testing.data;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -26,11 +28,6 @@ import java.util.List;
 import junit.framework.TestSuite;
 
 import org.aludratest.impl.log4testing.configuration.ConfigurationError;
-import org.aludratest.impl.log4testing.data.IllegalParentException;
-import org.aludratest.impl.log4testing.data.TestCaseLog;
-import org.aludratest.impl.log4testing.data.TestLogger;
-import org.aludratest.impl.log4testing.data.TestStepLog;
-import org.aludratest.impl.log4testing.data.TestSuiteLog;
 import org.aludratest.testcase.TestStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,10 +63,10 @@ public class TestSuiteTest {
     public void testClearTestCases() {
         emptyTestSuiteOne.addTestCase(emptyTestCaseOne);
         emptyTestCaseOne.newTestStep().setStatus(TestStatus.PASSED);
-        assertEquals(true, emptyTestSuiteOne.getTestCases().iterator().hasNext());
+        assertTrue(emptyTestSuiteOne.getTestCases().iterator().hasNext());
         assertEquals(1, emptyTestSuiteOne.getNumberOfTestSteps());
         emptyTestSuiteOne.clear();
-        assertEquals(false, emptyTestSuiteOne.getTestCases().iterator().hasNext());
+        assertFalse(emptyTestSuiteOne.getTestCases().iterator().hasNext());
         assertEquals(0, emptyTestSuiteOne.getNumberOfTestSteps());
     }
 
@@ -78,16 +75,16 @@ public class TestSuiteTest {
         emptyTestSuiteOne.addTestSuite(emptyTestSuiteTwo);
         emptyTestSuiteTwo.addTestCase(emptyTestCaseTwo);
         emptyTestCaseTwo.newTestStep().setStatus(TestStatus.PASSED);
-        assertEquals(true, emptyTestSuiteOne.getTestSuites().iterator().hasNext());
+        assertTrue(emptyTestSuiteOne.getTestSuites().iterator().hasNext());
         assertEquals(1, emptyTestSuiteOne.getNumberOfTestSteps());
         emptyTestSuiteOne.clear();
-        assertEquals(false, emptyTestSuiteOne.getTestSuites().iterator().hasNext());
+        assertFalse(emptyTestSuiteOne.getTestSuites().iterator().hasNext());
         assertEquals(0, emptyTestSuiteOne.getNumberOfTestSteps());
     }
 
     @Test
     public void testEmpty() {
-        assertEquals(false, emptyTestSuiteOne.getTestCases().iterator().hasNext());
+        assertFalse(emptyTestSuiteOne.getTestCases().iterator().hasNext());
         assertEquals(0, emptyTestSuiteOne.getNumberOfTestSteps());
     }
 
@@ -126,7 +123,7 @@ public class TestSuiteTest {
 
     @Test(timeout = 500)
     /**
-     * Test for performance Issue 
+     * Test for performance Issue
      * Adding should be done in under 150 ms
      */
     public void testAddTestSuitePerformance() {
@@ -145,7 +142,7 @@ public class TestSuiteTest {
 
     @Test
     /**
-     * Test the functionality of the function GetTestCases which should return only the local 
+     * Test the functionality of the function GetTestCases which should return only the local
      * TestCases
      */
     public void testGetTestCases() {
@@ -174,18 +171,18 @@ public class TestSuiteTest {
         for (TestCaseLog testCase4 : testCaseIter) {
             count = count + 1;
             switch (count) {
-            case 1:
-                assertSame(testCaseTwo, testCase4);
-                break;
-            case 2:
-                assertSame(testCaseOne, testCase4);
-                break;
-            case 3:
-                assertSame(testCaseThree, testCase4);
-                break;
-            default:
-                fail("Wrong count in Loop");
-                break;
+                case 1:
+                    assertSame(testCaseTwo, testCase4);
+                    break;
+                case 2:
+                    assertSame(testCaseOne, testCase4);
+                    break;
+                case 3:
+                    assertSame(testCaseThree, testCase4);
+                    break;
+                default:
+                    fail("Wrong count in Loop");
+                    break;
             }
         }
         // Check if there are three TestCase found
@@ -194,7 +191,7 @@ public class TestSuiteTest {
 
     @Test
     /**
-     * Test the functionality of the function GetTestSuites which should return only the local 
+     * Test the functionality of the function GetTestSuites which should return only the local
      * TestCases
      */
     public void testGetTestSuites() {
@@ -222,15 +219,15 @@ public class TestSuiteTest {
         for (TestSuiteLog testSuite1 : testSuiteIter) {
             count = count + 1;
             switch (count) {
-            case 1:
-                assertSame(testSuiteTwo, testSuite1);
-                break;
-            case 2:
-                assertSame(testSuiteThree, testSuite1);
-                break;
-            default:
-                fail("Wrong count in Loop");
-                break;
+                case 1:
+                    assertSame(testSuiteTwo, testSuite1);
+                    break;
+                case 2:
+                    assertSame(testSuiteThree, testSuite1);
+                    break;
+                default:
+                    fail("Wrong count in Loop");
+                    break;
             }
         }
         assertEquals(2, count);
@@ -269,7 +266,7 @@ public class TestSuiteTest {
         return createTestStep(TestStatus.INCONCLUSIVE, "Inconclusive", testCase);
     }
 
-    /** Encapsulate the creation of the TestSteps 
+    /** Encapsulate the creation of the TestSteps
      * @param testCase */
     private TestStepLog createTestStep(TestStatus status, String comment, TestCaseLog testCase) {
         return testCase.newTestStep(status, "Command", "This is the " + comment + " TestStep");
