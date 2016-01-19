@@ -19,14 +19,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 
-import org.aludratest.impl.log4testing.data.TestCaseLog;
-import org.aludratest.impl.log4testing.data.TestStepGroup;
-import org.aludratest.impl.log4testing.data.TestStepLog;
-import org.aludratest.impl.log4testing.data.TestSuiteLog;
 import org.aludratest.testcase.TestStatus;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -76,7 +73,7 @@ public class TestStepGroupTest {
     @Test
     public void testGetTestSteps() {
         assertFalse(createEmptyTestStepGroup().getTestSteps().iterator().hasNext());
-        
+
         TestStepGroup group = createEmptyTestStepGroup();
         TestStepLog okTestStep = createOKTestStep(group);
         TestStepLog errorTestStep = createErrorTestStep(group);
@@ -119,9 +116,9 @@ public class TestStepGroupTest {
     @Test
     public void testIsFailed() {
         TestStepGroup group = createEmptyTestStepGroup();
-        assertEquals(false, group.isFailed());
+        assertFalse(group.isFailed());
         createErrorTestStep(group);
-        assertEquals(true, group.isFailed());
+        assertTrue(group.isFailed());
     }
 
     /**
@@ -201,7 +198,7 @@ public class TestStepGroupTest {
      * @param testStepToAdd TestStep which will be added in the middle of the before and after TestSteps
      * @return TestStepGroup with the TestSteps
      */
-    private TestStepGroup createTestStepGroupwithTestSteps(int beforeOk, int beforefailed, int afterOK, int afterfailed, 
+    private TestStepGroup createTestStepGroupwithTestSteps(int beforeOk, int beforefailed, int afterOK, int afterfailed,
             TestStatus testStatusToAdd) {
         TestStepGroup group = new TestStepGroup("TestStepGroup 1", null);
 
@@ -244,7 +241,7 @@ public class TestStepGroupTest {
 
     /**
      * Creates a TestStep with Status OK
-     * @param group 
+     * @param group
      * @return the OK TestStep
      */
     private TestStepLog createOKTestStep(TestStepGroup group) {

@@ -668,7 +668,7 @@ public class Selenium2Wrapper {
 
     public void focus(GUIElementLocator locator) {
         LOGGER.debug("focus({})", locator);
-        WebElement element = waitUntilEnabled(locator, configuration.getTimeout());
+        WebElement element = doBeforeDelegate(locator, true, false, true);
         executeScript("arguments[0].focus()", element);
     }
 

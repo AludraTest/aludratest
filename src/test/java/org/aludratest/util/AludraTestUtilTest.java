@@ -49,8 +49,8 @@ public class AludraTestUtilTest {
         assertEquals((short) 0, nullOrPrimitiveDefault(Short.class));
         assertEquals((long) 0, nullOrPrimitiveDefault(long.class));
         assertEquals((long) 0, nullOrPrimitiveDefault(Long.class));
-        assertEquals(false, nullOrPrimitiveDefault(boolean.class));
-        assertEquals(false, nullOrPrimitiveDefault(Boolean.class));
+        assertEquals(Boolean.FALSE, nullOrPrimitiveDefault(boolean.class));
+        assertEquals(Boolean.FALSE, nullOrPrimitiveDefault(Boolean.class));
         assertEquals((char) 0, nullOrPrimitiveDefault(char.class));
         assertEquals((char) 0, nullOrPrimitiveDefault(Character.class));
         assertEquals("", nullOrPrimitiveDefault(String.class));

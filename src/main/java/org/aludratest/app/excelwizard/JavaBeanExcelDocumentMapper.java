@@ -55,7 +55,7 @@ public class JavaBeanExcelDocumentMapper {
         createOrMergeWorkbooks(testMethod, testDataRootFolder, workbooks);
         validateWorkbooks(workbooks.values());
         printWarnings(workbooks.values());
-        persistNewAndModifiedWorkbooks(workbooks, parentComponent);
+        persistNewAndModifiedWorkbooks(workbooks);
         return workbooks.values();
     }
 
@@ -114,7 +114,7 @@ public class JavaBeanExcelDocumentMapper {
         }
     }
 
-    private static void persistNewAndModifiedWorkbooks(Map<File, WorkbookTracker> workbooks, Component parentComponent) throws IOException {
+    private static void persistNewAndModifiedWorkbooks(Map<File, WorkbookTracker> workbooks) throws IOException {
         for (WorkbookTracker tracker : workbooks.values()) {
             if (tracker.needsPersisting()) {
                 LOGGER.info("Persisting file {}", tracker.getFile());

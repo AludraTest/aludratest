@@ -15,7 +15,8 @@
  */
 package org.aludratest.service.gui.component.base;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.aludratest.testcase.TestStatus;
 import org.junit.Test;
@@ -149,7 +150,7 @@ public abstract class AbstractCheckBoxTest extends GUITest {
      */
     @Test
     public void enabledOnDisabledCheckBox() {
-        assertEquals(false, guiTestUIMap.disabledCheckBox().isEnabled());
+        assertFalse(guiTestUIMap.disabledCheckBox().isEnabled());
     }
 
     /**
@@ -168,23 +169,23 @@ public abstract class AbstractCheckBoxTest extends GUITest {
      */
     @Test
     public void enabledOnDisabledCheckBoxWithTimeout() {
-        assertEquals(false, guiTestUIMap.disabledCheckBox().isEnabled(DEFAULT_TIMEOUT));
+        assertFalse(guiTestUIMap.disabledCheckBox().isEnabled(DEFAULT_TIMEOUT));
     }
 
     @Test
     public void checkedOnCheckedCheckBox() {
-        assertEquals(true, guiTestUIMap.secondCheckBox().isChecked());
+        assertTrue(guiTestUIMap.secondCheckBox().isChecked());
     }
 
     @Test
     public void checkedOnUncheckedCheckBox() {
         guiTestUIMap.firstCheckBox().select("false");
-        assertEquals(false, guiTestUIMap.firstCheckBox().isChecked());
+        assertFalse(guiTestUIMap.firstCheckBox().isChecked());
     }
 
     @Test
     public void checkedOnDisabledCheckBox() {
         guiTestUIMap.disabledCheckBox().select("false");
-        assertEquals(false, guiTestUIMap.disabledCheckBox().isChecked());
+        assertFalse(guiTestUIMap.disabledCheckBox().isChecked());
     }
 }

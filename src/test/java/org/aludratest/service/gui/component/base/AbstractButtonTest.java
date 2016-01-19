@@ -15,7 +15,8 @@
  */
 package org.aludratest.service.gui.component.base;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.aludratest.testcase.TestStatus;
 import org.aludratest.util.validator.ContainsIgnoreCaseValidator;
@@ -81,7 +82,7 @@ public abstract class AbstractButtonTest extends GUITest {
      */
     @Test
     public void enabledOnEnabledButton() {
-        assertEquals(true, guiTestUIMap.findButton().isEnabled());
+        assertTrue(guiTestUIMap.findButton().isEnabled());
         checkLastStepStatus(TestStatus.PASSED);
     }
 
@@ -91,7 +92,7 @@ public abstract class AbstractButtonTest extends GUITest {
      */
     @Test
     public void enabledOnDisabledButton() {
-        assertEquals(false, guiTestUIMap.disabledButton().isEnabled());
+        assertFalse(guiTestUIMap.disabledButton().isEnabled());
         checkLastStepStatus(TestStatus.PASSED);
     }
 
@@ -101,7 +102,7 @@ public abstract class AbstractButtonTest extends GUITest {
      */
     @Test
     public void enabledOnEnabledButtonWithTimeout() {
-        assertEquals(true, guiTestUIMap.findButton().isEnabled(DEFAULT_TIMEOUT));
+        assertTrue(guiTestUIMap.findButton().isEnabled(DEFAULT_TIMEOUT));
         checkLastStepStatus(TestStatus.PASSED);
     }
 
@@ -111,7 +112,7 @@ public abstract class AbstractButtonTest extends GUITest {
      */
     @Test
     public void enabledOnDisabledButtonWithTimeout() {
-        assertEquals(false, guiTestUIMap.disabledButton().isEnabled(DEFAULT_TIMEOUT));
+        assertFalse(guiTestUIMap.disabledButton().isEnabled(DEFAULT_TIMEOUT));
         checkLastStepStatus(TestStatus.PASSED);
     }
 
