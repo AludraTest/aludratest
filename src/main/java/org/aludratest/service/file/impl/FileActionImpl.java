@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * {@link FileInteraction}, {@link FileVerification} and {@link FileCondition}.
  * @author Volker Bergmann
  */
-public class FileActionImpl implements FileInteraction, FileVerification, FileCondition {
+public final class FileActionImpl implements FileInteraction, FileVerification, FileCondition {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileActionImpl.class);
 

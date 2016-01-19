@@ -46,25 +46,25 @@ public class CloneRepositoryData extends AbstractGitData {
 
     /** Returns the repository.
      * @return the repository */
-    public String getRepository() {
+    public final String getRepository() {
         return repository;
     }
 
     /** Sets the repository.
      * @param repository the repository to set */
-    public void setRepository(String repository) {
+    public final void setRepository(String repository) {
         this.repository = repository;
     }
 
     /** Returns the target directory in which to store the clone.
      * @return the target directory in which to store the clone */
-    public String getDirectory() {
+    public final String getDirectory() {
         return directory;
     }
 
     /** Sets the target directory in which to store the clone.
      * @param directory the target directory in which to store the clone */
-    public void setDirectory(String directory) {
+    public final void setDirectory(String directory) {
         this.directory = directory;
     }
 
