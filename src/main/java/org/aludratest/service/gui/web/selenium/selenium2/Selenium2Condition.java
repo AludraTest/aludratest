@@ -20,6 +20,7 @@ import org.aludratest.exception.AutomationException;
 import org.aludratest.service.gui.web.WebGUICondition;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.window.WindowLocator;
+import org.openqa.selenium.InvalidSelectorException;
 
 /** Provides the {@link WebGUICondition} feature set using Selenium 2.
  * @author Marcel Malitz
@@ -45,6 +46,10 @@ public class Selenium2Condition extends AbstractSelenium2Action implements WebGU
             return true;
         }
         catch (AutomationException e) {
+            // do not hide invalid selector exceptions
+            if (e.getCause() instanceof InvalidSelectorException) {
+                throw e;
+            }
             // expected exception: "Element not found"
             return false;
         }
