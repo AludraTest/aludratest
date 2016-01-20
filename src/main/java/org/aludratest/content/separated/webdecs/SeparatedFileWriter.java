@@ -61,6 +61,7 @@ public class SeparatedFileWriter implements Closeable {
     }
 
     /** Closes the internal writer. */
+    @Override
     public void close() throws IOException {
         IOUtil.close(this.writer);
     }

@@ -34,6 +34,7 @@ public class SequentialFirst implements Comparator<RunnerNode>, Serializable {
      *  judging sequential nodes as 'less' than concurrent ones. 
      *  Comparison of sequential nodes with each other yields 'equal' 
      *  as well as comparison of concurrent nodes with each other does. */
+    @Override
     public int compare(RunnerNode node1, RunnerNode node2) {
         boolean sg1 = (node1 instanceof RunnerGroup) && !((RunnerGroup) node1).isParallel();
         boolean sg2 = (node2 instanceof RunnerGroup) && !((RunnerGroup) node2).isParallel();

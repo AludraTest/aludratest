@@ -135,6 +135,7 @@ public final class TestStepInfoBean implements TestStepInfo {
         this.serviceId = serviceId;
     }
 
+    @Override
     public String getResult() {
         return result;
     }

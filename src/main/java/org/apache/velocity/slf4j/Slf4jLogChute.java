@@ -76,6 +76,7 @@ public class Slf4jLogChute implements LogChute {
 
     /********** LogChute methods *************/
 
+    @Override
     public void init(RuntimeServices rs) {
         String name = (String) rs.getProperty(LOGCHUTE_SLF4J_NAME);
 
@@ -89,6 +90,7 @@ public class Slf4jLogChute implements LogChute {
     /**
      * Send a log message from Velocity.
      */
+    @Override
     public void log(int level, String message) {
         switch (level) {
         case LogChute.WARN_ID:
@@ -113,6 +115,7 @@ public class Slf4jLogChute implements LogChute {
     /**
      * Send a log message from Velocity with an error.
      */
+    @Override
     public void log(int level, String message, Throwable t) {
         switch (level) {
         case LogChute.WARN_ID:
@@ -137,6 +140,7 @@ public class Slf4jLogChute implements LogChute {
     /**
      * Checks whether the specified log level is enabled.
      */
+    @Override
     public boolean isLevelEnabled(int level) {
         switch (level) {
         case LogChute.DEBUG_ID:

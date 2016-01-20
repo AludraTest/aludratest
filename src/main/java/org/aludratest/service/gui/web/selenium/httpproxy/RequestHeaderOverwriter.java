@@ -36,6 +36,7 @@ public class RequestHeaderOverwriter extends AbstractHttpProcessor {
         this.value = value;
     }
 
+    @Override
     public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
         request.removeHeaders(name);
         request.addHeader(name, value);

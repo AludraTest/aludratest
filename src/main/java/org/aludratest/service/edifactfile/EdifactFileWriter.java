@@ -80,6 +80,7 @@ public class EdifactFileWriter<C extends EdifactData, E extends EdifactFileWrite
     }
     
     /** @return a reference to itself (this) */
+    @Override
     @SuppressWarnings("unchecked")
     public E waitUntilNotExists() {
         assertState(State.CLOSED);
