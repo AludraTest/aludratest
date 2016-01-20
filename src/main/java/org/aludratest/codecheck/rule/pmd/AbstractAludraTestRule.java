@@ -48,7 +48,7 @@ import org.aludratest.testcase.AludraTestCase;
 public abstract class AbstractAludraTestRule extends AbstractJavaRule {
 
     protected AbstractAludraTestRule() {
-        setPriority(RulePriority.HIGH);
+        super.setPriority(RulePriority.HIGH);
     }
 
     protected static final ASTClassOrInterfaceDeclaration getClassOrInterfaceDeclaration(AbstractJavaNode node) {

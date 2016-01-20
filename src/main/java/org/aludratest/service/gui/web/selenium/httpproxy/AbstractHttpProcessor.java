@@ -29,10 +29,12 @@ import org.apache.http.protocol.HttpProcessor;
  */
 public abstract class AbstractHttpProcessor implements HttpProcessor {
 
+    @Override
     public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
         // empty implementation as default for child classes
     }
 
+    @Override
     public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
         // empty implementation as default for child classes
     }

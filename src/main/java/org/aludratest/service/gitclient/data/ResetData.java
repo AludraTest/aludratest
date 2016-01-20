@@ -39,13 +39,13 @@ public class ResetData extends AbstractGitData {
 
     /** Returns the name of the commit
      * @return the name of the commit */
-    public String getCommit() {
+    public final String getCommit() {
         return commit;
     }
 
     /** Sets the name of the commit.
      * @param commit the name of the commit */
-    public void setCommit(String commit) {
+    public final void setCommit(String commit) {
         this.commit = commit;
     }
 

@@ -36,13 +36,13 @@ public class CheckoutData {
     }
 
     /** @return the name of the branch to check out Returns the name of the branch to check out */
-    public String getBranchName() {
+    public final String getBranchName() {
         return branchName;
     }
 
     /** Sets the name of the branch to check out.
      * @param branchName the name of the branch to check out */
-    public void setBranchName(String branchName) {
+    public final void setBranchName(String branchName) {
         this.branchName = branchName;
     }
 

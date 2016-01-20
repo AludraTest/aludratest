@@ -33,6 +33,7 @@ public class NoComparator implements Comparator<RunnerNode>, Serializable {
      *  is not supposed to be called, since this is a marker class. 
      *  If called though, the method raises an 
      *  {@link UnsupportedOperationException}. */
+    @Override
     public int compare(RunnerNode node1, RunnerNode node2) {
         throw new UnsupportedOperationException("The Class is intended to serve as marker and not to be invoked");
     }

@@ -56,6 +56,7 @@ public class ProxyHandler implements HttpRequestHandler {
         this.connStrategy = DefaultConnectionReuseStrategy.INSTANCE;
     }
 
+    @Override
     public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
 
         HttpClientConnection conn = (HttpClientConnection) context.getAttribute(HTTP_OUT_CONN);

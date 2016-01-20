@@ -52,61 +52,61 @@ public class LogItemData extends AbstractGitData {
 
     /** Returns the commit message.
      * @return the commit message */
-    public String getCommit() {
+    public final String getCommit() {
         return commit;
     }
 
     /** Sets the commit message.
      * @param commit the commit message */
-    public void setCommit(String commit) {
+    public final void setCommit(String commit) {
         this.commit = commit;
     }
 
     /** Returns the merge info.
      * @return the merge info */
-    public String getMerge() {
+    public final String getMerge() {
         return merge;
     }
 
     /** Sets the merge info.
      * @param merge the merge info to set */
-    public void setMerge(String merge) {
+    public final void setMerge(String merge) {
         this.merge = merge;
     }
 
     /** Returns the author.
      * @return the author */
-    public String getAuthor() {
+    public final String getAuthor() {
         return author;
     }
 
     /** Sets the author.
      * @param author the author */
-    public void setAuthor(String author) {
+    public final void setAuthor(String author) {
         this.author = author;
     }
 
     /** Returns the date.
      * @return the date */
-    public String getDate() {
+    public final String getDate() {
         return date;
     }
 
     /** Sets the date.
      * @param date the date */
-    public void setDate(String date) {
+    public final void setDate(String date) {
         this.date = date;
     }
 
     /** Returns the message.
      * @return the message */
-    public String getMessage() {
+    public final String getMessage() {
         return message;
     }
 
     /** Sets the message.
      * @param message the message */
-    public void setMessage(String message) {
+    public final void setMessage(String message) {
         this.message = message;
     }
 

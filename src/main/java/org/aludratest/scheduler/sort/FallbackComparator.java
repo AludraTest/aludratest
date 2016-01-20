@@ -55,6 +55,7 @@ public class FallbackComparator implements Comparator<RunnerNode>, Serializable 
     }
 
     /** Compares two {@link RunnerNode}s as described in the class Javadoc. */
+    @Override
     public int compare(RunnerNode node1, RunnerNode node2) {
         int result = 0;
         for (Comparator<RunnerNode> step : steps) {
