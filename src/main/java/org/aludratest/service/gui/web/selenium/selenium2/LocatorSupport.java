@@ -37,7 +37,6 @@ import org.aludratest.util.ExceptionUtil;
 import org.aludratest.util.retry.RetryService;
 import org.aludratest.util.timeout.TimeoutService;
 import org.openqa.selenium.By;
-import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
@@ -224,10 +223,6 @@ public class LocatorSupport {
             return waitFor(condition, timeOutInMillis, NoSuchElementException.class, StaleElementReferenceException.class);
         }
         catch (TimeoutException e) {
-            // do not hide InvalidSelectorExceptions
-            if (e.getCause() instanceof InvalidSelectorException) {
-                throw new AutomationException("Invalid element selector", e.getCause());
-            }
             throw new AutomationException("Element not found"); // NOSONAR
         }
     }

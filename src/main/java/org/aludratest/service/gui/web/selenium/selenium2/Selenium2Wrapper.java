@@ -668,7 +668,7 @@ public class Selenium2Wrapper {
 
     public void focus(GUIElementLocator locator) {
         LOGGER.debug("focus({})", locator);
-        WebElement element = doBeforeDelegate(locator, true, false, true);
+        WebElement element = waitUntilEnabled(locator, configuration.getTimeout());
         executeScript("arguments[0].focus()", element);
     }
 
@@ -923,6 +923,9 @@ public class Selenium2Wrapper {
     }
 
     public void waitForTextValidity(GUIElementLocator locator, Validator<String> validator) {
+        // ensure element is visible (scroll into view)
+        waitUntilVisible(locator, configuration.getTimeout());
+
         waitForValidity(new ValidatingCondition(locator, locatorSupport, validator, "Text") {
             @Override
             protected String getTextToValidate(WebElement element) {
@@ -932,6 +935,9 @@ public class Selenium2Wrapper {
     }
 
     public void waitForValueValidity(GUIElementLocator locator, Validator<String> validator) {
+        // ensure element is visible (scroll into view)
+        waitUntilVisible(locator, configuration.getTimeout());
+
         waitForValidity(new ValidatingCondition(locator, locatorSupport, validator, "Value") {
             @Override
             protected String getTextToValidate(WebElement element) {
