@@ -34,6 +34,7 @@ public class DefaultNodeComparator implements Comparator<RunnerNode>, Serializab
 
     /** Calls the equally named method of the {@link #realComparator} 
      *  and forwards its result. */
+    @Override
     public int compare(RunnerNode node1, RunnerNode node2) {
         return realComparator.compare(node1, node2);
     }

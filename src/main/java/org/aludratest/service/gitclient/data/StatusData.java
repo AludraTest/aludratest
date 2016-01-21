@@ -54,13 +54,13 @@ public class StatusData extends AbstractGitData {
     }
 
     /** @return the name of the current branch */
-    public String getCurrentBranch() {
+    public final String getCurrentBranch() {
         return currentBranch;
     }
 
     /** Sets the name of the current branch.
      * @param currentBranch the name of the current branch to set */
-    public void setCurrentBranch(String currentBranch) {
+    public final void setCurrentBranch(String currentBranch) {
         this.currentBranch = currentBranch;
     }
 

@@ -41,6 +41,7 @@ public class RegexFilePathFilter implements FileFilter {
     }
 
     /** Accepts files that match the {@link #regex} */
+    @Override
     public boolean accept(FileInfo file) {
         boolean result = Pattern.matches(regex, file.getPath());
         if (result) {

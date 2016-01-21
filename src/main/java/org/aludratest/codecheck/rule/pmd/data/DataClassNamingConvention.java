@@ -15,10 +15,10 @@
  */
 package org.aludratest.codecheck.rule.pmd.data;
 
-import org.aludratest.codecheck.rule.pmd.AbstractAludraTestRule;
-
 import net.sourceforge.pmd.RulePriority;
 import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
+
+import org.aludratest.codecheck.rule.pmd.AbstractAludraTestRule;
 
 /**
  * See <code>src/main/resources/pmd-rules-aludra.xml</code> or the project Site
@@ -30,20 +30,20 @@ import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
 public class DataClassNamingConvention extends AbstractAludraTestRule {
 
     public DataClassNamingConvention() {
-        setPriority(RulePriority.MEDIUM_HIGH);
+        super.setPriority(RulePriority.MEDIUM_HIGH);
     }
 
-	@Override
-	public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
+    @Override
+    public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
         if (!isDataClass(node)) {
-			return super.visit(node, data);
-		}
+            return super.visit(node, data);
+        }
 
         if (!node.getImage().endsWith("Data")) {
             addViolationWithMessage(data, node, "Class name of Data class " + node.getImage() + " should end with 'Data'");
-		}
+        }
 
-		return super.visit(node, data);
-	}
+        return super.visit(node, data);
+    }
 
 }

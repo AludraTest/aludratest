@@ -41,25 +41,25 @@ public class RenamedStatusData extends AbstractGitData {
 
     /** Returns the {@link #fromPath}
      * @return the {@link #fromPath} */
-    public String getFromPath() {
+    public final String getFromPath() {
         return fromPath;
     }
 
     /** Sets the {@link #fromPath}.
      * @param fromPath sets the {@link #fromPath} */
-    public void setFromPath(String fromPath) {
+    public final void setFromPath(String fromPath) {
         this.fromPath = fromPath;
     }
 
     /** Returns the {@link #toPath}
      * @return the {@link #toPath} */
-    public String getToPath() {
+    public final String getToPath() {
         return toPath;
     }
 
     /** Sets the {@link #toPath}
      * @param toPath the {@link #toPath} to set */
-    public void setToPath(String toPath) {
+    public final void setToPath(String toPath) {
         this.toPath = toPath;
     }
 

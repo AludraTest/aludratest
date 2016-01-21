@@ -46,25 +46,25 @@ public class CommitData extends AbstractGitData {
 
     /** Returns the commit message.
      * @return the commit message */
-    public String getMessage() {
+    public final String getMessage() {
         return message;
     }
 
     /** Sets the commit message.
      * @param message the commit message to set */
-    public void setMessage(String message) {
+    public final void setMessage(String message) {
         this.message = message;
     }
 
     /** Tells if the git shall allow empty commits. If not set to "true", git refused empty commits.
      * @return true if git shall allow empty commits, otherwise false. */
-    public String getAllowEmpty() {
+    public final String getAllowEmpty() {
         return allowEmpty;
     }
 
     /** Configures git whether to allow empty commits or not. If not set to "true", git refused empty commits.
      * @param allowEmpty the flag value to set */
-    public void setAllowEmpty(String allowEmpty) {
+    public final void setAllowEmpty(String allowEmpty) {
         this.allowEmpty = allowEmpty;
     }
 

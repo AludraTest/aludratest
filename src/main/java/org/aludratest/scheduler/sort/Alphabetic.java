@@ -30,6 +30,7 @@ public class Alphabetic implements Comparator<RunnerNode>, Serializable {
     private static final long serialVersionUID = 1L;
 
     /** Compares the paths of the given nodes alphabetically. */
+    @Override
     public int compare(RunnerNode node1, RunnerNode node2) {
         String thisPath = node1.getName();
         String thatPath = node2.getName();

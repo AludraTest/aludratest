@@ -29,6 +29,7 @@ public class VelocityTestCaseWriter extends VelocityWriter<TestCaseLog> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VelocityTestCaseWriter.class);
 
+    @Override
     public File write(TestCaseLog testCase, String path) {
         File osFile = super.write(testCase, path);
         LOGGER.debug("Persisted test case {} in file {}", testCase, osFile);

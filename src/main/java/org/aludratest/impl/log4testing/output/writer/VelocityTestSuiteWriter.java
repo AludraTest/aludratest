@@ -30,6 +30,7 @@ public class VelocityTestSuiteWriter extends VelocityWriter<TestSuiteLog> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VelocityTestSuiteWriter.class);
 
+    @Override
     public File write(TestSuiteLog testSuite, String path) {
         File osFile = super.write(testSuite, path);
         LOGGER.debug("Persisted test suite {} in file {}", testSuite, osFile);

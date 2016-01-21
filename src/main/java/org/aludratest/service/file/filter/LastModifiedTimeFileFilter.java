@@ -45,6 +45,7 @@ public class LastModifiedTimeFileFilter implements FileFilter {
     }
 
     /** Accepts a file if timestamp constraints are matched. */
+    @Override
     public boolean accept(FileInfo file) {
         if (minTimestamp != null && file.getLastModifiedTime() < minTimestamp) {
             LOGGER.debug("File is too old: {}", file);

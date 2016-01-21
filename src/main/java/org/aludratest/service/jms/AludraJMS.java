@@ -23,18 +23,22 @@ import org.aludratest.service.AludraService;
  * @deprecated The implementation is not yet functional; implementation was suspended in favour of other tasks!
  * @author Volker Bergmann
  */
+@Deprecated
 public interface AludraJMS extends AludraService {
 
     /** Provides a {@link JMSInteraction} instance 
      *  for performing JMS interactions. */
+    @Override
     public JMSInteraction perform();
 
     /** Provides a JMSVerification instance 
      *  for performing JMS related verifications */
+    @Override
     public JMSVerification verify();
 
     /** Provides a JMSCondition instance 
      *  for performing JMS related checks */
+    @Override
     public JMSCondition check();
 
 }
