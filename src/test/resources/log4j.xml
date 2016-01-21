@@ -67,15 +67,7 @@
     <category name="org.aludratest.impl.log4testing.observer">
        <priority value="info"/>
     </category>
-    
-    <category name="org.aludratest.service.gui.web.selenium.httpproxy">
-       <priority value="info"/>
-    </category>
-    
-    <category name="org.aludratest.service.gui.web.selenium.selenium2">
-       <priority value="debug"/>
-    </category>
-    
+      
     <category name="org.aludratest.util">
        <priority value="info"/>
     </category>
