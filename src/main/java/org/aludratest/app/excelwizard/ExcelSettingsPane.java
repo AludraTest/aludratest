@@ -129,7 +129,7 @@ public final class ExcelSettingsPane extends AlignedPane {
                 Method testMethod = methodSelector.getSelectedItem();
                 File testDataRootFolder = new File(SystemInfo.getCurrentDir(), xlsRootPath).getCanonicalFile();
                 Collection<WorkbookTracker> workbooks = JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod,
-                        ExcelSettingsPane.this, testDataRootFolder);
+                        testDataRootFolder);
                 displayCreatedFiles(workbooks);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(ExcelSettingsPane.this, e.getMessage(),

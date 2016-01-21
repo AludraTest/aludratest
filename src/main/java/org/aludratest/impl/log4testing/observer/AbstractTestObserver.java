@@ -24,24 +24,31 @@ import org.aludratest.impl.log4testing.data.TestSuiteLog;
  */
 public class AbstractTestObserver implements TestObserver {
 
+    @Override
     public void validate() {
     }
 
+    @Override
     public void startingTestProcess(TestSuiteLog rootSuite) {
     }
 
+    @Override
     public void startingTestSuite(TestSuiteLog suite) {
     }
 
+    @Override
     public void startingTestCase(TestCaseLog testCase) {
     }
 
+    @Override
     public void finishedTestCase(TestCaseLog testCase) {
     }
 
+    @Override
     public void finishedTestSuite(TestSuiteLog suite) {
     }
 
+    @Override
     public void finishedTestProcess(TestSuiteLog rootSuite) {
     }
 

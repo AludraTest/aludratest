@@ -44,6 +44,7 @@ public abstract class AbstractNullStringValidator implements Validator<String> {
     }
 
     /** Implements the {@link Validator} interface. */
+    @Override
     public final boolean valid(String text) {
         if (this.validationTerm == null) {
             return true;

@@ -23,7 +23,6 @@ public abstract class AbstractUsageRestrictionRule extends AbstractAludraTestRul
     private UsageRestrictionCheck usageCheck;
 
     protected AbstractUsageRestrictionRule() {
-        this.usageCheck = createUsageRestrictionCheck();
     }
 
     protected abstract UsageRestrictionCheck createUsageRestrictionCheck();
@@ -32,6 +31,9 @@ public abstract class AbstractUsageRestrictionRule extends AbstractAludraTestRul
 
     @Override
     public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
+        if (usageCheck == null) {
+            usageCheck = createUsageRestrictionCheck();
+        }
         for (ASTImportDeclaration impDecl : getImports(node)) {
             if (impDecl.getType() != null && node.getType() != null
                     && !usageCheck.isValidImport(impDecl.getType(), node.getType())) {

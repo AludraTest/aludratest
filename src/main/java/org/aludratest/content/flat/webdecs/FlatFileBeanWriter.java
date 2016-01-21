@@ -65,6 +65,7 @@ public class FlatFileBeanWriter implements Closeable {
     }
 
     /** Closes the internal writer. */
+    @Override
     public void close() {
         IOUtil.close(this.writer);
     }

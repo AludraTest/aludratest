@@ -33,6 +33,7 @@ public class PrefixRowType extends AbstractRowType {
     }
 
     /** Returns the associated bean class if the prefix matches, otherwise null. */
+    @Override
     public Class<?> beanClassFor(String line) {
         return (line.startsWith(prefix) ? beanClass : null);
     }

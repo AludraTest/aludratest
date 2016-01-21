@@ -67,8 +67,7 @@ public class JavaBeanExcelDocumentMapperTest {
         File createdFile = null;
         try {
             Method testMethod = BeanUtil.getMethod(TEST_CLASS, "creationFromScratch", TEST_PARAMS);
-            Collection<WorkbookTracker> trackers = JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod, null,
-                    TARGET_CLASSES);
+            Collection<WorkbookTracker> trackers = JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod, TARGET_CLASSES);
             createdFile = trackers.iterator().next().getFile();
             verifyExcelDocument(trackers, "test_from_scratch.xls", new String[] { "name1", "name2" },
                     new String[] { "sub.name" },
@@ -86,8 +85,7 @@ public class JavaBeanExcelDocumentMapperTest {
         final String EXCEL_URI = "test_match.xls";
         copyToTarget(EXCEL_URI);
         Method testMethod = BeanUtil.getMethod(TEST_CLASS, "matchingExcelDocument", TEST_PARAMS);
-        Collection<WorkbookTracker> trackers = JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod, null,
-                TARGET_CLASSES);
+        Collection<WorkbookTracker> trackers = JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod, TARGET_CLASSES);
         verifyExcelDocument(trackers, EXCEL_URI, new String[] { "name1", "name2" },
                 new String[] { "sub.name" },
                 new String[] { "Alice", "Bob", "Charly" });
@@ -98,8 +96,7 @@ public class JavaBeanExcelDocumentMapperTest {
         final String EXCEL_URI = "test_additional_columns.xls";
         copyToTarget(EXCEL_URI);
         Method testMethod = BeanUtil.getMethod(TEST_CLASS, "additionalColumns", TEST_PARAMS);
-        Collection<WorkbookTracker> trackers = JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod, null,
-                TARGET_CLASSES);
+        Collection<WorkbookTracker> trackers = JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod, TARGET_CLASSES);
         verifyExcelDocument(trackers, EXCEL_URI, new String[] { "name1", "name2" }, new String[] { "sub.name" },
                 new String[] { "Alice", "Bob", "x", "Charly", "y" });
         // verify warnings
@@ -121,8 +118,7 @@ public class JavaBeanExcelDocumentMapperTest {
         final String EXCEL_URI = "test_missing_columns.xls";
         copyToTarget(EXCEL_URI);
         Method testMethod = BeanUtil.getMethod(TEST_CLASS, "missingColumns", TEST_PARAMS);
-        Collection<WorkbookTracker> trackers = JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod, null,
-                TARGET_CLASSES);
+        Collection<WorkbookTracker> trackers = JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod, TARGET_CLASSES);
         verifyExcelDocument(trackers, EXCEL_URI, new String[] { "name1", "name2" }, new String[] { "sub.name" }, new String[] {
                 "Alice", null, "Charly" });
     }

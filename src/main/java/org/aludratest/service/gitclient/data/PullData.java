@@ -40,25 +40,25 @@ public class PullData extends AbstractGitData {
 
     /** Returns the repository.
      * @return the repository */
-    public String getRepository() {
+    public final String getRepository() {
         return repository;
     }
 
     /** Sets the repository.
      * @param repository the repository to set */
-    public void setRepository(String repository) {
+    public final void setRepository(String repository) {
         this.repository = repository;
     }
 
     /** Returns the refspec.
      * @return the refspec */
-    public String getRefspec() {
+    public final String getRefspec() {
         return refspec;
     }
 
     /** Sets the refspec.
      * @param refspec the refspec to set */
-    public void setRefspec(String refspec) {
+    public final void setRefspec(String refspec) {
         this.refspec = refspec;
     }
 

@@ -37,6 +37,7 @@ public class AndFileFilter extends CompositeFileFilter {
     }
 
     /** Accepts a file if each of the filter components does. */
+    @Override
     public boolean accept(FileInfo file) {
         for (FileFilter component : components) {
             if (!component.accept(file)) {
