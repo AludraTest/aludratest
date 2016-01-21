@@ -15,7 +15,6 @@
  */
 package org.aludratest.codecheck.rule.pmd;
 
-import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
 import net.sourceforge.pmd.lang.java.ast.ASTImportDeclaration;
 
@@ -26,18 +25,15 @@ public abstract class AbstractUsageRestrictionRule extends AbstractAludraTestRul
     protected AbstractUsageRestrictionRule() {
     }
 
-    @Override
-    public void start(RuleContext ctx) {
-        super.start(ctx);
-        this.usageCheck = createUsageRestrictionCheck();
-    }
-
     protected abstract UsageRestrictionCheck createUsageRestrictionCheck();
 
     protected abstract String getImportViolationMessage();
 
     @Override
     public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
+        if (usageCheck == null) {
+            usageCheck = createUsageRestrictionCheck();
+        }
         for (ASTImportDeclaration impDecl : getImports(node)) {
             if (impDecl.getType() != null && node.getType() != null
                     && !usageCheck.isValidImport(impDecl.getType(), node.getType())) {
