@@ -182,13 +182,14 @@ public class XmlContentImpl implements XmlContent {
     // document creation -------------------------------------------------------
 
     @Override
-    public Document createDocument(String templateUri, String encoding, Map<String, Object> variables) {
+    public Document createDocument(String templateUri, String templateEncoding, String xmlEncoding, Map<String, Object> variables) {
         try {
             // prepare generator
             FreeMarkerScriptFactory factory = new FreeMarkerScriptFactory(Locale.ENGLISH);
-            Script script = factory.parseText(IOUtil.getContentOfURI(templateUri));
+            String templateText = IOUtil.getContentOfURI(templateUri, templateEncoding);
+            Script script = factory.parseText(templateText);
             Context context = new DefaultContext(variables);
-            context.set("documentEncoding", "UTF-8");
+            context.set("documentEncoding", xmlEncoding);
             // apply template
             String xmlText = String.valueOf(script.evaluate(context));
             // return result
