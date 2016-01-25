@@ -95,12 +95,8 @@ public interface XmlContent extends ContentHandler {
 
     /** Uses a FreeMarker template to create an XML document based on the content of a variables map.
      * @param templateUri the URI of the template to apply
-<<<<<<< Updated upstream
-     * @param encoding the encoding of the template file
-=======
      * @param templateEncoding the encoding in which the template file was saved
      * @param xmlEncoding the encoding to be used in the created XML document
->>>>>>> Stashed changes
      * @param variables values to provide as template variables
      * @return an XML {@link Document} with the data configured in the variables map */
     Document createDocument(String templateUri, String templateEncoding, String xmlEncoding, Map<String, Object> variables);
