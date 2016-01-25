@@ -136,7 +136,7 @@ public class XmlContentImplTest {
         Map<String, Object> variables = new HashMap<String, Object>();
         variables.put("attvar", "val");
         variables.put("textvar", "text");
-        Document doc = content.createDocument(FTL_TEMPLATE, Encodings.UTF_8, variables);
+        Document doc = content.createDocument(FTL_TEMPLATE, Encodings.UTF_8, Encodings.UTF_8, variables);
         verifySimpleDocument(doc);
     }
 
