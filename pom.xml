@@ -132,12 +132,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.6.1</version>
-		</dependency>
-
-		<dependency>
 			<groupId>jaxen</groupId>
 			<artifactId>jaxen</artifactId>
 			<version>1.1.1</version>
@@ -275,15 +269,6 @@
 			<version>1.0.6</version>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- for File Upload Test -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 
 	<build>
