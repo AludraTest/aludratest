@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.aludratest</groupId>
@@ -37,19 +38,25 @@
 		<developer>
 			<name>Marcel Malitz</name>
 			<id>mmalitz</id>
-			<roles><role>Emeritus</role></roles>
+			<roles>
+				<role>Emeritus</role>
+			</roles>
 		</developer>
 
 		<developer>
 			<name>Joerg Langnickel</name>
 			<id>jlangnic</id>
-			<roles><role>Emeritus</role></roles>
+			<roles>
+				<role>Emeritus</role>
+			</roles>
 		</developer>
 
 		<developer>
 			<name>Yibo Wang</name>
 			<id>ywang</id>
-			<roles><role>Emeritus</role></roles>
+			<roles>
+				<role>Emeritus</role>
+			</roles>
 		</developer>
 
 		<developer>
@@ -155,8 +162,7 @@
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-container-default</artifactId>
 			<version>1.6</version>
-			<!-- exclude google collections, as it conflicts with Guava (required 
-				by Selenium) -->
+			<!-- exclude google collections, as it is replaced by Guava -->
 			<exclusions>
 				<exclusion>
 					<groupId>com.google.collections</groupId>
@@ -164,6 +170,14 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
+		<!-- Guava, needed for IoC container, and more up-to-date than Google Collections. -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-component-annotations</artifactId>
@@ -335,7 +349,8 @@
 				</configuration>
 			</plugin>
 
-			<!-- download and extract JQuery JS during generate-resources (required for HTML log) -->
+			<!-- download and extract JQuery JS during generate-resources (required 
+				for HTML log) -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -409,7 +424,8 @@
 							<stylesheet>src/site/xsl/rule-format.xsl</stylesheet>
 							<outputDir>target/generated-site/xdoc</outputDir>
 							<fileMappers>
-								<fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
+								<fileMapper
+									implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
 									<pattern>pmd-rules-aludra</pattern>
 									<replacement>aludra-pmd-rules</replacement>
 								</fileMapper>
