@@ -5,6 +5,7 @@ org.aludratest.service.edifactfile.EdifactFileService=org.aludratest.service.edi
 org.aludratest.content.flat.FlatContent=org.aludratest.content.flat.webdecs.WebdecsFlatContent
 org.aludratest.content.separated.SeparatedContent=org.aludratest.content.separated.webdecs.WebdecsSeparatedContent
 org.aludratest.content.xml.XmlContent=org.aludratest.content.xml.impl.XmlContentImpl
+org.aludratest.content.edifact.EdifactContent=org.aludratest.content.edifact.edifatto.EdifattoContent
 org.aludratest.service.separatedfile.SeparatedFileService=org.aludratest.service.separatedfile.impl.DefaultSeparatedFileService
 org.aludratest.config.AludraTestConfig=org.aludratest.config.impl.AludraTestConfigImpl
 org.aludratest.util.retry.AutoRetry=org.aludratest.util.retry.AutoRetryImpl

@@ -15,72 +15,85 @@
  */
 package org.aludratest.service.util;
 
-import org.aludratest.impl.log4testing.data.TestCaseLog;
-import org.aludratest.service.ElementName;
-import org.aludratest.service.ElementType;
-import org.aludratest.service.TechnicalLocator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.event.InternalTestListener;
 import org.aludratest.testcase.event.TestStepInfo;
-import org.aludratest.testcase.event.attachment.Attachment;
-import org.databene.commons.StringUtil;
 
+/** A helper class for AludraTest module integration tests, where checking the logs is required (e.g. for determining the last
+ * logged state and error message). Instances of this class hold received test information without passing them to any other
+ * instance (especially, not to Log4Testing, so no log is written).
+ * 
+ * @author falbrech */
 public class DirectLogTestListener implements InternalTestListener {
 
-    private TestCaseLog testCaseLog;
+    private String currentTestStepGroup;
 
-    public DirectLogTestListener(TestCaseLog testCaseLog) {
-        this.testCaseLog = testCaseLog;
-    }
+    private List<TestStepInfo> currentTestSteps = new ArrayList<TestStepInfo>();
+
+    private TestStepInfo lastFailed;
+
+    private TestStatus status = TestStatus.PASSED;
 
     @Override
     public void newTestStepGroup(String name) {
-        testCaseLog.newTestStepGroup(name);
+        currentTestStepGroup = name;
+        currentTestSteps.clear();
     }
 
     @Override
     public void newTestStep(TestStepInfo testStep) {
-        testCaseLog.newTestStep(testStep.getTestStatus(), testStep.getCommand(), "");
-
-        testCaseLog.getLastTestStep().setCommand(testStep.getCommand());
-        // do NOT call setStatus here, as it finishes the step
-        // testCaseLog.getLastTestStep().setStatus(testStep.getTestStatus());
-        testCaseLog.getLastTestStep().setService(testStep.getServiceId() == null ? null : testStep.getServiceId().toString());
-
-        for (Attachment a : testStep.getAttachments()) {
-            testCaseLog.getLastTestStep().addAttachment(a);
+        // TODO best would be to copy the object
+        currentTestSteps.add(testStep);
+        if (testStep.getTestStatus() != null && testStep.getTestStatus().isFailure()) {
+            lastFailed = testStep;
+            status = testStep.getTestStatus();
         }
-
-        copyArgumentsFromTestStep(testStep);
-        testCaseLog.getLastTestStep().setError(testStep.getError());
-        testCaseLog.getLastTestStep().setErrorMessage(testStep.getErrorMessage());
-        testCaseLog.getLastTestStep().setStatus(testStep.getTestStatus());
     }
 
-    private void copyArgumentsFromTestStep(TestStepInfo testStep) {
-        // extract technical locator, if any
-        Object[] params = testStep.getArguments(TechnicalLocator.class);
-        if (params.length > 0 && params[0] != null) {
-            testCaseLog.getLastTestStep().setTechnicalLocator(params[0].toString());
-        }
+    /** Returns the last executed test step.
+     * 
+     * @return The last executed test step, or <code>null</code> if no test steps have been executed yet. */
+    public TestStepInfo getLastTestStep() {
+        return currentTestSteps.isEmpty() ? null : currentTestSteps.get(currentTestSteps.size() - 1);
+    }
 
-        // extract element name and element type, if any
-        params = testStep.getArguments(ElementName.class);
-        if (params.length > 0 && params[0] != null) {
-            testCaseLog.getLastTestStep().setElementName(params[0].toString());
-        }
-        params = testStep.getArguments(ElementType.class);
-        if (params.length > 0 && params[0] != null) {
-            testCaseLog.getLastTestStep().setElementType(params[0].toString());
-        }
+    /** Returns all test steps of the current test step group.
+     * 
+     * @return All test steps of the current test step group, possibly an empty list. The returned list cannot be modified. */
+    public List<TestStepInfo> getTestStepsOfCurrentGroup() {
+        return Collections.unmodifiableList(currentTestSteps);
+    }
 
-        // combine other arguments
-        params = testStep.getArguments(null);
-        String[] strings = new String[params.length];
-        for (int i = 0; i < params.length; i++) {
-            strings[i] = params[i] == null ? "null" : params[i].toString();
-        }
+    /** Returns the name of the current test step group.
+     * 
+     * @return The name of the current test step group, or <code>null</code> if no test step group has been started yet. */
+    public String getCurrentTestStepGroup() {
+        return currentTestStepGroup;
+    }
 
-        testCaseLog.getLastTestStep().setUsedArguments(StringUtil.concat('\n', strings));
+    /** Returns <code>true</code> if the test case represented by this log can be treated as failed.
+     * 
+     * @return <code>true</code> if the test case represented by this log can be treated as failed, <code>false</code> otherwise. */
+    public boolean isFailed() {
+        return lastFailed != null;
+    }
+
+    /** Returns the last failed test step.
+     * 
+     * @return The last failed test step, or <code>null</code> if no test step failed yet. */
+    public TestStepInfo getLastFailed() {
+        return lastFailed;
+    }
+
+    /** Returns the overall status of this test case.
+     * 
+     * @return The overall status of this test case; will be PASSED if nothing has been executed yet. */
+    public TestStatus getStatus() {
+        return status;
     }
 
 }

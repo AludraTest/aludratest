@@ -50,7 +50,7 @@ public class EdifactFileServiceIntegrationTest extends AbstractAludraServiceTest
         EdifactFileVerifier verifier = new EdifactFileVerifier("IFTDGN_1.edi", service) {
         };
         verifier.verifyWith(new StringData("IFTDGN_1.edi"));
-        assertEquals(TestStatus.PASSED, testCase.getLastTestStep().getStatus());
+        assertEquals(TestStatus.PASSED, getLoggedStatus());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class EdifactFileServiceIntegrationTest extends AbstractAludraServiceTest
         EdifactFileVerifier verifier = new EdifactFileVerifier("IFTDGN_1.edi", service) {
         };
         verifier.verifyWith(new StringData("IFTDGN_2.edi"));
-        assertEquals(TestStatus.FAILED, testCase.getLastTestStep().getStatus());
+        assertEquals(TestStatus.FAILED, getLoggedStatus());
     }
 
     // ENHANCE write positive test

@@ -18,7 +18,7 @@ package org.aludratest.config;
 import static org.junit.Assert.assertFalse;
 
 import org.aludratest.config.impl.AludraTestingTestConfigImpl;
-import org.aludratest.service.AbstractAludraServiceTest;
+import org.aludratest.service.AbstractAludraIntegrationTest;
 import org.databene.commons.StringUtil;
 import org.junit.Test;
 
@@ -27,7 +27,7 @@ import org.junit.Test;
  * @author Volker Bergmann
  */
 @SuppressWarnings("javadoc")
-public class AludraTestConfigTest extends AbstractAludraServiceTest {
+public class AludraTestConfigTest extends AbstractAludraIntegrationTest {
 
     @Test
     public void testVersion() {

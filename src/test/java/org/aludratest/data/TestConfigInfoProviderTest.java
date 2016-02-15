@@ -29,16 +29,15 @@ import org.aludratest.data.configtests.ConfigTestWithIgnoredMethod;
 import org.aludratest.data.configtests.ConfigTestWithMissingConfigRow;
 import org.aludratest.data.configtests.ConfigTestWithMissingTab;
 import org.aludratest.data.configtests.ConfigTestWithProperConfig;
-import org.aludratest.impl.log4testing.data.TestCaseLog;
-import org.aludratest.impl.log4testing.data.TestLogger;
+import org.aludratest.log4testing.TestCaseLog;
+import org.aludratest.log4testing.TestStatus;
 import org.aludratest.scheduler.AludraTestRunner;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.RunnerTreeBuilder;
 import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.scheduler.node.RunnerNode;
-import org.aludratest.service.AbstractAludraServiceTest;
-import org.aludratest.testcase.TestStatus;
+import org.aludratest.service.AbstractAludraIntegrationTest;
 import org.aludratest.testcase.data.impl.TestConfigInfoHelper;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +47,7 @@ import org.junit.Test;
  * @author Volker Bergmann
  */
 @SuppressWarnings("javadoc")
-public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
+public class TestConfigInfoProviderTest extends AbstractAludraIntegrationTest {
     /*
     @AfterClass
     public static void notifyFinishedTestProcess() {
@@ -57,7 +56,6 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
 
     @Before
     public void prepare() {
-        TestLogger.clear();
         AludraTestingTestConfigImpl.getTestInstance().setXlsRootPath("src/test/resources");
     }
 
@@ -230,8 +228,8 @@ public class TestConfigInfoProviderTest extends AbstractAludraServiceTest {
         return list;
     }
 
-    private static void assertNameAndStatus(RunnerLeaf testCase, String name, TestStatus status) {
-        TestCaseLog logCase = TestLogger.getTestCase(testCase.getName());
+    private void assertNameAndStatus(RunnerLeaf testCase, String name, TestStatus status) {
+        TestCaseLog logCase = getTestLog().getTestCaseLog(testCase.getName());
         assertEquals(status, logCase.getStatus());
         assertEquals(name, logCase.getName());
     }

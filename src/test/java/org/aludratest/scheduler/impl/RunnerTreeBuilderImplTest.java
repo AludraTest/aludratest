@@ -16,6 +16,7 @@
 package org.aludratest.scheduler.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -27,7 +28,6 @@ import java.util.List;
 import junit.framework.AssertionFailedError;
 
 import org.aludratest.PreconditionFailedException;
-import org.aludratest.impl.log4testing.data.TestLogger;
 import org.aludratest.scheduler.AnnotationBasedExecution;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.RunnerTreeBuilder;
@@ -37,7 +37,7 @@ import org.aludratest.scheduler.node.RunnerNode;
 import org.aludratest.scheduler.test.annot.AnnotatedTestClass1;
 import org.aludratest.scheduler.test.annot.AnnotatedTestClass2;
 import org.aludratest.scheduler.util.FilterParser;
-import org.aludratest.service.AbstractAludraServiceTest;
+import org.aludratest.service.AbstractAludraIntegrationTest;
 import org.aludratest.suite.DuplicateChildSuite;
 import org.aludratest.suite.ParallelTestClass;
 import org.aludratest.suite.ParallelTestSuite;
@@ -46,7 +46,6 @@ import org.aludratest.suite.PlainTestSuite;
 import org.aludratest.suite.SequentialTestClass;
 import org.aludratest.suite.SequentialTestSuite;
 import org.aludratest.testcase.AludraTestCase;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -54,12 +53,7 @@ import org.junit.Test;
  * @author Volker Bergmann
  */
 @SuppressWarnings("javadoc")
-public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
-
-    @Before
-    public void setUp() {
-        TestLogger.clear();
-    }
+public class RunnerTreeBuilderImplTest extends AbstractAludraIntegrationTest {
 
     private RunnerTree parseTestClass(Class<?> classToTest) {
         RunnerTreeBuilder builder = aludra.getServiceManager().newImplementorInstance(RunnerTreeBuilder.class);
@@ -285,15 +279,25 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraServiceTest {
     private void checkSuite(Class<?> testClass, boolean defaultParallel, RunnerGroup group) {
         List<RunnerNode> children = group.getChildren();
         assertEquals(3, children.size());
-        checkTestMethodGroup(testClass, "plainTest", defaultParallel, children, 0);
-        checkTestMethodGroup(testClass, "sequentialTest", false, children, 1);
-        checkTestMethodGroup(testClass, "parallelTest", true, children, 2);
+        checkTestMethodGroup(testClass, "plainTest", defaultParallel, children);
+        checkTestMethodGroup(testClass, "sequentialTest", false, children);
+        checkTestMethodGroup(testClass, "parallelTest", true, children);
     }
 
     /** Verifies the properties of an AludraTest test class. */
-    private void checkTestMethodGroup(Class<?> testClass, String methodName, boolean parallel, List<RunnerNode> nodes, int index) {
-        RunnerNode childNode = nodes.get(index);
-        assertEquals(testClass.getName() + "." + methodName, childNode.getName());
+    private void checkTestMethodGroup(Class<?> testClass, String methodName, boolean parallel, List<RunnerNode> nodes) {
+        // search for matching runner node, as Java does no longer guarantee order
+        RunnerNode childNode = null;
+        for (RunnerNode node : nodes) {
+            if (node.getName().equals(testClass.getName() + "." + methodName)) {
+                if (childNode != null) {
+                    throw new IllegalStateException("Matching child node found twice: " + node.getName());
+                }
+                childNode = node;
+            }
+        }
+
+        assertNotNull(childNode);
         assertTrue(childNode instanceof RunnerGroup);
         RunnerGroup childGroup = (RunnerGroup) childNode;
         assertEquals(parallel, childGroup.isParallel());

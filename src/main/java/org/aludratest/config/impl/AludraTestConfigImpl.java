@@ -69,6 +69,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
 
     private String sorterName;
 
+    private boolean attachmentsFileBuffer;
+
 
     // constructor -------------------------------------------------------------
 
@@ -153,6 +155,11 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         return sorterName;
     }
 
+    @Override
+    public boolean isAttachmentsFileBuffer() {
+        return attachmentsFileBuffer;
+    }
+
     // private helper methods --------------------------------------------------
 
     private void readAludraTestVersion() {
@@ -197,6 +204,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         this.debugAttachmentsOnFrameworkException = config.getBooleanValue(DEBUG_ON_FRAMEWORK_EXCEPTION_PROP, false);
 
         this.sorterName = config.getStringValue(RUNNER_TREE_SORTER_PROP, Alphabetic.class.getSimpleName());
+
+        this.attachmentsFileBuffer = config.getBooleanValue(ATTACHMENTS_AS_FILE_PROP, false);
     }
 
 }
