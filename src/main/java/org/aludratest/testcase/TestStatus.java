@@ -15,13 +15,9 @@
  */
 package org.aludratest.testcase;
 
-import org.aludratest.impl.log4testing.data.TestObject;
-
-/**
- * Enumeration for the possible states of a {@link TestObject}.
+/** Enumeration for the possible states of a test step.
  * @author Marcel Malitz
- * @author Volker Bergmann
- */
+ * @author Volker Bergmann */
 public enum TestStatus {
 
     /** Status of a test that experienced a functional fault. */

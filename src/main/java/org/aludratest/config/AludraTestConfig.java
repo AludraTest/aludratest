@@ -32,7 +32,8 @@ package org.aludratest.config;
     @ConfigProperty(name = AludraTestConfig.IGNORE_ENABLED_PROP, type = boolean.class, description = "If set to true, test case classes can be marked as ignored. Otherwise, the @Ignored annotation will itself be ignored, causing the marked tests to be executed.", defaultValue = "false"),
     @ConfigProperty(name = AludraTestConfig.NUMERIC_TOLERANCE_PROP, type = double.class, description = "The maximum allowed difference of a current and an expected value. This is for handling rounding issues when dealing with double precision values.", defaultValue = " 0.00000001"),
     @ConfigProperty(name = AludraTestConfig.DEBUG_ON_FRAMEWORK_EXCEPTION_PROP, type = boolean.class, description = "If set to true, debug attachments (e.g. screenshots) will be created also on framework (blue) errors.", defaultValue = "false"),
-        @ConfigProperty(name = AludraTestConfig.RUNNER_TREE_SORTER_PROP, type = String.class, description = "A simple or fully qualified name of a Runner Tree Sorter class to use. Default sorter is the Alphabetic sorter. This sorting only applies for filter / grouping execution mode (not for suite-based execution mode).", defaultValue = "Alphabetic") })
+    @ConfigProperty(name = AludraTestConfig.RUNNER_TREE_SORTER_PROP, type = String.class, description = "A simple or fully qualified name of a Runner Tree Sorter class to use. Default sorter is the Alphabetic sorter. This sorting only applies for filter / grouping execution mode (not for suite-based execution mode).", defaultValue = "Alphabetic"),
+    @ConfigProperty(name = AludraTestConfig.ATTACHMENTS_AS_FILE_PROP, type = boolean.class, description = "If set to true, test step attachments are buffered on the file system as temporary files (using File.createTempFile()). This helps reducing memory usage when running many test cases. Default is false.", defaultValue = "false") })
 public interface AludraTestConfig extends Configurable {
 
     /** Configuration property name. */
@@ -64,6 +65,9 @@ public interface AludraTestConfig extends Configurable {
 
     /** Configuration property name. */
     public static final String RUNNER_TREE_SORTER_PROP = "runner.tree.sorter";
+
+    /** Configuration property name. */
+    public static final String ATTACHMENTS_AS_FILE_PROP = "attachments.filebuffer";
 
     // interface ---------------------------------------------------------------
 
@@ -108,5 +112,11 @@ public interface AludraTestConfig extends Configurable {
      * 
      * @return The simple or fully qualified name of a Runner Tree Sorter to use. */
     public String getRunnerTreeSorterName();
+
+    /** Returns <code>true</code> if test step attachments shall be buffered on the file system as temporary files, to reduce
+     * memory usage when running many test cases.
+     * 
+     * @return <code>true</code> to buffer test step attachments on file system, <code>false</code> otherwise. */
+    public boolean isAttachmentsFileBuffer();
 
 }

@@ -125,17 +125,23 @@
 			<version>1.2.16</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.aludratest</groupId>
+			<artifactId>log4testing</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.databene</groupId>
 			<artifactId>databene-formats</artifactId>
-			<version>1.0.6</version>
+			<version>1.0.7</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.databene</groupId>
 			<artifactId>databene-commons</artifactId>
-			<version>1.0.6</version>
+			<version>1.0.7</version>
 		</dependency>
 
 		<dependency>
@@ -347,6 +353,20 @@
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
+			</plugin>
+			
+			<!-- generate components.xml for Plexus -->
+			<plugin>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-component-metadata</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate-metadata</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<!-- download and extract JQuery JS during generate-resources (required 

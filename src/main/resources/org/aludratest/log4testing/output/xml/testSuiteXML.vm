@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<TestSuite>
-	<Name><![CDATA[$!testSuite.Name]]></Name>
+<TestSuite version="2">
+	<Name>$html.format($testSuite.Name)</Name>
+	<StartTime>$!testSuite.StartingTime</StartTime>
+	<EndTime>$!testSuite.FinishingTime</EndTime>
+	<Duration>$!testSuite.Duration</Duration>
+	<Work>$!testSuite.Work</Work>
 	#foreach($testCase in $!testSuite.testCases)	
 		#TestCase($testCase)
 	#end
@@ -10,31 +14,36 @@
 </TestSuite>
 #macro (TestCase $testCase)
 <TestCase>
-	<Name><![CDATA[$!testCase.Name]]></Name>
-	#set ($duration = $testCase.Duration)
-	<Duration>$!duration.Days days $!duration.Hours hours $!duration.Minutes minutes $!duration.Seconds seconds $!duration.millis ms</Duration>
-	<NumberofTestSteps>$!testCase.NumberOfTestSteps</NumberofTestSteps>
-	<NumberofFailedTestSteps>$!testCase.NumberOfFailedTestSteps</NumberofFailedTestSteps>
+	<Name>$html.format($testCase.Name)</Name>
+	<StartTime>$!testCase.StartingTime</StartTime>
+	<EndTime>$!testCase.FinishingTime</EndTime>
+	<Duration>$!testCase.Duration</Duration>
 	<Status>$!testCase.Status</Status>
 	#foreach($group in $testCase.TestStepGroups)
 	<TestStepGroup>
-		<Name><![CDATA[$group.Name]]></Name>
+		<Name>$html.format($group.Name)</Name>
 		<Status>$group.Status</Status>
 		#foreach($testStep in $group.TestSteps)
 		<TestStep>
+			<StartOffsetSeconds>${testStep.startTimeOffsetSeconds}</StartOffsetSeconds>
 			<Status>$testStep.Status</Status>
-			<Command><![CDATA[$testStep.Command]]></Command>
-			<Data><![CDATA[$testStep.UsedArguments]]></Data>
-			<ErrorMessage><![CDATA[$testStep.ErrorMessage]]></ErrorMessage>
-			<GUIName><![CDATA[$testStep.elementName]]></GUIName>
-			<GUIType><![CDATA[$testStep.elementType]]></GUIType>
+			<Command>$html.format($testStep.Command)</Command>
+			<Data>$html.format($testStep.UsedArguments)</Data>
+			<ErrorMessage>$html.format($testStep.ErrorMessage)</ErrorMessage>
+			<ElementName>$html.format($testStep.elementName)</ElementName>
+			<ElementType>$html.format($testStep.elementType)</ElementType>
+			<TechnicalLocator>$html.format($testStep.TechnicalLocator)</TechnicalLocator>
+			<TechnicalArguments>$html.format($testStep.TechnicalArguments)</TechnicalArguments>
+			<IgnoredReason>$html.format($testStep.IgnoredReason)</IgnoredReason>
+			<Comment>$html.format($testStep.Comment)</Comment>
+			
 			#if ("$testStep.Attachments.size()" != 0)
 				<Attachments>
 					#foreach($attachment in $testStep.Attachments)
 					<Attachment>
-						<Title><![CDATA[$attachment.Title]]></Title>
-						<FileType><![CDATA[$attachment.FileExtension]]></FileType>
-						<Content><![CDATA[$attachment.FileDataAsBase64String]]></Content>
+						<Label>$html.format($attachment.Label)</Label>
+						<FileType>$html.format($attachment.FileExtension)</FileType>
+						<Content>$html.format($attachment.FileDataAsBase64String)</Content>
 					</Attachment>
 					#end
 				</Attachments>
@@ -48,7 +57,7 @@
 
 #macro (TestSuite $testSuite)
 	<TestSuite>
-	<Name><![CDATA[$!testSuite.Name]]></Name>
+	<Name>$html.format($testSuite.Name)</Name>
 	#foreach($testCase in $!testSuite.testCases)	
 		#TestCase($testCase)
 	#end
