@@ -22,21 +22,20 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collections;
 
 import org.aludratest.config.impl.AludraTestingTestConfigImpl;
-import org.aludratest.impl.log4testing.data.TestCaseLog;
-import org.aludratest.impl.log4testing.data.TestLogger;
-import org.aludratest.impl.log4testing.data.TestStepGroup;
+import org.aludratest.log4testing.TestCaseLog;
+import org.aludratest.log4testing.TestStatus;
+import org.aludratest.log4testing.TestStepGroupLog;
 import org.aludratest.service.pseudo.PseudoInteraction;
 import org.aludratest.service.pseudo.PseudoService;
 import org.aludratest.service.util.AbstractSystemConnector;
 import org.aludratest.testcase.AludraTestCase;
-import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.event.ErrorReport;
 import org.aludratest.testcase.event.SystemErrorReporter;
 import org.aludratest.testcase.event.attachment.StringAttachment;
 
 /** Verifies that SystemConnectors can be exchanged dynamically on a service.
  * @author Volker Bergmann */
-public class SystemConnectorExchangeTest extends AbstractAludraServiceTest {
+public class SystemConnectorExchangeTest extends AbstractAludraIntegrationTest {
 
     private static ComponentId<PseudoService> SERVICE_ID = ComponentId.create(PseudoService.class, "localhost");
 
@@ -47,8 +46,6 @@ public class SystemConnectorExchangeTest extends AbstractAludraServiceTest {
 
     /** Another connector instance to replace the {@link #connector1} later */
     private static final PlainConnector connector2 = new PlainConnector();
-
-    private static TestCaseLog testCase = null;
 
     /** Test case which uses the AludraTest framework to execute {@link PlainTest} and verifies execution results. */
     @org.junit.Test
@@ -70,12 +67,13 @@ public class SystemConnectorExchangeTest extends AbstractAludraServiceTest {
             // THEN the following reporting characteristics are expected
             assertTrue("ErrorConnector #1 has not been called", connector1.invoked);
             assertFalse("ErrorConnector #2 has been called despite previous error", connector2.invoked);
+            TestCaseLog testCase = getTestLog().getLastTestCaseLog();
             assertEquals(TestStatus.FAILED, testCase.getStatus());
-            TestStepGroup group1 = testCase.getTestStepGroups().get(0);
-            assertEquals("succeed", group1.getTestStep(0).getCommand());
-            String message2 = group1.getTestStep(1).getErrorMessage();
+            TestStepGroupLog group1 = testCase.getTestStepGroups().get(0);
+            assertEquals("succeed", group1.getTestSteps().get(0).getCommand());
+            String message2 = group1.getTestSteps().get(1).getErrorMessage();
             assertTrue(message2.startsWith("Nothing found"));
-            String message3 = group1.getTestStep(2).getErrorMessage();
+            String message3 = group1.getTestSteps().get(2).getErrorMessage();
             assertTrue(message3.startsWith("The system refuses to coooperate "));
         }
         finally {
@@ -90,7 +88,6 @@ public class SystemConnectorExchangeTest extends AbstractAludraServiceTest {
         @SuppressWarnings("javadoc")
         @org.aludratest.testcase.Test
         public void test() {
-            testCase = TestLogger.getTestCase(getClass().getName() + ".test-0");
             PseudoService service = getService(SERVICE_ID);
             // succeed and fail with connector1
             service.setSystemConnector(connector1);

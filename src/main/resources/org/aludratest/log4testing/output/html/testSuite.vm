@@ -4,9 +4,9 @@
 #set( $dateFormat =  "dd-MMM-yyyy HH:mm:ss:SSS")
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="${testSuite.getTag("HTMLPathToBaseDir")}/log4testing.css">
+	<link rel="stylesheet" type="text/css" href="${pathHelper.getPathToBaseDir($testSuite)}/log4testing.css">
 	<title>$!testSuite.Name</title>
-	<script src="${testSuite.getTag("HTMLPathToBaseDir")}/jquery.js"></script>
+	<script src="${pathHelper.getPathToBaseDir($testSuite)}/jquery.js"></script>
 </head>
 <body>
 	<h1>$name.format($!testSuite)</h1>
@@ -81,7 +81,7 @@
 			</tr>
 			#foreach($testCase in $testSuite.TestCases)
 			<tr class="$testCase.Status">
-				<td><a href="${testSuite.getTag("HTMLPathToBaseDir")}/${testCase.getTag("HTMLPathFromBaseDir")}">$name.format($testCase)</a></td>
+				<td><a href="${pathHelper.getPathToBaseDir($testSuite)}/${pathHelper.getPathFromBaseDir($testCase)}">$name.format($testCase)</a></td>
 				<td align="center">$time.format($testCase.Duration.toPeriod())</td>
 				<td align="center">$testCase.NumberOfTestSteps</td>
 				<td align="center">#if($testCase.IgnoredAndPassed)Skipped though successful#end</td>
@@ -127,7 +127,7 @@
 	   
 	   #foreach($childSuite in $testSuite.TestSuites)
 		<tr class="$childSuite.Status">
-		    <td><a href="${testSuite.getTag("HTMLPathToBaseDir")}/${childSuite.getTag("HTMLPathFromBaseDir")}">$name.format($childSuite)</td>
+		    <td><a href="${pathHelper.getPathToBaseDir($testSuite)}/${pathHelper.getPathFromBaseDir($childSuite)}">$name.format($childSuite)</td>
 		    <td align="center">$time.format($childSuite.Duration.toPeriod())</td>
 		    <td align="center">$time.format($$childSuite.Work.toPeriod())</td>
 		    <td align="center">$childSuite.NumberOfChildSuites</td>

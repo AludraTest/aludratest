@@ -73,9 +73,9 @@ import org.mozilla.javascript.Undefined;
  * @author falbrech */
 public class XmlBasedTestDataProvider implements TestDataProvider {
 
-    private static final SimpleDateFormat ISO_DATE = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    private final SimpleDateFormat ISO_DATE = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
-    private static final DecimalFormat JAVA_NUMBER = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.US));
+    private final DecimalFormat JAVA_NUMBER = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.US));
 
     @Requirement
     private AludraTestConfig aludraConfig;

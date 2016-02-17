@@ -15,14 +15,12 @@
  */
 package org.aludratest.service.edifactfile;
 
+import org.aludratest.content.xml.XmlComparisonSettings;
+import org.aludratest.content.xml.XmlDiffDetailType;
 import org.aludratest.dict.ActionWordLibrary;
 import org.aludratest.service.edifactfile.data.KeyExpressionData;
-import org.aludratest.service.edifactfile.data.LocalDiffTypeData;
 import org.aludratest.util.data.StringData;
-import org.databene.edifatto.ComparisonSettings;
-import org.databene.edifatto.compare.DiffType;
 import org.databene.edifatto.model.Interchange;
-import org.databene.edifatto.util.NameBasedXMLComparisonModel;
 
 /**
  * Provides access to EDI files.
@@ -32,16 +30,9 @@ import org.databene.edifatto.util.NameBasedXMLComparisonModel;
 @SuppressWarnings("unchecked")
 public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements ActionWordLibrary<E> {
 
-    public static final String ANY = null;
-    public static final String DIFFERENT = DiffType.DIFFERENT.name();
-    public static final String MISSING = DiffType.MISSING.name();
-    public static final String MOVED = DiffType.MOVED.name();
-    public static final String UNEXPECTED = DiffType.UNEXPECTED.name();
-
     private final String filePath;
     private final EdifactFileService service;
-    private final NameBasedXMLComparisonModel model;
-    private final ComparisonSettings settings;
+    private final XmlComparisonSettings settings;
     private final String elementType;
 
     /** Constructor.
@@ -50,8 +41,7 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
     public EdifactFileVerifier(String filePath, EdifactFileService service) {
         this.filePath = filePath;
         this.service = service;
-        this.model = new NameBasedXMLComparisonModel();
-        this.settings = new ComparisonSettings();
+        this.settings = service.check().createDefaultComparisonSettings();
         this.elementType = getClass().getSimpleName();
     }
 
@@ -59,16 +49,16 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
      *  @param path an XPath expressions of the EDI elements to ignore in comparison
      *  @return a reference to the invoked EdifactFileVerifier instance */
     public E addExclusionPath(StringData path) {
-        this.settings.addToleratedDiff(null, path.getValue());
+        this.settings.tolerateAnyDiffAt(path.getValue());
         return (E) this;
     }
 
     /** Allows the given diff type in comparisons.
-     * @param toleratedDiffType the diff type to tolerate
+     * @param type the type of difference
+     * @param xPath the path where the difference is tolerated
      * @return a reference to the invoked EdifactFileVerifier instance */
-    public E addToleratedDiff(LocalDiffTypeData toleratedDiffType) {
-        DiffType type = diffType(toleratedDiffType.getType());
-        this.settings.addToleratedDiff(type, toleratedDiffType.getXpath());
+    public E addToleratedDiff(XmlDiffDetailType type, String xPath) {
+        this.settings.tolerateGenericDiff(type, xPath);
         return (E) this;
     }
 
@@ -78,7 +68,7 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
      *  @return a reference to the invoked EdifactFileVerifier instance
      */
     public E addKeyExpression(KeyExpressionData keyExpression) {
-        this.model.addKeyExpression(keyExpression.getElementName(), keyExpression.getKeyExpression());
+        this.settings.addKeyExpression(keyExpression.getElementName(), keyExpression.getKeyExpression());
         return (E) this;
     }
 
@@ -113,18 +103,13 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
                 elementType, "reference file", referenceFileName.getValue());
         Interchange actual = service.perform().readInterchange(
                 elementType, "outbound file", this.filePath);
-        service.verify().assertInterchangesMatch(
-                elementType, null, expected, actual, settings, model);
+        service.verify().assertInterchangesMatch(elementType, null, expected, actual, settings);
         return (E) this;
     }
 
     @Override
     public E verifyState() {
         return (E) this;
-    }
-
-    private DiffType diffType(String name) {
-        return (name != null ? DiffType.valueOf(name) : null);
     }
 
 }

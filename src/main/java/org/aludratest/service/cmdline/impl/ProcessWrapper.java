@@ -76,7 +76,7 @@ public class ProcessWrapper {
         return processId;
     }
 
-    /** @return the command tokes used in construction */
+    /** @return the command tokens used in construction */
     public List<String> getCommand() {
         return builder.command();
     }

@@ -34,7 +34,7 @@ public class TimeoutService {
      * @param timeout the maximum tolerated execution time in milliseconds
      * @return the result of the callable's {@link Callable#call()} method invocation
      * @throws Exception */
-    public static <T> T call(Callable<T> callable, long timeout) throws Exception {
+    public static <T> T call(Callable<T> callable, long timeout) throws Exception { // NOSONAR
         Future<T> handler = null;
         try {
             handler = EXECUTOR_SERVICE.submit(callable);

@@ -22,10 +22,10 @@ import java.util.Map;
 
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.exception.AludraTestException;
+import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.AludraContext;
 import org.aludratest.service.AludraService;
 import org.aludratest.service.ComponentId;
-import org.aludratest.service.Condition;
 import org.aludratest.service.Interaction;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.Verification;
@@ -97,7 +97,7 @@ public class AludraTestUtil {
         }
         if (context instanceof AludraTestContext) {
             InvocationHandler invocationHandler = new ControlFlowHandler(object, serviceId, systemConnector,
-                    (AludraTestContext) context, stopOnException, !Condition.class.isAssignableFrom(interfaceType),
+                    (AludraTestContext) context, stopOnException, true,
                     config.isDebugAttachmentsOnFrameworkException());
             return AludraTestUtil.<T> wrapWithInvocationHandler(interfaceType, invocationHandler);
         }
@@ -115,7 +115,7 @@ public class AludraTestUtil {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             return (T) Proxy.newProxyInstance(classLoader, new Class[] { interfaceType }, invocationHandler);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new TechnicalException("Could not create dynamic proxy", e);
         }
     }
 

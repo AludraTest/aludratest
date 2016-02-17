@@ -36,17 +36,17 @@ The tester which requests test implementation from the '''Test programmer''', pe
 
 === Test Automation Engineer (Test Programmer) ===
 
-The programmer which receives test implementation requests from the '''Functional Tester'''. He implements the test code using features of the AludraTest Framework and, if necessary, requests additional ones. The [[User Guide]] was written from him.
+The programmer which receives test implementation requests from the '''Functional Tester'''. He implements the test code using features of the AludraTest Framework and, if necessary, requests additional ones. The [[User Guide]] should be used by Test Programmers.
 
 '''Requirements:'''
 
 * Ease of implementation
 * No need of subcomponent knowledge
-* Framework should prevent him from making faults
+* Framework should prevent Test Programmer from making faults
 
 === Framework Developer ===
 
-The programmer that maintains and evolves the AludraTest framework. This guide was made for him.
+The programmer that maintains and evolves the AludraTest framework. Every Framework Developer should carefully read '''this''' guide.
 
 '''Requirements:'''
 

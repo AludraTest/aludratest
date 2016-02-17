@@ -15,33 +15,28 @@
  */
 package org.aludratest.service.edifactfile;
 
+import org.aludratest.content.xml.XmlComparisonSettings;
 import org.aludratest.service.ElementName;
 import org.aludratest.service.ElementType;
 import org.aludratest.service.TechnicalArgument;
 import org.aludratest.service.Verification;
-import org.databene.edifatto.ComparisonSettings;
-import org.databene.edifatto.compare.ComparisonModel;
 import org.databene.edifatto.model.Interchange;
-import org.w3c.dom.Element;
 
-/** 
+/**
  * Verifies equality of EDIFACT or X12 documents.
  * @author Volker Bergmann
  */
 public interface EdifactFileVerification extends Verification {
 
     /** Asserts that two EDIFACT or X12 interchanges are equal.
-     *  @param elementType 
-     *  @param elementName 
-     *  @param expected the expected interchange data
-     *  @param actual the actual interface data
-     *  @param settings the {@link ComparisonSettings} to apply 
-     *  @param model */
+     * @param elementType
+     * @param elementName
+     * @param expected the expected interchange data
+     * @param actual the actual interface data
+     * @param settings the {@link XmlComparisonSettings} to apply */
     void assertInterchangesMatch(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
-            Interchange expected, 
-            Interchange actual, 
-            @TechnicalArgument ComparisonSettings settings, 
-            @TechnicalArgument ComparisonModel<Element> model);
+            @ElementType String elementType,
+            @ElementName String elementName,
+            Interchange expected,
+            Interchange actual, @TechnicalArgument XmlComparisonSettings settings);
 }

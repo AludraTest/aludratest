@@ -18,16 +18,16 @@ package org.aludratest.codecheck.rule.pmd;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
+import net.sourceforge.pmd.lang.java.ast.ASTImportDeclaration;
+import net.sourceforge.pmd.lang.rule.properties.BooleanProperty;
+import net.sourceforge.pmd.lang.rule.properties.StringProperty;
+
 import org.aludratest.dict.ActionWordLibrary;
 import org.aludratest.dict.Data;
 import org.aludratest.service.AludraService;
 import org.aludratest.service.ComponentId;
 import org.aludratest.testcase.AludraTestCase;
-
-import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
-import net.sourceforge.pmd.lang.java.ast.ASTImportDeclaration;
-import net.sourceforge.pmd.lang.rule.properties.BooleanProperty;
-import net.sourceforge.pmd.lang.rule.properties.StringProperty;
 
 /**
  * Configurable and extensible rule for restricting imports. When not subclassing this class, it will check the imports in ALL
@@ -64,9 +64,9 @@ public class ImportRestrictions extends AbstractAludraTestRule {
      */
     public static final BooleanProperty UTIL_CLASSES_ALLOWED_DESCRIPTOR = new BooleanProperty("utilClassesAllowed",
             "Allow imports of arbitrary Utility Classes (having only static methods) always", Boolean.FALSE, 3.0f);
-    
+
     private static final Class<?>[] DEFAULT_ALLOWED_IMPORT_PARENTS = { ActionWordLibrary.class, Data.class, AludraService.class,
-            AludraTestCase.class, ComponentId.class };
+        AludraTestCase.class, ComponentId.class };
 
     private String allowedImportPrefixes;
 
@@ -76,9 +76,10 @@ public class ImportRestrictions extends AbstractAludraTestRule {
      * Creates a new instance of this rule.
      */
     public ImportRestrictions() {
-        definePropertyDescriptor(ALLOWED_IMPORT_PREFIXES_DESCRIPTOR);
-        definePropertyDescriptor(ANNOTATIONS_ALLOWED_DESCRIPTOR);
-        definePropertyDescriptor(UTIL_CLASSES_ALLOWED_DESCRIPTOR);
+        // super calls to avoid override of methods
+        super.definePropertyDescriptor(ALLOWED_IMPORT_PREFIXES_DESCRIPTOR);
+        super.definePropertyDescriptor(ANNOTATIONS_ALLOWED_DESCRIPTOR);
+        super.definePropertyDescriptor(UTIL_CLASSES_ALLOWED_DESCRIPTOR);
     }
 
     @Override

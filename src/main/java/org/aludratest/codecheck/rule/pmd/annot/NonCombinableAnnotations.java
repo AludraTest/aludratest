@@ -43,7 +43,7 @@ public class NonCombinableAnnotations extends AbstractJavaRule {
      * Creates a new instance of this rule.
      */
     public NonCombinableAnnotations() {
-        definePropertyDescriptor(ANNOTATION_NAMES_DESCRIPTOR);
+        super.definePropertyDescriptor(ANNOTATION_NAMES_DESCRIPTOR);
     }
 
     @Override

@@ -269,6 +269,12 @@ public class LocalFileServiceTest extends AbstractLocalFileServiceTest {
         assertArrayEquals("binary".getBytes(), bytes);
     }
 
+    @Test(expected = FunctionalFailure.class)
+    public void testWriteBinaryFile_preexisting() throws IOException {
+        service.perform().writeBinaryFile("out2.dat", "binary".getBytes(), true);
+        service.perform().writeBinaryFile("out2.dat", "binary".getBytes(), false);
+    }
+
     @Test(expected = AutomationException.class)
     public void testWriteBinaryFile_noPath() {
         service.perform().writeBinaryFile("", "binary".getBytes(), true);

@@ -26,6 +26,7 @@ import java.util.Set;
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.data.DataConfiguration;
 import org.aludratest.exception.AutomationException;
+import org.aludratest.exception.TechnicalException;
 import org.aludratest.testcase.data.Source;
 import org.aludratest.testcase.data.TestCaseData;
 import org.aludratest.testcase.data.TestDataProvider;
@@ -64,7 +65,7 @@ public class DefaultTestDataProvider implements TestDataProvider {
             ReflectionUtils.setVariableValueInObject(xmlProvider, "scriptLibraries", scriptLibraries);
         }
         catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new TechnicalException("Could not set fields in providers using Reflection", e);
         }
     }
 

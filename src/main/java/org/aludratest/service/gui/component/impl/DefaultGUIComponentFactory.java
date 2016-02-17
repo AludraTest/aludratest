@@ -250,10 +250,10 @@ public class DefaultGUIComponentFactory implements GUIComponentFactory {
     }
 
     private <T> void registerComponentDescriptor(Class<T> componentClass, Class<? extends T> implClass)
-            throws CycleDetectedInComponentGraphException {
+            throws CycleDetectedInComponentGraphException, ComponentLookupException {
         if (!componentClass.isAssignableFrom(implClass)) {
-            throw new RuntimeException("Class " + implClass.getName() + " does not implement interface "
-                    + componentClass.getName());
+            throw new ComponentLookupException("Class " + implClass.getName() + " does not implement interface "
+                    + componentClass.getName(), componentClass.getName(), getRoleHint());
         }
 
         ComponentDescriptor<T> desc = new ComponentDescriptor<T>();

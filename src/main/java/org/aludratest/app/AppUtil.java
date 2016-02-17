@@ -40,12 +40,12 @@ final class AppUtil {
 
     /** Derives a file name from a resource name and source directory. */
     private static String deriveClassName(String resourceName, String sourceDir) {
-        String dirMarker = "." + sourceDir + ".";
         String baseName = resourceName.replace(File.separatorChar, '.');
         int i = baseName.indexOf(".src.");
         if (i < 0) {
             throw new UnsupportedOperationException("Cannot handle this as class name: " + resourceName);
         }
+        String dirMarker = "." + sourceDir + ".";
         i = baseName.indexOf(dirMarker, i + ".src.".length());
         if (i < 0) {
             throw new UnsupportedOperationException("Cannot handle this as class name: " + resourceName);

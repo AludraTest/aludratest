@@ -50,7 +50,6 @@ import org.aludratest.util.poll.PolledTask;
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelector;
-import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.databene.commons.IOUtil;
 import org.databene.commons.Validator;
@@ -62,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * {@link FileInteraction}, {@link FileVerification} and {@link FileCondition}.
  * @author Volker Bergmann
  */
-public class FileActionImpl implements FileInteraction, FileVerification, FileCondition {
+public final class FileActionImpl implements FileInteraction, FileVerification, FileCondition {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileActionImpl.class);
 
@@ -127,7 +126,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
                 LOGGER.debug("No children found for filter {}", filter);
             }
             return filePaths;
-        } catch (FileSystemException e) {
+        }
+        catch (IOException e) {
             throw new TechnicalException("Error retrivieving child objects", e);
         }
     }
@@ -140,7 +140,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         try {
             getFileObject(filePath).createFolder();
             LOGGER.debug("Created directory {}", filePath);
-        } catch (FileSystemException e) {
+        }
+        catch (IOException e) {
             throw new TechnicalException("Directory creation failed", e);
         }
     }
@@ -156,14 +157,15 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         assertWritingPermitted("move()");
         File.verifyFilePath(fromPath);
         File.verifyFilePath(toPath);
-        FileObject target = getFileObject(toPath);
-        boolean existedBefore = checkWritable(target, overwrite);
         try {
+            FileObject target = getFileObject(toPath);
+            boolean existedBefore = checkWritable(target, overwrite);
             getOrCreateDirectory(target.getParent());
             getFileObject(fromPath).moveTo(target);
             LOGGER.debug("Moved {} to {}", fromPath, toPath);
             return existedBefore;
-        } catch (FileSystemException e) {
+        }
+        catch (IOException e) {
             throw new TechnicalException("Error moving file" + fromPath + " -> " + toPath, e);
         }
     }
@@ -179,15 +181,16 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         assertWritingPermitted("copy()");
         File.verifyFilePath(fromPath);
         File.verifyFilePath(toPath);
-        FileObject target = getFileObject(toPath);
-        boolean existedBefore = checkWritable(target, overwrite);
         try {
+            FileObject target = getFileObject(toPath);
+            boolean existedBefore = checkWritable(target, overwrite);
             FileObject source = getFileObject(fromPath);
             FileSelector sourceSelector = new FilePathSelector(source.getName().getPath());
             target.copyFrom(source, sourceSelector);
             LOGGER.debug("Copied {} to {}", fromPath, toPath);
             return existedBefore;
-        } catch (FileSystemException e) {
+        }
+        catch (IOException e) {
             throw new TechnicalException("Error copying file " + fromPath + " -> " + toPath, e);
         }
     }
@@ -200,7 +203,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         try {
             getFileObject(filePath).delete(new AllFileSelector());
             LOGGER.debug("Deleted {}", filePath);
-        } catch (FileSystemException e) {
+        }
+        catch (IOException e) {
             throw new TechnicalException("Error deleting file", e);
         }
     }
@@ -250,7 +254,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
             return existedBefore;
         } catch (UnsupportedEncodingException e) {
             throw new TechnicalException("Unsupported Encoding:" + encoding, e);
-        } catch (Exception e) {
+        }
+        catch (IOException e) {
             throw new TechnicalException("Error writing text file", e);
         } finally {
             IOUtil.close(writer);
@@ -289,7 +294,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
             IOUtil.transfer(source, out);
             LOGGER.debug("Wrote binary file {}", filePath);
             return existedBefore;
-        } catch (Exception e) {
+        }
+        catch (IOException e) {
             throw new TechnicalException("Error writing text file", e);
         } finally {
             IOUtil.close(out);
@@ -370,7 +376,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
         try {
             LOGGER.debug("Providing InputStream for binary file: {}", filePath);
             return file.getContent().getInputStream();
-        } catch (FileSystemException e) {
+        }
+        catch (IOException e) {
             throw new TechnicalException("Error opening InputStream", e);
         }
     }
@@ -456,7 +463,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
             boolean result = file.exists();
             LOGGER.debug("File '{}' {}", filePath, (result ? "exists" : "does not exist"));
             return result;
-        } catch (FileSystemException e) {
+        }
+        catch (IOException e) {
             throw new TechnicalException("Error checking file presence", e);
         }
     }
@@ -491,7 +499,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
             boolean result = getFileObject(filePath).getType() == FileType.FOLDER;
             LOGGER.debug("{} is {}", filePath, (result ? "a folder" : "not a folder"));
             return result;
-        } catch (FileSystemException e) {
+        }
+        catch (IOException e) {
             throw new TechnicalException("Error accessing file or folder", e);
         }
     }
@@ -528,7 +537,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
             } else {
                 return false;
             }
-        } catch (FileSystemException e) {
+        }
+        catch (IOException e) {
             throw new TechnicalException("Error checking file", e);
         }
     }
@@ -539,7 +549,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
             try {
                 getOrCreateDirectory(directory.getParent());
                 directory.createFolder();
-            } catch (FileSystemException e) {
+            }
+            catch (IOException e) {
                 throw new TechnicalException("Error creating directory", e);
             }
         }
@@ -582,7 +593,8 @@ public class FileActionImpl implements FileInteraction, FileVerification, FileCo
                     LOGGER.debug("File not found: {}", filePath);
                     return (awaitExistence ? null : filePath);
                 }
-            } catch (FileSystemException e) {
+            }
+            catch (IOException e) {
                 throw new TechnicalException("Error checking presence of file ", e);
             }
         }

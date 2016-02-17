@@ -27,7 +27,7 @@ import org.databene.commons.Validator;
 /** Business delegate class for creating and accessing a command line process.
  * @param <E> The child class, to be specified when inheriting the CommandLineProcess class
  * @author Volker Bergmann */
-public class CommandLineProcess<E extends CommandLineProcess<E>> {
+public final class CommandLineProcess<E extends CommandLineProcess<E>> {
 
     private final CommandLineService service;
     private final String processType;

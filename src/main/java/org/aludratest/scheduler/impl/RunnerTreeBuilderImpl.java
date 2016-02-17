@@ -56,6 +56,7 @@ import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
 import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.Parallel;
 import org.aludratest.testcase.Sequential;
+import org.aludratest.testcase.SequentialGroup;
 import org.aludratest.testcase.Suite;
 import org.aludratest.testcase.Test;
 import org.aludratest.testcase.data.TestCaseData;
@@ -66,6 +67,9 @@ import org.databene.commons.BeanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** Default implementation of the RunnerTreeBuilder component interface.
+ * 
+ * @author falbrech */
 @Component(role = RunnerTreeBuilder.class, instantiationStrategy = "per-lookup")
 public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
@@ -204,31 +208,41 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         List<Class<? extends AludraTestCase>> result = new ArrayList<Class<? extends AludraTestCase>>();
 
         JarFile jf = new JarFile(jarFile);
-        Enumeration<JarEntry> entries = jf.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry je = entries.nextElement();
-            Matcher m = classPattern.matcher(je.getName());
-            if (m.matches()) {
-                String pkgName = m.group(1).replace('/', '.');
-                String className = m.group(2);
-                if (!"".equals(pkgName)) {
-                    className = pkgName + "." + className;
-                }
-                try {
-                    Class<?> clz;
-                    if (classLoader != null) {
-                        clz = classLoader.loadClass(className);
+        try {
+            Enumeration<JarEntry> entries = jf.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry je = entries.nextElement();
+                Matcher m = classPattern.matcher(je.getName());
+                if (m.matches()) {
+                    String pkgName = m.group(1).replace('/', '.');
+                    String className = m.group(2);
+                    if (!"".equals(pkgName)) {
+                        className = pkgName + "." + className;
                     }
-                    else {
-                        clz = Class.forName(className);
+                    try {
+                        Class<?> clz;
+                        if (classLoader != null) {
+                            clz = classLoader.loadClass(className);
+                        }
+                        else {
+                            clz = Class.forName(className);
+                        }
+                        if (AludraTestCase.class.isAssignableFrom(clz) && filter.matches((Class<? extends AludraTestCase>) clz)) {
+                            result.add((Class<? extends AludraTestCase>) clz);
+                        }
                     }
-                    if (AludraTestCase.class.isAssignableFrom(clz) && filter.matches((Class<? extends AludraTestCase>) clz)) {
-                        result.add((Class<? extends AludraTestCase>) clz);
+                    catch (Throwable t) {
+                        // ignore that class
                     }
                 }
-                catch (Throwable t) {
-                    // ignore that class
-                }
+            }
+        }
+        finally {
+            try {
+                jf.close();
+            }
+            catch (IOException e) {
+                // ignore
             }
         }
 
@@ -368,6 +382,9 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             mode = ExecutionMode.INHERITED;
         }
         RunnerGroup group = tree.createGroup(testClass.getName(), mode, parentGroup);
+
+        addSequentialGroupAttributes(group, testClass);
+
         return group;
     }
 
@@ -415,7 +432,7 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         @SuppressWarnings("unchecked")
         AludraTestCase testObject = BeanUtil.newInstance((Class<? extends AludraTestCase>) method.getDeclaringClass());
         TestInvoker invoker = new AludraTestMethodInvoker(testObject, method, args);
-        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, ignore, ignoredReason);
+        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, ignore, ignoredReason, false);
     }
 
     /** Creates a test runner for error reporting.
@@ -427,11 +444,11 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                 + errorCount.incrementAndGet();
         // Create test object
         TestInvoker invoker = new ErrorReportingInvoker(method, e);
-        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, false, null);
+        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, false, null, true);
     }
 
     private void createRunnerForTestInvoker(TestInvoker invoker, RunnerGroup parentGroup, RunnerTree tree, String testCaseName,
-            boolean ignore, String ignoredReason) {
+            boolean ignore, String ignoredReason, boolean error) {
         RunnerLeaf leaf = tree.addLeaf(nextLeafId.incrementAndGet(), invoker, testCaseName, parentGroup);
 
         if (ignore) {
@@ -439,6 +456,17 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             if (ignoredReason != null) {
                 leaf.setAttribute(CommonRunnerLeafAttributes.IGNORE_REASON, ignoredReason);
             }
+        }
+        if (error) {
+            leaf.setAttribute(CommonRunnerLeafAttributes.BUILDER_ERROR, Boolean.TRUE);
+        }
+    }
+
+    private void addSequentialGroupAttributes(RunnerGroup group, Class<?> testClass) {
+        SequentialGroup annot = testClass.getAnnotation(SequentialGroup.class);
+        if (annot != null) {
+            group.setAttribute(CommonRunnerLeafAttributes.SEQUENTIAL_GROUP_NAME, annot.groupName());
+            group.setAttribute(CommonRunnerLeafAttributes.SEQUENTIAL_GROUP_INDEX, Integer.valueOf(annot.index()));
         }
     }
 

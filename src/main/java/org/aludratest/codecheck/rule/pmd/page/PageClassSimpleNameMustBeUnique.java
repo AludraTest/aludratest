@@ -15,13 +15,11 @@
  */
 package org.aludratest.codecheck.rule.pmd.page;
 
-import java.util.HashSet;
 import java.util.Set;
 
-import org.aludratest.codecheck.rule.pmd.AbstractAludraTestRule;
-
-import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
+
+import org.aludratest.codecheck.rule.pmd.AbstractMustBeUniqueRule;
 
 /**
  * See <code>src/main/resources/pmd-rules-aludra.xml</code> or the project Site
@@ -30,50 +28,26 @@ import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
  * @author falbrech
  * 
  */
-public class PageClassSimpleNameMustBeUnique extends AbstractAludraTestRule {
+public class PageClassSimpleNameMustBeUnique extends AbstractMustBeUniqueRule {
 
-    private static final String UNIQUE_SIMPLE_NAMES_ATTRIBUTE = "uniqueSimplePageNames";
+    @Override
+    public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
+        if (!isPageClass(node)) {
+            return super.visit(node, data);
+        }
 
-	@Override
-	public void start(RuleContext ctx) {
-		ctx.setAttribute(UNIQUE_SIMPLE_NAMES_ATTRIBUTE, new HashSet<String>());
-		super.start(ctx);
-	}
+        Set<String> uniqueSimpleNames = getUnqiueSimpleNames(data);
+        if (uniqueSimpleNames == null) {
+            return super.visit(node, data);
+        }
 
-	@Override
-	public void end(RuleContext ctx) {
-		// has already been consumed
-		ctx.removeAttribute(UNIQUE_SIMPLE_NAMES_ATTRIBUTE);
-		super.end(ctx);
-	}
+        String simpleName = node.getImage();
+        if (uniqueSimpleNames.contains(simpleName)) {
+            addViolationWithMessage(data, node, "There is more than one page class with the name " + simpleName);
+        }
 
-	@SuppressWarnings("unchecked")
-	private Set<String> getUnqiueSimpleNames(Object data) {
-		if (!(data instanceof RuleContext)) {
-			return null;
-		}
-
-		return (Set<String>) ((RuleContext) data).getAttribute(UNIQUE_SIMPLE_NAMES_ATTRIBUTE);
-	}
-
-	@Override
-	public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
-		if (!isPageClass(node)) {
-			return super.visit(node, data);
-		}
-
-		Set<String> uniqueSimpleNames = getUnqiueSimpleNames(data);
-		if (uniqueSimpleNames == null) {
-			return super.visit(node, data);
-		}
-
-		String simpleName = node.getImage();
-		if (uniqueSimpleNames.contains(simpleName)) {
-			addViolationWithMessage(data, node, "There is more than one page class with the name " + simpleName);
-		}
-
-		uniqueSimpleNames.add(simpleName);
-		return super.visit(node, data);
-	}
+        uniqueSimpleNames.add(simpleName);
+        return super.visit(node, data);
+    }
 
 }

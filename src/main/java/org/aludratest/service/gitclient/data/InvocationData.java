@@ -48,49 +48,49 @@ public class InvocationData extends AbstractGitData {
 
     /** Returns the name of the process.
      * @return the name of the process */
-    public String getProcessName() {
+    public final String getProcessName() {
         return processName;
     }
 
     /** Sets the name of the process.
      * @param processName the name of the process to set */
-    public void setProcessName(String processName) {
+    public final void setProcessName(String processName) {
         this.processName = processName;
     }
 
     /** Returns the invocation arguments.
      * @return the invocation arguments */
-    public List<String> getArgs() {
+    public final List<String> getArgs() {
         return args;
     }
 
     /** Sets the invocation arguments.
      * @param args the invocation arguments to set */
-    public void setArgs(List<String> args) {
+    public final void setArgs(List<String> args) {
         this.args = args;
     }
 
     /** Returns the std out of the process.
      * @return the std out of the process */
-    public String getStdOut() {
+    public final String getStdOut() {
         return stdOut;
     }
 
     /** Sets the std out of the process.
      * @param stdOut the std out of the process */
-    public void setStdOut(String stdOut) {
+    public final void setStdOut(String stdOut) {
         this.stdOut = stdOut;
     }
 
     /** @return the {@link #failOnErrOut} */
-    public String getFailOnErrOut() {
+    public final String getFailOnErrOut() {
         return failOnErrOut;
     }
 
     /** Sets the {@link #failOnErrOut} flag. If set to true, the occurrence of content in the process' error out stream is
      * considered to indicate a failure and causes the framework to emit a {@link TechnicalException}.
      * @param failOnErrOut the {@link #failOnErrOut} to set */
-    public void setFailOnErrOut(String failOnErrOut) {
+    public final void setFailOnErrOut(String failOnErrOut) {
         this.failOnErrOut = failOnErrOut;
     }
 

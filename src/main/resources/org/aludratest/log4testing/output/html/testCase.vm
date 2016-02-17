@@ -5,25 +5,9 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>$!testCase.Name</title>
-	<link rel="stylesheet" type="text/css" href="${testCase.getTag("HTMLPathToBaseDir")}/log4testing.css">
-	<script src="${testCase.getTag("HTMLPathToBaseDir")}/jquery.js"></script>
-	<script type="text/javascript">
-	
-	function changeBtnText(id) {
-		var showHideBtn = $("#shbteststepgroup" + id);
-		var showText = '[+]';
-		var hideText = '[-]';
-		if (showHideBtn.text().indexOf(showText) >= 0) {
-			showHideBtn.text(hideText);
-		} else {
-			showHideBtn.text(showText);
-		}
-	};
-	function toggle(id) {
-		$("#teststepgroup" + id).toggle();
-		changeBtnText(id);
-	};
-	</script>
+	<link rel="stylesheet" type="text/css" href="${pathHelper.getPathToBaseDir($testCase)}/log4testing.css">
+	<script src="${pathHelper.getPathToBaseDir($testCase)}/jquery.js"></script>
+	<script type="text/javascript" src="${pathHelper.getPathToBaseDir($testCase)}/testcase.js"></script>
 </head>
 <body>
 	<h1>$!testCase.Name</h1>
@@ -47,8 +31,7 @@
 			<tr class="$testCase.Status">
 				<td>$!testCase.StartingTime.toString($dateFormat)</td>
 				<td>$!testCase.FinishingTime.toString($dateFormat)</td>
-				#set ($duration = $testCase.Duration)
-			    <td>$time.format($duration)</td>
+			    <td>$time.format($testCase.Duration.toPeriod())</td>
 				<td>$testCase.NumberOfTestSteps</td>
 				<td>#if ($testCase.isFailed()) 1 #else 0 #end</td>
 				<td><a href="#teststep$!{testCase.LastFailed.Id}" onClick="$('#ts$!{testCase.LastFailed.Id}').parent().show();$('#ts$!{testCase.LastFailed.Id}').parent().prev().find('h3 a').text('[-]')">$!testCase.LastFailed.ErrorMessage</a></td>
@@ -85,7 +68,7 @@
 				<th>Element&nbsp;Name</th>
 				<th>Data</th>
 				<th>Error&nbsp;Message</th>
-				<th>Attachments</th>
+				<th>Result / Attachments</th>
 				<th>Service</th>
 				<th>Technical&nbsp;Locator</th>
 				<th>Technical Arguments</th>
@@ -100,6 +83,9 @@
 				<td>$!testStep.UsedArguments</td>
 				<td>$!testStep.ErrorMessage</td>
 				<td>
+					#if ($testStep.Result)
+						$testStep.Result<br/>
+					#end
 					#foreach($attachment in $testStep.Attachments)
 						&gt;&gt;&nbsp;
 						#if (${attachment.FileName})

@@ -29,10 +29,8 @@ public class NumberStringGreaterValidator extends AbstractNumberStringValidator 
     }
 
     @Override
-    protected boolean validImpl(String text) {
-        Double actual = parseDouble(text, true);
-        Double expected = parseDouble(validationTerm, false);
-        return (actual - expected > -tolerance);
+    protected boolean validImpl(double validationTerm, double value) {
+        return (value - validationTerm > -tolerance);
     }
 
     @Override

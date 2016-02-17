@@ -29,7 +29,7 @@ import org.databene.commons.ui.swing.SwingUtil;
  * creating Excel documents for a selected test method.
  * @author Volker Bergmann
  */
-public class ExcelWizard extends JFrame {
+public final class ExcelWizard extends JFrame {
 
     private static final long serialVersionUID = 1L;
 

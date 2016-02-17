@@ -142,20 +142,20 @@ public interface GUIVerification extends Verification {
      * @param elementType Type of the element, depending on the implementation.
      * @param elementName Name of the element.
      * @param locator Locator of the element.
-     * @param expectedValues Values which are expexted in the element. */
+     * @param expectedValues Values which are expexted in the element.
+     * @param checkOrder If <code>true</code>, order of the values must match, otherwise, order is not important. */
     void assertHasValues(@ElementType String elementType, @ElementName String elementName,
-            @TechnicalLocator GUIElementLocator locator,
-            String[] expectedValues);
+            @TechnicalLocator GUIElementLocator locator, String[] expectedValues, boolean checkOrder);
 
     /** Verifies for an element identified by a locator (usually a dropdownbox) that it has the given labels (and only these).
      * Elements not having the given labels will raise an exception which will be handled by the test framework.
      * @param elementType Type of the element, depending on the implementation.
      * @param elementName Name of the element.
      * @param locator Locator of the element.
-     * @param expectedLabels Labels which are expexted in the element. */
+     * @param expectedLabels Labels which are expexted in the element.
+     * @param checkOrder If <code>true</code>, order of the labels must match, otherwise, order is not important. */
     void assertHasLabels(@ElementType String elementType, @ElementName String elementName,
-            @TechnicalLocator GUIElementLocator locator,
-            String[] expectedLabels);
+            @TechnicalLocator GUIElementLocator locator, String[] expectedLabels, boolean checkOrder);
 
     /** Verifies for an input element identified by a locator (usually an input field, a button, or similar) that its value matches
      * the given Validator. Elements with an unmatched value will raise an exception which will be handled by the test framework.
@@ -176,6 +176,15 @@ public interface GUIVerification extends Verification {
     void assertContainsLabels(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             String[] labels);
+
+    /** Verifies for an element identified by a locator (usually a dropdownbox) that it contains the given values (and possibly
+     * more). Elements not containing the given values will raise an exception which will be handled by the test framework.
+     * @param elementType Type of the element, depending on the implementation.
+     * @param elementName Name of the element.
+     * @param locator Locator of the element.
+     * @param values Values which are expexted to be contained in the element. */
+    void assertContainsValues(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator, String[] values);
 
     /** Verifies for an element identified by a locator that it is <b>not</b> present in the GUI (not either visible nor
      * invisible). Elements being present (visible or invisible) will raise an exception which will be handled by the test

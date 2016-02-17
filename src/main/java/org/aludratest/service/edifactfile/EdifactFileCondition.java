@@ -18,71 +18,67 @@ package org.aludratest.service.edifactfile;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
+import org.aludratest.content.xml.AggregateXmlDiff;
+import org.aludratest.content.xml.XmlComparisonSettings;
 import org.aludratest.service.Condition;
 import org.aludratest.service.ElementName;
 import org.aludratest.service.ElementType;
 import org.aludratest.service.TechnicalArgument;
 import org.aludratest.service.TechnicalLocator;
-import org.databene.edifatto.ComparisonSettings;
-import org.databene.edifatto.compare.AggregateDiff;
-import org.databene.edifatto.compare.ComparisonModel;
 import org.databene.edifatto.model.Interchange;
-import org.w3c.dom.Element;
 
-/** 
+/**
  * Performs queries on EDIFACT or X12 interchanges and analyzes their differences.
  * @author Volker Bergmann
  */
 public interface EdifactFileCondition extends Condition {
-    
+
     /**
      * Tells if a file exists at the given path.
-     * @param elementType 
-     * @param elementName 
+     * @param elementType
+     * @param elementName
      * @param filePath the file path to query
      * @return true if a file with the provided path exists, otherwise false
      */
     boolean exists(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
+            @ElementType String elementType,
+            @ElementName String elementName,
             @TechnicalLocator String filePath);
-    
-    /** 
+
+    /**
      * Creates an XML representation of the interchange and performs an XPath query on it.
-     * @param elementType 
-     * @param elementName 
+     * @param elementType
+     * @param elementName
      * @param interchange the interchange to query
      * @param xpathQuery the XPath query to perform
-     * @param returnType determines the type of the returned object: 
+     * @param returnType determines the type of the returned object:
      *   {@link XPathConstants#STRING} for a single {@link java.lang.String},
      *   {@link XPathConstants#NODE} for a single {@link org.w3c.dom.Element},
      *   {@link XPathConstants#NODESET} for a {@link org.w3c.dom.NodeList}
      * @return the query result
      */
     Object queryXML(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
-            Interchange interchange, 
-            @TechnicalLocator String xpathQuery, 
+            @ElementType String elementType,
+            @ElementName String elementName,
+            Interchange interchange,
+            @TechnicalLocator String xpathQuery,
             @TechnicalArgument QName returnType);
-    
-    /**
-     * Finds out the differences between two EDIFACT or X12 interchanges, 
-     * ignoring elements that match the XPath exclusion paths.
-     * @param elementType 
-     * @param elementName 
+
+    /** Finds out the differences between two EDIFACT or X12 interchanges, ignoring elements that match the XPath exclusion paths.
+     * @param elementType
+     * @param elementName
      * @param expected the expected interchange data
      * @param actual the actual interface data
-     * @param settings the {@link ComparisonSettings} to apply
-     * @param model 
-     * @return an AggregateDiff that represent the differences 
-     *     between the interchanges */
-    AggregateDiff diff(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
-            Interchange expected, 
-            Interchange actual, 
-            @TechnicalArgument ComparisonSettings settings, 
-            @TechnicalArgument ComparisonModel<Element> model);
-    
+     * @param settings the {@link XmlComparisonSettings} to apply
+     * @param model
+     * @return an AggregateDiff that represent the differences between the interchanges */
+    AggregateXmlDiff diff(
+            @ElementType String elementType,
+            @ElementName String elementName,
+            Interchange expected,
+            Interchange actual, @TechnicalArgument XmlComparisonSettings settings);
+
+    /** @return an {@link XmlComparisonSettings} with default settings for comparing XML documents */
+    XmlComparisonSettings createDefaultComparisonSettings();
+
 }

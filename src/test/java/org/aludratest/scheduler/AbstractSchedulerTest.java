@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.aludratest.AludraTest;
 import org.aludratest.LocalTestCase;
-import org.aludratest.impl.log4testing.data.TestLogger;
 import org.junit.Before;
 
 /**
@@ -31,11 +30,9 @@ import org.junit.Before;
  */
 public abstract class AbstractSchedulerTest extends LocalTestCase {
 
-    /** Resets the {@link TestLogger}, the {@link Log} start time and removes all entries
-     *  before each test. */
+    /** Resets the {@link Log} start time and removes all entries before each test. */
     @Before
     public void resetLogs() {
-        TestLogger.clear();
         Log.reset();
     }
 

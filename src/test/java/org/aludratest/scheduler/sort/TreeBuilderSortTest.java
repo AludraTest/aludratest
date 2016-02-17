@@ -27,26 +27,19 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.aludratest.config.impl.AludraTestingTestConfigImpl;
-import org.aludratest.impl.log4testing.data.TestLogger;
 import org.aludratest.scheduler.AnnotationBasedExecution;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.RunnerTreeBuilder;
 import org.aludratest.scheduler.impl.RunnerTreeBuilderImpl;
 import org.aludratest.scheduler.node.RunnerGroup;
 import org.aludratest.scheduler.node.RunnerNode;
-import org.aludratest.service.AbstractAludraServiceTest;
+import org.aludratest.service.AbstractAludraIntegrationTest;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import org.junit.Before;
 import org.junit.Test;
 
-public class TreeBuilderSortTest extends AbstractAludraServiceTest {
-
-    @Before
-    public void setUp() {
-        TestLogger.clear();
-    }
+public class TreeBuilderSortTest extends AbstractAludraIntegrationTest {
 
     private RunnerTree parseTestFilter(File classDir, String filter, List<String> categories, ClassLoader cl)
             throws ParseException {

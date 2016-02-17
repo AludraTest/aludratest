@@ -35,13 +35,13 @@ public class VersionData extends AbstractGitData {
     // properties --------------------------------------------------------------
 
     /** @return the version number returned by git. */
-    public String getVersionNumber() {
+    public final String getVersionNumber() {
         return versionNumber;
     }
 
     /** Sets the version number information.
      * @param versionNumber */
-    public void setVersionNumber(String versionNumber) {
+    public final void setVersionNumber(String versionNumber) {
         this.versionNumber = versionNumber;
     }
 
