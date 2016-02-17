@@ -90,7 +90,8 @@ public class XmlContentImplTest {
     public void testQueryElementText() throws Exception {
         Document doc = parseSimpleXml();
         assertEquals("text", content.queryElementText(doc, "/root/node"));
-        assertEquals(LF + "  text" + LF, content.queryElementText(doc, "/root"));
+        String actualText = content.queryElementText(doc, "/root");
+        assertEquals("\n  text\n", actualText);
         assertNull(content.queryElementText(doc, "/root/nonode"));
     }
 
