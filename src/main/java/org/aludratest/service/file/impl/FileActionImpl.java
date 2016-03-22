@@ -30,6 +30,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.aludratest.exception.AutomationException;
@@ -45,6 +46,8 @@ import org.aludratest.service.file.FileService;
 import org.aludratest.service.file.FileVerification;
 import org.aludratest.service.file.filter.RegexFilePathFilter;
 import org.aludratest.testcase.event.attachment.Attachment;
+import org.aludratest.testcase.event.attachment.BinaryAttachment;
+import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.aludratest.util.poll.PollService;
 import org.aludratest.util.poll.PolledTask;
 import org.apache.commons.vfs2.AllFileSelector;
@@ -507,7 +510,15 @@ public final class FileActionImpl implements FileInteraction, FileVerification, 
 
     @Override
     public List<Attachment> createAttachments(Object object, String label) {
-        throw new TechnicalException("Not supported");
+        if (object instanceof String && label.equalsIgnoreCase("Text file contents")) {
+            return Collections.<Attachment> singletonList(new StringAttachment(label, object.toString(), "txt"));
+        }
+        if (object instanceof byte[]) {
+            return Collections.<Attachment> singletonList(new BinaryAttachment(label, (byte[]) object, "bin"));
+        }
+
+        throw new TechnicalException("Unsupported object type for attachment: "
+                + (object == null ? "null" : object.getClass().getName()));
     }
 
     @Override

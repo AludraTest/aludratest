@@ -15,18 +15,20 @@
  */
 package org.aludratest.service.flatfile;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.Iterator;
 
 import org.aludratest.content.flat.PrefixRowType;
 import org.aludratest.content.flat.data.FlatFileBeanData;
 import org.aludratest.content.flat.data.WrappedRowData;
 import org.aludratest.service.AbstractAludraServiceTest;
-import org.aludratest.service.flatfile.FlatFileReader;
-import org.aludratest.service.flatfile.FlatFileService;
-import org.aludratest.service.flatfile.FlatFileWriter;
+import org.aludratest.testcase.event.attachment.Attachment;
 import org.databene.commons.IOUtil;
 import org.databene.commons.ReaderLineIterator;
 import org.databene.commons.TimeUtil;
@@ -65,6 +67,14 @@ public class FlatFileServiceIntegrationTest extends AbstractAludraServiceTest {
         assertEquals("AMAIN STREET 321     NEW YORK            0123.45", iterator.next());
         assertFalse(iterator.hasNext());
 
+        // check that the whole file has been attached
+        Iterator<Attachment> iter = getLastTestStep().getAttachments().iterator();
+        assertTrue(iter.hasNext());
+        Attachment att = iter.next();
+
+        String contents = new String(att.getFileData(), "UTF-8");
+        assertTrue(contents.startsWith("PAlice               02319910106Miez    "));
+
         // tear down the FlatFileService
         IOUtil.close(service);
         assertNotFailed();
@@ -98,11 +108,11 @@ public class FlatFileServiceIntegrationTest extends AbstractAludraServiceTest {
         IOUtil.close(service);
         assertNotFailed();
     }
-    
+
     public static final class MyFlatFileWriter extends FlatFileWriter<FlatFileBeanData, MyFlatFileWriter> {
         public MyFlatFileWriter(String filePath, FlatFileService service, boolean overwrite) {
             super(filePath, service, overwrite);
         }
     }
-    
+
 }

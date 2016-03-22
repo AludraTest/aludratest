@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
+import org.aludratest.service.AttachParameter;
 import org.aludratest.service.ElementType;
 import org.aludratest.service.Interaction;
 import org.aludratest.service.TechnicalLocator;
@@ -88,7 +89,7 @@ public interface FileInteraction extends Interaction {
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
      * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
-    boolean writeTextFile(@TechnicalLocator String filePath, String text, boolean overwrite);
+    boolean writeTextFile(@TechnicalLocator String filePath, @AttachParameter("Text file contents") String text, boolean overwrite);
 
     /** Creates a text file and writes to it all content provided by the source Reader.
      * @param filePath the path of the file to save
@@ -104,7 +105,8 @@ public interface FileInteraction extends Interaction {
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
      * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
-    boolean writeBinaryFile(@TechnicalLocator String filePath, byte[] bytes, boolean overwrite);
+    boolean writeBinaryFile(@TechnicalLocator String filePath, @AttachParameter("Binary file contents") byte[] bytes,
+            boolean overwrite);
 
     /** Creates a binary file and writes to it all content provided by the source {@link InputStream}.
      * @param filePath the path of the file to save
