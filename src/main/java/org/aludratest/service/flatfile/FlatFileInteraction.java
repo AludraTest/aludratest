@@ -17,6 +17,7 @@ package org.aludratest.service.flatfile;
 
 import org.aludratest.content.flat.data.FlatFileBeanData;
 import org.aludratest.content.flat.data.RowTypeData;
+import org.aludratest.service.AttachParameter;
 import org.aludratest.service.Interaction;
 
 /**
@@ -25,9 +26,9 @@ import org.aludratest.service.Interaction;
  */
 public interface FlatFileInteraction extends Interaction {
 
-    /** Polls the file system until a file at the given path is found 
-     *  or a timeout occurs. 
-     *  @param elementType 
+    /** Polls the file system until a file at the given path is found
+     *  or a timeout occurs.
+     *  @param elementType
      *  @param filePath the full path of the requested file */
     void waitUntilExists(String elementType, String filePath);
 
@@ -39,38 +40,38 @@ public interface FlatFileInteraction extends Interaction {
      *  @param filePath the path of the file to delete */
     public void delete(String filePath);
 
-    /** Creates a writer for persisting 
-     *  FlatFileBeans or JavaBean data structures. 
+    /** Creates a writer for persisting
+     *  FlatFileBeans or JavaBean data structures.
      *  @param filePath the path of the file to write
      *  @param overwrite flag that indicates whether pre-existing files may be overwritten
      *  @return the id of the created writer */
     Object createWriter(String filePath, boolean overwrite);
 
-    /** Writes an object as flat file row. 
+    /** Writes an object as flat file row.
      *  @param bean a FlatFileBean to write
      *  @param writerId the id of the writer */
     void writeRow(Object bean, Object writerId);
 
-    /** Closes the writer. 
+    /** Closes the writer.
      *  @param writerId the id of the writer */
-    void closeWriter(Object writerId);
+    void closeWriter(@AttachParameter("Written flat file data") Object writerId);
 
-    /** Creates a reader for reading JavaBeans. 
+    /** Creates a reader for reading JavaBeans.
      *  @param  filePath the path of the file to read
      *  @return the id of the created reader */
     Object createReader(String filePath);
 
-    /** Adds a RowType to a BeanFlatFileReader. 
+    /** Adds a RowType to a BeanFlatFileReader.
      *  @param rowType a {@link RowTypeData} to be applied by the flat file reader
      *  @param readerId the id of the reader */
     void addRowType(RowTypeData rowType, Object readerId);
 
-    /** Reads a flat file row and provides it as Java object. 
+    /** Reads a flat file row and provides it as Java object.
      *  @param  readerId the id of the reader
      *  @return a FlatFileBean holding the content of the parsed flat file row */
     FlatFileBeanData readRow(Object readerId);
 
-    /** Closes the reader. 
+    /** Closes the reader.
      *  @param readerId the id of the reader */
     void closeReader(Object readerId);
 
