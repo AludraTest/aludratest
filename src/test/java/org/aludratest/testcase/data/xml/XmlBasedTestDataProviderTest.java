@@ -169,7 +169,7 @@ public class XmlBasedTestDataProviderTest {
         XmlBasedTestDataProvider provider = createProvider(config);
         List<TestCaseData> testData = provider
                 .getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod("testMethodTimetravel", StringData.class));
-        assertEquals("2015-03-07", ((StringData) testData.get(0).getData()[0]).getValue());
+        assertEquals("2015-03-07 23:58", ((StringData) testData.get(0).getData()[0]).getValue());
     }
 
     @Test

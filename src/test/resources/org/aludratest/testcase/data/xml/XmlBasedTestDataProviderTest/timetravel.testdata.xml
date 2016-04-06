@@ -8,7 +8,7 @@
         <segment name="stringObject"
         	dataClassName="org.aludratest.util.data.StringData">
         <fields>
-        	<field name="value" fieldType="DATE" formatterPattern="yyyy-MM-dd"/>
+        	<field name="value" fieldType="DATE" formatterPattern="yyyy-MM-dd HH:mm"/>
         </fields>
         </segment>
         </segments>
@@ -20,7 +20,7 @@
     		<segment name="stringObject">
     			<fieldValues>
     				<fieldValue name="value" script="true">
-    					<value>new Date(&quot;8 Mar 2015&quot;)</value>
+    					<value>new Date(&quot;8 Mar 2015 23:58:00&quot;)</value>
     				</fieldValue>
     			</fieldValues>
     		</segment>

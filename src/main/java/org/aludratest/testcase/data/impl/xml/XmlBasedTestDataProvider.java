@@ -509,7 +509,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
 
                 // apply time travel
                 if (result instanceof Date && aludraConfig.getScriptSecondsOffset() != 0) {
-                    result = new Date(((Date) result).getTime() + aludraConfig.getScriptSecondsOffset());
+                    result = new Date(((Date) result).getTime() + aludraConfig.getScriptSecondsOffset() * 1000);
                 }
 
                 // apply patterns, if required
