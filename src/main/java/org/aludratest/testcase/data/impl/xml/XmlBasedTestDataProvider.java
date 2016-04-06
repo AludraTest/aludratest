@@ -69,7 +69,7 @@ import org.mozilla.javascript.Undefined;
  * <li>Relative to <i>xlsRootPath</i>
  * </ol>
  * xlsRootPath value is configured in aludratest.properties.
- * 
+ *
  * @author falbrech */
 public class XmlBasedTestDataProvider implements TestDataProvider {
 
@@ -472,7 +472,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
     }
 
     /** Evaluates the given data script, applying the given format pattern and locale, if specified.
-     * 
+     *
      * @param script Script to evaluate, e.g. <code>addDaysToNow(5)</code>
      * @param formatPattern Format pattern to apply. Can be a format accepted by <code>SimpleDateFormat</code> or
      *            <code>DecimalFormat</code>, depending on type of expression. If not specified, a type-specific default format is
@@ -506,6 +506,11 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                     return null;
                 }
                 result = toJavaObject(result);
+
+                // apply time travel
+                if (result instanceof Date && aludraConfig.getScriptSecondsOffset() != 0) {
+                    result = new Date(((Date) result).getTime() + aludraConfig.getScriptSecondsOffset() * 1000);
+                }
 
                 // apply patterns, if required
                 result = format(result, formatPattern, locale);

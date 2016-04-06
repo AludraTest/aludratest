@@ -32,6 +32,8 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
 
     private String sorterName;
 
+    private Integer scriptSecondsOffset;
+
     public AludraTestingTestConfigImpl() {
         super();
         testInstance = this;
@@ -47,6 +49,10 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
 
     public void setStopTestCaseOnOtherException(Boolean stopTestCaseOnOtherException) {
         this.stopTestCaseOnOtherException = stopTestCaseOnOtherException;
+    }
+
+    public void setScriptSecondsOffset(Integer scriptSecondsOffset) {
+        this.scriptSecondsOffset = scriptSecondsOffset;
     }
 
     @Override
@@ -111,6 +117,14 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
             return sorterName;
         }
         return super.getRunnerTreeSorterName();
+    }
+
+    @Override
+    public int getScriptSecondsOffset() {
+        if (scriptSecondsOffset != null) {
+            return scriptSecondsOffset.intValue();
+        }
+        return super.getScriptSecondsOffset();
     }
 
 }
