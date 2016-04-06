@@ -29,7 +29,7 @@ import org.databene.commons.version.VersionInfo;
 
 /** Default implementation of the AludraTestConfig interface. Provides an accessor to the instance, if any, but this should only be
  * used by AludraTest internal components.
- * 
+ *
  * @author Volker Bergmann
  * @author falbrech */
 @Implementation({ AludraTestConfig.class })
@@ -70,6 +70,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
     private String sorterName;
 
     private boolean attachmentsFileBuffer;
+
+    private int scriptSecondsOffset;
 
 
     // constructor -------------------------------------------------------------
@@ -160,6 +162,11 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         return attachmentsFileBuffer;
     }
 
+    @Override
+    public int getScriptSecondsOffset() {
+        return scriptSecondsOffset;
+    }
+
     // private helper methods --------------------------------------------------
 
     private void readAludraTestVersion() {
@@ -206,6 +213,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         this.sorterName = config.getStringValue(RUNNER_TREE_SORTER_PROP, Alphabetic.class.getSimpleName());
 
         this.attachmentsFileBuffer = config.getBooleanValue(ATTACHMENTS_AS_FILE_PROP, false);
+
+        this.scriptSecondsOffset = config.getIntValue(SECONDS_OFFSET_PROP, 0);
     }
 
 }

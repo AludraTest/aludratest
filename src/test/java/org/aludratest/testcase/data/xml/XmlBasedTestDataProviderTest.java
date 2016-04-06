@@ -25,7 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.aludratest.config.AludraTestConfig;
 import org.aludratest.config.impl.AludraTestConfigImpl;
+import org.aludratest.config.impl.AludraTestingTestConfigImpl;
 import org.aludratest.config.impl.DefaultConfigurator;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.testcase.Ignored;
@@ -41,11 +43,13 @@ import org.junit.Test;
 
 public class XmlBasedTestDataProviderTest {
 
-    private XmlBasedTestDataProvider createProvider() throws Exception {
+    private XmlBasedTestDataProvider createProvider(AludraTestConfig config) throws Exception {
         XmlBasedTestDataProvider provider = new XmlBasedTestDataProvider();
-        AludraTestConfigImpl config = new AludraTestConfigImpl();
-        DefaultConfigurator configurator = new DefaultConfigurator();
-        configurator.configure(config);
+        if (config == null) {
+            config = new AludraTestConfigImpl();
+            DefaultConfigurator configurator = new DefaultConfigurator();
+            configurator.configure(config);
+        }
 
         Map<String, ScriptLibrary> libs = new HashMap<String, ScriptLibrary>();
         libs.put("default", new DefaultScriptLibrary());
@@ -53,6 +57,10 @@ public class XmlBasedTestDataProviderTest {
         ReflectionUtils.setVariableValueInObject(provider, "aludraConfig", config);
         ReflectionUtils.setVariableValueInObject(provider, "scriptLibraries", libs);
         return provider;
+    }
+
+    private XmlBasedTestDataProvider createProvider() throws Exception {
+        return createProvider(null);
     }
 
     @Test
@@ -153,6 +161,18 @@ public class XmlBasedTestDataProviderTest {
     }
 
     @Test
+    public void testTimetravel() throws Exception {
+        AludraTestingTestConfigImpl config = new AludraTestingTestConfigImpl();
+        DefaultConfigurator configurator = new DefaultConfigurator();
+        configurator.configure(config);
+        config.setScriptSecondsOffset(Integer.valueOf(-86400));
+        XmlBasedTestDataProvider provider = createProvider(config);
+        List<TestCaseData> testData = provider
+                .getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod("testMethodTimetravel", StringData.class));
+        assertEquals("2015-03-07", ((StringData) testData.get(0).getData()[0]).getValue());
+    }
+
+    @Test
     public void testFormatting() throws Exception {
         XmlBasedTestDataProvider provider = createProvider();
         List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
@@ -209,6 +229,12 @@ public class XmlBasedTestDataProviderTest {
     }
 
     public void testMethodFormat(@Source(uri = "formatting.testdata.xml", segment = "complexObject") ComplexData object) {
+        if (object == null) {
+            // do nothing
+        }
+    }
+
+    public void testMethodTimetravel(@Source(uri = "timetravel.testdata.xml", segment = "stringObject") StringData object) {
         if (object == null) {
             // do nothing
         }
