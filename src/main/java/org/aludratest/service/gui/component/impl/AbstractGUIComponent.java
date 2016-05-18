@@ -68,7 +68,7 @@ public abstract class AbstractGUIComponent implements GUIComponent {
     // private helpers ---------------------------------------------------------
 
     private String defaultElementName() {
-        return "bla";
+        return "- no name -";
     }
 
 }
