@@ -41,12 +41,14 @@ import org.junit.Before;
  * <code>aludra.run(<i>className</i>)</code> to run a test or suite class in the AludraTest environment. Use {@link #getTestLog()}
  * to retrieve the log for the last executed test run. <br>
  * If you only want to test a service implementation, consider using {@link AbstractAludraServiceTest} as base class.
- * 
+ *
  * @author falbrech */
 @SuppressWarnings("javadoc")
 public abstract class AbstractAludraIntegrationTest {
 
     protected AludraTest aludra;
+
+    protected AludraTestingTestConfigImpl config;
 
     @Before
     public void prepareTestCase() throws Exception {
@@ -76,8 +78,7 @@ public abstract class AbstractAludraIntegrationTest {
 
         registry.addRunnerListener(listener);
 
-        // run initialization to retrieve context
-
+        this.config = (AludraTestingTestConfigImpl) config;
     }
 
     @After

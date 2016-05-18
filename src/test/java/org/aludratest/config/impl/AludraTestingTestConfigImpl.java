@@ -34,6 +34,8 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
 
     private Integer scriptSecondsOffset;
 
+    private Boolean deferredScriptEvaluation;
+
     public AludraTestingTestConfigImpl() {
         super();
         testInstance = this;
@@ -53,6 +55,10 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
 
     public void setScriptSecondsOffset(Integer scriptSecondsOffset) {
         this.scriptSecondsOffset = scriptSecondsOffset;
+    }
+
+    public void setDeferredScriptEvaluation(Boolean deferredScriptEvaluation) {
+        this.deferredScriptEvaluation = deferredScriptEvaluation;
     }
 
     @Override
@@ -125,6 +131,14 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
             return scriptSecondsOffset.intValue();
         }
         return super.getScriptSecondsOffset();
+    }
+
+    @Override
+    public boolean isDeferredScriptEvaluation() {
+        if (deferredScriptEvaluation != null) {
+            return deferredScriptEvaluation.booleanValue();
+        }
+        return super.isDeferredScriptEvaluation();
     }
 
 }

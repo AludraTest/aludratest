@@ -21,7 +21,7 @@ import org.databene.commons.ArrayUtil;
 /** Represents the data for a single invocation of a method of a test class. Conceptually spoken, a concrete instance of this class
  * <b>is</b> the "test case". More formally, the combination of a test method <i>M</i> and a <code>TestCaseData</code> object
  * <i>D</i> makes up the test case <i>T</i>: <code>T = (M, D)</code> or <code>T = M(D)</code>.
- * 
+ *
  * @author falbrech */
 public final class TestCaseData {
 
@@ -37,8 +37,10 @@ public final class TestCaseData {
 
     private Throwable exception;
 
+    private TestDataSource dataSource;
+
     /** Constructs a new TestCaseData object.
-     * 
+     *
      * @param id ID for the test case data. Must be not <code>null</code> and unique within all datasets for the same test method
      *            (this will be checked by the framework before test invocation).
      * @param description Description for the test case data. May be <code>null</code>.
@@ -50,7 +52,7 @@ public final class TestCaseData {
     }
 
     /** Constructs a new TestCaseData object.
-     * 
+     *
      * @param id ID for the test case data. Must be not <code>null</code> and unique within all datasets for the same test method
      *            (this will be checked by the framework before test invocation).
      * @param description Description for the test case data. May be <code>null</code>.
@@ -67,7 +69,7 @@ public final class TestCaseData {
     }
 
     /** Constructs a new TestCaseData object.
-     * 
+     *
      * @param id ID for the test case data. Must be not <code>null</code> and unique within all datasets for the same test method
      *            (this will be checked by the framework before test invocation).
      * @param description Description for the test case data. May be <code>null</code>.
@@ -82,8 +84,25 @@ public final class TestCaseData {
         this.ignoredReason = ignoredReason;
     }
 
+    /** Constructs a new TestCaseData object, suitable for deferred data evaluation (if supported by TestDataProvider).
+     *
+     * @param id ID for the test case data. Must be not <code>null</code> and unique within all datasets for the same test method
+     *            (this will be checked by the framework before test invocation).
+     * @param description Description for the test case data. May be <code>null</code>.
+     * @param dataSource The data source for an array of parameters for the test method to use for a single test invocation. The
+     *            source's <code>getData()</code> method may return <code>null</code> if the method does not require any
+     *            parameters. Otherwise, it must have as many entries as the method has parameters.
+     * @param ignored If <code>true</code>, marks this data set as ignored, i.e. this test case shall not be invoked (this
+     *            behaviour can be disabled by Framework settings).
+     * @param ignoredReason A text describing why this data set has been marked as ignored. */
+    public TestCaseData(String id, String description, TestDataSource dataSource, boolean ignored, String ignoredReason) {
+        this(id, description, null, ignored);
+        this.ignoredReason = ignoredReason;
+        this.dataSource = dataSource;
+    }
+
     /** Constructs a new TestCaseData object, for a dataset which could not be loaded for a given reason.
-     * 
+     *
      * @param id ID for the test case data. Must be not <code>null</code> and unique within all datasets for the same test method
      *            (this will be checked by the framework before test invocation).
      * @param exception The cause why the data for this dataset could not be loaded. */
@@ -94,14 +113,14 @@ public final class TestCaseData {
 
     /** Returns a unique ID for this test case dataset (unique within the parent test suite, represented by the test class). Can
      * also contain a short description, e.g. <code>A3456_max_length_for_street</code>. Should not contain space characters!
-     * 
+     *
      * @return A unique ID for this test case dataset, never <code>null</code>. */
     public String getId() {
         return id;
     }
 
     /** Returns a textual description for this test case dataset. May be <code>null</code> if no description is available.
-     * 
+     *
      * @return A textual description for this test case dataset, or <code>null</code>. */
     public String getDescription() {
         return description;
@@ -110,21 +129,25 @@ public final class TestCaseData {
     /** Returns the data elements for this test case, in the order of the parameter list of the test case method. May be an empty
      * array if the test case method does not require any parameters. Otherwise, it must have as many entries as the method's
      * parameter list.
-     * 
+     *
      * @return The data elements for this test case, maybe empty, but never <code>null</code>. */
     public Data[] getData() {
+        if (dataSource != null) {
+            Data[] data = dataSource.getData();
+            return data == null ? new Data[0] : ArrayUtil.copyOfRange(data, 0, data.length);
+        }
         return data;
     }
 
     /** Returns <code>true</code> if this dataset should not be tested, but skipped.
-     * 
+     *
      * @return <code>true</code> if this dataset should not be tested, but skipped, <code>false</code> otherwise. */
     public boolean isIgnored() {
         return ignored;
     }
 
     /** Returns the optional reason why this dataset has been marked as ignored.
-     * 
+     *
      * @return The optional reason why this dataset has been marked as ignored, or <code>null</code>. */
     public String getIgnoredReason() {
         return ignoredReason;
@@ -132,7 +155,7 @@ public final class TestCaseData {
 
     /** Returns an exception that describes why this dataset could not be loaded. If <code>null</code> is returned, the dataset
      * could be loaded successfully.
-     * 
+     *
      * @return <code>null</code>, or an exception that describes why this dataset could not be loaded. */
     public Throwable getException() {
         return exception;

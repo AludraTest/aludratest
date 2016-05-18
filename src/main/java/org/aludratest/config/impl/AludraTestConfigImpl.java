@@ -73,6 +73,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
 
     private int scriptSecondsOffset;
 
+    private boolean deferredScriptEvaluation;
+
 
     // constructor -------------------------------------------------------------
 
@@ -167,6 +169,11 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         return scriptSecondsOffset;
     }
 
+    @Override
+    public boolean isDeferredScriptEvaluation() {
+        return deferredScriptEvaluation;
+    }
+
     // private helper methods --------------------------------------------------
 
     private void readAludraTestVersion() {
@@ -215,6 +222,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         this.attachmentsFileBuffer = config.getBooleanValue(ATTACHMENTS_AS_FILE_PROP, false);
 
         this.scriptSecondsOffset = config.getIntValue(SECONDS_OFFSET_PROP, 0);
+
+        this.deferredScriptEvaluation = config.getBooleanValue(DEFERRED_EVALUATION_PROP, false);
     }
 
 }

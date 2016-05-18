@@ -16,6 +16,7 @@
 package org.aludratest.scheduler.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -25,14 +26,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.AssertionFailedError;
-
 import org.aludratest.PreconditionFailedException;
+import org.aludratest.invoker.TestInvoker;
 import org.aludratest.scheduler.AnnotationBasedExecution;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.RunnerTreeBuilder;
 import org.aludratest.scheduler.TestClassFilter;
 import org.aludratest.scheduler.node.RunnerGroup;
+import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.scheduler.node.RunnerNode;
 import org.aludratest.scheduler.test.annot.AnnotatedTestClass1;
 import org.aludratest.scheduler.test.annot.AnnotatedTestClass2;
@@ -46,7 +47,10 @@ import org.aludratest.suite.PlainTestSuite;
 import org.aludratest.suite.SequentialTestClass;
 import org.aludratest.suite.SequentialTestSuite;
 import org.aludratest.testcase.AludraTestCase;
+import org.aludratest.testcase.impl.AludraTestContextImpl;
 import org.junit.Test;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * Tests the {@link AludraSuiteParser}.
@@ -273,6 +277,32 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraIntegrationTest {
         RunnerGroup group = tree.getRoot();
         assertEquals("All Tests", group.getName());
         assertEquals(2, group.getChildren().size());
+    }
+
+    @Test
+    public void testDeferredEvaluation() throws Throwable {
+        Class<?> testClass = DeferredEvalTestClass.class;
+        RunnerTree tree = parseTestClass(testClass);
+
+        // data should already now have been evaluated
+        assertTrue(DeferredEvalTestClass.marker);
+
+        // now, do the same with changed config
+        DeferredEvalTestClass.marker = false;
+        config.setDeferredScriptEvaluation(true);
+
+        tree = parseTestClass(testClass);
+        assertFalse(DeferredEvalTestClass.marker);
+
+        RunnerLeaf leaf = (RunnerLeaf) ((RunnerGroup) tree.getRoot().getChildren().get(0)).getChildren().get(0);
+
+        AludraTestContextImpl dummyContext = new AludraTestContextImpl(null, null);
+
+        TestInvoker invoker = leaf.getTestInvoker();
+        invoker.setContext(dummyContext);
+
+        invoker.invoke();
+        assertTrue(DeferredEvalTestClass.marker);
     }
 
     /** Verifies the properties of an AludraTest suite class. */

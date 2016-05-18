@@ -15,6 +15,7 @@
  */
 package org.aludratest.scheduler;
 
+import org.aludratest.scheduler.impl.DeferredEvalTestClass;
 import org.aludratest.scheduler.test.DefaultSuite;
 import org.aludratest.scheduler.test.ParallelClass;
 import org.aludratest.scheduler.test.ParallelSuite;
@@ -27,7 +28,7 @@ import org.aludratest.scheduler.test.UnconfiguredSuiteWithParallelClasses;
 import org.junit.Test;
 
 /**
- * Tests various constellations of sequential, default and parallel 
+ * Tests various constellations of sequential, default and parallel
  * suites and sub suites with different pool sizes.
  * @author Volker Bergmann
  */
@@ -68,7 +69,7 @@ public class HierarchicalSchedulerTest extends AbstractSchedulerTest {
         // WHEN executing the tests with a thread pool size of 2
         executeTests(suiteClass, 2);
 
-        // THEN the first two test leafs and the last two test leafs 
+        // THEN the first two test leafs and the last two test leafs
         // must have been executed concurrently with each other,...
         assertInvocationCount(4);
         assertParallelExecution("test1", "test2");
@@ -93,9 +94,9 @@ public class HierarchicalSchedulerTest extends AbstractSchedulerTest {
     }
 
     /**
-     * Tests a suite without concurrency configuration 
-     * which consists of 2 classes without concurrency configuration 
-     * with a thread pool size of 4, 
+     * Tests a suite without concurrency configuration
+     * which consists of 2 classes without concurrency configuration
+     * with a thread pool size of 4,
      * requiring that all tests are executed sequentially.
      */
     @Test
@@ -112,8 +113,8 @@ public class HierarchicalSchedulerTest extends AbstractSchedulerTest {
     }
 
     /**
-     * Tests a sequential suite which consists of 2 sequential classes 
-     * of which each one has 2 methods with a thread pool size of 4, 
+     * Tests a sequential suite which consists of 2 sequential classes
+     * of which each one has 2 methods with a thread pool size of 4,
      * requiring that all tests are executed sequentially.
      */
     @Test
@@ -130,8 +131,8 @@ public class HierarchicalSchedulerTest extends AbstractSchedulerTest {
     }
 
     /**
-     * Tests a parallel suite which consists of 2 parallel classes 
-     * of which each one has 2 methods with a thread pool size of 4, 
+     * Tests a parallel suite which consists of 2 parallel classes
+     * of which each one has 2 methods with a thread pool size of 4,
      * requiring that all tests are executed concurrently.
      */
     @Test
@@ -148,9 +149,9 @@ public class HierarchicalSchedulerTest extends AbstractSchedulerTest {
     }
 
     /**
-     * Tests a sequential suite which consists of 2 parallel classes 
-     * of which each one has 2 methods with a thread pool size of 4, 
-     * requiring that classes are executed sequentially, 
+     * Tests a sequential suite which consists of 2 parallel classes
+     * of which each one has 2 methods with a thread pool size of 4,
+     * requiring that classes are executed sequentially,
      * but the methods of each class concurrently.
      */
     @Test
@@ -161,7 +162,7 @@ public class HierarchicalSchedulerTest extends AbstractSchedulerTest {
         // WHEN executing the tests
         executeTests(suiteClass, 4);
 
-        // THEN the sub suites must have been executed sequentially, 
+        // THEN the sub suites must have been executed sequentially,
         // the elements of each sub suite concurrently
         assertInvocationCount(4);
         assertSequentialExecution("test1a", "test2a");
@@ -173,9 +174,9 @@ public class HierarchicalSchedulerTest extends AbstractSchedulerTest {
     }
 
     /**
-     * Tests an unconfigured suite which consists of 2 parallel classes 
-     * of which each one has 2 methods. 
-     * The test is performed with a thread pool size of 4, 
+     * Tests an unconfigured suite which consists of 2 parallel classes
+     * of which each one has 2 methods.
+     * The test is performed with a thread pool size of 4,
      * requiring that all methods are executed concurrently.
      */
     @Test
@@ -198,12 +199,12 @@ public class HierarchicalSchedulerTest extends AbstractSchedulerTest {
         // WHEN executing the tests
         executeTests(suiteClass, 4);
 
-        // THEN the sub suites must have been executed concurrently, 
+        // THEN the sub suites must have been executed concurrently,
         // the elements of each sub suite sequentially
         assertInvocationCount(4);
 
-        // The parent suite is parallel but not the child suites, 
-        // Since the parent's parallelism overwrites children's settings, anything 
+        // The parent suite is parallel but not the child suites,
+        // Since the parent's parallelism overwrites children's settings, anything
         // is executed concurrently
         assertSequentialExecution("test1a", "test1b");
         assertSequentialExecution("test2a", "test2b");
@@ -219,14 +220,23 @@ public class HierarchicalSchedulerTest extends AbstractSchedulerTest {
         // WHEN executing the tests
         executeTests(suiteClass, 4);
 
-        // THEN the sub suites must have been executed concurrently, 
+        // THEN the sub suites must have been executed concurrently,
         // the elements of each sub suite sequentially
         assertInvocationCount(4);
 
-        // The parent suite is parallel and sets the default for 
-        // the unconfigured child suites, so anything 
+        // The parent suite is parallel and sets the default for
+        // the unconfigured child suites, so anything
         // shall be executed concurrently
         assertParallelExecution("test1a", "test1b", "test2a", "test2b");
+    }
+
+    @Test
+    public void testDeferredEvaluation() {
+        Class<?> testClass = DeferredEvalTestClass.class;
+
+        executeTests(testClass, 1);
+        executeTests(testClass, 1);
+
     }
 
 }

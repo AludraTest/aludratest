@@ -38,9 +38,6 @@ import java.util.regex.Pattern;
 
 import org.aludratest.PreconditionFailedException;
 import org.aludratest.config.AludraTestConfig;
-import org.aludratest.dict.Data;
-import org.aludratest.invoker.AludraTestMethodInvoker;
-import org.aludratest.invoker.ErrorReportingInvoker;
 import org.aludratest.invoker.TestInvoker;
 import org.aludratest.scheduler.AnnotationBasedExecution;
 import org.aludratest.scheduler.RunnerTree;
@@ -68,7 +65,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Default implementation of the RunnerTreeBuilder component interface.
- * 
+ *
  * @author falbrech */
 @Component(role = RunnerTreeBuilder.class, instantiationStrategy = "per-lookup")
 public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
@@ -120,7 +117,7 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             }
             catch (IOException e) {
                 throw new PreconditionFailedException("Could not search JAR file " + searchRoot.getAbsolutePath()
-                        + " for test classes", e);
+                + " for test classes", e);
             }
         }
         else {
@@ -409,8 +406,7 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                 List<TestCaseData> invocationParams = testDataProvider.getTestDataSets(method);
                 for (TestCaseData data : invocationParams) {
                     if (data.getException() == null) {
-                        createTestRunnerForMethodInvocation(method, data.getData(), data.getId(), data.isIgnored(),
-                                data.getIgnoredReason(), methodGroup, tree);
+                        createTestRunnerForMethodInvocation(method, data, methodGroup, tree);
                     }
                     else {
                         createTestRunnerForErrorReporting(method, data.getException(), methodGroup, tree);
@@ -424,15 +420,15 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
     }
 
     /** Creates a test runner for a single method invocation */
-    private void createTestRunnerForMethodInvocation(Method method, Data[] args, String testInfo, boolean ignore,
-            String ignoredReason, RunnerGroup methodGroup, RunnerTree tree) {
+    private void createTestRunnerForMethodInvocation(Method method, TestCaseData data, RunnerGroup methodGroup, RunnerTree tree) {
         // create log4testing TestCase
-        String invocationTestCaseName = createInvocationTestCaseName(testInfo, methodGroup.getName());
+        String invocationTestCaseName = createInvocationTestCaseName(data.getId(), methodGroup.getName());
         // Create test object
         @SuppressWarnings("unchecked")
         AludraTestCase testObject = BeanUtil.newInstance((Class<? extends AludraTestCase>) method.getDeclaringClass());
-        TestInvoker invoker = new AludraTestMethodInvoker(testObject, method, args);
-        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, ignore, ignoredReason, false);
+        TestInvoker invoker = new AludraTestMethodInvoker(testObject, method, data, aludraConfig.isDeferredScriptEvaluation());
+        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, data.isIgnored(), data.getIgnoredReason(),
+                false);
     }
 
     /** Creates a test runner for error reporting.
