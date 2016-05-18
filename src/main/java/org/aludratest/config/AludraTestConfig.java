@@ -34,7 +34,8 @@ package org.aludratest.config;
     @ConfigProperty(name = AludraTestConfig.DEBUG_ON_FRAMEWORK_EXCEPTION_PROP, type = boolean.class, description = "If set to true, debug attachments (e.g. screenshots) will be created also on framework (blue) errors.", defaultValue = "false"),
     @ConfigProperty(name = AludraTestConfig.RUNNER_TREE_SORTER_PROP, type = String.class, description = "A simple or fully qualified name of a Runner Tree Sorter class to use. Default sorter is the Alphabetic sorter. This sorting only applies for filter / grouping execution mode (not for suite-based execution mode).", defaultValue = "Alphabetic"),
     @ConfigProperty(name = AludraTestConfig.ATTACHMENTS_AS_FILE_PROP, type = boolean.class, description = "If set to true, test step attachments are buffered on the file system as temporary files (using File.createTempFile()). This helps reducing memory usage when running many test cases. Default is false.", defaultValue = "false"),
-    @ConfigProperty(name = AludraTestConfig.SECONDS_OFFSET_PROP, type = int.class, description = "Amount of seconds to add to script calculations when evaluating test data. Use negative amount to subtract. Can be used for 'time travel' features of application under test.") })
+    @ConfigProperty(name = AludraTestConfig.SECONDS_OFFSET_PROP, type = int.class, description = "Amount of seconds to add to script calculations when evaluating test data. Use negative amount to subtract. Can be used for 'time travel' features of application under test."),
+    @ConfigProperty(name = AludraTestConfig.DEFERRED_EVALUATION_PROP, type = boolean.class, description = "If set to true, script formulas are evaluated when test case starts, otherwise, they are evaluated when test execution tree is built (default). Currently only applies to XML test data sources.", defaultValue = "false", required = false) })
 public interface AludraTestConfig extends Configurable {
 
     /** Configuration property name. */
@@ -72,6 +73,9 @@ public interface AludraTestConfig extends Configurable {
 
     /** Configuration property name. */
     public static final String SECONDS_OFFSET_PROP = "script.seconds.offset";
+
+    /** Configuration property name. */
+    public static final String DEFERRED_EVALUATION_PROP = "deferred.script.evaluation";
 
     // interface ---------------------------------------------------------------
 
@@ -128,5 +132,12 @@ public interface AludraTestConfig extends Configurable {
      *
      * @return The amount of seconds to add to test data script results. Can be zero or negative. */
     public int getScriptSecondsOffset();
+
+    /** Returns <code>true</code> if script expressions in XML data shall be evaluated only when the according test case execution
+     * starts. Otherwise, they are evaluated when the test execution tree is built (default).
+     *
+     * @return <code>true</code> if script expressions in XML data shall be evaluated only when the according test case execution
+     *         starts, <code>false</code> otherwise. */
+    public boolean isDeferredScriptEvaluation();
 
 }

@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.invoker;
+package org.aludratest.scheduler.impl;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.TechnicalException;
+import org.aludratest.invoker.TestInvoker;
 import org.aludratest.testcase.After;
 import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.AludraTestContext;
 import org.aludratest.testcase.Before;
+import org.aludratest.testcase.data.TestCaseData;
 import org.databene.commons.ArrayFormat;
 import org.databene.commons.Assert;
 
@@ -38,27 +40,35 @@ public class AludraTestMethodInvoker implements TestInvoker {
     /** The method to invoke in the test class instance. */
     private Method method;
 
+    /** The Test Case Data object provided by the TestDataProvider. */
+    private TestCaseData testCaseData;
+
     /** The arguments to provide to the test method. */
     private Object[] args;
 
     /** Constructor receiving values for all attributes of same name.
      * @param testObject the object on which to invoke the test method
      * @param method the test method to invoke
-     * @param args the arguments to pass on method invocation */
-    public AludraTestMethodInvoker(AludraTestCase testObject, Method method, Object[] args) {
+     * @param data The Test Case Data object carrying the arguments for execution.
+     * @param deferredEvaluation If <code>true</code>, the test case data object will be asked for the arguments right before
+     *            method invocation, otherwise, it will be asked <b>now</b> (in the constructor) for the arguments. */
+    public AludraTestMethodInvoker(AludraTestCase testObject, Method method, TestCaseData data, boolean deferredEvaluation) {
         // check preconditions
         Assert.notNull(testObject, "testObject");
         Assert.notNull(method, "method");
-        int expectedArgCount = method.getParameterTypes().length;
-        int providedArgCount = (args != null ? args.length : 0);
-        if (expectedArgCount != providedArgCount) {
-            throw new IllegalArgumentException("Method" + method.getName() + " expects " + expectedArgCount + " parameters, " + "but got " + providedArgCount);
-        }
 
         // assign fields
         this.testObject = testObject;
         this.method = method;
-        this.args = (args != null ? args.clone() : null);
+
+        if (!deferredEvaluation) {
+            Object[] args = data.getData();
+            validateArgsSize(args);
+            this.args = (args != null ? args.clone() : null);
+        }
+        else {
+            this.testCaseData = data;
+        }
     }
 
     /** Sets the testCase property on the {@link #testObject}. */
@@ -74,7 +84,7 @@ public class AludraTestMethodInvoker implements TestInvoker {
     public void invoke() throws Exception { //NOSONAR
         executeBefores(testObject.getClass());
         try {
-            this.method.invoke(testObject, args);
+            this.method.invoke(testObject, getArgs());
         } finally {
             executeAfters(testObject.getClass());
         }
@@ -88,7 +98,8 @@ public class AludraTestMethodInvoker implements TestInvoker {
     /** Creates a String representation of the object. */
     @Override
     public String toString() {
-        return method.getDeclaringClass().getName() + '.' + method.getName() + '(' + ArrayFormat.format(args) + ')';
+        String args = this.args == null && testCaseData != null ? "<deferred evaluation>" : ArrayFormat.format(this.args);
+        return method.getDeclaringClass().getName() + '.' + method.getName() + '(' + args + ')';
     }
 
     // private helper methods ------------------------------------------------------------------------------------------
@@ -123,6 +134,24 @@ public class AludraTestMethodInvoker implements TestInvoker {
         if (!Object.class.equals(superclass)) {
             executeAfters(superclass);
         }
+    }
+
+    private void validateArgsSize(Object[] args) {
+        int expectedArgCount = method.getParameterTypes().length;
+        int providedArgCount = (args != null ? args.length : 0);
+        if (expectedArgCount != providedArgCount) {
+            throw new IllegalArgumentException("Method " + method.getName() + " expects " + expectedArgCount + " parameters, "
+                    + "but got " + providedArgCount);
+        }
+    }
+
+    private Object[] getArgs() {
+        if (args == null && testCaseData != null) {
+            Object[] args = testCaseData.getData();
+            this.args = (args != null ? args.clone() : null);
+            validateArgsSize(this.args);
+        }
+        return this.args == null ? new Object[0] : this.args;
     }
 
     /** Invokes the given {@literal @}Before or {@literal @}After method

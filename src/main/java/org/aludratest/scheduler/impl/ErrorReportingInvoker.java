@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.aludratest.invoker;
+package org.aludratest.scheduler.impl;
 
 import java.lang.reflect.Method;
 
+import org.aludratest.invoker.TestInvoker;
 import org.aludratest.testcase.AludraTestContext;
 import org.databene.commons.Assert;
 

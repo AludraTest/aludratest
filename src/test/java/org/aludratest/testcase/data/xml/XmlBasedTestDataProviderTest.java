@@ -17,6 +17,7 @@ package org.aludratest.testcase.data.xml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -184,6 +185,16 @@ public class XmlBasedTestDataProviderTest {
         assertEquals("09. Juli 2015", cd.getName());
     }
 
+    @Test
+    public void testDeferredExecution() throws Exception {
+        XmlBasedTestDataProvider provider = createProvider();
+        List<TestCaseData> testData = provider
+                .getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod("testMethodDeferred", StringData.class));
+        String value1 = ((StringData) testData.get(0).getData()[0]).getValue();
+        String value2 = ((StringData) testData.get(0).getData()[0]).getValue();
+        assertNotEquals(value1, value2);
+    }
+
     public void testMethod1(@Source(uri = "complex.testdata.xml", segment = "complexObject") ComplexData object,
             @Source(uri = "complex.testdata.xml", segment = "stringObject") StringData object2) {
         if (object == null) {
@@ -240,4 +251,9 @@ public class XmlBasedTestDataProviderTest {
         }
     }
 
+    public void testMethodDeferred(@Source(uri = "deferred.testdata.xml", segment = "stringObject") StringData object) {
+        if (object == null) {
+            // do nothing
+        }
+    }
 }
