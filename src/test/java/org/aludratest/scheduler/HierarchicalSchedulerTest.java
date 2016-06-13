@@ -25,6 +25,7 @@ import org.aludratest.scheduler.test.SequentialClass;
 import org.aludratest.scheduler.test.SequentialSuite;
 import org.aludratest.scheduler.test.SequentialSuiteWithParallelClasses;
 import org.aludratest.scheduler.test.UnconfiguredSuiteWithParallelClasses;
+import org.aludratest.suite.SequentialGroupClass;
 import org.junit.Test;
 
 /**
@@ -237,6 +238,17 @@ public class HierarchicalSchedulerTest extends AbstractSchedulerTest {
         executeTests(testClass, 1);
         executeTests(testClass, 1);
 
+    }
+
+    @Test
+    public void testSequentialGroupClass() {
+        Class<?> testClass = SequentialGroupClass.class;
+
+        executeTests(testClass, 1);
+        long prevMSO = minSequentialOffset;
+        minSequentialOffset = 1;
+        assertSequentialExecution("someMethod", "anotherMethod", "otherMethod", "lastMethod");
+        minSequentialOffset = prevMSO;
     }
 
 }
