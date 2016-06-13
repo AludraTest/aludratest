@@ -30,6 +30,10 @@ import org.junit.Before;
  */
 public abstract class AbstractSchedulerTest extends LocalTestCase {
 
+    protected long minSequentialOffset = 470;
+
+    protected long maxParallelOffset = 300;
+
     /** Resets the {@link Log} start time and removes all entries before each test. */
     @Before
     public void resetLogs() {
@@ -81,7 +85,7 @@ public abstract class AbstractSchedulerTest extends LocalTestCase {
             } else {
                 assertionMessage = "invocation " + invocation.action + " is assumed to happen after " + invocations[i - 1].action + ", but occured " + Math.abs(offset) + " ms earlier";
             }
-            assertTrue(assertionMessage, offset > 470);
+            assertTrue(assertionMessage, offset > minSequentialOffset);
             latestInvocation = invocation.millis;
         }
     }
@@ -98,7 +102,7 @@ public abstract class AbstractSchedulerTest extends LocalTestCase {
             Log.Entry invocation = invocations[i];
             long offset = invocation.millis - latestInvocation;
             String assertionMessage = "invocation " + invocation.action + " is assumed to be parallel to " + invocations[i - 1].action + ", but occured " + offset + " ms later";
-            assertTrue(assertionMessage, offset < 300);
+            assertTrue(assertionMessage, offset < maxParallelOffset);
             latestInvocation = invocation.millis;
         }
     }
