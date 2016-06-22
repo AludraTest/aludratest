@@ -112,7 +112,11 @@ public class EdifattoContent implements EdifactContent {
             NameBasedEdiToXMLConverter converter = new NameBasedEdiToXMLConverter();
             EdiChecker checker = new EdiChecker((DatabeneXmlComparisonSettings) settings, converter);
             AggregateDiff genericDiff = checker.diff(expected, actual);
-            return new EdifattoAggregateEdiDiff(expected, actual, (ComparisonSettings) settings, genericDiff);
+            // TODO In the result we use XML Document objects as expected an actual,
+            // because they will be used for rendering the compared content.
+            // From the semantically point of view, they should be Edifact Interchanges
+            return new EdifattoAggregateEdiDiff(genericDiff.getExpected(), genericDiff.getActual(),
+                    (ComparisonSettings) settings, genericDiff);
         } catch (Exception e) {
             throw new TechnicalException("Error comparing Edifact interchanges", e);
         }
