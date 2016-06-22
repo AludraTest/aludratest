@@ -15,8 +15,8 @@
  */
 package org.aludratest.service.edifactfile;
 
-import org.aludratest.content.xml.XmlComparisonSettings;
-import org.aludratest.content.xml.XmlDiffDetailType;
+import org.aludratest.content.edifact.EdiComparisonSettings;
+import org.aludratest.content.edifact.EdiDiffDetailType;
 import org.aludratest.dict.ActionWordLibrary;
 import org.aludratest.service.edifactfile.data.KeyExpressionData;
 import org.aludratest.util.data.StringData;
@@ -32,7 +32,7 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
 
     private final String filePath;
     private final EdifactFileService service;
-    private final XmlComparisonSettings settings;
+    private final EdiComparisonSettings settings;
     private final String elementType;
 
     /** Constructor.
@@ -57,7 +57,7 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
      * @param type the type of difference
      * @param xPath the path where the difference is tolerated
      * @return a reference to the invoked EdifactFileVerifier instance */
-    public E addToleratedDiff(XmlDiffDetailType type, String xPath) {
+    public E addToleratedDiff(EdiDiffDetailType type, String xPath) {
         this.settings.tolerateGenericDiff(type, xPath);
         return (E) this;
     }

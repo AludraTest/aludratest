@@ -129,19 +129,19 @@
 		<dependency>
 			<groupId>org.aludratest</groupId>
 			<artifactId>log4testing</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.databene</groupId>
 			<artifactId>databene-formats</artifactId>
-			<version>1.0.7</version>
+			<version>1.0.12</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.databene</groupId>
 			<artifactId>databene-commons</artifactId>
-			<version>1.0.7</version>
+			<version>1.0.10</version>
 		</dependency>
 
 		<dependency>
