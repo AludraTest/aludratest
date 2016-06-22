@@ -129,7 +129,7 @@
 		<dependency>
 			<groupId>org.aludratest</groupId>
 			<artifactId>log4testing</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
