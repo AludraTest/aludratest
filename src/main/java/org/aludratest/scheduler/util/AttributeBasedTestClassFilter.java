@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.aludratest.scheduler.TestClassFilter;
-import org.aludratest.scheduler.impl.TestAttributeUtil;
 import org.aludratest.testcase.AludraTestCase;
 
 public final class AttributeBasedTestClassFilter implements TestClassFilter {

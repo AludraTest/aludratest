@@ -50,6 +50,7 @@ import org.aludratest.scheduler.node.RunnerNode;
 import org.aludratest.scheduler.sort.Alphabetic;
 import org.aludratest.scheduler.sort.RunnerTreeSortUtil;
 import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
+import org.aludratest.scheduler.util.TestAttributeUtil;
 import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.Parallel;
 import org.aludratest.testcase.Sequential;
