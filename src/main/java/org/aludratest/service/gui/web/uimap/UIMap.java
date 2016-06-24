@@ -19,25 +19,20 @@ import org.aludratest.service.gui.web.AludraWebGUI;
 
 /**
  * A UIMap is a class which provides access to elements of a web page. Every
- * page related UIMap must extend this class. 
+ * page related UIMap must extend this class.
  * @author Marcel Malitz
  */
 public abstract class UIMap {
-    
-    /**
-     * Gives access to the application under test and is normally used to give GUI components a instance of AludraTest.
-     */
+
+    /** Gives access to the application under test and is normally used to give GUI components an instance of the web GUI
+     * service. */
     protected AludraWebGUI aludraGUI;
-    
-    /**
-     * Makes the passed through instance aludraTest available to all the sub
-     * classes of this class. Sub classes can access this instance over the
-     * member {@link #aludraGUI}.
-     * @param aludraTest will be available to all sub classes through the member
-     *      {@link #aludraGUI}
-     */
-    public UIMap(AludraWebGUI aludraTest) {
-        this.aludraGUI = aludraTest;
+
+    /** Makes the passed through instance aludraGUI available to all the sub classes of this class. Sub classes can access this
+     * instance over the member {@link #aludraGUI}.
+     * @param aludraGUI will be available to all sub classes through the member {@link #aludraGUI} */
+    public UIMap(AludraWebGUI aludraGUI) {
+        this.aludraGUI = aludraGUI;
     }
-    
+
 }
