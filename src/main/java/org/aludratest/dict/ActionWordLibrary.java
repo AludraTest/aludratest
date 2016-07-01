@@ -21,7 +21,6 @@ import org.aludratest.service.gui.GUIInteraction;
  * Common interface for all test classes that make use of the ActionWordLibrary pattern.
  * @param <E> Chosen by child classes in a way that {@link #verifyState()} is parameterized 
  * 		to return the individual child class. 
- * @see <a href="https://wiki.hsdg-ad.int/GLOBE/index.php/ActionWordLibrary_%28AludraTest%29">AludraTest Wiki</a>
  * @author Volker Bergmann
  */
 public interface ActionWordLibrary<E extends ActionWordLibrary<E>> {
