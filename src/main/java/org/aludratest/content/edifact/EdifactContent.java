@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.aludratest.content.ContentHandler;
-import org.aludratest.content.xml.AggregateXmlDiff;
 import org.aludratest.content.xml.XmlComparisonSettings;
 import org.databene.edifatto.EdiFormatSymbols;
 import org.databene.edifatto.model.Interchange;
@@ -56,17 +55,17 @@ public interface EdifactContent extends ContentHandler {
      *            {@link java.lang.String}, {@link javax.xml.xpath.XPathConstants#NODE} for a single {@link org.w3c.dom.Element},
      *            {@link javax.xml.xpath.XPathConstants#NODESET} for a {@link org.w3c.dom.NodeList}
      * @return the found nodes of the interchange in the form of XML elements */
-    Object queryXML(Interchange interchange, String expression, QName returnType);
+    Object query(Interchange interchange, String expression, QName returnType);
 
     /** @return an instance of the {@link XmlComparisonSettings} appropriate for comparing EDIFACT or X12 interchanges */
-    XmlComparisonSettings createDefaultComparisonSettings();
+    EdiComparisonSettings createDefaultComparisonSettings();
 
     /** Finds out the differences between two EDIFACT or X12 interchanges, ignoring elements that match the XPath exclusion paths.
      * @param expected
      * @param actual
      * @param settings
      * @return an aggregated diff of the documents */
-    AggregateXmlDiff compare(Interchange expected, Interchange actual, XmlComparisonSettings settings);
+    AggregateEdiDiff compare(Interchange expected, Interchange actual, EdiComparisonSettings settings);
 
     /** Formats a full interchange structure recursively as String.
      * @param interchange the Edifact interchange to format

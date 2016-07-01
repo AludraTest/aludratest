@@ -18,8 +18,8 @@ package org.aludratest.service.edifactfile;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
-import org.aludratest.content.xml.AggregateXmlDiff;
-import org.aludratest.content.xml.XmlComparisonSettings;
+import org.aludratest.content.edifact.AggregateEdiDiff;
+import org.aludratest.content.edifact.EdiComparisonSettings;
 import org.aludratest.service.Condition;
 import org.aludratest.service.ElementName;
 import org.aludratest.service.ElementType;
@@ -57,7 +57,7 @@ public interface EdifactFileCondition extends Condition {
      *   {@link XPathConstants#NODESET} for a {@link org.w3c.dom.NodeList}
      * @return the query result
      */
-    Object queryXML(
+    Object query(
             @ElementType String elementType,
             @ElementName String elementName,
             Interchange interchange,
@@ -69,16 +69,16 @@ public interface EdifactFileCondition extends Condition {
      * @param elementName
      * @param expected the expected interchange data
      * @param actual the actual interface data
-     * @param settings the {@link XmlComparisonSettings} to apply
+     * @param settings the {@link EdiComparisonSettings} to apply
      * @param model
      * @return an AggregateDiff that represent the differences between the interchanges */
-    AggregateXmlDiff diff(
+    AggregateEdiDiff diff(
             @ElementType String elementType,
             @ElementName String elementName,
             Interchange expected,
-            Interchange actual, @TechnicalArgument XmlComparisonSettings settings);
+            Interchange actual, @TechnicalArgument EdiComparisonSettings settings);
 
-    /** @return an {@link XmlComparisonSettings} with default settings for comparing XML documents */
-    XmlComparisonSettings createDefaultComparisonSettings();
+    /** @return an {@link EdiComparisonSettings} with default settings for comparing XML documents */
+    EdiComparisonSettings createDefaultComparisonSettings();
 
 }

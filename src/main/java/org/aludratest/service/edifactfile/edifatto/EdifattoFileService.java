@@ -29,7 +29,6 @@ import org.aludratest.service.file.FileService;
  * @author Volker Bergmann
  */
 public class EdifattoFileService extends AbstractAludraService implements EdifactFileService {
-    // TODO this class does not depend on Edifatto any more and should be renamed to EdifactFileServiceImpl in package impl
 
     private FileService fileService;
 
