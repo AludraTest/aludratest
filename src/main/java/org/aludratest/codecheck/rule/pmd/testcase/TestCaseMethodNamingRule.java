@@ -15,31 +15,41 @@
  */
 package org.aludratest.codecheck.rule.pmd.testcase;
 
-import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
+import net.sourceforge.pmd.lang.java.ast.ASTMethodDeclarator;
+import net.sourceforge.pmd.lang.java.ast.AbstractJavaNode;
 
 import org.aludratest.codecheck.rule.pmd.AbstractRegexNamingRule;
 
 /** Requires the names of test case methods to match a regular expression.
  * @author Volker Bergmann */
-public class TestCaseClassNamingRule extends AbstractRegexNamingRule {
+public class TestCaseMethodNamingRule extends AbstractRegexNamingRule {
 
-    private static final String DEFAULT_REGEX = "[A-Z][A-Za-z0-9]*";
-    private static final String DEFAULT_MESSAGE = "Test case class names should start with an uppercase letter "
+    private static final String DEFAULT_REGEX = "[a-z][A-Za-z0-9]*";
+    private static final String DEFAULT_MESSAGE = "Test method names should start with a lowercase letter "
             + "and contain only letters and digits";
 
     /** Default constructor, setting the default regular expression */
-    public TestCaseClassNamingRule() {
+    public TestCaseMethodNamingRule() {
         super(DEFAULT_REGEX, DEFAULT_MESSAGE);
     }
 
     @Override
-    public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
-        if (isTestCaseClass(node)) {
-            String className = node.getImage();
-            if (!matches(className)) {
-                addViolationWithMessage(data, node, "Test class names should match the regular expression '" + getRegex() + "'");
-            }
+    public Object visit(ASTMethodDeclarator node, Object data) {
+        // Skip methods of non-test-classes
+        if (!isTestCaseClass(node)) {
+            return super.visit(node, data);
         }
+
+        // Skip methods which do not have a @Test annotation
+        AbstractJavaNode parent = (AbstractJavaNode) node.getNthParent(2);
+        if (!parent.hasDescendantMatchingXPath("Annotation/MarkerAnnotation[Name/@Image='Test']")) {
+            return super.visit(node, data);
+        }
+
+        // verify the method name
+        String methodName = node.getImage();
+        assertMatch(methodName, node, data);
+
         return data;
     }
 
