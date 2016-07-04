@@ -135,13 +135,13 @@
 		<dependency>
 			<groupId>org.databene</groupId>
 			<artifactId>databene-formats</artifactId>
-			<version>1.0.7</version>
+			<version>1.0.12</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.databene</groupId>
 			<artifactId>databene-commons</artifactId>
-			<version>1.0.7</version>
+			<version>1.0.10</version>
 		</dependency>
 
 		<dependency>

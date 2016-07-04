@@ -15,7 +15,7 @@
  */
 package org.aludratest.service.edifactfile;
 
-import org.aludratest.content.xml.XmlComparisonSettings;
+import org.aludratest.content.edifact.EdiComparisonSettings;
 import org.aludratest.service.ElementName;
 import org.aludratest.service.ElementType;
 import org.aludratest.service.TechnicalArgument;
@@ -33,10 +33,10 @@ public interface EdifactFileVerification extends Verification {
      * @param elementName
      * @param expected the expected interchange data
      * @param actual the actual interface data
-     * @param settings the {@link XmlComparisonSettings} to apply */
+     * @param settings the {@link EdiComparisonSettings} to apply */
     void assertInterchangesMatch(
             @ElementType String elementType,
             @ElementName String elementName,
             Interchange expected,
-            Interchange actual, @TechnicalArgument XmlComparisonSettings settings);
+            Interchange actual, @TechnicalArgument EdiComparisonSettings settings);
 }

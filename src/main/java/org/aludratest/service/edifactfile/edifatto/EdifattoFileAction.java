@@ -24,11 +24,10 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
+import org.aludratest.content.edifact.AggregateEdiDiff;
+import org.aludratest.content.edifact.EdiComparisonSettings;
+import org.aludratest.content.edifact.EdiDiffDetail;
 import org.aludratest.content.edifact.EdifactContent;
-import org.aludratest.content.xml.AggregateXmlDiff;
-import org.aludratest.content.xml.XmlComparisonSettings;
-import org.aludratest.content.xml.XmlDiffDetail;
-import org.aludratest.content.xml.util.DatabeneXmlComparisonSettings;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
@@ -45,7 +44,6 @@ import org.databene.edifatto.format.StandardInterchangeFormatter;
 import org.databene.edifatto.format.TextTreeInterchangeFormatter;
 import org.databene.edifatto.model.Interchange;
 import org.databene.formats.compare.AggregateDiff;
-import org.databene.formats.xml.compare.DefaultXMLComparisonModel;
 
 /**
  * Action class for {@link EdifattoFileService}, implementing all Edifact action interfaces.
@@ -135,17 +133,17 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
     @Override
     public void assertInterchangesMatch(String elementType, String elementName,
             Interchange expected, Interchange actual,
-            XmlComparisonSettings settings) {
-        AggregateXmlDiff diffs = contentHandler.compare(expected, actual, settings);
+            EdiComparisonSettings settings) {
+        AggregateEdiDiff diffs = contentHandler.compare(expected, actual, settings);
         memorizeInterchanges(expected, actual, diffs);
-        int detailCount = diffs.getXmlDetails().size();
+        int detailCount = diffs.getEdiDetails().size();
         if (detailCount > 0) {
             String lf = SystemInfo.getLineSeparator();
             StringBuilder message = new StringBuilder("Interchanges do not match. Found " + detailCount + " difference");
             if (detailCount > 1) {
                 message.append("s");
             }
-            for (XmlDiffDetail diff : diffs.getXmlDetails()) {
+            for (EdiDiffDetail diff : diffs.getEdiDetails()) {
                 message.append(lf).append(diff);
             }
             throw new FunctionalFailure(message.toString());
@@ -164,14 +162,14 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
      *   {@link XPathConstants#NODESET} for a {@link org.w3c.dom.NodeList}
      */
     @Override
-    public Object queryXML(String elementType, String elementName, Interchange interchange, String expression, QName returnType) {
+    public Object query(String elementType, String elementName, Interchange interchange, String expression, QName returnType) {
         memorizeInterchanges(null, interchange, null);
-        return contentHandler.queryXML(interchange, expression, returnType);
+        return contentHandler.query(interchange, expression, returnType);
     }
 
     @Override
-    public XmlComparisonSettings createDefaultComparisonSettings() {
-        return new DatabeneXmlComparisonSettings(new DefaultXMLComparisonModel());
+    public EdiComparisonSettings createDefaultComparisonSettings() {
+        return contentHandler.createDefaultComparisonSettings();
     }
 
     /** Finds out the differences between two EDIFACT or X12 interchanges,
@@ -184,8 +182,8 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
      *  @param model
      *  @return an {@link AggregateDiff} of the interchanges */
     @Override
-    public AggregateXmlDiff diff(String elementType, String elementName, Interchange expected, Interchange actual,
-            XmlComparisonSettings settings) {
+    public AggregateEdiDiff diff(String elementType, String elementName, Interchange expected, Interchange actual,
+            EdiComparisonSettings settings) {
         try {
             memorizeInterchanges(expected, actual, null);
             return contentHandler.compare(expected, actual, settings);
@@ -230,7 +228,7 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
 
     /** saves the most recently used interchange(s)
      * in order to provide them as attachment on request. */
-    private void memorizeInterchanges(Interchange expected, Interchange actual, AggregateXmlDiff diff) {
+    private void memorizeInterchanges(Interchange expected, Interchange actual, AggregateEdiDiff diff) {
         this.recentExpectedInterchange = expected;
         this.recentActualInterchange = actual;
         this.recentDiff = (AggregateDiff) diff;

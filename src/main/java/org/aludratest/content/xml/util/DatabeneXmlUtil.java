@@ -61,7 +61,8 @@ public class DatabeneXmlUtil {
      * @param locatorOfActual the locator of the actual element
      * @return an {@link XmlDiffDetail} that represents different values or contents between an expected and an actual element */
     public static XmlDiffDetail different(Object expected, Object actual, String objectClassifier, String locatorOfActual) {
-        return new DatabeneXmlDiffDetail(expected, actual, objectClassifier, DiffDetailType.DIFFERENT, null, locatorOfActual);
+        return new DatabeneXmlDiffDetail(expected, actual, objectClassifier, DiffDetailType.DIFFERENT, locatorOfActual,
+                locatorOfActual);
     }
 
     /** Converts an {@link AggregateDiff} instance from the Databene Formats library to an {@link AggregateXmlDiff} for the
