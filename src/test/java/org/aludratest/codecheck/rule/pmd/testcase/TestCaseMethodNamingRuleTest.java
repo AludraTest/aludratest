@@ -28,9 +28,11 @@ public class TestCaseMethodNamingRuleTest extends AbstractPmdTestCase {
     @Test
     public void testInvalidClass() {
         TestCaseMethodNamingRule rule = new TestCaseMethodNamingRule();
+        rule.setProperty(rule.messageProperty, "Method name not OK");
         Report report = runPmdTest(InvalidMethodNameTestCaseClass.class, rule);
         assertReportViolations(report, 1);
         assertReportViolationMethod(report, 0, "test_illegal_name");
+        assertReportViolationMessageMatches(report, 0, "Method name not OK");
     }
 
     @Test

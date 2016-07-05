@@ -35,10 +35,7 @@ public class TestCaseClassNamingRule extends AbstractRegexNamingRule {
     @Override
     public Object visit(ASTClassOrInterfaceDeclaration node, Object data) {
         if (isTestCaseClass(node)) {
-            String className = node.getImage();
-            if (!matches(className)) {
-                addViolationWithMessage(data, node, "Test class names should match the regular expression '" + getRegex() + "'");
-            }
+            assertMatch(node.getImage(), node, data);
         }
         return data;
     }

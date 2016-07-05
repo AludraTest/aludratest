@@ -29,8 +29,10 @@ public class TestCaseClassNamingRuleTest extends AbstractPmdTestCase {
     public void testInvalidClass() {
         TestCaseClassNamingRule rule = new TestCaseClassNamingRule();
         rule.setProperty(rule.regexProperty, "ValidTestCaseClass");
+        rule.setProperty(rule.messageProperty, "Class name not OK");
         Report report = runPmdTest(InvalidTestCaseClass.class, rule);
         assertReportViolations(report, 1);
+        assertReportViolationMessageMatches(report, 0, "Class name not OK");
     }
 
     @Test
