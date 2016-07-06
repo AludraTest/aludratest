@@ -171,7 +171,8 @@ public class XmlContentImplTest {
         actual.getDocumentElement().setAttribute("att", "val2");
         AggregateXmlDiff diff = content.compare(expected, actual, content.createDefaultComparisonSettings());
         assertEquals(1, diff.getXmlDetails().size());
-        assertEquals(DatabeneXmlUtil.different("val", "val2", "attribute value", "/root/@att"), diff.getXmlDetails().get(0));
+        assertEquals(DatabeneXmlUtil.different("val", "val2", "attribute value", "/root/@att", "/root/@att"),
+                diff.getXmlDetails().get(0));
     }
 
     @Test
@@ -240,7 +241,8 @@ public class XmlContentImplTest {
         assertEquals("text", expectedText.getTextContent());
         Node actualText = XPathUtil.queryNode(actual, "/root/node/text()");
         assertEquals("otherText", actualText.getTextContent());
-        XmlDiffDetail expectedDiff = DatabeneXmlUtil.different(expectedText, actualText, "element text", "/root/node/text()");
+        XmlDiffDetail expectedDiff = DatabeneXmlUtil.different(expectedText, actualText, "element text", "/root/node/text()",
+                "/root/node/text()");
         assertEquals(expectedDiff, diff.getXmlDetails().get(0));
     }
 

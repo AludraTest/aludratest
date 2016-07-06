@@ -33,6 +33,7 @@ import org.databene.commons.SystemInfo;
 import org.databene.edifatto.EdiChecker;
 import org.databene.edifatto.EdiFormatSymbols;
 import org.databene.edifatto.EdiGenerator;
+import org.databene.edifatto.EdiParserSettings;
 import org.databene.edifatto.EdiWriter;
 import org.databene.edifatto.Edifatto;
 import org.databene.edifatto.model.Interchange;
@@ -53,7 +54,7 @@ public class EdifattoContent implements EdifactContent {
     @Override
     public Interchange readInterchange(InputStream in) {
         try {
-            return Edifatto.parseEdiFile(in);
+            return Edifatto.parseEdiFile(in, new EdiParserSettings());
         } catch (IOException e) {
             throw new TechnicalException("Error parsing EDI document", e);
         }

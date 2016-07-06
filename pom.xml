@@ -135,13 +135,13 @@
 		<dependency>
 			<groupId>org.databene</groupId>
 			<artifactId>databene-formats</artifactId>
-			<version>1.0.12</version>
+			<version>1.0.13</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.databene</groupId>
 			<artifactId>databene-commons</artifactId>
-			<version>1.0.10</version>
+			<version>1.0.11</version>
 		</dependency>
 
 		<dependency>
@@ -194,7 +194,7 @@
 		<dependency>
 			<groupId>org.databene</groupId>
 			<artifactId>edifatto</artifactId>
-			<version>2.1.1</version>
+			<version>3.0.1</version>
 		</dependency>
 
 		<!-- for file based services -->
