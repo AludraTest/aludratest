@@ -19,26 +19,26 @@ import net.sourceforge.pmd.Report;
 
 import org.aludratest.codecheck.rule.pmd.AbstractPmdTestCase;
 import org.junit.Test;
-import org.test.testclasses.testcase.InvalidTestCaseClass;
+import org.test.testclasses.testcase.InvalidMethodNameTestCaseClass;
 import org.test.testclasses.testcase.ValidTestCaseClass;
 
 @SuppressWarnings("javadoc")
-public class TestCaseClassNamingRuleTest extends AbstractPmdTestCase {
+public class TestCaseMethodNamingRuleTest extends AbstractPmdTestCase {
 
     @Test
     public void testInvalidClass() {
-        TestCaseClassNamingRule rule = new TestCaseClassNamingRule();
-        rule.setProperty(rule.regexProperty, "ValidTestCaseClass");
-        rule.setProperty(rule.messageProperty, "Class name not OK");
-        Report report = runPmdTest(InvalidTestCaseClass.class, rule);
+        TestCaseMethodNamingRule rule = new TestCaseMethodNamingRule();
+        rule.setProperty(rule.messageProperty, "Method name not OK");
+        Report report = runPmdTest(InvalidMethodNameTestCaseClass.class, rule);
         assertReportViolations(report, 1);
-        assertReportViolationMessageMatches(report, 0, "Class name not OK");
+        assertReportViolationMethod(report, 0, "test_illegal_name");
+        assertReportViolationMessageMatches(report, 0, "Method name not OK");
     }
 
     @Test
     public void testValidClass() {
-        TestCaseClassNamingRule rule = new TestCaseClassNamingRule();
-        rule.setProperty(rule.regexProperty, "ValidTestCaseClass");
+        TestCaseMethodNamingRule rule = new TestCaseMethodNamingRule();
+        rule.setProperty(rule.regexProperty, "test");
         Report report = runPmdTest(ValidTestCaseClass.class, rule);
         assertReportViolations(report, 0);
     }
