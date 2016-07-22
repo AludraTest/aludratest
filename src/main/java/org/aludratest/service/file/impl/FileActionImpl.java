@@ -38,6 +38,7 @@ import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.file.File;
+import org.aludratest.service.file.FileChooser;
 import org.aludratest.service.file.FileCondition;
 import org.aludratest.service.file.FileFilter;
 import org.aludratest.service.file.FileInfo;
@@ -118,7 +119,9 @@ public final class FileActionImpl implements FileInteraction, FileVerification, 
             List<String> filePaths = new ArrayList<String>();
             if (candidates != null) {
                 for (FileObject candidate : candidates) {
-                    if (filter == null || filter.accept(new FileInfo(candidate))) {
+                    String path = configuration.pathFromRoot(candidate);
+                    FileInfo info = new FileInfoImpl(candidate, path);
+                    if (filter == null || filter.accept(info)) {
                         filePaths.add(pathFromRoot(candidate));
                     }
                 }
@@ -395,6 +398,18 @@ public final class FileActionImpl implements FileInteraction, FileVerification, 
         pollService.poll(new WaitForFileTask(filePath, true));
     }
 
+    /** Polls the file system for searching a file until it is found or a timeout is exceeded. Timeout and the maximum number of
+     * polls are retrieved from the {@link FileServiceConfiguration}.
+     * @throws FunctionalFailure if the file was not found within the timeout */
+    @Override
+    public String waitUntilChildExists(String dirPath, FileChooser chooser) {
+        File.verifyFilePath(dirPath);
+        if (chooser == null) {
+            throw new AutomationException("No FileChooser provided");
+        }
+        return pollService.poll(new WaitForFileChoosingTask(dirPath, chooser, true));
+    }
+
     /** Polls the file system for a given file until it has disappeared or a timeout is exceeded.
      *  Timeout and the maximum number of polls are retrieved from the
      *  {@link FileServiceConfiguration}.
@@ -573,6 +588,29 @@ public final class FileActionImpl implements FileInteraction, FileVerification, 
         }
     }
 
+    /** Lists FileInfos for all child elements of the given folder which match the filter. */
+    private List<FileInfo> getChildInfos(String dirPath, FileFilter filter) {
+        File.verifyFilePath(dirPath);
+        try {
+            FileObject parent = configuration.getFileObject(dirPath);
+            parent.refresh();
+            FileObject[] candidates = parent.getChildren();
+            List<FileInfo> infos = new ArrayList<FileInfo>();
+            if (candidates != null) {
+                for (FileObject candidate : candidates) {
+                    FileInfo fileInfo = new FileInfoImpl(candidate, configuration.pathFromRoot(candidate));
+                    if (filter == null || filter.accept(fileInfo)) {
+                        infos.add(fileInfo);
+                    }
+                }
+            }
+            return infos;
+        }
+        catch (IOException e) {
+            throw new TechnicalException("Error retrivieving child objects", e);
+        }
+    }
+
     private class WaitForFileTask implements PolledTask<String> {
 
         private String filePath;
@@ -619,6 +657,63 @@ public final class FileActionImpl implements FileInteraction, FileVerification, 
         @Override
         public String toString() {
             return getClass().getSimpleName() + "(" + filePath + ")";
+        }
+
+    }
+
+    private class WaitForFileChoosingTask implements PolledTask<String> {
+
+        private String dirPath;
+        private FileChooser chooser;
+        private boolean awaitExistence;
+
+        public WaitForFileChoosingTask(String dirPath, FileChooser chooser, boolean awaitExistence) {
+            this.dirPath = dirPath;
+            this.chooser = chooser;
+            this.awaitExistence = awaitExistence;
+        }
+
+        @Override
+        public String run() {
+            FileObject dir = getFileObject(dirPath);
+            try {
+                if (!awaitExistence) {
+                    // This is a workaround for VFS 2.0's flaws in the
+                    // handling of attached/detached state and caching:
+                    FileObject parent = dir.getParent();
+                    parent.getType(); // assure that parent folder is attached
+                    parent.refresh(); // detach parent folder and clear child object cache
+                    // (works only if attached before)
+                    // ...end of workaround
+                }
+                dir.refresh();
+
+                List<FileInfo> children = getChildInfos(dirPath, null);
+                FileInfo chosenFile = chooser.chooseFrom(children);
+                if (chosenFile != null) {
+                    String chosenPath = chosenFile.getPath();
+                    LOGGER.debug("File chosen: {}", chosenFile);
+                    return (awaitExistence ? chosenPath : null);
+                }
+                else {
+                    LOGGER.debug("No appropriate file found in: {}", dirPath);
+                    return (awaitExistence ? null : dirPath);
+                }
+            }
+            catch (IOException e) {
+                throw new TechnicalException("Error checking directory", e);
+            }
+        }
+
+        @Override
+        public String timedOut() {
+            String expectedState = (awaitExistence ? "found" : "removed");
+            throw new FunctionalFailure("File not " + expectedState + " within timeout: " + dirPath);
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "(" + dirPath + ")";
         }
 
     }

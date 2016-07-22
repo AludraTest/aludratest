@@ -96,7 +96,7 @@ public class FtpFileServiceTest extends AbstractAludraServiceTest {
                 fileCount++;
             }
         }
-        assertEquals(2, dirCount);
+        assertEquals(3, dirCount);
         assertEquals(1, fileCount);
     }
 

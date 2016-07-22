@@ -18,6 +18,7 @@ package org.aludratest.service.file;
 import org.aludratest.dict.ActionWordLibrary;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.TechnicalException;
+import org.aludratest.service.file.data.FileData;
 import org.aludratest.service.file.data.TargetFileData;
 import org.aludratest.util.DataUtil;
 import org.aludratest.util.data.StringData;
@@ -154,6 +155,19 @@ public class File implements ActionWordLibrary<File> {
      */
     public File waitUntilExists() {
         service.perform().waitUntilExists(elementName, filePath);
+        return this;
+    }
+
+    /** Waits until a child file exists or a timeout occurs.
+     * @param chooser the {@link FileChooser} that chooses the file from the directory
+     * @param resultFile returns a reference to the chosen file
+     * @return a reference to the File object itself */
+    public File waitUntilChildExists(FileChooser chooser, FileData resultFile) {
+        if (resultFile == null) {
+            throw new AutomationException("No resultFile data object provided");
+        }
+        String chosenPath = service.perform().waitUntilChildExists(filePath, chooser);
+        resultFile.setFile(new File(chosenPath, service));
         return this;
     }
 
