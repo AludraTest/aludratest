@@ -16,6 +16,7 @@
 package org.aludratest.service.edifactfile.edifatto;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,8 +113,14 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
 
     @Override
     public Interchange readInterchange(String elementType, String elementName, String filePath) {
-        String content = fileService.perform().readTextFile(filePath);
-        ByteArrayInputStream in = new ByteArrayInputStream(content.getBytes()); // ENHANCE which encoding to use?
+        byte[] bytes = fileService.perform().readBinaryFile(filePath);
+        Interchange interchange = contentHandler.readInterchange(new ByteArrayInputStream(bytes));
+        memorizeInterchanges(null, interchange, null);
+        return interchange;
+    }
+
+    @Override
+    public Interchange readInterchange(String elementType, String elementName, InputStream in) {
         Interchange interchange = contentHandler.readInterchange(in);
         memorizeInterchanges(null, interchange, null);
         return interchange;

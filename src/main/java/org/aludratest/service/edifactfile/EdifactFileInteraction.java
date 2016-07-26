@@ -15,7 +15,9 @@
  */
 package org.aludratest.service.edifactfile;
 
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.Map;
 
 import org.aludratest.service.AttachParameter;
@@ -28,78 +30,86 @@ import org.aludratest.service.TechnicalLocator;
 import org.databene.edifatto.EdiFormatSymbols;
 import org.databene.edifatto.model.Interchange;
 
-/** 
+/**
  * Parses and saves EDIFACT and X12 documents from and to streams.
  * @author Volker Bergmann
  */
 public interface EdifactFileInteraction extends Interaction {
-    
-    /** Polls the file system until a file at the given path is found 
-     *  or a timeout occurs. 
-     *  @param elementType 
-     *  @param elementName 
+
+    /** Polls the file system until a file at the given path is found
+     *  or a timeout occurs.
+     *  @param elementType
+     *  @param elementName
      *  @param filePath */
     void waitUntilExists(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
+            @ElementType String elementType,
+            @ElementName String elementName,
             @TechnicalLocator String filePath);
-    
+
     /** Polls the file system until no file is found at the given path.
-     *  @param elementType 
-     *  @param elementName 
+     *  @param elementType
+     *  @param elementName
      *  @param filePath */
     void waitUntilNotExists(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
+            @ElementType String elementType,
+            @ElementName String elementName,
             @TechnicalLocator String filePath);
-    
+
     /** Deletes a file
-     *  @param elementType 
-     *  @param elementName 
+     *  @param elementType
+     *  @param elementName
      *  @param filePath the path of the file to delete */
     void delete(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
+            @ElementType String elementType,
+            @ElementName String elementName,
             @TechnicalLocator String filePath);
-    
-    /** Writes an EDIFACT or X12 interchange to an {@link OutputStream}. 
-     *  @param elementType 
-     *  @param elementName 
-     *  @param interchange the interchange to persist 
+
+    /** Writes an EDIFACT or X12 interchange to an {@link OutputStream}.
+     *  @param elementType
+     *  @param elementName
+     *  @param interchange the interchange to persist
      *  @param filePath the path of the file to write
      *  @param overwrite flag that indicates whether a pre-existing file may be overwritten */
     void writeInterchange(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
-            @AttachParameter("Interchange") Interchange interchange, 
-            @TechnicalLocator String filePath, 
+            @ElementType String elementType,
+            @ElementName String elementName,
+            @AttachParameter("Interchange") Interchange interchange,
+            @TechnicalLocator String filePath,
             @TechnicalArgument boolean overwrite);
-    
+
     /** Creates an {@link Interchange} based on a template file and a variable tree
-     *  @param elementType 
-     *  @param elementName 
+     *  @param elementType
+     *  @param elementName
      *  @param templateUri the path of the template file
      *  @param symbols the symbols to use
      *  @param variables the variable tree
      *  @return a new Interchange containing the information from the variable tree */
     @AttachResult("Created Interchange")
     Interchange createInterchange(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
-            @TechnicalLocator String templateUri, 
-            @TechnicalArgument EdiFormatSymbols symbols, 
+            @ElementType String elementType,
+            @ElementName String elementName,
+            @TechnicalLocator String templateUri,
+            @TechnicalArgument EdiFormatSymbols symbols,
             @TechnicalArgument Map<String, Object> variables);
-    
+
     /** Reads an {@link Interchange} from a file system.
-     *  @param elementType 
-     *  @param elementName 
-     *  @param filePath the full path of the file to read
-     *  @return an {@link Interchange} data structure 
-     *  	that contains the EDI data mapped to a tree structure */
+     * @param elementType
+     * @param elementName
+     * @param filePath the full path of the file to read
+     * @return an {@link Interchange} data structure that contains the EDI data mapped to a tree structure */
     @AttachResult("Read Interchange")
     Interchange readInterchange(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
+            @ElementType String elementType,
+            @ElementName String elementName,
             @TechnicalLocator String filePath);
-    
+
+    /** Reads an {@link Interchange} from a {@link Reader}.
+     * @param elementType
+     * @param elementName
+     * @param in an {@link InputStream} that provides the interchange's textual representation
+     * @return an {@link Interchange} data structure that contains the EDI data mapped to a tree structure */
+    @AttachResult("Read Interchange")
+    Interchange readInterchange(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalArgument InputStream in);
+
 }

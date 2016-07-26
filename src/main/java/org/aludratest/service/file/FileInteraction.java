@@ -162,4 +162,12 @@ public interface FileInteraction extends Interaction {
      *  @throws AutomationException if the file was not found within the timeout */
     String waitForFirstMatch(@TechnicalLocator String parentPath, FileFilter filter);
 
+    /** Polls the given directory until the filter finds a match or a timeout is exceeded. Timeout and the maximum number of polls
+     * are retrieved from the {@link org.aludratest.service.file.impl.FileServiceConfiguration}.
+     * @param dirPath the path of the directory in which to search for the file
+     * @param selector a {@link FileChooser} object that decides which file is to be accepted
+     * @return the file path of the file that was accepted by the filter, or null if none was accepted
+     * @throws AutomationException if the file was not found within the timeout */
+    String waitUntilChildExists(String dirPath, FileChooser selector);
+
 }

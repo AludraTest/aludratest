@@ -15,11 +15,16 @@
  */
 package org.aludratest.service.edifactfile;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.aludratest.content.edifact.EdiComparisonSettings;
 import org.aludratest.content.edifact.EdiDiffDetailType;
 import org.aludratest.dict.ActionWordLibrary;
+import org.aludratest.exception.AutomationException;
 import org.aludratest.service.edifactfile.data.KeyExpressionData;
 import org.aludratest.util.data.StringData;
+import org.databene.commons.IOUtil;
 import org.databene.edifatto.model.Interchange;
 
 /**
@@ -94,13 +99,18 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
         return (E) this;
     }
 
-    /** Asserts that the interchange stored in this document is equals to the provided
-     *  interchange, ignoring the provided paths.
-     *  @param referenceFileName the name of the reference file to verify against
-     *  @return a reference to the invoked EdifactFileVerifier instance */
-    public E verifyWith(StringData referenceFileName) {
-        Interchange expected = service.perform().readInterchange(
-                elementType, "reference file", referenceFileName.getValue());
+    /** Asserts that the interchange stored in this document is equals to the provided interchange, ignoring the provided paths.
+     * @param referenceFileUri the URI of the reference file to verify against
+     * @return a reference to the invoked EdifactFileVerifier instance */
+    public E verifyWith(StringData referenceFileUri) {
+        InputStream referenceFileStream;
+        try {
+            referenceFileStream = IOUtil.getInputStreamForURI(referenceFileUri.getValue());
+        }
+        catch (IOException e) {
+            throw new AutomationException("Failed to read reference file", e);
+        }
+        Interchange expected = service.perform().readInterchange(elementType, "reference file", referenceFileStream);
         Interchange actual = service.perform().readInterchange(
                 elementType, "outbound file", this.filePath);
         service.verify().assertInterchangesMatch(elementType, null, expected, actual, settings);

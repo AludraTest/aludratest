@@ -15,25 +15,13 @@
  */
 package org.aludratest.service.file;
 
-/**
- * Provides elementary file information which might serve as filter criteria.
- * @author Volker Bergmann
- */
-public interface FileInfo {
+import java.util.List;
 
-    /** @return the name of the file */
-    public String getName();
-
-    /** @return the path of the file relative to the root folder of the related {@link FileService} */
-    public String getPath();
-
-    /** @return true if the file is a directory, otherwise false */
-    public boolean isDirectory();
-
-    /** @return the size of the file */
-    public long getSize();
-
-    /** @return the time at which the file was modified the last time */
-    long getLastModifiedTime();
-
+/** Chooses a file from a list.
+ * @author Volker Bergmann */
+public interface FileChooser {
+    /** Chooses a file from a list
+     * @param fileInfos the candidates from which to choose
+     * @return the chosen file or null if none met the criteria */
+    FileInfo chooseFrom(List<FileInfo> fileInfos);
 }
