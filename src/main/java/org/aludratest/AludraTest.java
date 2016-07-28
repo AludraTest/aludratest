@@ -44,6 +44,7 @@ import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
 import org.aludratest.service.AludraServiceManager;
 import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.event.TestStepInfo;
+import org.aludratest.util.EnvUtil;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
@@ -51,14 +52,13 @@ import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.lifecycle.UndefinedLifecycleHandlerException;
-import org.databene.commons.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * AludraTest framework class. This is the main entry point to AludraTest. Clients can either invoke the class via its main method
  * directly, or construct an instance of this class and call one of its <code>run</code> methods.
- * 
+ *
  * @author Volker Bergmann
  * @author falbrech
  */
@@ -67,7 +67,7 @@ public final class AludraTest {
     /**
      * The name of the System Property which is checked for the environment name to use.
      */
-    public static final String ENVIRONMENT_NAME_PROPERTY = "aludraTest.environment";
+    public static final String ENVIRONMENT_NAME_PROPERTY = EnvUtil.ENVIRONMENT_NAME_PROPERTY;
 
     /** The name of the System Property which is checked for the dry run indicator. */
     private static final String DRY_RUN_PROPERTY = "aludraTest.dryRun";
@@ -126,9 +126,9 @@ public final class AludraTest {
 
     /** Returns the current AludraTest instance. This method will only return a non-null value between calls to
      * {@link #startFramework()} and {@link #stopFramework()}.
-     * 
+     *
      * @return The current AludraTest instance, or <code>null</code>.
-     * 
+     *
      * @deprecated This method should not be used for software design reasons. Better keep your AludraTest instance which is
      *             returned by startFramework, or use IoC patterns to retrieve components you need. */
     @Deprecated
@@ -162,19 +162,15 @@ public final class AludraTest {
     /**
      * Returns the name of the current environment. This is a central parameter of AludraTest and used to distinguish
      * configuration for different environments. Pass it e.g. via command line System Property:
-     * 
+     *
      * <pre>
      * -DaludraTest.environment=MYHOST
      * </pre>
-     * 
+     *
      * @return The name of the current environment. Defaults to <code>LOCAL</code> if none has been set.
      */
     public static String getEnvironmentName() {
-        String propValue = System.getProperty(ENVIRONMENT_NAME_PROPERTY);
-        if (!StringUtil.isEmpty(propValue)) {
-            return propValue;
-        }
-        return "LOCAL";
+        return EnvUtil.getEnvironmentName();
     }
 
     private static boolean isDryRun() {
@@ -184,14 +180,14 @@ public final class AludraTest {
 
     /** Returns the service manager of AludraTest. This can be used for service and component lookups. If you have a context
      * available (an AludraTestContext or an AludraServiceContext), you should prefer to call its methods for these lookups.
-     * 
+     *
      * @return The service manager of AludraTest, never <code>null</code>. */
     public AludraServiceManager getServiceManager() {
         return serviceManager;
     }
 
     /** Executes tests based on their <code>TestAttribute</code> annotations. Waits until all tests are finished.
-     * 
+     *
      * @param jarOrClassRoot A JAR file or a folder containing all class files to search.
      * @param filterString A filter for test classes to include in the execution. See <a
      *            href="http://aludratest.github.io/aludratest/test-filter-syntax.html">AludraTest Documentation</a> for syntax.
