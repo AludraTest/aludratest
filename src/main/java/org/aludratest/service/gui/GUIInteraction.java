@@ -22,7 +22,6 @@ import org.aludratest.service.Interaction;
 import org.aludratest.service.TechnicalArgument;
 import org.aludratest.service.TechnicalLocator;
 import org.aludratest.service.Verification;
-import org.aludratest.service.gui.web.page.Page;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.option.OptionLocator;
 import org.aludratest.service.locator.window.TitleLocator;
@@ -219,7 +218,7 @@ public interface GUIInteraction extends Interaction {
     String captureActiveWindow();
 
     /** Issues a "wrong page flow" error on this service. This should only be called from <code>checkCorrectPage()</code> methods
-     * of {@link Page} subclasses.
+     * of <code>Page</code> subclasses.
      *
      * @param message Message to log together with the error. */
     void wrongPageFlow(String message);
