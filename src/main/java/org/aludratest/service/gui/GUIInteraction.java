@@ -15,6 +15,7 @@
  */
 package org.aludratest.service.gui;
 
+import org.aludratest.service.AttachResult;
 import org.aludratest.service.ElementName;
 import org.aludratest.service.ElementType;
 import org.aludratest.service.Interaction;
@@ -199,7 +200,7 @@ public interface GUIInteraction extends Interaction {
 
     /** Waits until the given window is closed, or the given timeout is reached. This is especially useful if a window is closed
      * asynchronously some time after some event (e.g. a button click).
-     * 
+     *
      * @param elementType the type of the target windows to log
      * @param elementName the name of the target windows to log
      * @param locator is a window locator or just a String which will be automatically converted to one of the default locators
@@ -209,8 +210,23 @@ public interface GUIInteraction extends Interaction {
     void waitForWindowToBeClosed(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator TitleLocator locator, int taskCompletionTimeout);
 
+    /** Performs a screenshot of the currently active window.
+     *
+     * @return A BASE64-encoded image with the contents of the currently active window. The image format is up to the UI service
+     *         implementation, although PNG is recommended. */
+    @AttachResult("Active Window Screenshot")
+    String captureActiveWindow();
+
+    /** Issues a "wrong page flow" error on this service. This should only be called from <code>checkCorrectPage()</code> methods
+     * of <code>Page</code> subclasses.
+     *
+     * @param message Message to log together with the error. */
     void wrongPageFlow(String message);
 
+    /** Signals a functional error of the underlying SUT. This should only used in cases where simple assertion calls of UI
+     * components are not sufficient, e.g. where complex checks are required to determine the error state of the SUT.
+     *
+     * @param message Message to log together with the error. */
     void functionalError(String message);
 
 }
