@@ -743,14 +743,14 @@ public final class FileActionImpl implements FileInteraction, FileVerification, 
                 LOGGER.debug("File found: {}", result);
                 return result;
             } else {
-                LOGGER.debug("No match found for {}", filter);
+                LOGGER.debug("No match found for {} in {}", filter, parentPath);
                 return null;
             }
         }
 
         @Override
         public String timedOut() {
-            throw new FunctionalFailure("No match found for filter " + filter);
+            throw new FunctionalFailure("No match found for filter " + filter + " in " + parentPath);
         }
 
         @Override
