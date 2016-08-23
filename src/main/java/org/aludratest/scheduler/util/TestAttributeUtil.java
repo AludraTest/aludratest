@@ -15,7 +15,10 @@
  */
 package org.aludratest.scheduler.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.aludratest.testcase.AludraTestCase;
@@ -23,7 +26,7 @@ import org.aludratest.testcase.TestAttribute;
 import org.aludratest.testcase.TestAttributes;
 
 /** Helper class for dealing with {@link TestAttribute} annotations.
- * 
+ *
  * @author falbrech */
 public final class TestAttributeUtil {
 
@@ -31,22 +34,26 @@ public final class TestAttributeUtil {
     }
 
     /** Determines all test attributes of the given test case class.
-     * 
+     *
      * @param testClass Test case class.
-     * 
+     *
      * @return All test attributes of the given test case class. */
-    public static Map<String, String> getTestAttributes(Class<? extends AludraTestCase> testClass) {
+    public static Map<String, List<String>> getTestAttributes(Class<? extends AludraTestCase> testClass) {
         TestAttribute attr = testClass.getAnnotation(TestAttribute.class);
         TestAttributes attrs = testClass.getAnnotation(TestAttributes.class);
 
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, List<String>> result = new HashMap<String, List<String>>();
 
         if (attr != null) {
-            result.put(attr.name(), attr.value());
+            result.put(attr.name(), Collections.singletonList(attr.value()));
         }
         if (attrs != null) {
             for (TestAttribute a : attrs.value()) {
-                result.put(a.name(), a.value());
+                List<String> ls = result.get(a.name());
+                if (ls == null) {
+                    result.put(a.name(), ls = new ArrayList<String>());
+                }
+                ls.add(a.value());
             }
         }
 

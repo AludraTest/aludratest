@@ -497,7 +497,8 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                 List<String> categories = new ArrayList<String>();
                 StringBuilder prefix = new StringBuilder();
                 for (String cat : categoryOrder) {
-                    String catVal = TestAttributeUtil.getTestAttributes(clazz).get(cat);
+                    List<String> catVals = TestAttributeUtil.getTestAttributes(clazz).get(cat);
+                    String catVal = catVals == null || catVals.isEmpty() ? null : catVals.get(0);
                     if (catVal == null) {
                         catVal = cat + " unknown";
                     }
