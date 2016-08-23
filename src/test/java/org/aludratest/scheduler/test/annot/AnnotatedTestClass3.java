@@ -20,10 +20,10 @@ import org.aludratest.testcase.Test;
 import org.aludratest.testcase.TestAttribute;
 import org.aludratest.testcase.TestAttributes;
 
-@TestAttributes({ @TestAttribute(name = "author", value = "falbrech"), @TestAttribute(name = "author", value = "secondauthor"),
-        @TestAttribute(name = "state", value = "InWork"),
+@TestAttributes({ @TestAttribute(name = "author", value = "secondauthor"), @TestAttribute(name = "author", value = "falbrech"),
+    @TestAttribute(name = "state", value = "InWork"),
     @TestAttribute(name = "testName", value = "RunnerTreeBuilderImplTest") })
-public class AnnotatedTestClass1 extends AludraTestCase {
+public class AnnotatedTestClass3 extends AludraTestCase {
 
     @Test
     public void testSth() {

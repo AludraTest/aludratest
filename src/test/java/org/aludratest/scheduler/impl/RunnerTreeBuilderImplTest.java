@@ -24,7 +24,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.aludratest.PreconditionFailedException;
 import org.aludratest.invoker.TestInvoker;
@@ -37,6 +39,7 @@ import org.aludratest.scheduler.node.RunnerLeaf;
 import org.aludratest.scheduler.node.RunnerNode;
 import org.aludratest.scheduler.test.annot.AnnotatedTestClass1;
 import org.aludratest.scheduler.test.annot.AnnotatedTestClass2;
+import org.aludratest.scheduler.test.annot.AnnotatedTestClass3;
 import org.aludratest.scheduler.util.FilterParser;
 import org.aludratest.service.AbstractAludraIntegrationTest;
 import org.aludratest.suite.DuplicateChildSuite;
@@ -238,30 +241,27 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraIntegrationTest {
         assertEquals("InWork", tree.getRoot().getChildren().get(0).getName());
 
         RunnerGroup group = (RunnerGroup) tree.getRoot().getChildren().get(0);
-        assertEquals(2, group.getChildren().size());
+        assertEquals(3, group.getChildren().size());
         List<String> names = new ArrayList<String>();
         names.add(group.getChildren().get(0).getName());
         names.add(group.getChildren().get(1).getName());
+        names.add(group.getChildren().get(2).getName());
         assertTrue(names.contains("InWork.falbrech"));
         assertTrue(names.contains("InWork.jdoe"));
+        assertTrue(names.contains("InWork.secondauthor"));
 
         // and the actual classes
-        RunnerGroup classGroup = (RunnerGroup) group.getChildren().get(0);
-        assertEquals(1, classGroup.getChildren().size());
-        if ("InWork.falbrech".equals(classGroup.getName())) {
-            assertEquals(AnnotatedTestClass1.class.getName(), classGroup.getChildren().get(0).getName());
+        Map<String, String> classNames = new HashMap<String, String>();
+
+        for (RunnerNode node : group.getChildren()) {
+            RunnerGroup classGroup = (RunnerGroup) node;
+            assertEquals(1, classGroup.getChildren().size());
+            classNames.put(classGroup.getName(), classGroup.getChildren().get(0).getName());
         }
-        else {
-            assertEquals(AnnotatedTestClass2.class.getName(), classGroup.getChildren().get(0).getName());
-        }
-        classGroup = (RunnerGroup) group.getChildren().get(1);
-        assertEquals(1, classGroup.getChildren().size());
-        if ("InWork.falbrech".equals(classGroup.getName())) {
-            assertEquals(AnnotatedTestClass1.class.getName(), classGroup.getChildren().get(0).getName());
-        }
-        else {
-            assertEquals(AnnotatedTestClass2.class.getName(), classGroup.getChildren().get(0).getName());
-        }
+
+        assertEquals(AnnotatedTestClass1.class.getName(), classNames.get("InWork.falbrech"));
+        assertEquals(AnnotatedTestClass2.class.getName(), classNames.get("InWork.jdoe"));
+        assertEquals(AnnotatedTestClass3.class.getName(), classNames.get("InWork.secondauthor"));
     }
 
     @Test
@@ -276,7 +276,7 @@ public class RunnerTreeBuilderImplTest extends AbstractAludraIntegrationTest {
         RunnerTree tree = builder.buildRunnerTree(exec);
         RunnerGroup group = tree.getRoot();
         assertEquals("All Tests", group.getName());
-        assertEquals(2, group.getChildren().size());
+        assertEquals(3, group.getChildren().size());
     }
 
     @Test

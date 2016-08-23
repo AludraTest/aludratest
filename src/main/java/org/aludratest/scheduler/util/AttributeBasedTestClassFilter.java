@@ -22,7 +22,17 @@ import java.util.Map;
 
 import org.aludratest.scheduler.TestClassFilter;
 import org.aludratest.testcase.AludraTestCase;
+import org.aludratest.testcase.TestAttribute;
 
+/** Filter for test classes based on their {@link TestAttribute} annotation(s) and according values. For a given name of a test
+ * attribute, one or more valid values can be specified. A value of <code>[]</code> specifies that a test case matches where this
+ * test attribute is not set at all. <br>
+ * If the test case has multiple {@link TestAttribute} annotations with the same name, the test case matches as soon as one of the
+ * associated values are contained in the list of valid values. <br>
+ * If the <code>invert</code> flag is set, the calculated match flag (as described above) is inverted before being returned by
+ * {@link #matches(Class)}.
+ *
+ * @author falbrech */
 public final class AttributeBasedTestClassFilter implements TestClassFilter {
 
     private String attributeName;
@@ -31,6 +41,11 @@ public final class AttributeBasedTestClassFilter implements TestClassFilter {
 
     private boolean invert;
 
+    /** Constructs a new attribute based test class filter.
+     *
+     * @param attributeName Name of the TestAttribute to match on.
+     * @param values List of accepted values for the TestAttribute.
+     * @param invert If <code>true</code>, the match result is inverted before being returned. */
     public AttributeBasedTestClassFilter(String attributeName, List<String> values, boolean invert) {
         this.attributeName = attributeName;
         this.values = Collections.unmodifiableList(new ArrayList<String>(values));
@@ -51,7 +66,7 @@ public final class AttributeBasedTestClassFilter implements TestClassFilter {
 
     @Override
     public boolean matches(Class<? extends AludraTestCase> testClass) {
-        Map<String, String> attributes = TestAttributeUtil.getTestAttributes(testClass);
+        Map<String, List<String>> attributes = TestAttributeUtil.getTestAttributes(testClass);
 
         boolean matchValue = false;
 
@@ -59,7 +74,10 @@ public final class AttributeBasedTestClassFilter implements TestClassFilter {
             matchValue = values.contains("[]");
         }
         else {
-            matchValue = values.contains(attributes.get(attributeName));
+            // one of the attributes set must be contained in values
+            for (String attrValue : attributes.get(attributeName)) {
+                matchValue |= values.contains(attrValue);
+            }
         }
 
         return invert ? !matchValue : matchValue;
