@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Map;
 
+import org.aludratest.exception.AutomationException;
 import org.aludratest.service.AttachParameter;
 import org.aludratest.service.AttachResult;
 import org.aludratest.service.ElementName;
@@ -27,6 +28,7 @@ import org.aludratest.service.ElementType;
 import org.aludratest.service.Interaction;
 import org.aludratest.service.TechnicalArgument;
 import org.aludratest.service.TechnicalLocator;
+import org.aludratest.service.file.FileFilter;
 import org.databene.edifatto.EdiFormatSymbols;
 import org.databene.edifatto.model.Interchange;
 
@@ -45,6 +47,14 @@ public interface EdifactFileInteraction extends Interaction {
             @ElementType String elementType,
             @ElementName String elementName,
             @TechnicalLocator String filePath);
+
+    /** Polls the given directory until the filter finds a match or a timeout is exceeded. Timeout and the maximum number of polls
+     * are retrieved from the {@link org.aludratest.service.file.impl.FileServiceConfiguration}.
+     * @param parentPath the path of the directory in which to search for the file
+     * @param filter a filter object that decides which file is to be accepted
+     * @return the file path of the first file that was accepted by the filter
+     * @throws AutomationException if the file was not found within the timeout */
+    String waitForFirstMatch(@TechnicalLocator String parentPath, FileFilter filter);
 
     /** Polls the file system until no file is found at the given path.
      *  @param elementType

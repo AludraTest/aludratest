@@ -71,11 +71,6 @@ public class EdifattoFileService extends AbstractAludraService implements Edifac
         return action;
     }
 
-    @Override
-    public FileService getFileService() {
-        return fileService;
-    }
-
     /** Closes the service */
     @Override
     public void close() {

@@ -32,9 +32,11 @@ import org.aludratest.content.edifact.EdifactContent;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
+import org.aludratest.service.TechnicalLocator;
 import org.aludratest.service.edifactfile.EdifactFileCondition;
 import org.aludratest.service.edifactfile.EdifactFileInteraction;
 import org.aludratest.service.edifactfile.EdifactFileVerification;
+import org.aludratest.service.file.FileFilter;
 import org.aludratest.service.file.FileService;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
@@ -94,6 +96,11 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
     @Override
     public void waitUntilExists(String elementType, String elementName, String filePath) {
         fileService.perform().waitUntilExists(elementType, filePath);
+    }
+
+    @Override
+    public String waitForFirstMatch(@TechnicalLocator String parentPath, FileFilter filter) {
+        return fileService.perform().waitForFirstMatch(parentPath, filter);
     }
 
     @Override
