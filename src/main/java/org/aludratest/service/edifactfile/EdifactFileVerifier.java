@@ -37,7 +37,7 @@ import org.databene.edifatto.model.Interchange;
 @SuppressWarnings("unchecked")
 public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements ActionWordLibrary<E> {
 
-    private String filePath;
+    protected String filePath;
     private final EdifactFileService service;
     private final EdiComparisonSettings settings;
     private final String elementType;
@@ -104,6 +104,16 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
     /** Polls the file system until a file at the given path is found or a timeout occurs. If a file matched, the value of the
      * {@link #filePath} field is set to the path of that file. If the timeout is exceeded without a matching file, a
      * {@link FunctionalFailure} is thrown.
+     * 
+     * Usage Example:
+     * 
+     * <pre>
+     *   MyEdifactFileVerifier verifier = new MyEdifactFileVerifier(null, service);
+     *   FileFilter filter = new RegexFilePathFilter(".*IFTDGN_1\\.edi");
+     *   verifier.waitForFirstMatch("/", filter);
+     *   verifier.verifyWith(new StringData("target/test-classes/ediTest/IFTDGN_1.edi"));
+     * </pre>
+     * 
      * @param parentPath the path of the directory in which to search for the file
      * @param filter a filter object that decides which file is to be accepted
      * @exception FunctionalFailure if the timeout is exceeded without a matching file
