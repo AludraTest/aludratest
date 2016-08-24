@@ -18,6 +18,8 @@ package org.aludratest.service.edifactfile;
 import static org.junit.Assert.assertEquals;
 
 import org.aludratest.service.AbstractAludraServiceTest;
+import org.aludratest.service.file.FileFilter;
+import org.aludratest.service.file.filter.RegexFilePathFilter;
 import org.aludratest.testcase.TestStatus;
 import org.aludratest.util.data.StringData;
 import org.junit.After;
@@ -46,20 +48,37 @@ public class EdifactFileServiceIntegrationTest extends AbstractAludraServiceTest
     }
 
     @Test
+    public void testWaitForFirstMatch() throws Exception {
+        MyEdifactFileVerifier verifier = new MyEdifactFileVerifier(null, service);
+        FileFilter filter = new RegexFilePathFilter(".*IFTDGN_1\\.edi");
+        verifier.waitForFirstMatch("/", filter);
+        assertEquals("IFTDGN_1.edi", verifier.filePath);
+        assertEquals(TestStatus.PASSED, getLoggedStatus());
+        verifier.verifyWith(new StringData("target/test-classes/ediTest/IFTDGN_1.edi"));
+    }
+
+    @Test
     public void testVerify_identical() throws Exception {
-        EdifactFileVerifier verifier = new EdifactFileVerifier("IFTDGN_1.edi", service) {
-        };
+        MyEdifactFileVerifier verifier = new MyEdifactFileVerifier("IFTDGN_1.edi", service);
         verifier.verifyWith(new StringData("target/test-classes/ediTest/IFTDGN_1.edi"));
         assertEquals(TestStatus.PASSED, getLoggedStatus());
     }
 
     @Test
     public void testVerify_different_negative() throws Exception {
-        EdifactFileVerifier verifier = new EdifactFileVerifier("IFTDGN_1.edi", service) {
-        };
+        MyEdifactFileVerifier verifier = new MyEdifactFileVerifier("IFTDGN_1.edi", service);
         verifier.verifyWith(new StringData("target/test-classes/ediTest/IFTDGN_2.edi"));
         assertEquals(TestStatus.FAILED, getLoggedStatus());
     }
 
     // ENHANCE write positive test
+
+    class MyEdifactFileVerifier extends EdifactFileVerifier<MyEdifactFileVerifier> {
+
+        public MyEdifactFileVerifier(String filePath, EdifactFileService service) {
+            super(filePath, service);
+        }
+
+    }
+
 }
