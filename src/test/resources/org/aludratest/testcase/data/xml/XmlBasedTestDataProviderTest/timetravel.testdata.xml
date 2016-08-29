@@ -38,16 +38,5 @@
     		</segment>
     	</segments>
     </configuration>
-    <configuration name="config2">
-    	<segments>
-    		<segment name="stringObject">
-    			<fieldValues>
-    				<fieldValue name="value">
-    					<value></value>
-    				</fieldValue>
-    			</fieldValues>
-    		</segment>
-    	</segments>
-    </configuration>
     </configurations>
 </testdata>
