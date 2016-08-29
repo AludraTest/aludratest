@@ -125,6 +125,13 @@
       <implementation>org.aludratest.testcase.data.impl.xml.DefaultScriptLibrary</implementation>
       <description></description>
       <isolated-realm>false</isolated-realm>
+      <requirements>
+        <requirement>
+          <role>org.aludratest.config.AludraTestConfig</role>
+          <role-hint></role-hint>
+          <field-name>aludraConfig</field-name>
+        </requirement>
+      </requirements>
     </component>
     <component>
       <role>org.aludratest.service.ServiceWrapper</role>
