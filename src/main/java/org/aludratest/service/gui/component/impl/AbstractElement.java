@@ -30,7 +30,7 @@ import org.aludratest.util.data.helper.DataMarkerCheck;
  * already been finished before starting the check. If activity is reported, the task completion timeout is applied which waits
  * for the specified number of milliseconds until the connector reports the system is not busy any longer. If the timeout is
  * exceeded, the system throws a {@link PerformanceFailure}, otherwise returns normally.
- * 
+ *
  * @author Joerg Langnickel
  * @author Volker Bergmann
  * @param <E> Type of the concrete element, to be used by subclasses. */
@@ -66,6 +66,16 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
     }
 
     @Override
+    public void assertPresent(boolean expected) {
+        if (expected) {
+            assertPresent();
+        }
+        else {
+            assertNotPresent();
+        }
+    }
+
+    @Override
     public void assertVisible() {
         verify().assertVisible(elementType, elementName, getLocator());
     }
@@ -73,6 +83,16 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
     @Override
     public void assertNotVisible() {
         verify().assertNotVisible(elementType, elementName, getLocator());
+    }
+
+    @Override
+    public void assertVisible(boolean expected) {
+        if (expected) {
+            assertVisible();
+        }
+        else {
+            assertNotVisible();
+        }
     }
 
     @Override
@@ -84,6 +104,16 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
     @Override
     public void assertNotEnabled() {
         verify().assertNotEnabled(elementType, elementName, getLocator());
+    }
+
+    @Override
+    public void assertEnabled(boolean expected) {
+        if (expected) {
+            assertEnabled();
+        }
+        else {
+            assertNotEnabled();
+        }
     }
 
     @Override

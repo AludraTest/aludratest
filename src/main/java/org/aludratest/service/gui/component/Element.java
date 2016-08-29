@@ -44,17 +44,36 @@ public interface Element<E extends Element<E>> extends GUIComponent {
     /** Asserts that the element is not present */
     public void assertNotPresent();
 
+    /** Asserts that the element is present or is not present, depending on the passed parameter.
+     *
+     * @param expected if <code>true</code>, assert that element is present, otherwise, assert that element is not present.
+     * @see #assertPresent()
+     * @see #assertNotPresent() */
+    public void assertPresent(boolean expected);
+
     /** Asserts that the element is visible */
     public void assertVisible();
 
     /** Asserts that the element is not visible */
     public void assertNotVisible();
 
+    /** Asserts that the element is visible or is not visible, depending on the passed parameter.
+     * @param expected if <code>true</code>, assert that element is visible, otherwise, assert that element is not visible.
+     * @see #assertVisible()
+     * @see #assertNotVisible() */
+    public void assertVisible(boolean expected);
+
     /** Asserts that this element is enabled, i.e. does not have an active "disabled" state. */
     public void assertEnabled();
 
     /** Asserts that this element is not enabled, i.e. has an active "disabled" state. */
     public void assertNotEnabled();
+
+    /** Asserts that the element is enabled or is not enabled, depending on the passed parameter.
+     * @param expected if <code>true</code>, assert that element is enabled, otherwise, assert that element is not enabled.
+     * @see #assertEnabled()
+     * @see #assertNotEnabled() */
+    public void assertEnabled(boolean expected);
 
     /** Asserts that the element has the focus. */
     public void assertFocus();
@@ -78,7 +97,7 @@ public interface Element<E extends Element<E>> extends GUIComponent {
     public void click(String click);
 
     /** Checks if the specified element is somewhere on the page within the standard timeout.
-     * 
+     *
      * @return <code>true</code> if the element was found present somewhere on the page within the standard timeout,
      *         <code>false</code> otherwise. */
     public boolean isPresent();
@@ -86,53 +105,53 @@ public interface Element<E extends Element<E>> extends GUIComponent {
     /**
      * Checks if the specified element is somewhere on the page and in foreground
      * within the standard timeout.
-     * 
+     *
      * @return <code>true</code> if the element was found present somewhere on the page and in foreground within the standard timeout,
      *         <code>false</code> otherwise. */
     public boolean isPresentAndInForeground();
 
     /** Checks if the specified element is somewhere on the page within a given timeout
-     * 
+     *
      * @param timeout max time to wait for the element to become present.
      * @return <code>true</code> if the element was found present somewhere on the page within the given timeout,
      *         <code>false</code> otherwise. */
     public boolean isPresent(long timeout);
 
     /** Checks if the specified element is nowhere on the page within the standard timeout.
-     * 
+     *
      * @return <code>true</code> if the element was <b>not</b> found present somewhere on the page within the standard timeout,
      *         <code>false</code> otherwise. */
     public boolean isNotPresent();
 
     /** Checks if the specified element is nowhere on the page within the standard timeout.
-     * 
+     *
      * @param timeout time to check for the element not being present.
-     * 
+     *
      * @return <code>true</code> if the element was <b>not</b> found present somewhere on the page within the given timeout,
      *         <code>false</code> otherwise. */
     public boolean isNotPresent(long timeout);
 
     /** Checks if the specified element is visible within the standard timeout.
-     * 
+     *
      * @return <code>true</code> if the element is visible, <code>false</code> otherwise. */
     public boolean isVisible();
 
     /** Checks if the specified element is visible within the given timeout.
-     * 
+     *
      * @param timeout Max time to wait for the element to become visible.
-     * 
+     *
      * @return <code>true</code> if the element was found visible during the given timeout, <code>false</code> otherwise. */
     public boolean isVisible(long timeout);
 
     /** Checks whether this input element is enabled.
-     * 
+     *
      * @return <code>true</code> if the input element is enabled, <code>false</code> otherwise. */
     public boolean isEnabled();
 
     /** Checks whether this input element is enabled.
-     * 
+     *
      * @param timeout Max time to wait for this input element to become enabled.
-     * 
+     *
      * @return <code>true</code> if the input element is enabled, <code>false</code> otherwise. */
     public boolean isEnabled(long timeout);
 
