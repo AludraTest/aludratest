@@ -53,7 +53,10 @@ public class XmlBasedTestDataProviderTest {
         }
 
         Map<String, ScriptLibrary> libs = new HashMap<String, ScriptLibrary>();
-        libs.put("default", new DefaultScriptLibrary());
+
+        DefaultScriptLibrary lib = new DefaultScriptLibrary();
+        ReflectionUtils.setVariableValueInObject(lib, "aludraConfig", config);
+        libs.put("default", lib);
 
         ReflectionUtils.setVariableValueInObject(provider, "aludraConfig", config);
         ReflectionUtils.setVariableValueInObject(provider, "scriptLibraries", libs);
@@ -169,8 +172,11 @@ public class XmlBasedTestDataProviderTest {
         config.setScriptSecondsOffset(Integer.valueOf(-86400));
         XmlBasedTestDataProvider provider = createProvider(config);
         List<TestCaseData> testData = provider
-                .getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod("testMethodTimetravel", StringData.class));
+                .getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod("testMethodTimetravel", StringData.class,
+                        StringData.class));
         assertEquals("2015-03-07 23:58", ((StringData) testData.get(0).getData()[0]).getValue());
+        // uses timetravel() JavaScript method
+        assertEquals("Test 2016-08-27", ((StringData) testData.get(0).getData()[1]).getValue());
     }
 
     @Test
@@ -245,7 +251,8 @@ public class XmlBasedTestDataProviderTest {
         }
     }
 
-    public void testMethodTimetravel(@Source(uri = "timetravel.testdata.xml", segment = "stringObject") StringData object) {
+    public void testMethodTimetravel(@Source(uri = "timetravel.testdata.xml", segment = "stringObject") StringData object,
+            @Source(uri = "timetravel.testdata.xml", segment = "secondObject") StringData secondObject) {
         if (object == null) {
             // do nothing
         }
