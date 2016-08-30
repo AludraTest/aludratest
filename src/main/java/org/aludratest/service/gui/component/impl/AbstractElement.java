@@ -19,6 +19,7 @@ import org.aludratest.exception.PerformanceFailure;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.gui.component.Element;
 import org.aludratest.service.locator.element.GUIElementLocator;
+import org.aludratest.util.DataUtil;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 
 /** Parent class for GUI Elements e.g. Button.
@@ -76,6 +77,11 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
     }
 
     @Override
+    public void assertPresent(String expected) {
+        assertPresent(DataUtil.parseBoolean(expected));
+    }
+
+    @Override
     public void assertVisible() {
         verify().assertVisible(elementType, elementName, getLocator());
     }
@@ -93,6 +99,11 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
         else {
             assertNotVisible();
         }
+    }
+
+    @Override
+    public void assertVisible(String expected) {
+        assertVisible(DataUtil.parseBoolean(expected));
     }
 
     @Override
@@ -114,6 +125,11 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
         else {
             assertNotEnabled();
         }
+    }
+
+    @Override
+    public void assertEnabled(String expected) {
+        assertEnabled(DataUtil.parseBoolean(expected));
     }
 
     @Override
