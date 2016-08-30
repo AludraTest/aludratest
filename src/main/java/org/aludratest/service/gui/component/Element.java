@@ -51,6 +51,14 @@ public interface Element<E extends Element<E>> extends GUIComponent {
      * @see #assertNotPresent() */
     public void assertPresent(boolean expected);
 
+    /** Asserts that the element is present or is not present, depending on the passed parameter.
+     *
+     * @param expected if <code>"true"</code> (any case), assert that element is present, otherwise, assert that element is not
+     *            present.
+     * @see #assertPresent()
+     * @see #assertNotPresent() */
+    public void assertPresent(String expected);
+
     /** Asserts that the element is visible */
     public void assertVisible();
 
@@ -63,6 +71,13 @@ public interface Element<E extends Element<E>> extends GUIComponent {
      * @see #assertNotVisible() */
     public void assertVisible(boolean expected);
 
+    /** Asserts that the element is visible or is not visible, depending on the passed parameter.
+     * @param expected if <code>"true"</code> (any case), assert that element is visible, otherwise, assert that element is not
+     *            visible.
+     * @see #assertVisible()
+     * @see #assertNotVisible() */
+    public void assertVisible(String expected);
+
     /** Asserts that this element is enabled, i.e. does not have an active "disabled" state. */
     public void assertEnabled();
 
@@ -74,6 +89,13 @@ public interface Element<E extends Element<E>> extends GUIComponent {
      * @see #assertEnabled()
      * @see #assertNotEnabled() */
     public void assertEnabled(boolean expected);
+
+    /** Asserts that the element is enabled or is not enabled, depending on the passed parameter.
+     * @param expected if <code>"true"</code> (any case), assert that element is enabled, otherwise, assert that element is not
+     *            enabled.
+     * @see #assertEnabled()
+     * @see #assertNotEnabled() */
+    public void assertEnabled(String expected);
 
     /** Asserts that the element has the focus. */
     public void assertFocus();
