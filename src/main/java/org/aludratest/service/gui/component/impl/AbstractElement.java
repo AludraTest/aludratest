@@ -78,7 +78,9 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
 
     @Override
     public void assertPresent(String expected) {
-        assertPresent(DataUtil.parseBoolean(expected));
+        if (!DataMarkerCheck.isNull(expected)) {
+            assertPresent(DataUtil.parseBoolean(expected));
+        }
     }
 
     @Override
@@ -103,7 +105,9 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
 
     @Override
     public void assertVisible(String expected) {
-        assertVisible(DataUtil.parseBoolean(expected));
+        if (!DataMarkerCheck.isNull(expected)) {
+            assertVisible(DataUtil.parseBoolean(expected));
+        }
     }
 
     @Override
@@ -129,7 +133,9 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
 
     @Override
     public void assertEnabled(String expected) {
-        assertEnabled(DataUtil.parseBoolean(expected));
+        if (!DataMarkerCheck.isNull(expected)) {
+            assertEnabled(DataUtil.parseBoolean(expected));
+        }
     }
 
     @Override
