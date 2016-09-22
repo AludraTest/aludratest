@@ -49,7 +49,7 @@ public final class DefaultScriptLibrary implements ScriptLibrary {
         loadScript(context, scope, "date-format.js");
 
         // timetravel() function
-        long timetravelDiff = aludraConfig.getScriptSecondsOffset() * 1000;
+        long timetravelDiff = aludraConfig.getScriptSecondsOffset() * 1000l;
         if (timetravelDiff == 0) {
             context.evaluateString(scope, "function timetravel(date) { return date; }", "jsTimetravel", 1, null);
         }
@@ -59,7 +59,6 @@ public final class DefaultScriptLibrary implements ScriptLibrary {
                     1,
                     null);
         }
-
     }
 
     private void loadScript(Context context, Scriptable scope, String jsResourceName) {
