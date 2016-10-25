@@ -25,6 +25,7 @@ import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.service.AttachParameter;
 import org.aludratest.service.ElementType;
 import org.aludratest.service.Interaction;
+import org.aludratest.service.TechnicalArgument;
 import org.aludratest.service.TechnicalLocator;
 
 /**
@@ -68,7 +69,7 @@ public interface FileInteraction extends Interaction {
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
      * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
-    boolean move(@TechnicalLocator String fromPath, String toPath, boolean overwrite);
+    boolean move(@TechnicalLocator String fromPath, String toPath, @TechnicalArgument boolean overwrite);
 
     /** Copies a file or folder.
      * @param fromPath the file/folder to copy
@@ -76,7 +77,7 @@ public interface FileInteraction extends Interaction {
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
      * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
-    boolean copy(@TechnicalLocator String fromPath, String toPath, boolean overwrite);
+    boolean copy(@TechnicalLocator String fromPath, String toPath, @TechnicalArgument boolean overwrite);
 
     /** Deletes a file or folder.
      *  @param filePath the path of the file to delete
@@ -89,7 +90,8 @@ public interface FileInteraction extends Interaction {
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
      * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
-    boolean writeTextFile(@TechnicalLocator String filePath, @AttachParameter("Text file contents") String text, boolean overwrite);
+    boolean writeTextFile(@TechnicalLocator String filePath, @AttachParameter("Text file contents") String text,
+            @TechnicalArgument boolean overwrite);
 
     /** Creates a text file and writes to it all content provided by the source Reader.
      * @param filePath the path of the file to save
@@ -97,7 +99,7 @@ public interface FileInteraction extends Interaction {
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
      * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
-    boolean writeTextFile(@TechnicalLocator String filePath, Reader source, boolean overwrite);
+    boolean writeTextFile(@TechnicalLocator String filePath, Reader source, @TechnicalArgument boolean overwrite);
 
     /** Creates a binary file with the provided content.
      * @param filePath the path of the file to save
@@ -106,7 +108,7 @@ public interface FileInteraction extends Interaction {
      * @return true if a formerly existing file was overwritten.
      * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
     boolean writeBinaryFile(@TechnicalLocator String filePath, @AttachParameter("Binary file contents") byte[] bytes,
-            boolean overwrite);
+            @TechnicalArgument boolean overwrite);
 
     /** Creates a binary file and writes to it all content provided by the source {@link InputStream}.
      * @param filePath the path of the file to save
@@ -114,7 +116,7 @@ public interface FileInteraction extends Interaction {
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
      * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
-    boolean writeBinaryFile(@TechnicalLocator String filePath, InputStream source, boolean overwrite);
+    boolean writeBinaryFile(@TechnicalLocator String filePath, InputStream source, @TechnicalArgument boolean overwrite);
 
     /** Reads a text file and provides its content as String.
      *  @param filePath the path of the file to read
