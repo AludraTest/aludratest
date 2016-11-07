@@ -17,6 +17,7 @@ package org.aludratest.service.gui.component.impl;
 
 import org.aludratest.service.gui.component.InputField;
 import org.aludratest.service.gui.component.ValueComponent;
+import org.aludratest.util.DataUtil;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.databene.commons.Validator;
 
@@ -93,6 +94,18 @@ public class InputFieldImpl extends AbstractElement<InputField> implements Value
     @Override
     public void assertNotEditable() {
         verify().assertNotEditable(elementType, elementName, getLocator());
+    }
+
+    @Override
+    public void assertEditable(String expected) {
+        if (!DataMarkerCheck.isNull(expected)) {
+            if (DataUtil.parseBoolean(expected)) {
+                assertEditable();
+            }
+            else {
+                assertNotEditable();
+            }
+        }
     }
 
 }
