@@ -38,4 +38,11 @@ public interface InputField extends Element<InputField>, ValueComponent {
      * "not editable". */
     public void assertNotEditable();
 
+    /** /** Asserts that the element is editable or is not editable, depending on the passed parameter.
+     * @param expected if <code>"true"</code> (any case), assert that element is editable, otherwise, assert that element is not
+     *            editable.
+     * @see #assertEditable()
+     * @see #assertNotEditable() */
+    public void assertEditable(String expected);
+
 }
