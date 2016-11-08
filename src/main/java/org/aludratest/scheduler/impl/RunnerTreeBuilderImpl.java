@@ -17,6 +17,7 @@ package org.aludratest.scheduler.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -402,6 +403,8 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             }
             String methodTestSuiteName = createMethodTestSuiteName(testClass, method);
             RunnerGroup methodGroup = tree.createGroup(methodTestSuiteName, mode, classGroup);
+            addSequentialGroupAttributes(methodGroup, method);
+
             try {
                 // iterate through method invocations
                 List<TestCaseData> invocationParams = testDataProvider.getTestDataSets(method);
@@ -459,8 +462,8 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         }
     }
 
-    private void addSequentialGroupAttributes(RunnerGroup group, Class<?> testClass) {
-        SequentialGroup annot = testClass.getAnnotation(SequentialGroup.class);
+    private void addSequentialGroupAttributes(RunnerGroup group, AnnotatedElement testClassOrMethod) {
+        SequentialGroup annot = testClassOrMethod.getAnnotation(SequentialGroup.class);
         if (annot != null) {
             group.setAttribute(CommonRunnerLeafAttributes.SEQUENTIAL_GROUP_NAME, annot.groupName());
             group.setAttribute(CommonRunnerLeafAttributes.SEQUENTIAL_GROUP_INDEX, Integer.valueOf(annot.index()));
