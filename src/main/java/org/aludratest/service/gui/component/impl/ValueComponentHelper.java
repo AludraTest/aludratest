@@ -27,7 +27,7 @@ import org.aludratest.util.validator.NumberStringLessValidator;
 import org.databene.commons.Validator;
 
 /** Helper class to implement the ValueComponent interface for a GUIComponent (pseudo-multi-inheritance)
- * 
+ *
  * @author falbrech */
 class ValueComponentHelper implements ValueComponent {
 
@@ -53,11 +53,11 @@ class ValueComponentHelper implements ValueComponent {
         if (!DataMarkerCheck.isNull(expectedText)) {
             if (value) {
                 component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
-                        new EqualsValidator(expectedText));
+                        new EqualsValidator(DataMarkerCheck.convertIfEmpty(expectedText)));
             }
             else {
                 component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
-                        new EqualsValidator(expectedText));
+                        new EqualsValidator(DataMarkerCheck.convertIfEmpty(expectedText)));
             }
         }
     }
@@ -67,11 +67,11 @@ class ValueComponentHelper implements ValueComponent {
         if (!DataMarkerCheck.isNull(expectedText)) {
             if (value) {
                 component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
-                        new NotEqualsValidator(expectedText));
+                        new NotEqualsValidator(DataMarkerCheck.convertIfEmpty(expectedText)));
             }
             else {
                 component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
-                        new NotEqualsValidator(expectedText));
+                        new NotEqualsValidator(DataMarkerCheck.convertIfEmpty(expectedText)));
             }
         }
     }
@@ -81,11 +81,11 @@ class ValueComponentHelper implements ValueComponent {
         if (!DataMarkerCheck.isNull(expectedText)) {
             if (value) {
                 component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
-                        new ContainsValidator(expectedText));
+                        new ContainsValidator(DataMarkerCheck.convertIfEmpty(expectedText)));
             }
             else {
                 component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
-                        new ContainsValidator(expectedText));
+                        new ContainsValidator(DataMarkerCheck.convertIfEmpty(expectedText)));
             }
         }
     }
@@ -95,11 +95,11 @@ class ValueComponentHelper implements ValueComponent {
         if (!DataMarkerCheck.isNull(expectedText)) {
             if (value) {
                 component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
-                        new ContainsIgnoreCaseTrimmedValidator(expectedText));
+                        new ContainsIgnoreCaseTrimmedValidator(DataMarkerCheck.convertIfEmpty(expectedText)));
             }
             else {
                 component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
-                        new ContainsIgnoreCaseTrimmedValidator(expectedText));
+                        new ContainsIgnoreCaseTrimmedValidator(DataMarkerCheck.convertIfEmpty(expectedText)));
             }
         }
     }
@@ -109,11 +109,11 @@ class ValueComponentHelper implements ValueComponent {
         if (!DataMarkerCheck.isNull(expectedText)) {
             if (value) {
                 component.verify().assertValueMatches(component.elementType, component.elementName, component.getLocator(),
-                        new EqualsIgnoreCaseTrimmedValidator(expectedText));
+                        new EqualsIgnoreCaseTrimmedValidator(DataMarkerCheck.convertIfEmpty(expectedText)));
             }
             else {
                 component.verify().assertTextMatches(component.elementType, component.elementName, component.getLocator(),
-                        new EqualsIgnoreCaseTrimmedValidator(expectedText));
+                        new EqualsIgnoreCaseTrimmedValidator(DataMarkerCheck.convertIfEmpty(expectedText)));
             }
         }
     }
