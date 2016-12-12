@@ -39,7 +39,6 @@ public final class TestStepGroupLogImpl extends AbstractNamedTestLogElementImpl 
     public TestStepGroupLogImpl(String name, TestCaseLogImpl parent) {
         super(name);
         this.parent = parent;
-        parent.addTestStepGroup(this);
     }
 
     /** Adds a test step log to this test step group log.
