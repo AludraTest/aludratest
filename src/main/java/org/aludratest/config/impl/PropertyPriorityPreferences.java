@@ -63,7 +63,7 @@ public class PropertyPriorityPreferences extends AbstractPreferences {
      * </ol>
      */
     private static final String[] PROPFILE_NAMES = { "config/_{0}/{2}/{1}.properties", "config/_{0}/{1}.properties",
-            "config/{2}/{1}.properties", "config/{1}.properties"
+        "config/{2}/{1}.properties", "config/{1}.properties"
     };
 
     private String componentName;
@@ -255,7 +255,7 @@ public class PropertyPriorityPreferences extends AbstractPreferences {
         if (child == null) {
             child = new SimplePreferences();
         }
-        String path = relativePath == null ? name : relativePath + "/" + name;
+        String path = (relativePath == null ? name : (relativePath + "/" + name));
         return new PropertyPriorityPreferences(componentName, serviceInstanceName, path, child);
     }
 

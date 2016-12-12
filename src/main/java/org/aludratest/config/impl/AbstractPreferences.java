@@ -41,11 +41,11 @@ public abstract class AbstractPreferences implements Preferences {
     @Override
     public final String getStringValue(String key) {
         if (key.contains("/")) {
-            String subnode = key.substring(0, key.indexOf('/'));
             String remainder = key.substring(key.indexOf('/') + 1);
             if ("".equals(remainder)) {
                 return null;
             }
+            String subnode = key.substring(0, key.indexOf('/'));
             Preferences child = getChildNode(subnode);
             if (child == null) {
                 return null;
