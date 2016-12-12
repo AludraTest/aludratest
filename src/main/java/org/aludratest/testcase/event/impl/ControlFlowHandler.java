@@ -215,8 +215,10 @@ public class ControlFlowHandler implements InvocationHandler {
             for (Annotation a : paramAnnots) {
                 if (a.annotationType() == AttachParameter.class) {
                     List<Attachment> attachments = action.createAttachments(args[i], ((AttachParameter) a).value());
-                    for (Attachment attachment : attachments) {
-                        testStep.addAttachment(attachment);
+                    if (attachments != null) {
+                        for (Attachment attachment : attachments) {
+                            testStep.addAttachment(attachment);
+                        }
                     }
                 }
             }

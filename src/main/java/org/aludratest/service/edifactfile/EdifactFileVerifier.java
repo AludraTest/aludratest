@@ -127,11 +127,12 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
      * @param referenceFileUri the URI of the reference file to verify against
      * @return a reference to the invoked EdifactFileVerifier instance */
     public E verifyWith(StringData referenceFileUri) {
-        InputStream referenceFileStream;
+        InputStream referenceFileStream = null;
         try {
             referenceFileStream = IOUtil.getInputStreamForURI(referenceFileUri.getValue());
         }
         catch (IOException e) {
+            IOUtil.close(referenceFileStream);
             throw new AutomationException("Failed to read reference file", e);
         }
         Interchange expected = service.perform().readInterchange(elementType, "reference file", referenceFileStream);
