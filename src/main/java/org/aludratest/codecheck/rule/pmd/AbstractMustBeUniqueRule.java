@@ -46,7 +46,7 @@ public class AbstractMustBeUniqueRule extends AbstractAludraTestRule {
     @SuppressWarnings("unchecked")
     protected final Set<String> getUnqiueSimpleNames(Object data) {
         if (!(data instanceof RuleContext)) {
-            return null;
+            return null; // NOSONAR
         }
 
         return (Set<String>) ((RuleContext) data).getAttribute(UNIQUE_SIMPLE_NAMES_ATTRIBUTE);
