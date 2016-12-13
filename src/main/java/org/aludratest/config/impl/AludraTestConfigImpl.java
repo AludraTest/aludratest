@@ -32,7 +32,7 @@ import org.databene.commons.version.VersionInfo;
  *
  * @author Volker Bergmann
  * @author falbrech */
-@Implementation({ AludraTestConfig.class })
+@Implementation(AludraTestConfig.class)
 public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
 
     private static final String DEFAULT_XLS_ROOT = "xls/javatest";
@@ -97,6 +97,7 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
 
     @Override
     public void fillDefaults(MutablePreferences preferences) {
+        // no-op by default
     }
 
     @Override

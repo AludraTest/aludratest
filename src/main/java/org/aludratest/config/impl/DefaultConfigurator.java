@@ -24,9 +24,6 @@ import org.codehaus.plexus.component.annotations.Component;
 @Component(role = Configurator.class)
 public class DefaultConfigurator implements Configurator {
 
-    public DefaultConfigurator() {
-    }
-
     @Override
     public void configure(Configurable configurable) {
         SimplePreferences defPrefs = new SimplePreferences();
