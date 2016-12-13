@@ -45,12 +45,14 @@ public class EdiDiffDetailImpl extends DiffDetail implements EdiDiffDetail {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj) || getClass() != obj.getClass())
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
+        }
         EdiDiffDetailImpl that = (EdiDiffDetailImpl) obj;
-        return (super.equals(that) && ediType == that.ediType);
+        return (this.ediType == that.ediType);
     }
 
 }
