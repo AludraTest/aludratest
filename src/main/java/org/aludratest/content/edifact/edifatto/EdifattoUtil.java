@@ -25,6 +25,10 @@ import org.databene.formats.compare.DiffDetailType;
  * @author Volker Bergmann */
 public class EdifattoUtil {
 
+    private EdifattoUtil() {
+        // private constructor to prevent instantiation of this utility class
+    }
+
     /** Maps an {@link EdiDiffDetailType} to a generic diff detail type.
      * @param type the EDI diff detail type to map
      * @return the corresponding generic diff detail type */

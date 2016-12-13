@@ -38,4 +38,19 @@ public class EdiDiffDetailImpl extends DiffDetail implements EdiDiffDetail {
         return ediType;
     }
 
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + ((ediType == null) ? 0 : ediType.hashCode());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj) || getClass() != obj.getClass())
+            return false;
+        EdiDiffDetailImpl that = (EdiDiffDetailImpl) obj;
+        return (super.equals(that) && ediType == that.ediType);
+    }
+
 }
