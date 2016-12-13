@@ -63,7 +63,7 @@ public class NoTrailingCommaInAnnotationArray extends AbstractJavaRule {
             return new URL(fn).openStream();
         }
 
-        File f = new File(fn);
+        File f = new File(fn); // NOSONAR
         return f.isFile() ? new FileInputStream(f) : null;
     }
 
@@ -97,12 +97,11 @@ public class NoTrailingCommaInAnnotationArray extends AbstractJavaRule {
                 in = new FileInputStream(file);
             }
             List<String> lines = IOUtils.readLines(in);
+            if (endLine > lines.size()) {
+                throw new IOException("Unexpected end of file " + (file != null ? file.getAbsolutePath() : ""));
+            }
             StringBuilder sbContent = new StringBuilder();
             for (int line = beginLine; line <= endLine; line++) {
-                if (line > lines.size()) {
-                    throw new IOException("Unexpected end of file " + (file != null ? file.getAbsolutePath() : ""));
-                }
-
                 String toAppend = null;
 
                 // replace tab by 8 spaces (relatively hard coded in PMD)
