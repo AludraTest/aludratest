@@ -192,8 +192,13 @@ public class DefaultFlatFileAction implements FlatFileInteraction, FlatFileVerif
         }
 
         @Override
-        public boolean equals(Object other) {
-            return internalKey.equals(other);
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null || getClass() != obj.getClass())
+                return false;
+            WriterKey that = (WriterKey) obj;
+            return this.internalKey.equals(that.internalKey); // internalKey is never null
         }
 
         @Override
