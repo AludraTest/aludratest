@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 
 /** RunnerListener which uses Log4Testing for writing test logs. To configure Log4Testing, see Log4Testing documentation (hint: you
  * need a log4testing.xml on your classpath root or in your working directory).
- * 
+ *
  * @author falbrech */
 @Component(role = RunnerListener.class, hint = "log4testing")
 public class Log4TestingRunnerListener extends AbstractRunnerListener {
@@ -74,7 +74,7 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
     }
 
     /** Constructor for testing purposes only. Allows to specify custom log configuration.
-     * 
+     *
      * @param logConfiguration Custom log configuration. */
     public Log4TestingRunnerListener(Log4TestingConfiguration logConfiguration) {
         this.logConfiguration = logConfiguration;
@@ -169,7 +169,7 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
             return;
         }
 
-        new TestStepGroupLogImpl(groupName, log);
+        log.addTestStepGroup(new TestStepGroupLogImpl(groupName, log));
     }
 
     @Override
