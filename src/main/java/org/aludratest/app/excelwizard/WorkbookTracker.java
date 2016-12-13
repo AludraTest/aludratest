@@ -131,7 +131,8 @@ public class WorkbookTracker {
         return sheet;
     }
 
-    int synchronizeColumnsWithClassFeatures(Class<?> dataType, Sheet sheet, int insertionIndex, String parentPath) {
+    int synchronizeColumnsWithClassFeatures(Class<?> dataType, Sheet sheet, int initialInsertionIndex, String parentPath) {
+        int insertionIndex = initialInsertionIndex;
         // Get bean properties and public attributes
         Map<String, Class<?>> features = WizardUtil.getFeatures(dataType);
         // create String type columns first...
@@ -142,7 +143,7 @@ public class WorkbookTracker {
             }
         }
         // ...then recur into bean graphs
-        for (Map.Entry<String, Class<?>> feature : features.entrySet()) {
+        for (Map.Entry<String, Class<?>> feature : features.entrySet()) { // NOSONAR
             if (feature.getValue() != String.class) {
                 String localPath = extendPath(parentPath, feature.getKey());
                 insertionIndex = synchronizeColumnsWithClassFeatures(feature.getValue(), sheet, insertionIndex, localPath);
@@ -166,13 +167,11 @@ public class WorkbookTracker {
                 Cell headerCell = headerRow.getCell(i);
                 if (headerCell != null) {
                     String actualHeader = headerCell.getStringCellValue();
-                    if (actualHeader != null && actualHeader.trim().length() > 0) {
-                        if (!expectedHeaders.contains(actualHeader)) {
-                            this.warnings.add("Unmappable column '" + actualHeader + "' in sheet '" + sheetName + "' of file '"
-                                    + file.getName() + "'");
-                            headerCell.setCellStyle(warningCellStyle);
-                            this.status = STATUS_MODIFIED;
-                        }
+                    if (actualHeader != null && !actualHeader.trim().isEmpty() && !expectedHeaders.contains(actualHeader)) {
+                        this.warnings.add("Unmappable column '" + actualHeader + "' in sheet '" + sheetName + "' of file '"
+                                + file.getName() + "'");
+                        headerCell.setCellStyle(warningCellStyle);
+                        this.status = STATUS_MODIFIED;
                     }
                 }
             }
@@ -182,7 +181,9 @@ public class WorkbookTracker {
     boolean persistWoorkbook() throws IOException {
         File targetFolder = this.file.getCanonicalFile().getParentFile();
         if (!targetFolder.exists()) {
-            targetFolder.mkdirs();
+            if (!targetFolder.mkdirs()) {
+                throw new IOException("Unable to create directory " + targetFolder.getAbsolutePath());
+            }
         }
         OutputStream out = null;
         try {
@@ -205,13 +206,13 @@ public class WorkbookTracker {
         Row dataRow = configTab.createRow(1);
         String configName = testMethod.getDeclaringClass().getSimpleName();
         if (configName.startsWith("ID_")) {
-            configName = "C" + configName + "1";
+            configName = "C" + configName + "1"; // NOSONAR
         }
         dataRow.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(configName);
     }
 
     private static String extendPath(String parentPath, String key) {
-        return (StringUtil.isEmpty(parentPath) ? key : parentPath + '.' + key);
+        return (StringUtil.isEmpty(parentPath) ? key : (parentPath + '.' + key));
     }
 
     private int haveColumnWithHeader(String header, Sheet sheet, int insertionIndex) {
