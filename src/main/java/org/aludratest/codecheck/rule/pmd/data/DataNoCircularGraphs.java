@@ -46,7 +46,7 @@ public class DataNoCircularGraphs extends AbstractAludraTestRule {
         if (clazz != null) {
             List<String> messages = new ArrayList<String>();
             checkDependencies(clazz, new Stack<Class<?>>(), new Stack<String>(), messages);
-            if (messages.size() > 0) {
+            if (!messages.isEmpty()) {
                 addViolationWithMessage(data, node, messages.get(0));
             }
         }

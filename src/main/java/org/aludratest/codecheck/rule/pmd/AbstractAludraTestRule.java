@@ -52,7 +52,7 @@ public abstract class AbstractAludraTestRule extends AbstractJavaRule {
     }
 
     protected static final ASTClassOrInterfaceDeclaration getClassOrInterfaceDeclaration(AbstractJavaNode node) {
-        ASTClassOrInterfaceDeclaration decl = null;
+        ASTClassOrInterfaceDeclaration decl;
         if (!(node instanceof ASTClassOrInterfaceDeclaration)) {
             decl = node.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
         }
