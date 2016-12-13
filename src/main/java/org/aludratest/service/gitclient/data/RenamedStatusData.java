@@ -77,10 +77,12 @@ public class RenamedStatusData extends AbstractGitData {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null || getClass() != obj.getClass())
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
+        }
         RenamedStatusData that = (RenamedStatusData) obj;
         return NullSafeComparator.equals(this.fromPath, that.fromPath) && NullSafeComparator.equals(this.toPath, that.toPath);
     }

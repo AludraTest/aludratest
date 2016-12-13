@@ -54,10 +54,12 @@ public class VersionData extends AbstractGitData {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null || getClass() != obj.getClass())
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
+        }
         VersionData that = (VersionData) obj;
         return NullSafeComparator.equals(this.versionNumber, that.versionNumber);
     }

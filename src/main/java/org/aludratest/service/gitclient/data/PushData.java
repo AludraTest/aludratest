@@ -20,10 +20,7 @@ import org.aludratest.service.gitclient.GitClient;
 /** Wraps data for the invocation of the {@link GitClient}'s push method.
  * @see GitClient#push(PushData)
  * @author Volker Bergmann */
-public class PushData {
-
-    private String repository;
-    private String refspec;
+public class PushData extends AbstractRefspecData {
 
     /** Public default constructor. */
     public PushData() {
@@ -34,32 +31,7 @@ public class PushData {
      * @param repository the repository
      * @param refspec the refspec */
     public PushData(String repository, String refspec) {
-        setRepository(repository);
-        setRefspec(refspec);
-    }
-
-    /** Returns the repository.
-     * @return the repository */
-    public final String getRepository() {
-        return repository;
-    }
-
-    /** Sets the repository.
-     * @param repository the repository to set */
-    public final void setRepository(String repository) {
-        this.repository = repository;
-    }
-
-    /** Returns the refspec.
-     * @return the refspec */
-    public final String getRefspec() {
-        return refspec;
-    }
-
-    /** Sets the refspec.
-     * @param refspec the refspec */
-    public final void setRefspec(String refspec) {
-        this.refspec = refspec;
+        super(repository, refspec);
     }
 
 }

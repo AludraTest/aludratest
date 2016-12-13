@@ -92,7 +92,7 @@ public class ConfigData extends AbstractGitData {
 
     @Override
     public String toString() {
-        return "git config " + key + (value != null ? " " + value : "");
+        return "git config " + key + (value != null ? (" " + value) : "");
     }
 
 }

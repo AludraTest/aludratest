@@ -64,7 +64,7 @@ public final class TestCaseData {
     public TestCaseData(String id, String description, Data[] data, boolean ignored) {
         this.id = id;
         this.description = description;
-        this.data = data == null ? new Data[0] : ArrayUtil.copyOfRange(data, 0, data.length);
+        this.data = (data == null ? new Data[0] : ArrayUtil.copyOfRange(data, 0, data.length));
         this.ignored = ignored;
     }
 
@@ -133,8 +133,8 @@ public final class TestCaseData {
      * @return The data elements for this test case, maybe empty, but never <code>null</code>. */
     public Data[] getData() {
         if (dataSource != null) {
-            Data[] data = dataSource.getData();
-            return data == null ? new Data[0] : ArrayUtil.copyOfRange(data, 0, data.length);
+            Data[] sourceData = dataSource.getData();
+            return (sourceData == null ? new Data[0] : ArrayUtil.copyOfRange(sourceData, 0, sourceData.length));
         }
         return data;
     }
