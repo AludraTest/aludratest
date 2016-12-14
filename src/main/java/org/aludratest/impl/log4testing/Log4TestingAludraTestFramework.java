@@ -27,6 +27,10 @@ class Log4TestingAludraTestFramework extends AbstractTestFramework {
 
     private boolean hooked;
 
+    public Log4TestingAludraTestFramework() {
+        this.hooked = false;
+    }
+
     @Override
     protected void hook() {
         hooked = true;

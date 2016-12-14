@@ -203,7 +203,8 @@ class ProcessOutputReader implements Closeable {
                         // if the line separator consists of multiple characters,
                         // assume the following characters match and skip them
                         for (int i = 1; i < LF.length() && pos < buffer.length() && c != -1; i++) {
-                            c = buffer.get(pos++);
+                            c = buffer.get(pos);
+                            pos++;
                         }
                         break;
                     }
