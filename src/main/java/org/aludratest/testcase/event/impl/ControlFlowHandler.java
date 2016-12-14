@@ -15,6 +15,9 @@
  */
 package org.aludratest.testcase.event.impl;
 
+import static org.aludratest.testcase.event.impl.LogUtil.attach;
+import static org.aludratest.testcase.event.impl.LogUtil.attachDebugAttachments;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -110,7 +113,7 @@ public class ControlFlowHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable { //NOSONAR
         if (shallContinueTestCaseExecution()) {
-            if (method.getName().equals("setSystemConnector")) {
+            if ("setSystemConnector".equals(method.getName())) {
                 this.systemConnector = (SystemConnector) args[0];
                 boolean oldLogFlag = logTestSteps;
                 logTestSteps = false;
@@ -125,7 +128,7 @@ public class ControlFlowHandler implements InvocationHandler {
                 return forwardAndHandleException(method, args);
             }
         } else {
-            if (logTestSteps && !method.getName().equals("setSystemConnector")) {
+            if (logTestSteps && !"setSystemConnector".equals(method.getName())) {
                 TestStepInfoBean testStep = new TestStepInfoBean();
                 testStep.setServiceId(serviceId);
                 testStep.setCommandNameAndArguments(method, args);
@@ -215,11 +218,7 @@ public class ControlFlowHandler implements InvocationHandler {
             for (Annotation a : paramAnnots) {
                 if (a.annotationType() == AttachParameter.class) {
                     List<Attachment> attachments = action.createAttachments(args[i], ((AttachParameter) a).value());
-                    if (attachments != null) {
-                        for (Attachment attachment : attachments) {
-                            testStep.addAttachment(attachment);
-                        }
-                    }
+                    attach(attachments, testStep);
                 }
             }
         }
@@ -293,20 +292,6 @@ public class ControlFlowHandler implements InvocationHandler {
         }
     }
 
-    private boolean requiresErrorChecking(Throwable t) {
-        // Check only for some sub classes of AludraTestException
-        if (!(t instanceof AludraTestException)) {
-            return false;
-        }
-        TestStatus status = AludraTestUtil.getTestStatus(t);
-        return (status == TestStatus.FAILED || status == TestStatus.FAILEDAUTOMATION);
-    }
-
-    private ErrorReport checkForError(SystemConnector connector) {
-        SystemErrorReporter reporter = connector.getConnector(SystemErrorReporter.class);
-        return reporter != null ? reporter.checkForError() : null;
-    }
-
     private Object forwardWithRetry(Method method, Object[] args, TestStepInfoBean testStep, TestStepInfoBean[] outTestStep)
             throws Throwable { // NOSONAR
         int retryCount = 0;
@@ -349,13 +334,13 @@ public class ControlFlowHandler implements InvocationHandler {
     }
 
     private void setErrorAndStatus(TestStepInfoBean testStep, Throwable t) {
-        t = ExceptionUtil.unwrapInvocationTargetException(t);
-        testStep.setError(t);
-        testStep.setErrorMessage(t.getMessage());
-        if (t instanceof AludraTestException && !(t instanceof TechnicalException)) {
-            testStep.setTestStatus(((AludraTestException) t).getTestStatus());
+        Throwable cause = ExceptionUtil.unwrapInvocationTargetException(t);
+        testStep.setError(cause);
+        testStep.setErrorMessage(cause.getMessage());
+        if (cause instanceof AludraTestException && !(cause instanceof TechnicalException)) {
+            testStep.setTestStatus(((AludraTestException) cause).getTestStatus());
             // also extract attachments, if applicable
-            if (((AludraTestException) t).shouldSaveDebugAttachments() && (target instanceof Action)) {
+            if (((AludraTestException) cause).shouldSaveDebugAttachments() && (target instanceof Action)) {
                 attachDebugAttachments((Action) target, testStep);
             }
         }
@@ -367,13 +352,18 @@ public class ControlFlowHandler implements InvocationHandler {
         }
     }
 
-    private void attachDebugAttachments(Action action, TestStepInfoBean testStep) {
-        List<Attachment> attachments = action.createDebugAttachments();
-        if (attachments != null) {
-            for (Attachment attachment : attachments) {
-                testStep.addAttachment(attachment);
-            }
+    private static boolean requiresErrorChecking(Throwable t) {
+        // Check only for some sub classes of AludraTestException
+        if (!(t instanceof AludraTestException)) {
+            return false;
         }
+        TestStatus status = AludraTestUtil.getTestStatus(t);
+        return (status == TestStatus.FAILED || status == TestStatus.FAILEDAUTOMATION);
+    }
+
+    private static ErrorReport checkForError(SystemConnector connector) {
+        SystemErrorReporter reporter = connector.getConnector(SystemErrorReporter.class);
+        return (reporter != null ? reporter.checkForError() : null);
     }
 
 }
