@@ -23,6 +23,7 @@ public class ByteArrayData {
 
     /** Public default Constructor. */
     public ByteArrayData() {
+        this.value = null;
     }
 
     /** @return the {@link #value} */

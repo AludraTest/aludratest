@@ -32,12 +32,9 @@ public class TargetFileData extends Data {
         this(null, null);
     }
 
-    /**
-     * Constructor that initializes each property.
+    /** Constructor that initializes each property.
      * @param filePath the file path
-     * @param overwrite a flag indicating whether a pre-existing file 
-     * 		at this path may be overwritten
-     */
+     * @param overwrite a flag indicating whether a pre-existing file at this path may be overwritten */
     public TargetFileData(String filePath, String overwrite) {
         setFilePath(filePath);
         setOverwrite(overwrite);
