@@ -21,7 +21,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -51,7 +50,6 @@ import org.aludratest.scheduler.node.RunnerNode;
 import org.aludratest.scheduler.sort.Alphabetic;
 import org.aludratest.scheduler.sort.RunnerTreeSortUtil;
 import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
-import org.aludratest.scheduler.util.TestAttributeUtil;
 import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.Parallel;
 import org.aludratest.testcase.Sequential;
@@ -74,21 +72,31 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RunnerTreeBuilder.class);
 
-    private final AtomicLong errorCount = new AtomicLong();
+    private final AtomicLong errorCount;
 
-    private final AtomicInteger nextLeafId = new AtomicInteger();
+    private final AtomicInteger nextLeafId;
 
     /** Used to trace added files and detect recursions & multi-uses of classes */
-    private Set<Class<?>> addedClasses = new HashSet<Class<?>>();
+    private Set<Class<?>> addedClasses;
 
     /** Map Class -> Assertion Error for classes where an assertion failed */
-    private Map<Class<?>, String> assertionErrorClasses = new HashMap<Class<?>, String>();
+    private Map<Class<?>, String> assertionErrorClasses;
 
     @Requirement
     private TestDataProvider testDataProvider;
 
     @Requirement
     private AludraTestConfig aludraConfig;
+
+    /**
+     * Default constructor
+     */
+    public RunnerTreeBuilderImpl() {
+        this.errorCount = new AtomicLong();
+        this.nextLeafId = new AtomicInteger();
+        this.addedClasses = new HashSet<Class<?>>();
+        this.assertionErrorClasses = new HashMap<Class<?>, String>();
+    }
 
     @Override
     public RunnerTree buildRunnerTree(Class<?> suiteOrTestClass) {
@@ -119,7 +127,7 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             }
             catch (IOException e) {
                 throw new PreconditionFailedException("Could not search JAR file " + searchRoot.getAbsolutePath()
-                + " for test classes", e);
+                        + " for test classes", e);
             }
         }
         else {
@@ -149,7 +157,7 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         }
 
         if (!sortClassName.contains(".")) {
-            sortClassName = Alphabetic.class.getPackage().getName() + "." + sortClassName;
+            sortClassName = Alphabetic.class.getPackage().getName() + "." + sortClassName; // NOSONAR
         }
 
         try {
@@ -198,7 +206,6 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     private List<Class<? extends AludraTestCase>> findMatchingClassesInJar(File jarFile, TestClassFilter filter,
             ClassLoader classLoader)
                     throws IOException {
@@ -215,24 +222,10 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                 if (m.matches()) {
                     String pkgName = m.group(1).replace('/', '.');
                     String className = m.group(2);
-                    if (!"".equals(pkgName)) {
-                        className = pkgName + "." + className;
+                    if (!pkgName.isEmpty()) {
+                        className = pkgName + "." + className; // NOSONAR
                     }
-                    try {
-                        Class<?> clz;
-                        if (classLoader != null) {
-                            clz = classLoader.loadClass(className);
-                        }
-                        else {
-                            clz = Class.forName(className);
-                        }
-                        if (AludraTestCase.class.isAssignableFrom(clz) && filter.matches((Class<? extends AludraTestCase>) clz)) {
-                            result.add((Class<? extends AludraTestCase>) clz);
-                        }
-                    }
-                    catch (Throwable t) {
-                        // ignore that class
-                    }
+                    checkJarClass(className, filter, classLoader, result);
                 }
             }
         }
@@ -246,6 +239,26 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         }
 
         return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void checkJarClass(String className, TestClassFilter filter, ClassLoader classLoader,
+            List<Class<? extends AludraTestCase>> result) {
+        try {
+            Class<?> clz;
+            if (classLoader != null) {
+                clz = classLoader.loadClass(className);
+            }
+            else {
+                clz = Class.forName(className);
+            }
+            if (AludraTestCase.class.isAssignableFrom(clz) && filter.matches((Class<? extends AludraTestCase>) clz)) {
+                result.add((Class<? extends AludraTestCase>) clz);
+            }
+        }
+        catch (Throwable t) {
+            // ignore that class
+        }
     }
 
     private String getCommonPackageRoot(List<Class<? extends AludraTestCase>> testClasses) {
@@ -274,8 +287,9 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
 
     private String getCommonPrefix(String s1, String s2) {
         int i;
-        for (i = 0; i < s1.length() && i < s2.length() && s1.charAt(i) == s2.charAt(i); i++)
-            ;
+        for (i = 0; i < s1.length() && i < s2.length() && s1.charAt(i) == s2.charAt(i); i++) {
+            // empty loop that sets i to the first index of non-equal characters
+        }
         return s1.substring(0, i);
     }
 
@@ -478,92 +492,6 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
     /** Creates a test case name for a test method invocation. */
     private static String createInvocationTestCaseName(String testInfo, String methodTestSuiteName) {
         return methodTestSuiteName + '-' + testInfo;
-    }
-
-    private static class CategoryBuilder {
-
-        private String removePackagePrefix;
-
-        private List<String> categoryOrder;
-
-        public CategoryBuilder(List<String> categoryOrder) {
-            this.categoryOrder = categoryOrder;
-        }
-
-        public CategoryBuilder(String removePackagePrefix) {
-            this.removePackagePrefix = removePackagePrefix;
-            this.categoryOrder = Collections.emptyList();
-        }
-
-        public RunnerGroup getParentRunnerGroup(RunnerTree tree, Class<? extends AludraTestCase> clazz) {
-            if (!categoryOrder.isEmpty()) {
-                List<String> categories = new ArrayList<String>();
-                StringBuilder prefix = new StringBuilder();
-                for (String cat : categoryOrder) {
-                    List<String> catVals = TestAttributeUtil.getTestAttributes(clazz).get(cat);
-                    String catVal = catVals == null || catVals.isEmpty() ? null : catVals.get(0);
-                    if (catVal == null) {
-                        catVal = cat + " unknown";
-                    }
-                    categories.add(prefix + catVal);
-                    prefix.append(catVal).append(".");
-                }
-                return forceGetRunnerGroup(tree, categories);
-            }
-            else {
-                String className = clazz.getName();
-                if (!"".equals(removePackagePrefix) && className.startsWith(removePackagePrefix)) {
-                    className = className.substring(removePackagePrefix.length());
-                    if (className.startsWith(".")) {
-                        className = className.substring(1);
-                    }
-                }
-
-                // remove class itself
-                if (className.contains(".")) {
-                    className = className.substring(0, className.lastIndexOf('.'));
-                }
-                else {
-                    // no package available
-                    return tree.getRoot();
-                }
-
-                List<String> groups = new ArrayList<String>();
-                int i = 0;
-                while (i < className.length()) {
-                    int nextIndex = className.indexOf('.', i);
-                    if (nextIndex == -1) {
-                        groups.add(className);
-                        break;
-                    }
-                    groups.add(className.substring(0, nextIndex));
-                    i = nextIndex + 1;
-                }
-
-                return forceGetRunnerGroup(tree, groups);
-            }
-        }
-
-        private RunnerGroup forceGetRunnerGroup(RunnerTree tree, List<String> pathSegments) {
-            RunnerGroup group = tree.getRoot();
-
-            for (String seg : pathSegments) {
-                boolean found = false;
-                for (RunnerNode node : group.getChildren()) {
-                    if (node instanceof RunnerGroup && seg.equals(node.getName())) {
-                        group = (RunnerGroup) node;
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    // TODO here would be the place to select execution mode based on whatever information
-                    group = tree.createGroup(seg, ExecutionMode.PARALLEL, group);
-                }
-            }
-
-            return group;
-        }
     }
 
 }
