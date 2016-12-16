@@ -15,20 +15,27 @@
  */
 package org.aludratest.testcase.event.impl;
 
+import java.util.Collection;
+
 import org.aludratest.exception.AludraTestException;
 import org.aludratest.scheduler.RunnerListenerRegistry;
 import org.aludratest.scheduler.node.RunnerLeaf;
+import org.aludratest.service.Action;
 import org.aludratest.testcase.AludraTestContext;
 import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.util.ExceptionUtil;
 import org.aludratest.util.FlowController;
 
+/** Utility class for functional logging.
+ * @author Volker Bergmann */
 public class LogUtil {
 
     private LogUtil() {
+        // private constructor for preventing instantiation of this utility class
     }
 
-    public static void logErrorAsNewGroup(RunnerListenerRegistry listenerRegistry, RunnerLeaf leaf, Throwable t, boolean ignore) {
+    public static void logErrorAsNewGroup(RunnerListenerRegistry listenerRegistry, RunnerLeaf leaf, Throwable t, boolean ignore) { // NOSONAR
         listenerRegistry.fireNewTestStepGroup(leaf, "Error");
         TestStepInfoBean info = new TestStepInfoBean();
         info.setCommand("Error report");
@@ -79,6 +86,18 @@ public class LogUtil {
         info.setTestStatus(status);
 
         testContext.fireTestStep(info);
+    }
+
+    public static void attachDebugAttachments(Action action, TestStepInfoBean testStep) {
+        attach(action.createDebugAttachments(), testStep);
+    }
+
+    public static void attach(Collection<Attachment> attachments, TestStepInfoBean testStep) {
+        if (attachments != null) {
+            for (Attachment attachment : attachments) {
+                testStep.addAttachment(attachment);
+            }
+        }
     }
 
 }
