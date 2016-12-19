@@ -28,7 +28,6 @@ public class DatabeneXmlUtil {
 
     /** Private constructor for preventing instantiation of this utility class. */
     private DatabeneXmlUtil() {
-        // Private constructor for preventing instantiation of this utility class.
     }
 
     /** Creates an {@link XmlDiffDetail} that represents a missing element.

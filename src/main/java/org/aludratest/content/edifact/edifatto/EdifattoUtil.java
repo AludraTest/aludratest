@@ -27,7 +27,6 @@ public final class EdifattoUtil {
 
     /** Private constructor for preventing instantiation of this utility class. */
     private EdifattoUtil() {
-        // Private constructor for preventing instantiation of this utility class.
     }
 
     /** Maps an {@link EdiDiffDetailType} to a generic diff detail type.
