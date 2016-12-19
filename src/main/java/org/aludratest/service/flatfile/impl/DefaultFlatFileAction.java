@@ -114,7 +114,7 @@ public class DefaultFlatFileAction implements FlatFileInteraction, FlatFileVerif
     @Override
     public Object createWriter(String filePath, boolean overwrite) {
         WriterConfig config = new WriterConfig(filePath, overwrite);
-        Object writerId = config.createWriter(contentHandler);
+        Serializable writerId = config.createWriter(contentHandler);
         this.writers.put(writerId, config);
         return new WriterKey(writerId);
     }
@@ -177,9 +177,9 @@ public class DefaultFlatFileAction implements FlatFileInteraction, FlatFileVerif
 
         private static final long serialVersionUID = -6215758848328616178L;
 
-        private Object internalKey;
+        private Serializable internalKey;
 
-        public WriterKey(Object internalKey) {
+        public WriterKey(Serializable internalKey) {
             if (internalKey == null) {
                 throw new IllegalArgumentException("Internal writer ID is null");
             }
