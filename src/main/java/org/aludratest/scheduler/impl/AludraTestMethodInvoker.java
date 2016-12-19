@@ -62,9 +62,9 @@ public class AludraTestMethodInvoker implements TestInvoker {
         this.method = method;
 
         if (!deferredEvaluation) {
-            Object[] args = data.getData();
-            validateArgsSize(args);
-            this.args = (args != null ? args.clone() : null);
+            Object[] params = data.getData();
+            validateArgsSize(params);
+            this.args = (params != null ? params.clone() : null);
         }
         else {
             this.testCaseData = data;
@@ -98,8 +98,8 @@ public class AludraTestMethodInvoker implements TestInvoker {
     /** Creates a String representation of the object. */
     @Override
     public String toString() {
-        String args = this.args == null && testCaseData != null ? "<deferred evaluation>" : ArrayFormat.format(this.args);
-        return method.getDeclaringClass().getName() + '.' + method.getName() + '(' + args + ')';
+        String params = (this.args == null && testCaseData != null ? "<deferred evaluation>" : ArrayFormat.format(this.args));
+        return method.getDeclaringClass().getName() + '.' + method.getName() + '(' + params + ')';
     }
 
     // private helper methods ------------------------------------------------------------------------------------------
@@ -111,11 +111,11 @@ public class AludraTestMethodInvoker implements TestInvoker {
         if (!Object.class.equals(superclass)) {
             executeBefores(superclass);
         }
-        for (Method method : type.getDeclaredMethods()) {
-            Before before = method.getAnnotation(Before.class);
+        for (Method candidate : type.getDeclaredMethods()) {
+            Before before = candidate.getAnnotation(Before.class);
             if (before != null) {
-                verifyBeforeAfterMethod(method);
-                invokeObjectMethod(method, testObject);
+                verifyBeforeAfterMethod(candidate);
+                invokeObjectMethod(candidate, testObject);
             }
         }
     }
@@ -123,11 +123,11 @@ public class AludraTestMethodInvoker implements TestInvoker {
     /** Executes all {@literal @}After methods of the {@link #testObject}
      *  and its parent classes (child classes first). */
     private void executeAfters(Class<?> type) {
-        for (Method method : type.getDeclaredMethods()) {
-            After after = method.getAnnotation(After.class);
+        for (Method candidate : type.getDeclaredMethods()) {
+            After after = candidate.getAnnotation(After.class);
             if (after != null) {
-                verifyBeforeAfterMethod(method);
-                invokeObjectMethod(method, testObject);
+                verifyBeforeAfterMethod(candidate);
+                invokeObjectMethod(candidate, testObject);
             }
         }
         Class<?> superclass = type.getSuperclass();
@@ -147,11 +147,11 @@ public class AludraTestMethodInvoker implements TestInvoker {
 
     private Object[] getArgs() {
         if (args == null && testCaseData != null) {
-            Object[] args = testCaseData.getData();
-            this.args = (args != null ? args.clone() : null);
+            Object[] params = testCaseData.getData();
+            this.args = (params != null ? params.clone() : null);
             validateArgsSize(this.args);
         }
-        return this.args == null ? new Object[0] : this.args;
+        return (this.args == null ? new Object[0] : this.args);
     }
 
     /** Invokes the given {@literal @}Before or {@literal @}After method

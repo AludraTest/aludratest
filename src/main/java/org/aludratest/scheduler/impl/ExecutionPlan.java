@@ -120,7 +120,8 @@ public class ExecutionPlan {
         if (groupName != null) {
             List<RunnerNode> ls = buildList.get(groupName);
             if (ls == null) {
-                buildList.put(groupName, ls = new ArrayList<RunnerNode>());
+                ls = new ArrayList<RunnerNode>();
+                buildList.put(groupName, ls);
             }
             ls.add(node);
             Collections.sort(ls, new Comparator<RunnerNode>() {
@@ -181,14 +182,10 @@ public class ExecutionPlan {
     private RunnerNode findPrecedingNonEmptyNode(List<? extends RunnerNode> list, int index) {
         for (int i = index - 1; i >= 0; i--) {
             RunnerNode node = list.get(i);
-            if (node instanceof RunnerLeaf) {
-                return node;
-            }
-            else if (containsLeafs((RunnerGroup) node)) {
+            if (node instanceof RunnerLeaf || containsLeafs((RunnerGroup) node)) {
                 return node;
             }
         }
-
         return null;
     }
 
@@ -206,11 +203,10 @@ public class ExecutionPlan {
 
     private ExecutionPlanEntry findEntry(RunnerLeaf leaf) {
         for (ExecutionPlanEntry entry : entries) {
-            if (entry.leaf == leaf) {
+            if (entry.leaf == leaf) { // NOSONAR Object identity is required here
                 return entry;
             }
         }
-
         return null;
     }
 
@@ -222,7 +218,7 @@ public class ExecutionPlan {
 
         private boolean started;
 
-        private ExecutionPlanEntry(RunnerLeaf leaf) {
+        ExecutionPlanEntry(RunnerLeaf leaf) {
             this.leaf = leaf;
         }
 

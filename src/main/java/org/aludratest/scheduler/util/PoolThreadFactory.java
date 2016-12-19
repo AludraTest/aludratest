@@ -59,8 +59,9 @@ public class PoolThreadFactory implements ThreadFactory {
      * group name, that it is a thread and its number in the ThreadGroup.
      */
     @Override
-    public Thread newThread(Runnable r) {
-        return new Thread(group, r, group.getName() + "-thread-" + threadNumber.getAndIncrement(), 0);
+    public Thread newThread(Runnable r) { // NOSONAR not intended to be used in J2EE components
+        return new Thread(group, r, group.getName() + "-thread-" + threadNumber.getAndIncrement(), 0); // NOSONAR not intended to
+        // be used in J2EE components
     }
 
 }

@@ -94,32 +94,14 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
 
             try {
                 while (!executionPlan.isEmpty()) {
-                    // wait for an execution slot to become available
-                    while (executorService.getActiveCount() >= poolSize) {
-                        synchronized (executorService) {
-                            try {
-                                executorService.wait(5000);
-                            }
-                            catch (InterruptedException e) {
-                                return;
-                            }
-                        }
+                    if (!waitForExecutionSlot(poolSize)) {
+                        return;
                     }
-
-                    // wait for a runner leaf to become available (all dependencies fulfilled)
-                    RunnerLeaf nextLeaf;
-                    while ((nextLeaf = executionPlan.getNextExecutableLeaf()) == null && !executionPlan.isEmpty()) {
-                        synchronized (executorService) {
-                            try {
-                                executorService.wait(5000);
-                            }
-                            catch (InterruptedException e) {
-                                return;
-                            }
-                        }
+                    RunnerLeaf nextLeaf = waitForAvailableLeaf();
+                    if (nextLeaf == null) {
+                        return;
                     }
-
-                    executorService.submit(new RunnerLeafRunnable(nextLeaf));
+                    executorService.submit(new RunnerLeafRunnable(nextLeaf)); // NOSONAR
                 }
             }
             finally {
@@ -136,6 +118,35 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
         else {
             LOGGER.info("No tests to run");
         }
+    }
+
+    private RunnerLeaf waitForAvailableLeaf() {
+        RunnerLeaf nextLeaf;
+        while ((nextLeaf = executionPlan.getNextExecutableLeaf()) == null && !executionPlan.isEmpty()) {
+            synchronized (executorService) {
+                try {
+                    executorService.wait(5000);
+                }
+                catch (InterruptedException e) {
+                    return null;
+                }
+            }
+        }
+        return nextLeaf;
+    }
+
+    private boolean waitForExecutionSlot(int poolSize) {
+        while (executorService.getActiveCount() >= poolSize) {
+            synchronized (executorService) {
+                try {
+                    executorService.wait(5000);
+                }
+                catch (InterruptedException e) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private void executeEmptyGroups(RunnerGroup group) {
@@ -155,7 +166,7 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
      * @param node
      * @param indent */
     private void debugSubTree(RunnerNode node, String indent) {
-        LOGGER.debug(indent + node);
+        LOGGER.debug("{}{}", indent, node);
         if (node instanceof RunnerGroup) {
             String subIndent = indent + "  ";
             RunnerGroup group = (RunnerGroup) node;
@@ -179,7 +190,7 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
         @Override
         public Void call() {
             TestInvoker testInvoker = leaf.getTestInvoker();
-            LOGGER.debug("Starting " + testInvoker);
+            LOGGER.debug("Starting {}", testInvoker);
 
             InternalTestListener listener = new InternalTestListener() {
                 @Override
@@ -225,7 +236,7 @@ public class AludraTestRunnerImpl implements AludraTestRunner {
 
                 listenerRegistry.fireStartingTestLeaf(leaf);
                 testInvoker.invoke();
-                LOGGER.debug("Finished " + testInvoker);
+                LOGGER.debug("Finished {}", testInvoker);
                 Thread.currentThread().setName(oldName);
             }
             catch (Throwable t) {

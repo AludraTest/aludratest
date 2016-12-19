@@ -30,9 +30,6 @@ import org.aludratest.scheduler.RunStatus;
  */
 public class RunnerGroup extends RunnerNode {
 
-    /** The parent group. */
-    private final RunnerGroup parent;
-
     /** The child nodes. */
     private final List<RunnerNode> children;
 
@@ -45,7 +42,6 @@ public class RunnerGroup extends RunnerNode {
      * @param parent See {@link #parent}. */
     public RunnerGroup(String path, ExecutionMode mode, RunnerGroup parent) {
         super(path, parent);
-        this.parent = parent;
         this.mode = mode;
         this.children = new ArrayList<RunnerNode>();
     }
@@ -56,7 +52,8 @@ public class RunnerGroup extends RunnerNode {
             return true;
         } else if (mode == ExecutionMode.SEQUENTIAL) {
             return false;
-        } else if (parent == null) {
+        }
+        else if (parent == null) { // NOSONAR
             return true;
         } else {
             return parent.isParallel();
@@ -99,8 +96,6 @@ public class RunnerGroup extends RunnerNode {
 
     @Override
     public RunStatus getRunStatus() {
-        Set<RunStatus> allStates = new HashSet<RunStatus>();
-
         List<RunnerNode> checkChildren;
         synchronized (children) {
             if (children.isEmpty()) {
@@ -108,6 +103,7 @@ public class RunnerGroup extends RunnerNode {
             }
             checkChildren = new ArrayList<RunnerNode>(children);
         }
+        Set<RunStatus> allStates = new HashSet<RunStatus>();
         for (RunnerNode child : checkChildren) {
             allStates.add(child.getRunStatus());
         }

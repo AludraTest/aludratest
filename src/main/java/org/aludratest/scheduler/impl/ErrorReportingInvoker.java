@@ -22,8 +22,8 @@ import org.aludratest.testcase.AludraTestContext;
 import org.databene.commons.Assert;
 
 /**
- * {@link TestInvoker} implementation that is used to 
- * report initialization errors specific to a certain test. 
+ * {@link TestInvoker} implementation that is used to
+ * report initialization errors specific to a certain test.
  * @author Volker Bergmann
  */
 public class ErrorReportingInvoker implements TestInvoker {
@@ -34,8 +34,8 @@ public class ErrorReportingInvoker implements TestInvoker {
     /** The error to report. */
     private Throwable error;
 
-    /** Constructor receiving values for all attributes of same name. 
-     *  @param method 
+    /** Constructor receiving values for all attributes of same name.
+     *  @param method
      *  @param error */
     public ErrorReportingInvoker(Method method, Throwable error) {
         // check preconditions
@@ -45,10 +45,11 @@ public class ErrorReportingInvoker implements TestInvoker {
     }
 
     /** Is called to set the testCase property on the test object,
-     *  but since the called instance of this class only exists to 
+     *  but since the called instance of this class only exists to
      *  report an exception, this does nothing. */
     @Override
     public void setContext(AludraTestContext context) {
+        // context is not used
     }
 
     /** rethrows the error.  */
