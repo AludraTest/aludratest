@@ -119,7 +119,7 @@ public class FileFieldImpl extends AbstractElement<FileField> implements ValueCo
     }
 
     private File getTestResourceFile(String fileName) {
-        return new File(getTestResourceFolder(), fileName);
+        return new File(getTestResourceFolder(), fileName); // NOSONAR
     }
 
     private File getTestResourceFolder() {

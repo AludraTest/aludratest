@@ -226,50 +226,6 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
         }
     }
 
-    // private void startTestCase(TestCaseLogImpl log) {
-    // DateTime now = DateTime.now();
-    // // notify all parent suites which are not started yet
-    // startTestSuite(log.getParent(), now);
-    // log.setStartTime(now);
-    // framework.fireStartingTestCase(log);
-    // }
-    //
-    // private void startTestSuite(TestSuiteLogImpl log, DateTime now) {
-    // if (log.getStartTime() != null) {
-    // return;
-    // }
-    //
-    // TestSuiteLogImpl parent = log.getParent();
-    // if (parent != null && parent.getStatus() == TestStatus.PENDING) {
-    // startTestSuite(parent, now);
-    // }
-    // log.setStartTime(now);
-    // framework.fireStartingTestSuite(log);
-    // }
-    //
-    // private void finishTestCase(TestCaseLogImpl log) {
-    // DateTime now = DateTime.now();
-    //
-    // log.setEndTime(now);
-    // framework.fireFinishedTestCase(log);
-    //
-    // checkFinishSuite(log.getParent(), now);
-    // }
-    //
-    // private void checkFinishSuite(TestSuiteLogImpl log, DateTime now) {
-    // // as status is calculated dynamically from children, we can use it here
-    // if (log.getEndTime() == null && log.getStatus() != TestStatus.RUNNING) {
-    // log.setEndTime(now);
-    // if (log.getParent() != null) {
-    // framework.fireFinishedTestSuite(log);
-    // checkFinishSuite(log.getParent(), now);
-    // }
-    // else {
-    // framework.fireFinishedTestProcess(log);
-    // }
-    // }
-    // }
-
     private AttachmentLog createAttachmentLog(Attachment attachment) {
         if (configuration.isAttachmentsFileBuffer()) {
             try {
@@ -320,7 +276,7 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
         }
     }
 
-    private String toString(Object o) {
+    private String toString(Object o) { // NOSONAR number of returns is appropriate
         if (o == null) {
             return "null";
         }
@@ -341,15 +297,16 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
             else if (o.getClass().getComponentType() == double.class) {
                 return Arrays.toString((double[]) o);
             }
-            else if (o.getClass().getComponentType() == short.class) {
-                return Arrays.toString((short[]) o);
+            else if (o.getClass().getComponentType() == short.class) { // NOSONAR I need to support short generically
+                return Arrays.toString((short[]) o); // NOSONAR I need to support short generically
             }
         }
 
         return o.toString();
     }
 
-    private static TestStatus convertStatus(org.aludratest.testcase.TestStatus status) {
+    private static TestStatus convertStatus(org.aludratest.testcase.TestStatus status) { // NOSONAR number of returns is
+                                                                                         // appropriate
         switch (status) {
             case FAILED:
                 return TestStatus.FAILED;

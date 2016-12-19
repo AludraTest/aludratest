@@ -29,6 +29,6 @@ package org.aludratest.service.gui.web.page;
  * @author falbrech
  * 
  */
-public abstract class PageUtility {
+public abstract class PageUtility { // NOSONAR
 
 }

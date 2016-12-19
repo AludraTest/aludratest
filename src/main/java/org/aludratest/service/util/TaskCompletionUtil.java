@@ -57,7 +57,7 @@ public class TaskCompletionUtil {
         }
         int dt = (int) (System.currentTimeMillis() - startTime);
         // a task is running, I wait until it is finished or I get impatient...
-        LOGGER.debug("Activity was observed on {}, now waiting for completion " +
+        LOGGER.debug("Activity was observed on {}, now waiting for completion " + // NOSONAR
                 "until the completionTimeout of {} ms", connector, completionTimeout);
         waitUntilNotBusy(connector, completionTimeout - dt, pollingInterval, failureMessage);
         LOGGER.debug("{} finished its activity", connector);
@@ -123,7 +123,7 @@ public class TaskCompletionUtil {
             return false;
         }
         SystemBusyIndicator busyIndicator = connector.getConnector(SystemBusyIndicator.class);
-        return busyIndicator != null ? busyIndicator.isBusy() : false;
+        return (busyIndicator != null && busyIndicator.isBusy());
     }
 
     private static void sleep(int duration) {

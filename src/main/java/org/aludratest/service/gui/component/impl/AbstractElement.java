@@ -160,10 +160,8 @@ public abstract class AbstractElement<E extends Element<E>> extends AbstractGUIC
 
     @Override
     public void click(String click) {
-        if (!DataMarkerCheck.isNull(click)) {
-            if (Boolean.parseBoolean(click)) {
-                click();
-            }
+        if (!DataMarkerCheck.isNull(click) && Boolean.parseBoolean(click)) {
+            click();
         }
     }
 

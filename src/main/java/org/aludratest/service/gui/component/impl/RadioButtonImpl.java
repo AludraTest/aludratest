@@ -28,10 +28,8 @@ public class RadioButtonImpl extends AbstractElement<RadioButton> implements Rad
 
     @Override
     public void select(String value) {
-        if (!DataMarkerCheck.isNull(value)) {
-            if (Boolean.parseBoolean(value)) {
-                select();
-            }
+        if (!DataMarkerCheck.isNull(value) && Boolean.parseBoolean(value)) {
+            select();
         }
     }
 

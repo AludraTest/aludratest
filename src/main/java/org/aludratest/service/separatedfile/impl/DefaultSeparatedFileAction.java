@@ -69,7 +69,7 @@ public class DefaultSeparatedFileAction implements SeparatedFileInteraction, Sep
     /** Empty implementation of the {@link Action} interface returning null. */
     @Override
     public List<Attachment> createDebugAttachments() {
-        return null;
+        return null; // NOSONAR this is compliant with the interface's contract
     }
 
     // general file operations -------------------------------------------------

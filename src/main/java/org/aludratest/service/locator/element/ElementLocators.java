@@ -60,7 +60,7 @@ public class ElementLocators implements Iterable<GUIElementLocator> {
      * @return A new mutable instance of this locators object, which implements GUIElementLocator.
      */
     public GUIElementLocator newMutableInstance() {
-        return new ElementLocatorsGUI(options);
+        return new ElementLocatorsGUI(options); // NOSONAR
     }
 
     // java.lang.Object overrides ----------------------------------------------
@@ -129,18 +129,6 @@ public class ElementLocators implements Iterable<GUIElementLocator> {
             return usedOption;
         }
 
-        // private helpers ---------------------------------------------------------
-
-        private int indexOf(GUIElementLocator option) {
-            for (int i = 0; i < options.size(); i++) {
-                GUIElementLocator candidate = options.get(i);
-                if (candidate == option) { // NOSONAR
-                    return i;
-                }
-            }
-            return -1;
-        }
-
         // java.lang.Object overrides ----------------------------------------------
         @Override
         public int hashCode() {
@@ -159,7 +147,7 @@ public class ElementLocators implements Iterable<GUIElementLocator> {
                 return false;
             }
             ElementLocatorsGUI that = (ElementLocatorsGUI) obj;
-            return (this.options.equals(that.options) && (this.usedOption == null ? that.usedOption == null : this.usedOption
+            return (this.options.equals(that.options) && ((this.usedOption == null) ? (that.usedOption == null) : this.usedOption
                     .equals(that.usedOption)));
         }
 

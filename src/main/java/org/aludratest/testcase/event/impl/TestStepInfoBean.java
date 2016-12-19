@@ -227,7 +227,8 @@ public final class TestStepInfoBean implements TestStepInfo {
                 if (isTestArgumentMarkerAnnotation(paramAnno.annotationType())) {
                     List<Object> ls = fillMap.get(paramAnno.annotationType());
                     if (ls == null) {
-                        fillMap.put(paramAnno.annotationType(), ls = new ArrayList<Object>());
+                        ls = new ArrayList<Object>();
+                        fillMap.put(paramAnno.annotationType(), ls);
                     }
                     ls.add(paramFormat == null ? parameters[i] : paramFormat.format(parameters[i]));
                     consumedArg = true;
@@ -236,7 +237,8 @@ public final class TestStepInfoBean implements TestStepInfo {
             if (!consumedArg) {
                 List<Object> ls = fillMap.get(null);
                 if (ls == null) {
-                    fillMap.put(null, ls = new ArrayList<Object>());
+                    ls = new ArrayList<Object>();
+                    fillMap.put(null, ls);
                 }
                 ls.add(paramFormat == null ? parameters[i] : paramFormat.format(parameters[i]));
             }
