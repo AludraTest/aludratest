@@ -36,11 +36,11 @@ public class FilterParser {
      * 
      * @throws ParseException If a parsing error occurs, i.e. the input filter string is invalid. */
     public TestClassFilter parse(String inputString) throws ParseException {
-        List<Token> tokens = new FilterTokenizer().tokenize(inputString);
+        List<TokenDeclaration> tokens = new FilterTokenizer().tokenize(inputString);
         return parseOrFilter(tokens);
     }
 
-    private TestClassFilter parseOrFilter(List<Token> tokens) throws ParseException {
+    private TestClassFilter parseOrFilter(List<TokenDeclaration> tokens) throws ParseException {
         List<TestClassFilter> filters = new ArrayList<TestClassFilter>();
 
         while (!tokens.isEmpty()) {
@@ -54,14 +54,14 @@ public class FilterParser {
         return filters.size() == 1 ? filters.get(0) : new OrTestClassFilter(filters);
     }
 
-    private TestClassFilter parseAndFilter(List<Token> tokens) throws ParseException {
+    private TestClassFilter parseAndFilter(List<TokenDeclaration> tokens) throws ParseException {
         assertNotEmpty(tokens);
 
         List<TestClassFilter> filters = new ArrayList<TestClassFilter>();
 
         while (!tokens.isEmpty() && tokens.get(0).token != FilterTokenizer.TOKEN_OR) {
             // get attribute name
-            Token token = consumeToken(tokens, FilterTokenizer.TOKEN_IDENTIFIER);
+            TokenDeclaration token = consumeToken(tokens, FilterTokenizer.TOKEN_IDENTIFIER);
             String attributeName = token.sequence.trim();
             token = consumeToken(tokens, 0);
             boolean invert = false;
@@ -86,11 +86,11 @@ public class FilterParser {
         return new AndTestClassFilter(filters);
     }
 
-    private List<String> parseValues(List<Token> tokens) throws ParseException {
+    private List<String> parseValues(List<TokenDeclaration> tokens) throws ParseException {
         assertNotEmpty(tokens);
 
         // either bracket, or single value
-        Token token = consumeToken(tokens, 0);
+        TokenDeclaration token = consumeToken(tokens, 0);
         if (token.token == FilterTokenizer.TOKEN_OPEN_BRACKET) {
             List<String> values = parseValueList(tokens);
             consumeToken(tokens, FilterTokenizer.TOKEN_CLOSE_BRACKET);
@@ -101,13 +101,13 @@ public class FilterParser {
         return Collections.singletonList(token.sequence.trim());
     }
 
-    private List<String> parseValueList(List<Token> tokens) throws ParseException {
+    private List<String> parseValueList(List<TokenDeclaration> tokens) throws ParseException {
         assertNotEmpty(tokens);
 
         List<String> result = new ArrayList<String>();
 
         while (tokens.get(0).token != FilterTokenizer.TOKEN_CLOSE_BRACKET) {
-            Token token = consumeToken(tokens, FilterTokenizer.TOKEN_IDENTIFIER);
+            TokenDeclaration token = consumeToken(tokens, FilterTokenizer.TOKEN_IDENTIFIER);
             result.add(token.sequence.trim());
             assertNotEmpty(tokens);
             if (tokens.get(0).token != FilterTokenizer.TOKEN_CLOSE_BRACKET) {
@@ -118,23 +118,23 @@ public class FilterParser {
         return result;
     }
 
-    private Token consumeToken(List<Token> tokens, int expectedType) throws ParseException {
+    private TokenDeclaration consumeToken(List<TokenDeclaration> tokens, int expectedType) throws ParseException {
         assertNotEmpty(tokens);
 
-        Token token = tokens.remove(0);
+        TokenDeclaration token = tokens.remove(0);
         if (expectedType > 0) {
             assertToken(token, expectedType);
         }
         return token;
     }
 
-    private void assertToken(Token token, int expectedType) throws ParseException {
+    private void assertToken(TokenDeclaration token, int expectedType) throws ParseException {
         if (token.token != expectedType) {
             throw new ParseException("Unexpected token " + token.sequence + " at offset " + token.offset, token.offset);
         }
     }
 
-    private void assertNotEmpty(List<Token> tokens) throws ParseException {
+    private void assertNotEmpty(List<TokenDeclaration> tokens) throws ParseException {
         if (tokens.isEmpty()) {
             throw new ParseException("Unexpected end of filter string", 0);
         }
@@ -171,9 +171,9 @@ public class FilterParser {
             addTokenInfo("([^\\|;=!\\(\\)\\[\\],]+)|\\[\\]", TOKEN_IDENTIFIER);
         }
 
-        public List<Token> tokenize(String input) throws ParseException {
-            List<Token> result = new ArrayList<Token>();
-
+        public List<TokenDeclaration> tokenize(String text) throws ParseException {
+            List<TokenDeclaration> result = new ArrayList<TokenDeclaration>();
+            String input = text;
             int offset = 0;
             while (!"".equals(input)) {
                 // remove spaces before and after each token
@@ -191,7 +191,7 @@ public class FilterParser {
                     if (m.find()) {
                         match = true;
                         String tok = m.group();
-                        result.add(new Token(info.token, tok, offset));
+                        result.add(new TokenDeclaration(info.token, tok, offset));
                         input = m.replaceFirst("");
                         offset += tok.length();
                         break;
@@ -223,12 +223,12 @@ public class FilterParser {
         }
     }
 
-    private static class Token {
+    private static class TokenDeclaration {
         public final int token;
         public final String sequence;
         public final int offset;
 
-        public Token(int token, String sequence, int offset) {
+        public TokenDeclaration(int token, String sequence, int offset) {
             this.token = token;
             this.sequence = sequence;
             this.offset = offset;

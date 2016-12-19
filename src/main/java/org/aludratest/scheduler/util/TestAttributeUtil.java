@@ -51,7 +51,8 @@ public final class TestAttributeUtil {
             for (TestAttribute a : attrs.value()) {
                 List<String> ls = result.get(a.name());
                 if (ls == null) {
-                    result.put(a.name(), ls = new ArrayList<String>());
+                    ls = new ArrayList<String>();
+                    result.put(a.name(), ls);
                 }
                 ls.add(a.value());
             }
