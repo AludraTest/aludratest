@@ -62,7 +62,7 @@ public class AludraTestMethodInvoker implements TestInvoker {
         this.method = method;
 
         if (!deferredEvaluation) {
-            Object[] params = data.getData(); // NOSONAR
+            Object[] params = data.getData();
             validateArgsSize(params);
             this.args = (params != null ? params.clone() : null);
         }
