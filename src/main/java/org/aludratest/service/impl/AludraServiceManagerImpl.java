@@ -19,7 +19,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import org.aludratest.config.ConfigurationException;
-import org.aludratest.config.InternalComponent;
 import org.aludratest.config.impl.DefaultConfigurator;
 import org.aludratest.exception.AludraTestException;
 import org.aludratest.exception.AutomationException;
@@ -36,7 +35,6 @@ import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.component.composition.CycleDetectedInComponentGraphException;
 import org.codehaus.plexus.component.repository.ComponentDescriptor;
-import org.codehaus.plexus.component.repository.ComponentRequirement;
 import org.codehaus.plexus.component.repository.exception.ComponentLifecycleException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
@@ -53,7 +51,7 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
     @Requirement(role = ServiceWrapper.class)
     private List<ServiceWrapper> serviceWrappers;
 
-    /** TODO FAL javadoc */
+    /** Default constructor */
     public AludraServiceManagerImpl() {
         serviceRegistry = new AludraServiceRegistry();
         new DefaultConfigurator().configure(serviceRegistry);
@@ -73,7 +71,7 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
             throw new AutomationException("No implementor class configured for interface " + iface.getName());
         }
         cd.setImplementation(implClass);
-        cd.setInstantiationStrategy(isSingleton(iface) ? "singleton" : "per-lookup");
+        cd.setInstantiationStrategy(AludraServiceUtil.isSingleton(iface) ? "singleton" : "per-lookup");
         cd.setRealm(realm);
 
         // lookup Requirements in class and parent classes
@@ -82,7 +80,7 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
             for (Field f : clazz.getDeclaredFields()) {
                 Requirement req = f.getAnnotation(Requirement.class);
                 if (req != null) {
-                    cd.addRequirement(createComponentRequirement(f, req));
+                    cd.addRequirement(AludraServiceUtil.createComponentRequirement(f, req));
                 }
             }
             clazz = clazz.getSuperclass();
@@ -91,28 +89,10 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
         return cd;
     }
 
-    private ComponentRequirement createComponentRequirement(Field field, Requirement requirement) {
-        ComponentRequirement cr = new ComponentRequirement();
-        cr.setFieldName(field.getName());
-        cr.setOptional(requirement.optional());
-        if (requirement.role() != null && requirement.role() != Object.class) {
-            cr.setRole(requirement.role().getName());
-        }
-        else {
-            cr.setRole(field.getType().getName());
-        }
-        if (requirement.hint() != null) {
-            cr.setRoleHint(requirement.hint());
-        }
-
-        return cr;
-    }
-
     @Override
     public <T extends AludraService> T createAndConfigureService(ComponentId<T> serviceId, AludraContext context, boolean wrap) {
         // get service details
         Class<T> serviceInterface = serviceId.getInterfaceClass();
-        String instanceName = serviceId.getInstanceName();
 
         // check preconditions
         if (serviceInterface == null) {
@@ -122,6 +102,7 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
             throw new IllegalArgumentException(serviceInterface.getName() + " is not an interface");
         }
 
+        String instanceName = serviceId.getInstanceName();
         AludraServiceContext serviceContext = new AludraServiceContextImpl(context, instanceName);
 
         // instantiate and initialize service
@@ -138,16 +119,14 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
 
             return service;
         }
+        catch (AludraTestException e) {
+            throw e;
+        }
+        catch (ConfigurationException e) {
+            throw new AutomationException("Configuration exception when initializing " + serviceId, e);
+        }
         catch (Exception e) {
-            if (e instanceof AludraTestException) {
-                throw (AludraTestException) e;
-            }
-            else if (e instanceof ConfigurationException) {
-                throw new AutomationException("Configuration exception when initializing " + serviceId, e);
-            }
-            else {
-                throw new TechnicalException("Error initializing " + serviceId, e);
-            }
+            throw new TechnicalException("Error initializing " + serviceId, e);
         }
     }
 
@@ -170,15 +149,6 @@ public class AludraServiceManagerImpl implements AludraServiceManager {
         catch (ComponentLifecycleException e) {
             throw new TechnicalException("Exception when closing singleton of class " + iface.getName(), e);
         }
-    }
-
-    private boolean isSingleton(Class<?> iface) {
-        // check if interface class is marked as singleton; if so, check singleton map
-        if (iface.isAnnotationPresent(InternalComponent.class)) {
-            InternalComponent ic = iface.getAnnotation(InternalComponent.class);
-            return ic.singleton();
-        }
-        return false;
     }
 
     private <T> T newImplementorInstance(Class<T> iface, String instanceName) {
