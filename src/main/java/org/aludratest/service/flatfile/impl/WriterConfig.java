@@ -15,12 +15,13 @@
  */
 package org.aludratest.service.flatfile.impl;
 
+import java.io.Serializable;
 import java.io.StringWriter;
 
 import org.aludratest.content.flat.FlatContent;
 
-/** 
- * Wraps a reader's character buffer and 'target data' 
+/**
+ * Wraps a reader's character buffer and 'target data'
  * (filePath and a flag whether a pre-existing file may be overwritten).
  * @author Volker Bergmann
  */
@@ -62,12 +63,12 @@ class WriterConfig {
     }
 
     /**
-     * Uses the {@link FlatContent} to create a flat file writer 
-     * that writes to the internal {@link #buffer}. 
+     * Uses the {@link FlatContent} to create a flat file writer
+     * that writes to the internal {@link #buffer}.
      * @param contentHandler the {@link FlatContent} handler to use
      * @return the id of the new writer
      */
-    public Object createWriter(FlatContent contentHandler) {
+    public Serializable createWriter(FlatContent contentHandler) {
         return contentHandler.createWriter(this.buffer);
     }
 
