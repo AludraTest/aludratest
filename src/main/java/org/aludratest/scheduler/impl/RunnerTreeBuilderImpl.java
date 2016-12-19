@@ -296,7 +296,10 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
     private PreconditionFailedException concatAssertionExceptions(Iterator<Map.Entry<Class<?>, String>> iterator,
             PreconditionFailedException cause) {
         if (!iterator.hasNext()) {
-            throw new IllegalArgumentException("Method called with empty iterator");
+            if (cause != null)
+                return cause;
+            else
+                throw new IllegalArgumentException("Method called with empty iterator and no cause exception");
         }
         Map.Entry<Class<?>, String> entry = iterator.next();
         String msg = entry.getValue() + ": " + entry.getKey().getName();
