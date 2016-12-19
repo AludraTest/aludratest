@@ -25,10 +25,6 @@ import org.databene.formats.compare.DiffDetailType;
  * @author Volker Bergmann */
 public final class EdifattoUtil {
 
-    private EdifattoUtil() {
-        // private constructor to prevent instantiation of this utility class
-    }
-
     /** Private constructor for preventing instantiation of this utility class. */
     private EdifattoUtil() {
         // Private constructor for preventing instantiation of this utility class.
