@@ -104,7 +104,7 @@ public class ProcessWrapper {
      * @param directory the working directory to set. */
     public void setWorkingDirectory(File directory) {
         assertState(ProcessState.CREATED);
-        if (!directory.mkdirs()) {
+        if (!directory.mkdirs() && !directory.exists()) {
             throw new TechnicalException("Directory creation failed: " + directory);
         }
         this.builder.directory(directory);
