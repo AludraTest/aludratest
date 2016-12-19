@@ -32,6 +32,7 @@ import org.aludratest.testcase.Offset;
 import org.aludratest.testcase.data.Source;
 import org.aludratest.testcase.data.TestCaseData;
 import org.aludratest.testcase.data.TestDataProvider;
+import org.aludratest.testcase.data.impl.xml.TestCaseUtil;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.databene.commons.StringUtil;
@@ -132,41 +133,21 @@ public class DatabeneFormatsTestDataProvider implements TestDataProvider {
                 TestDataLoadInfo ti = testInfos.get(iSet);
                 Object info = ti.getInfo();
                 if (info instanceof Throwable) {
-                    dataSets.add(new TestCaseData(getNextAutoId(dataSets, true), (Throwable) info));
+                    dataSets.add(new TestCaseData(TestCaseUtil.getNextAutoId(dataSets, true), (Throwable) info));
                 }
                 else {
-                    dataSets.add(new TestCaseData(info == null ? getNextAutoId(dataSets, false) : info.toString(), null, args, ti
-                            .isIgnored(), ti.getIgnoredReason()));
+                    dataSets.add(new TestCaseData(info == null ? TestCaseUtil.getNextAutoId(dataSets, false) : info.toString(),
+                            null, args, ti.isIgnored(), ti.getIgnoredReason()));
                 }
             }
             return dataSets;
-        } catch (Exception e) {
-            if (e instanceof AutomationException) {
-                throw (AutomationException) e;
-            } else {
-                throw new AutomationException("Error creating test parameters: " + e, e);
-            }
         }
-    }
-
-    private String getNextAutoId(List<TestCaseData> dataSets, boolean error) {
-        String prefix = error ? "error-" : "";
-        int nextAutoId = dataSets.size();
-        boolean found;
-        do {
-            found = false;
-            for (TestCaseData tcd : dataSets) {
-                if (tcd.getId().equals(prefix + nextAutoId)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                nextAutoId++;
-            }
+        catch (AutomationException e) {
+            throw e;
         }
-        while (found);
-        return prefix + nextAutoId;
+        catch (Exception e) {
+            throw new AutomationException("Error creating test parameters: " + e, e);
+        }
     }
 
     private Source getRequiredSourceAnnotation(Annotation[] annotations, String parameterName) {
@@ -214,7 +195,7 @@ public class DatabeneFormatsTestDataProvider implements TestDataProvider {
             }
             values.add((Data) wrapper.getData());
         }
-        if (values.size() == 0) {
+        if (values.isEmpty()) {
             throw new AutomationException("Empty sheet '" + segment + "' in file " + uri);
         }
         return values;

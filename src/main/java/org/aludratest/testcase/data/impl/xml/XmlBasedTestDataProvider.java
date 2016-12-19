@@ -15,19 +15,17 @@
  */
 package org.aludratest.testcase.data.impl.xml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import static org.aludratest.testcase.data.impl.xml.XmlDataProviderUtil.containsSegment;
+import static org.aludratest.testcase.data.impl.xml.XmlDataProviderUtil.format;
+import static org.aludratest.testcase.data.impl.xml.XmlDataProviderUtil.getFieldValue;
+import static org.aludratest.testcase.data.impl.xml.XmlDataProviderUtil.getRequiredSourceAnnotation;
+import static org.aludratest.testcase.data.impl.xml.XmlDataProviderUtil.getSegmentMetadata;
+import static org.aludratest.testcase.data.impl.xml.XmlDataProviderUtil.toJavaObject;
+import static org.aludratest.testcase.data.impl.xml.XmlDataProviderUtil.tryFindXml;
+
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -48,10 +46,8 @@ import org.aludratest.testcase.data.TestDataProvider;
 import org.aludratest.testcase.data.TestDataSource;
 import org.aludratest.testcase.data.impl.xml.model.TestData;
 import org.aludratest.testcase.data.impl.xml.model.TestDataConfiguration;
-import org.aludratest.testcase.data.impl.xml.model.TestDataConfigurationSegment;
 import org.aludratest.testcase.data.impl.xml.model.TestDataFieldMetadata;
 import org.aludratest.testcase.data.impl.xml.model.TestDataFieldType;
-import org.aludratest.testcase.data.impl.xml.model.TestDataFieldValue;
 import org.aludratest.testcase.data.impl.xml.model.TestDataSegmentMetadata;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.component.annotations.Requirement;
@@ -59,7 +55,6 @@ import org.databene.commons.BeanUtil;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
 
 /** An XML based Test Data provider. XML files must have the AludraTest XML Testdata format; best use AludraTest VDE Plugin for
@@ -73,10 +68,6 @@ import org.mozilla.javascript.Undefined;
  *
  * @author falbrech */
 public class XmlBasedTestDataProvider implements TestDataProvider {
-
-    private final SimpleDateFormat ISO_DATE = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-
-    private final DecimalFormat JAVA_NUMBER = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.US));
 
     @Requirement
     private AludraTestConfig aludraConfig;
@@ -141,8 +132,8 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             // ensure that all data lists contain enough entries
             for (List<InternalSingleDataSource> ls : allData) {
                 if (ls.size() <= i) {
-                    result.add(new TestCaseData(getNextAutoId(result, false), new AutomationException("For method " + method
-                            + ", not all referenced XML files contain the same amount of test configurations.")));
+                    result.add(new TestCaseData(TestCaseUtil.getNextAutoId(result, false), new AutomationException("For method "
+                            + method + ", not all referenced XML files contain the same amount of test configurations.")));
                     dataForConfig = null;
                     break;
                 }
@@ -199,7 +190,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             InputStream in = null;
             try {
                 // real URI?
-                in = tryFindXml(uri, method);
+                in = tryFindXml(uri, method, aludraConfig.getXlsRootPath());
                 testData = TestData.read(in);
                 // some base validations
                 if (testData.getMetadata() == null || testData.getMetadata().getSegments() == null
@@ -216,8 +207,6 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             }
         }
 
-        List<InternalSingleDataSource> dataElements = new ArrayList<InternalSingleDataSource>();
-
         // get metadata for requested segment
         TestDataSegmentMetadata segmentMeta = null;
         for (TestDataSegmentMetadata segment : testData.getMetadata().getSegments()) {
@@ -233,6 +222,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         final TestDataSegmentMetadata finalSegmentMeta = segmentMeta;
 
         // for each configuration entry, find values
+        List<InternalSingleDataSource> dataElements = new ArrayList<InternalSingleDataSource>();
         for (final TestDataConfiguration config : testData.getConfigurations()) {
             if (containsSegment(config, segmentMeta.getName())) {
                 dataElements.add(new InternalSingleDataSource() {
@@ -248,78 +238,6 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         }
 
         return dataElements;
-    }
-
-    private TestDataSegmentMetadata getSegmentMetadata(TestData testData, String segmentName) {
-        for (TestDataSegmentMetadata segment : testData.getMetadata().getSegments()) {
-            if (segmentName.equals(segment.getName())) {
-                return segment;
-            }
-        }
-        return null;
-    }
-
-    private Object getFieldValue(TestDataConfiguration configuration, String segmentName, TestDataFieldMetadata fieldMeta) {
-        String fieldName = fieldMeta.getName();
-        for (TestDataConfigurationSegment segment : configuration.getSegments()) {
-            if (segmentName.equals(segment.getName())) {
-                for (TestDataFieldValue field : segment.getFieldValues()) {
-                    if (fieldName.equals(field.getName())) {
-                        Object value = field.getFieldValueAsJavaType();
-                        if (field.isScript() && (value instanceof String)) {
-                            return new ScriptToEvaluate(value.toString(), fieldMeta.getFormatterPattern(),
-                                    toLocale(fieldMeta.getFormatterLocale()));
-                        }
-
-                        // perform auto-conversion based on type
-                        if (value instanceof String && !"".equals(value)) {
-                            switch (fieldMeta.getType()) {
-                                case BOOLEAN:
-                                    value = Boolean.parseBoolean(value.toString());
-                                    break;
-                                case DATE:
-                                    try {
-                                        value = ISO_DATE.parse(value.toString());
-                                    }
-                                    catch (ParseException e) {
-                                        // ignore; value is presented as-is
-                                        return value;
-                                    }
-                                    break;
-                                case NUMBER:
-                                    try {
-                                        value = JAVA_NUMBER.parseObject(value.toString());
-                                    }
-                                    catch (ParseException e) {
-                                        // ignore; value is presented as-is
-                                        return value;
-                                    }
-                                    break;
-                                default:
-                                    // nothing
-                            }
-
-                            return format(value, fieldMeta.getFormatterPattern(), toLocale(fieldMeta.getFormatterLocale()))
-                                    .toString();
-                        }
-                        else if ("".equals(value)) {
-                            return null;
-                        }
-                        return value;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private boolean containsSegment(TestDataConfiguration configuration, String segmentName) {
-        for (TestDataConfigurationSegment segment : configuration.getSegments()) {
-            if (segmentName.equals(segment.getName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private Data buildObject(TestData testData, TestDataConfiguration configuration, String segmentName) {
@@ -344,29 +262,20 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             Map<String, Object> plainValues = new HashMap<String, Object>();
 
             for (TestDataFieldMetadata field : segmentMeta.getFields()) {
-                Object value;
                 // if field is reference to another segment or segments, recurse into object creation
-                if (field.getType() == TestDataFieldType.OBJECT) {
-                    value = buildObject(testData, configuration, segmentMeta.getName() + "." + field.getName());
-                }
-                else if (field.getType() == TestDataFieldType.OBJECT_LIST) {
-                    value = buildObjectList(testData, configuration, segmentMeta.getName() + "." + field.getName());
+                Object value = buildValueFor(field, testData, configuration, segmentMeta, segmentName);
+
+                if (value instanceof ScriptToEvaluate) {
+                    scriptValues.put(field.getName(), (ScriptToEvaluate) value);
                 }
                 else {
-                    value = getFieldValue(configuration, segmentName, field);
-                }
-
-                if (!(value instanceof ScriptToEvaluate)) {
+                    if (value != null) {
+                        BeanUtil.setPropertyValue(data, field.getName(), value);
+                    }
                     // also put null in map to avoid "no such reference"
                     plainValues.put(field.getName(), value);
                 }
-                else {
-                    scriptValues.put(field.getName(), (ScriptToEvaluate) value);
-                }
 
-                if (value != null && !(value instanceof ScriptToEvaluate)) {
-                    BeanUtil.setPropertyValue(data, field.getName(), value);
-                }
             }
 
             // now evaluate scripts. Offer already calculated fields as Context variables
@@ -380,12 +289,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                 while (scriptIter.hasNext()) {
                     Map.Entry<String, ScriptToEvaluate> entry = scriptIter.next();
                     try {
-                        Object value = evaluate(entry.getValue().script, entry.getValue().formatPattern,
-                                entry.getValue().formatLocale, plainValues);
-                        plainValues.put(entry.getKey(), value);
-                        if (value != null) {
-                            BeanUtil.setPropertyValue(data, entry.getKey(), value);
-                        }
+                        processScript(entry, data, plainValues);
                         scriptIter.remove();
                     }
                     catch (AutomationException e) {
@@ -402,8 +306,35 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
 
             return data;
         }
-        catch (Exception e) {
+        catch (AutomationException e) {
+            throw e;
+        }
+        catch (Exception e) { // NOSONAR
             throw new AutomationException("Could not create data object for segment " + segmentMeta.getName(), e);
+        }
+    }
+
+    private Object buildValueFor(TestDataFieldMetadata field, TestData testData, TestDataConfiguration configuration,
+            TestDataSegmentMetadata segmentMeta, String segmentName) {
+        Object value;
+        if (field.getType() == TestDataFieldType.OBJECT) {
+            value = buildObject(testData, configuration, segmentMeta.getName() + "." + field.getName());
+        }
+        else if (field.getType() == TestDataFieldType.OBJECT_LIST) {
+            value = buildObjectList(testData, configuration, segmentMeta.getName() + "." + field.getName());
+        }
+        else {
+            value = getFieldValue(configuration, segmentName, field);
+        }
+        return value;
+    }
+
+    private void processScript(Map.Entry<String, ScriptToEvaluate> entry, Data data, Map<String, Object> plainValues) {
+        Object value = evaluate(entry.getValue().script, entry.getValue().formatPattern,
+                entry.getValue().formatLocale, plainValues);
+        plainValues.put(entry.getKey(), value);
+        if (value != null) {
+            BeanUtil.setPropertyValue(data, entry.getKey(), value);
         }
     }
 
@@ -420,75 +351,6 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         }
 
         return result;
-    }
-
-    private Source getRequiredSourceAnnotation(Annotation[] annotations, String parameterName) {
-        for (Annotation anno : annotations) {
-            if (anno instanceof Source) {
-                return (Source) anno;
-            }
-        }
-        throw new AutomationException("Parameter does not have a @Source annotation: " + parameterName);
-    }
-
-    private InputStream tryFindXml(String uri, Method testMethod) throws IOException, AutomationException, URISyntaxException {
-        if (uri.matches("[a-z]+://.*")) {
-            URI realUri = new URI(uri);
-            URL url = realUri.toURL();
-            return url.openStream();
-        }
-
-        // first search try: full path, as used for Excels
-        StringBuilder sbPath = new StringBuilder();
-        sbPath.append(aludraConfig.getXlsRootPath());
-
-        if (sbPath.toString().endsWith(File.separator)) {
-            sbPath.delete(sbPath.length() - 1, sbPath.length());
-        }
-        sbPath.append(File.separator);
-        sbPath.append(testMethod.getDeclaringClass().getName().replace(".", File.separator));
-        sbPath.append(File.separator);
-        sbPath.append(uri);
-        File f = new File(sbPath.toString());
-        if (f.isFile()) {
-            return new FileInputStream(f);
-        }
-
-        // second try: directly under root path
-        sbPath = new StringBuilder();
-        sbPath.append(aludraConfig.getXlsRootPath());
-
-        if (sbPath.toString().endsWith(File.separator)) {
-            sbPath.delete(sbPath.length() - 1, sbPath.length());
-        }
-        sbPath.append(File.separator);
-        sbPath.append(uri);
-        f = new File(sbPath.toString());
-        if (f.isFile()) {
-            return new FileInputStream(f);
-        }
-
-        throw new AutomationException("Could not find test data XML file " + uri);
-    }
-
-    private String getNextAutoId(List<TestCaseData> dataSets, boolean error) {
-        String prefix = error ? "error-" : "";
-        int nextAutoId = dataSets.size();
-        boolean found;
-        do {
-            found = false;
-            for (TestCaseData tcd : dataSets) {
-                if (tcd.getId().equals(prefix + nextAutoId)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                nextAutoId++;
-            }
-        }
-        while (found);
-        return prefix + nextAutoId;
     }
 
     /** Evaluates the given data script, applying the given format pattern and locale, if specified.
@@ -544,86 +406,6 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         finally {
             Context.exit();
         }
-    }
-
-    private Object format(Object object, String formatPattern, Locale locale) {
-        if (locale == null) {
-            locale = Locale.US;
-        }
-
-        if (object instanceof Date) {
-            if (formatPattern == null) {
-                formatPattern = "yyyy-MM-dd";
-            }
-            SimpleDateFormat sdf = new SimpleDateFormat(formatPattern, locale);
-            return sdf.format(object);
-        }
-        if (object instanceof Number) {
-            if (formatPattern == null) {
-                formatPattern = "#.#";
-            }
-            DecimalFormat df = new DecimalFormat(formatPattern, DecimalFormatSymbols.getInstance(locale));
-            return df.format(object);
-        }
-
-        return object;
-    }
-
-    private Object toJavaObject(Object jsObject) {
-        if (!(jsObject instanceof ScriptableObject)) {
-            // already Java
-            return jsObject;
-        }
-        // analyze object class name to determine target type
-        if (jsObject.getClass().getName().endsWith("Date")) {
-            return Context.jsToJava(jsObject, Date.class);
-        }
-        if (jsObject.getClass().getName().endsWith("Number")) {
-            return Context.jsToJava(jsObject, Double.class);
-        }
-        return Context.toString(jsObject);
-    }
-
-    private static Locale toLocale(String s) {
-        if (s == null || "".equals(s)) {
-            return null;
-        }
-
-        // language only?
-        if (s.matches("[a-z]{2}")) {
-            return new Locale(s);
-        }
-
-        // language and country?
-        if (s.matches("[a-z]{2}_[A-Z]{2}")) {
-            String[] parts = s.split("_");
-            return new Locale(parts[0], parts[1]);
-        }
-
-        // variant?
-        if (s.matches("[a-z]{2}_[A-Z]{2}_[^_]+")) {
-            String[] parts = s.split("_");
-            return new Locale(parts[0], parts[1], parts[2]);
-        }
-
-        // invalid locale string
-        throw new IllegalArgumentException("Invalid Locale value found in XML: " + s);
-    }
-
-    private static class ScriptToEvaluate {
-
-        private String script;
-
-        private String formatPattern;
-
-        private Locale formatLocale;
-
-        private ScriptToEvaluate(String script, String formatPattern, Locale formatLocale) {
-            this.script = script;
-            this.formatPattern = formatPattern;
-            this.formatLocale = formatLocale;
-        }
-
     }
 
     private static interface InternalSingleDataSource {

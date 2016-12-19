@@ -75,24 +75,13 @@ public class DefaultTestDataProvider implements TestDataProvider {
             initProviders();
             initialized = true;
         }
-        // analyze annotations; select provider based on extension
-        Set<String> extensions = new HashSet<String>();
 
         if (method.getParameterTypes().length == 0) {
             // no-arg method
             return databeneProvider.getTestDataSets(method);
         }
 
-        Annotation[][] annos = method.getParameterAnnotations();
-        for (int i = 0; i < annos.length; i++) {
-            Source src = getSourceAnnotation(annos[i]);
-            if (src != null) {
-                String uri = src.uri();
-                if (uri != null && uri.contains(".")) {
-                    extensions.add(uri.substring(uri.lastIndexOf('.') + 1).toLowerCase(Locale.US));
-                }
-            }
-        }
+        Set<String> extensions = extractExtensions(method);
 
         // extensions may contain at max two entries (xls and xlsx)
         boolean xml = extensions.contains("xml");
@@ -111,6 +100,22 @@ public class DefaultTestDataProvider implements TestDataProvider {
         else {
             return databeneProvider.getTestDataSets(method);
         }
+    }
+
+    private Set<String> extractExtensions(Method method) {
+        // analyze annotations; select provider based on extension
+        Set<String> extensions = new HashSet<String>();
+        Annotation[][] annos = method.getParameterAnnotations();
+        for (int i = 0; i < annos.length; i++) {
+            Source src = getSourceAnnotation(annos[i]);
+            if (src != null) {
+                String uri = src.uri();
+                if (uri != null && uri.contains(".")) {
+                    extensions.add(uri.substring(uri.lastIndexOf('.') + 1).toLowerCase(Locale.US));
+                }
+            }
+        }
+        return extensions;
     }
 
     private Source getSourceAnnotation(Annotation[] annotations) {
