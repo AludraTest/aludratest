@@ -46,10 +46,6 @@ import org.databene.formats.compare.ComparisonSettings;
  * @author Volker Bergmann */
 public class EdifattoContent implements EdifactContent {
 
-    /** Constructor. */
-    public EdifattoContent() {
-    }
-
     /** Parses an EDIFACT or X12 interchange available in an {@link InputStream}. */
     @Override
     public Interchange readInterchange(InputStream in) {

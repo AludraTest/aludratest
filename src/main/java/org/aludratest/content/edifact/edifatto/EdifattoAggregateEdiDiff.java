@@ -38,7 +38,7 @@ public class EdifattoAggregateEdiDiff extends AggregateDiff implements Aggregate
             AggregateDiff genericDiff) {
         super(expected, actual, comparisonSettings);
         for (DiffDetail detail : genericDiff.getDetails()) {
-            this.addDetail(new EdiDiffDetailImpl(detail));
+            this.addDetail(new EdiDiffDetailImpl(detail)); // NOSONAR
         }
     }
 
