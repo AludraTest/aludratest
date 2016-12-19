@@ -28,6 +28,8 @@ import org.databene.commons.IOUtil;
 import org.databene.commons.SystemInfo;
 import org.databene.commons.array.ByteArray;
 
+/** Watches and collects a process' output.
+ * @author Volker Bergmann */
 public class InputStreamWatchDog extends Thread {
 
     private static final int DEFAULT_POLLING_INTERVAL = 300;
@@ -75,7 +77,7 @@ public class InputStreamWatchDog extends Thread {
         return true;
     }
 
-    public boolean availableWithinResponseTimeout() {
+    boolean availableWithinResponseTimeout() {
         PollService poller = new PollService(process.getResponseTimeout(), DEFAULT_POLLING_INTERVAL);
         WaitUntilTextAvailable task = new WaitUntilTextAvailable();
         return poller.poll(task);
@@ -150,7 +152,7 @@ public class InputStreamWatchDog extends Thread {
         IOUtil.close(this.in); // this also cancels in.read() in the run method's loop
     }
 
-    public class WaitUntilTextAvailable implements PolledTask<Boolean> {
+    class WaitUntilTextAvailable implements PolledTask<Boolean> {
         @Override
         public Boolean run() {
             return (bufferedTextAvailable() ? true : null); // NOSONAR

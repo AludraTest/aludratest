@@ -26,35 +26,35 @@ import org.aludratest.testcase.event.TestStepInfo;
 public abstract class AbstractRunnerListener implements RunnerListener {
 
     @Override
-    public void startingTestProcess(RunnerTree runnerTree) {
+    public void startingTestProcess(RunnerTree runnerTree) { // NOSONAR: empty default implementation
     }
 
     @Override
-    public void startingTestGroup(RunnerGroup runnerGroup) {
+    public void startingTestGroup(RunnerGroup runnerGroup) { // NOSONAR: empty default implementation
     }
 
     @Override
-    public void startingTestLeaf(RunnerLeaf runnerLeaf) {
+    public void startingTestLeaf(RunnerLeaf runnerLeaf) { // NOSONAR: empty default implementation
     }
 
     @Override
-    public void finishedTestLeaf(RunnerLeaf runnerLeaf) {
+    public void finishedTestLeaf(RunnerLeaf runnerLeaf) { // NOSONAR: empty default implementation
     }
 
     @Override
-    public void finishedTestGroup(RunnerGroup runnerGroup) {
+    public void finishedTestGroup(RunnerGroup runnerGroup) { // NOSONAR: empty default implementation
     }
 
     @Override
-    public void finishedTestProcess(RunnerTree runnerTree) {
+    public void finishedTestProcess(RunnerTree runnerTree) { // NOSONAR: empty default implementation
     }
 
     @Override
-    public void newTestStepGroup(RunnerLeaf runnerLeaf, String groupName) {
+    public void newTestStepGroup(RunnerLeaf runnerLeaf, String groupName) { // NOSONAR: empty default implementation
     }
 
     @Override
-    public void newTestStep(RunnerLeaf runnerLeaf, TestStepInfo testStepInfo) {
+    public void newTestStep(RunnerLeaf runnerLeaf, TestStepInfo testStepInfo) { // NOSONAR: empty default implementation
     }
 
 }

@@ -30,7 +30,7 @@ public final class RunnerTreeUtil {
      * @param logger The logger to debug the tree structure to.
      * @param indent Indent to use for output, e.g. a string with two spaces, or an empty string. Never <code>null</code>! */
     public static void debugSubTree(RunnerNode node, Logger logger, String indent) {
-        logger.debug(indent + node);
+        logger.debug("{}{}", indent, node);
         if (node instanceof RunnerGroup) {
             String subIndent = indent + "  ";
             RunnerGroup group = (RunnerGroup) node;
