@@ -61,7 +61,7 @@ public class ProcessWrapper {
         this.processId = processId;
         this.processTimeout = processTimeout;
         this.responseTimeout = responseTimeout;
-        this.builder = new ProcessBuilder(command);
+        this.builder = new ProcessBuilder(command); // NOSONAR
         this.process = null;
         this.stdIn = null;
         this.stdOut = null;
