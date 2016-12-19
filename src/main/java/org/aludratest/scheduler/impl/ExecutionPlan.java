@@ -120,7 +120,8 @@ public class ExecutionPlan {
         if (groupName != null) {
             List<RunnerNode> ls = buildList.get(groupName);
             if (ls == null) {
-                buildList.put(groupName, ls = new ArrayList<RunnerNode>());
+                ls = new ArrayList<RunnerNode>();
+                buildList.put(groupName, ls);
             }
             ls.add(node);
             Collections.sort(ls, new Comparator<RunnerNode>() {
