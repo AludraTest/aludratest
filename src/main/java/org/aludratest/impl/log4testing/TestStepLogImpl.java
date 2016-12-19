@@ -35,29 +35,29 @@ public final class TestStepLogImpl extends AbstractNamedTestLogElementImpl imple
 
     private TestStepLogContainer parent;
 
-    private volatile String command; // NOSONAR 'volatile' is use by purpose here
+    private volatile String command; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile String service; // NOSONAR 'volatile' is use by purpose here
+    private volatile String service; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile String elementType; // NOSONAR 'volatile' is use by purpose here
+    private volatile String elementType; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile String elementName; // NOSONAR 'volatile' is use by purpose here
+    private volatile String elementName; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile String technicalLocator; // NOSONAR 'volatile' is use by purpose here
+    private volatile String technicalLocator; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile String technicalArguments; // NOSONAR 'volatile' is use by purpose here
+    private volatile String technicalArguments; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile String usedArguments; // NOSONAR 'volatile' is use by purpose here
+    private volatile String usedArguments; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile String result; // NOSONAR 'volatile' is use by purpose here
+    private volatile String result; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile String errorMessage; // NOSONAR 'volatile' is use by purpose here
+    private volatile String errorMessage; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile Throwable error; // NOSONAR 'volatile' is use by purpose here
+    private volatile Throwable error; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile String comment; // NOSONAR 'volatile' is use by purpose here
+    private volatile String comment; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile TestStatus status; // NOSONAR 'volatile' is use by purpose here
+    private volatile TestStatus status; // NOSONAR 'volatile' is used here intentionally
 
     // optimization - as most steps will never have child steps, only initialize when needed
     private List<TestStepLogImpl> childSteps;

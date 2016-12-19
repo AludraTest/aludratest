@@ -38,8 +38,6 @@ import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** JUnit {@link Runner} which creates a JUnit test suite structure based on AludraTest files. The related AludraTest base suite is
  * specified using a virtual machine parameter 'suite' with a fully qualified class name, e.g. -Dsuite=com.foo.MyTest
@@ -47,9 +45,6 @@ import org.slf4j.LoggerFactory;
 public class AludraTestJUnitSuite extends Runner implements RunnerListener {
 
     public static final String SUITE_SYSPROP = "suite";
-
-    /** The technical {@link Logger} to track debugging information. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AludraTestJUnitSuite.class);
 
     /** The Java class which triggered JUnit invocation
      *  (the one with a {@link RunWith}(AludraTestJUnitSuite.class) annotation.*/
@@ -77,7 +72,6 @@ public class AludraTestJUnitSuite extends Runner implements RunnerListener {
         String suiteName = System.getProperty(SUITE_SYSPROP);
 
         if (StringUtil.isEmpty(suiteName)) {
-            LOGGER.debug("SuiteName:\"{}\"", suiteName);
             throw new InitializationError("No suite configured");
         }
 

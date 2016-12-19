@@ -32,9 +32,9 @@ public final class TestCaseLogImpl extends AbstractNamedTestLogElementImpl imple
 
     private TestSuiteLogImpl parent;
 
-    private volatile boolean ignored; // NOSONAR 'volatile' is use by purpose here
+    private volatile boolean ignored; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile String ignoredReason; // NOSONAR 'volatile' is use by purpose here
+    private volatile String ignoredReason; // NOSONAR 'volatile' is used here intentionally
 
     private List<TestStepGroupLogImpl> groups = new ArrayList<TestStepGroupLogImpl>();
 
