@@ -36,7 +36,7 @@ public class StdIn {
      * @param in a String that contains the data to be sent to the process
      * @return this */
     public StdIn redirectFrom(StringData in) {
-        return redirectFrom(in.getValue().getBytes());
+        return redirectFrom(in.getValue().getBytes()); // NOSONAR the default system charset has to be used here
     }
 
     /** Redirects data from a byte array to the assigned process' standard input.

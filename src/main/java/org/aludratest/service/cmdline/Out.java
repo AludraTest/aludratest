@@ -42,7 +42,7 @@ public abstract class Out {
     public Out redirectTo(StringData textOutput) {
         ByteArrayData buffer = new ByteArrayData();
         redirectTo(buffer);
-        textOutput.setValue(new String(buffer.getValue()));
+        textOutput.setValue(new String(buffer.getValue())); // NOSONAR the default system charset has to be used here
         return this;
     }
 
