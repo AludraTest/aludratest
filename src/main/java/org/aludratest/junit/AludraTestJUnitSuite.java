@@ -77,7 +77,7 @@ public class AludraTestJUnitSuite extends Runner implements RunnerListener {
         String suiteName = System.getProperty(SUITE_SYSPROP);
 
         if (StringUtil.isEmpty(suiteName)) {
-            LOGGER.debug("SuiteName:\"" + suiteName + "\"");
+            LOGGER.debug("SuiteName:\"{}\"", suiteName);
             throw new InitializationError("No suite configured");
         }
 

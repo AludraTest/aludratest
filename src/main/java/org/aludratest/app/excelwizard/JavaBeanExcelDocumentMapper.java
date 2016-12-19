@@ -61,7 +61,7 @@ public class JavaBeanExcelDocumentMapper {
     // private helper methods --------------------------------------------------
 
     static File resolveExcelFile(File testDataRootFolder, Class<?> testClass, String uri) {
-        File targetFolder = new File(testDataRootFolder, testClass.getName().replace('.', '/'));
+        File targetFolder = new File(testDataRootFolder, testClass.getName().replace('.', '/')); // NOSONAR
         return new File(targetFolder, uri);
     }
 

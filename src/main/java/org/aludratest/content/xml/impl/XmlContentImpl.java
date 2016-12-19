@@ -53,11 +53,6 @@ import org.w3c.dom.Element;
  */
 public class XmlContentImpl implements XmlContent {
 
-    /** Default constructor. */
-    public XmlContentImpl() {
-    }
-
-
     // XMLInteraction interface implementation --------------------------------
 
     @Override

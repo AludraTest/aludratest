@@ -35,29 +35,29 @@ public final class TestStepLogImpl extends AbstractNamedTestLogElementImpl imple
 
     private TestStepLogContainer parent;
 
-    private volatile String command;
+    private volatile String command; // NOSONAR 'volatile' is use by purpose here
 
-    private volatile String service;
+    private volatile String service; // NOSONAR 'volatile' is use by purpose here
 
-    private volatile String elementType;
+    private volatile String elementType; // NOSONAR 'volatile' is use by purpose here
 
-    private volatile String elementName;
+    private volatile String elementName; // NOSONAR 'volatile' is use by purpose here
 
-    private volatile String technicalLocator;
+    private volatile String technicalLocator; // NOSONAR 'volatile' is use by purpose here
 
-    private volatile String technicalArguments;
+    private volatile String technicalArguments; // NOSONAR 'volatile' is use by purpose here
 
-    private volatile String usedArguments;
+    private volatile String usedArguments; // NOSONAR 'volatile' is use by purpose here
 
-    private volatile String result;
+    private volatile String result; // NOSONAR 'volatile' is use by purpose here
 
-    private volatile String errorMessage;
+    private volatile String errorMessage; // NOSONAR 'volatile' is use by purpose here
 
-    private volatile Throwable error;
+    private volatile Throwable error; // NOSONAR 'volatile' is use by purpose here
 
-    private volatile String comment;
+    private volatile String comment; // NOSONAR 'volatile' is use by purpose here
 
-    private volatile TestStatus status;
+    private volatile TestStatus status; // NOSONAR 'volatile' is use by purpose here
 
     // optimization - as most steps will never have child steps, only initialize when needed
     private List<TestStepLogImpl> childSteps;

@@ -73,7 +73,7 @@ public class SeparatedFileReader<E extends SeparatedFileBeanData> implements Clo
         }
         DataContainer<String[]> rowData = rowIterator.nextRaw(new DataContainer<String[]>());
         if (rowData == null) {
-            return null; // reached end of data
+            return null; // return null to signal end of data // NOSONAR
         }
         LOGGER.debug("Imported data row: {}", rowData);
         return rowData.getData();

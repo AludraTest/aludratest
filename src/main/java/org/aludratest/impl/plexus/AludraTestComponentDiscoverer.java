@@ -31,6 +31,7 @@ import org.codehaus.plexus.component.repository.ComponentSetDescriptor;
 import org.codehaus.plexus.configuration.PlexusConfigurationException;
 import org.codehaus.plexus.context.Context;
 
+/** TODO FAL Javadoc */
 public class AludraTestComponentDiscoverer implements ComponentDiscoverer {
 
     private Configurator configurator;
@@ -79,14 +80,14 @@ public class AludraTestComponentDiscoverer implements ComponentDiscoverer {
         for (Field f : implClass.getDeclaredFields()) {
             Requirement req = f.getAnnotation(Requirement.class);
             if (req != null) {
-                desc.addRequirement(buildRequirement(f, req, realm));
+                desc.addRequirement(buildRequirement(f, req));
             }
         }
 
         return desc;
     }
 
-    private ComponentRequirement buildRequirement(Field field, Requirement requirement, ClassRealm realm) {
+    private ComponentRequirement buildRequirement(Field field, Requirement requirement) {
         ComponentRequirement req = new ComponentRequirement();
         req.setFieldName(field.getName());
 
