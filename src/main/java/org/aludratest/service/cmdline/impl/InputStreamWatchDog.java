@@ -33,10 +33,11 @@ import org.databene.commons.array.ByteArray;
 public class InputStreamWatchDog extends Thread {
 
     private static final int DEFAULT_POLLING_INTERVAL = 300;
+
     private final static String LF = SystemInfo.getLineSeparator();
 
-    private ProcessWrapper process;
     private InputStream in;
+    private ProcessWrapper process;
     private String name;
     private ByteArray buffer;
     private int pos;
@@ -68,11 +69,10 @@ public class InputStreamWatchDog extends Thread {
         return readLineFromBuffer();
     }
 
-    private boolean waitUntilAvailable() {
+    public boolean waitUntilAvailable() {
         if (!availableWithinResponseTimeout()) {
             throw new PerformanceFailure("Process '" + process
-                    + "' did not provide expected output within the response timeout of " + process.getResponseTimeout()
-                    + " ms");
+                    + "' did not provide expected output within the response timeout of " + process.getResponseTimeout() + " ms");
         }
         return true;
     }
@@ -171,4 +171,3 @@ public class InputStreamWatchDog extends Thread {
     }
 
 }
-

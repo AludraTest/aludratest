@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.PerformanceFailure;
+import org.aludratest.exception.TechnicalException;
 import org.aludratest.util.poll.PollService;
 import org.aludratest.util.poll.PolledTask;
 import org.databene.commons.IOUtil;
@@ -103,7 +104,9 @@ public class ProcessWrapper {
      * @param directory the working directory to set. */
     public void setWorkingDirectory(File directory) {
         assertState(ProcessState.CREATED);
-        directory.mkdirs();
+        if (!directory.mkdirs() && !directory.exists()) {
+            throw new TechnicalException("Directory creation failed: " + directory);
+        }
         this.builder.directory(directory);
     }
 
@@ -164,7 +167,7 @@ public class ProcessWrapper {
      * @param text the text to enter */
     public void enter(String text) {
         try {
-            stdIn.write(text.getBytes());
+            stdIn.write(text.getBytes()); // NOSONAR the default charset is needed here
             stdIn.flush();
         }
         catch (IOException e) {
@@ -206,15 +209,15 @@ public class ProcessWrapper {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder buffer = new StringBuilder();
         List<String> tokens = getCommand();
         for (int i = 0; i < tokens.size(); i++) {
             if (i > 0) {
-                builder.append(' ');
+                buffer.append(' ');
             }
-            builder.append(formatToken(tokens.get(i)));
+            buffer.append(formatToken(tokens.get(i)));
         }
-        return builder.toString();
+        return buffer.toString();
     }
 
     // private helpers ---------------------------------------------------------
@@ -234,7 +237,7 @@ public class ProcessWrapper {
     }
 
     private String formatToken(String token) {
-        return (token.contains(" ") ? '"' + token + '"' : token);
+        return (token.contains(" ") ? ('"' + token + '"') : token);
     }
 
     private enum ProcessState {
