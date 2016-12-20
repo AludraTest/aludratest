@@ -115,7 +115,7 @@ public final class ComponentId<T> {
         }
         ComponentId<?> that = (ComponentId<?>) obj;
         return this.interfaceClass.equals(that.interfaceClass)
-                && (this.instanceName == null ? that.instanceName == null : this.instanceName.equals(that.instanceName));
+                && (this.instanceName == null ? (that.instanceName == null) : this.instanceName.equals(that.instanceName));
     }
 
     @Override

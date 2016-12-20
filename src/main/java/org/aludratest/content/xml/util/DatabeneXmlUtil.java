@@ -26,6 +26,10 @@ import org.databene.formats.compare.DiffDetailType;
  * @author Volker Bergmann */
 public class DatabeneXmlUtil {
 
+    /** Private constructor for preventing instantiation of this utility class. */
+    private DatabeneXmlUtil() {
+    }
+
     /** Creates an {@link XmlDiffDetail} that represents a missing element.
      * @param expected the expected element
      * @param objectClassifier the object classifier

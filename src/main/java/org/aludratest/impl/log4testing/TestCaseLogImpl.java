@@ -32,9 +32,9 @@ public final class TestCaseLogImpl extends AbstractNamedTestLogElementImpl imple
 
     private TestSuiteLogImpl parent;
 
-    private volatile boolean ignored;
+    private volatile boolean ignored; // NOSONAR 'volatile' is used here intentionally
 
-    private volatile String ignoredReason;
+    private volatile String ignoredReason; // NOSONAR 'volatile' is used here intentionally
 
     private List<TestStepGroupLogImpl> groups = new ArrayList<TestStepGroupLogImpl>();
 
@@ -122,17 +122,16 @@ public final class TestCaseLogImpl extends AbstractNamedTestLogElementImpl imple
     @Override
     public TestStepLog getLastFailedStep() {
         // optimized - go backwards
-        List<? extends TestStepGroupLog> groups = getTestStepGroups();
-        for (int i = groups.size() - 1; i >= 0; i--) {
-            List<? extends TestStepLog> steps = groups.get(i).getTestSteps();
-            for (int s = steps.size() - 1; s >= 0; s--) {
-                TestStepLog step = steps.get(s);
+        List<? extends TestStepGroupLog> testGroups = getTestStepGroups();
+        for (int i = testGroups.size() - 1; i >= 0; i--) {
+            List<? extends TestStepLog> testSteps = testGroups.get(i).getTestSteps();
+            for (int s = testSteps.size() - 1; s >= 0; s--) {
+                TestStepLog step = testSteps.get(s);
                 if (step.getStatus() != null && step.getStatus().isFailure()) {
                     return step;
                 }
             }
         }
-
         return null;
     }
 

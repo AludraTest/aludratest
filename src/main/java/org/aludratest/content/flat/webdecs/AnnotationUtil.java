@@ -32,7 +32,7 @@ import org.databene.formats.fixedwidth.FixedWidthRowTypeDescriptor;
 import org.databene.formats.fixedwidth.FixedWidthUtil;
 
 /**
- * Parses the structure of FlatFileBeans and maps it 
+ * Parses the structure of FlatFileBeans and maps it
  * to arrays of {@link FixedWidthColumnDescriptor}s.
  * @author Volker Bergmann
  */
@@ -42,13 +42,13 @@ public class AnnotationUtil {
     private AnnotationUtil() {
     }
 
-    /** Parses the structure of a FlatFileBean class and maps it 
-      * to an array of {@link FixedWidthColumnDescriptor}s. 
+    /** Parses the structure of a FlatFileBean class and maps it
+     * to an array of {@link FixedWidthColumnDescriptor}s.
      * @param beanClass the FlatFileBean class to analyze
      * @param defaultLocale the locale to apply by default
      * @return a {@link FixedWidthRowTypeDescriptor} holding the format data of the bean attributes */
     public static FixedWidthRowTypeDescriptor parseFlatFileColumns(Class<?> beanClass, Locale defaultLocale) {
-        // parse all fields with their descriptors and put them into a set, 
+        // parse all fields with their descriptors and put them into a set,
         // sorted by startIndex
         Set<ColumnDescriptor> columnDescriptors = new TreeSet<ColumnDescriptor>(new DescriptorComparator());
 
@@ -87,14 +87,14 @@ public class AnnotationUtil {
 
     // private helpers ---------------------------------------------------------
 
-    /** Scans the attributes of a class and its parents, mapping their 
-     *  {@link FlatFileColumn} annotation information to a sorted set of 
+    /** Scans the attributes of a class and its parents, mapping their
+     *  {@link FlatFileColumn} annotation information to a sorted set of
      *  {@link ColumnDescriptor}s. */
     private static void parseFields(Class<?> beanClass, Locale defaultLocale, Set<ColumnDescriptor> columnDescriptors) {
         for (Field field : beanClass.getDeclaredFields()) {
             String fieldName = field.getName();
             // if the attribute has already been defined by a child class
-            // (which was iterated before), then ignore it - child classes 
+            // (which was iterated before), then ignore it - child classes
             // override parent classes' attributes and settings
             if (containsDescriptorForField(fieldName, columnDescriptors)) {
                 continue;
@@ -130,14 +130,16 @@ public class AnnotationUtil {
 
     /** Compares two {@link ColumnDescriptor}s by its {@link ColumnDescriptor#startIndex} value. */
     private static class DescriptorComparator implements Comparator<ColumnDescriptor>, Serializable {
+        private static final long serialVersionUID = 1L;
+
         @Override
         public int compare(ColumnDescriptor col1, ColumnDescriptor col2) {
             return ((Integer) col1.startIndex).compareTo(col2.startIndex);
         }
     }
 
-    /** Collects the format information of a flat file column. 
-     *  Internally it uses the {@link FixedWidthColumnDescriptor} class 
+    /** Collects the format information of a flat file column.
+     *  Internally it uses the {@link FixedWidthColumnDescriptor} class
      *  of the Databene Webdecs library and adds a startIndex. */
     private static class ColumnDescriptor {
 
@@ -150,7 +152,7 @@ public class AnnotationUtil {
         /** fixed-width descriptor as provided by Databene Webdecs. */
         private final FixedWidthColumnDescriptor descriptor;
 
-        /** Constructor 
+        /** Constructor
          *  @param name the column name
          *  @param startIndex the index of the character at which the associated column begins
          *  @param descriptor the associated {@link FixedWidthColumnDescriptor} */
