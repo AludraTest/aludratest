@@ -32,7 +32,7 @@ public interface Element<E extends Element<E>> extends GUIComponent {
      * @return This object. */
     public E waitingUntilTaskCompletion();
 
-    /** Sets the {@link #taskCompletionTimeout} to the specified value.
+    /** Sets the internal task completion timeout to the specified value.
      * @param waitTime the wait time to apply. A negative number disables the wait feature, 0 implicitly activates the
      *            {@link AludraGUI}'s default, a positive value is used as explicit timeout.
      * @return This object. */

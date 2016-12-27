@@ -207,7 +207,7 @@ public class File implements ActionWordLibrary<File> {
     }
 
     /** Verifies a file path.
-     * @param filePath */
+     * @param filePath the file path to verify */
     public static void verifyFilePath(String filePath) {
         if (filePath == null || filePath.length() == 0) {
             throw new AutomationException("File path is empty or null");

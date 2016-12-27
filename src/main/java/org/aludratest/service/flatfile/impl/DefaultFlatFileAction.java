@@ -52,8 +52,8 @@ public class DefaultFlatFileAction implements FlatFileInteraction, FlatFileVerif
     private Map<Object, WriterConfig> writers;
 
     /** Constructor.
-     *  @param contentHandler
-     *  @param fileService */
+     * @param contentHandler the {@link FlatContent} implementation to use
+     * @param fileService the {@link FileService} implementation to use */
     public DefaultFlatFileAction(FlatContent contentHandler, FileService fileService) {
         this.contentHandler = contentHandler;
         this.fileService = fileService;

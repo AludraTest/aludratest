@@ -69,7 +69,7 @@ public class AludraTestUtil {
      * generic invocations on methods which are expected to return a non-null value (typically a primitive data type). Main
      * purpose is its use in the {@link ControlFlowHandler} (proxy), which is allowed to skip actual method execution but has to
      * return a value that appears valid to the caller.
-     * @param type
+     * @param type the type for which to get a null replacement
      * @return null for classes, an 'empty' or zero-like value for primitive return types */
     public static Object nullOrPrimitiveDefault(Class<?> type) {
         return NULL_REPLACEMENTS.get(type);
@@ -77,12 +77,15 @@ public class AludraTestUtil {
 
     /** Wraps the given object with a dynamic proxy that implements a parent interface of the object and transparently add control
      * flow logic using the {@link ControlFlowHandler}.
-     * @param object
-     * @param interfaceType
-     * @param serviceId
-     * @param systemConnector
-     * @param context
-     * @return */
+     * @param <T> the type of the interface to return
+     * @param <U> the type of the object to be wrapped
+     * @param object the object to be wrapped
+     * @param interfaceType the type of the interface to create and return
+     * @param serviceId the service ID of the object
+     * @param systemConnector a {@link SystemConnector} for accessing the state of the object
+     * @param context the {@link AludraContext}
+     * @return an object that implements the specified <code>interfaceType</code> and wraps calls with the
+     *         {@link ControlFlowHandler} */
     public static <T, U extends T> T wrapWithControlFlowHandler(U object, Class<T> interfaceType,
             ComponentId<? extends AludraService> serviceId,
             SystemConnector systemConnector, AludraContext context) {
@@ -105,9 +108,10 @@ public class AludraTestUtil {
     }
 
     /** Calls the Java dynamic proxy API to dynamically implement the given interfaceType using the given invocationHandler.
-     * @param interfaceType
-     * @param invocationHandler
-     * @return
+     * @param <T> the type of interface to be implemented
+     * @param interfaceType the type of interface to create
+     * @param invocationHandler the {@link InvocationHandler} to apply to calls of the created object
+     * @return an object that implements the specified interface and processes calls with the specified {@link InvocationHandler}
      * @see InvocationHandler */
     @SuppressWarnings("unchecked")
     public static <T> T wrapWithInvocationHandler(Class<T> interfaceType, InvocationHandler invocationHandler) {
@@ -120,8 +124,8 @@ public class AludraTestUtil {
     }
 
     /** Returns a specific the stack trace element of the current invocation stack.
-     * @param levelsUp
-     * @return */
+     * @param levelsUp the number of levels to move up in the stack trace
+     * @return the {@link StackTraceElement} #<code>levelsUp</code> before the current one */
     public static StackTraceElement getStackTraceElement(int levelsUp) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         int index = levelsUp + 1;

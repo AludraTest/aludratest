@@ -18,7 +18,7 @@ package org.aludratest.service.gitclient.data;
 import org.aludratest.service.gitclient.GitClient;
 
 /** Wraps data for the invocation of the {@link GitClient}'s clone method.
- * @see GitClient#clone(CloneRepositoryData)
+ * @see GitClient#cloneRepository(CloneRepositoryData)
  * @author Volker Bergmann */
 public class CloneRepositoryData extends AbstractGitData {
 
@@ -31,7 +31,7 @@ public class CloneRepositoryData extends AbstractGitData {
     }
 
     /** Convenience constructor.
-     * @param repository */
+     * @param repository the URL of the repository to clone */
     public CloneRepositoryData(String repository) {
         this(repository, null);
     }

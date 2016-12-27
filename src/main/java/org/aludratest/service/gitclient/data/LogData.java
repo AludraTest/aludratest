@@ -35,7 +35,7 @@ public class LogData extends AbstractGitData {
     }
 
     /** Creates a LogData object with the given maxCount.
-     * @param maxCount
+     * @param maxCount the maxCount to set
      * @return a new LogData object set to the provided maxCount */
     public static LogData createWithMaxCount(int maxCount) {
         LogData result = new LogData();

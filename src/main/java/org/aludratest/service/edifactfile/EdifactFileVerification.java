@@ -29,8 +29,8 @@ import org.databene.edifatto.model.Interchange;
 public interface EdifactFileVerification extends Verification {
 
     /** Asserts that two EDIFACT or X12 interchanges are equal.
-     * @param elementType
-     * @param elementName
+     * @param elementType the element type to log
+     * @param elementName the name type to log
      * @param expected the expected interchange data
      * @param actual the actual interface data
      * @param settings the {@link EdiComparisonSettings} to apply */

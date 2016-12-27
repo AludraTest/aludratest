@@ -30,8 +30,9 @@ import org.aludratest.testcase.AludraTestCase;
 import org.aludratest.testcase.event.ErrorReport;
 import org.aludratest.testcase.event.SystemErrorReporter;
 
-/** Tests the behavior of AludraTest when an exception occurs in a call to {@link SystemConnector#checkForErrors()}.
+/** Tests the behavior of AludraTest when an exception occurs in a call to {@link SystemErrorReporter#checkForError()}.
  * @author Volker Bergmann */
+@SuppressWarnings("javadoc")
 public class SystemConnectorExceptionTest extends AbstractAludraIntegrationTest {
 
     private static ComponentId<PseudoService> SERVICE_ID = ComponentId.create(PseudoService.class, "localhost");
@@ -59,7 +60,6 @@ public class SystemConnectorExceptionTest extends AbstractAludraIntegrationTest 
                 stepIterator.next().getErrorMessage().contains("Cancelled execution to avoid infinite recursion"));
     }
 
-    @SuppressWarnings("javadoc")
     public static class RecurringTest extends AludraTestCase {
         @org.aludratest.testcase.Test
         public void test() {

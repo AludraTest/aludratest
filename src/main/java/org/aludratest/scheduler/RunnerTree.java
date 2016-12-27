@@ -23,16 +23,16 @@ import org.aludratest.scheduler.node.RunnerNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * <p>Assembles nodes in a tree structure and provides the feature of executing
- * each node's sub nodes either concurrently or sequentially. Each leaf node
- * is executed by a thread of the {@link #parallelExecutorService}, so its
- * size limits the number of concurrent leaf executions.</p>
- * <p>Leaf nodes are formed by objects which implement the {@link Runnable}
- * interface.</p>
+/** <p>
+ * Assembles nodes in a tree structure and provides the feature of executing each node's sub nodes either concurrently or
+ * sequentially. Each leaf node is executed by a thread of the parallel executor service, so its size limits the number of
+ * concurrent leaf executions.
+ * </p>
+ * <p>
+ * Leaf nodes are formed by objects which implement the {@link Runnable} interface.
+ * </p>
  * @see RunnerNode
- * @author Volker Bergmann
- */
+ * @author Volker Bergmann */
 public class RunnerTree {
 
     /** The {@link Logger} of the class. */

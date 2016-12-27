@@ -59,16 +59,15 @@ public class FlatFileBeanReader implements Closeable {
     }
 
     /** Adds a {@link RowTypeData} definition to the reader.
-     * @param rowType */
+     * @param rowType the row type to add */
     public void addRowType(RowTypeData rowType) {
         this.rowParser.addRowType(rowType);
     }
 
-    /** Reads a single text row of the flat file, determines its FlatFileBean type
-     *  using the configured {@link RowTypeData}s and creates a FlatFileBean instance
-     *  configured by the row data.
-     *  @return the next row mapped to a JavaBean
-     *  @throws IOException */
+    /** Reads a single text row of the flat file, determines its FlatFileBean type using the configured {@link RowTypeData}s and
+     * creates a FlatFileBean instance configured by the row data.
+     * @return the next row mapped to a JavaBean
+     * @throws IOException if row reading fails */
     public FlatFileBeanData readRow() throws IOException {
         if (this.reader == null) {
             throw new TechnicalException("Reader has already been closed: " + this);

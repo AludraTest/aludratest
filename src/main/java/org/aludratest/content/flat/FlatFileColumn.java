@@ -21,9 +21,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks an attribute to be considered when parsing and writing flat files 
+ * Marks an attribute to be considered when parsing and writing flat files
  * and specifies the column {@link #startIndex()} and well as the {@link #format()}.
- * A single column may be specified in three different manners: 
+ * A single column may be specified in three different manners:
  * <ol>
  *   <li>a date/time format, declared by a leading D and followed by a date/timepattern as understood by the Java SimpleDateFormat class. Example: DyyyyMMdd</li>
  *   <li>a number format, declared by a leading N and followed by a number pattern as understood by the Java DecimalFormat class. Example: N000.00</li>
@@ -42,10 +42,10 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD })
 public @interface FlatFileColumn {
 
-    /** The 1-based start-index of the flat file column */
+    /** @return The 1-based start-index of the flat file column */
     int startIndex();
 
-    /** The format description of the column, as described in the class Javadoc: {@link FlatFileColumn} */
+    /** @return The format description of the column, as described in the class Javadoc: {@link FlatFileColumn} */
     String format();
 
 }

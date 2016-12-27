@@ -76,7 +76,7 @@ public final class FileInteractionImpl extends AbstractFileAction implements Fil
      * @param toPath the new name/location of the file/folder
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
-     * @throws FilePresentException if a file was already present and overwriting was disabled. */
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
     @Override
     public boolean move(String fromPath, String toPath, boolean overwrite) {
         assertWritingPermitted("move()");
@@ -100,7 +100,7 @@ public final class FileInteractionImpl extends AbstractFileAction implements Fil
      * @param toPath the name/location of the copy
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
-     * @throws FilePresentException if a file was already present and overwriting was disabled. */
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
     @Override
     public boolean copy(String fromPath, String toPath, boolean overwrite) {
         assertWritingPermitted("copy()");
@@ -139,7 +139,7 @@ public final class FileInteractionImpl extends AbstractFileAction implements Fil
      * @param content the text to save as file content
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
-     * @throws FilePresentException if a file was already present and overwriting was disabled. */
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
     @Override
     public boolean writeTextFile(String filePath, String content, boolean overwrite) {
         assertWritingPermitted("writeTextFile()");
@@ -152,7 +152,7 @@ public final class FileInteractionImpl extends AbstractFileAction implements Fil
      * @param source a {@link Reader} which provides the file content
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
-     * @throws FilePresentException if a file was already present and overwriting was disabled. */
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
     @Override
     public boolean writeTextFile(String filePath, Reader source, boolean overwrite) {
         assertWritingPermitted("writeTextFile()");
@@ -195,7 +195,7 @@ public final class FileInteractionImpl extends AbstractFileAction implements Fil
      * @param bytes the file content to write
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
-     * @throws FilePresentException if a file was already present and overwriting was disabled. */
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
     @Override
     public boolean writeBinaryFile(String filePath, byte[] bytes, boolean overwrite) {
         assertWritingPermitted("writeBinaryFile()");
@@ -208,7 +208,7 @@ public final class FileInteractionImpl extends AbstractFileAction implements Fil
      * @param source an {@link InputStream} which provides the content to write to the file
      * @param overwrite flag which indicates if an existing file may be overwritten by the operation
      * @return true if a formerly existing file was overwritten.
-     * @throws FilePresentException if a file was already present and overwriting was disabled. */
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
     @Override
     public boolean writeBinaryFile(String filePath, InputStream source, boolean overwrite) {
         assertWritingPermitted("writeBinaryFile()");

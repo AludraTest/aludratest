@@ -41,14 +41,19 @@ public class AludraLocalFile extends AbstractFileObject implements FileObject {
 
     private File file;
 
-    /** Creates a non-root file. */
+    /** Creates a non-root file.
+     * @param fileSystem The underlying VFS2 {@link LocalFileSystem} instance
+     * @param rootFile the path of the root file
+     * @param name the name of the file system
+     * @throws FileSystemException if initialization fails */
     protected AludraLocalFile(final LocalFileSystem fileSystem, final String rootFile, final AbstractFileName name)
             throws FileSystemException {
         super(name, fileSystem);
         this.rootFile = rootFile;
     }
 
-    /** Returns the local file that this file object represents. */
+    /** Returns the local file that this file object represents.
+     * @return the {@link #file} */
     protected File getLocalFile() {
         return file;
     }

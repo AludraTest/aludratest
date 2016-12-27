@@ -29,7 +29,7 @@ import org.aludratest.service.locator.window.WindowLocator;
 
 /** The interface {@link Interaction} provides several methods to interact with the active screen of the application under test.
  * This means that the application under test can be controlled with the help of these methods. Every class which implements this
- * interface must assure that a call of one of these methods results in a interaction with the application under test.<br/>
+ * interface must assure that a call of one of these methods results in a interaction with the application under test.<br>
  * For verifications of the application under test see {@link Verification}.
  * @author Marcel Malitz
  * @author Volker Bergmann */
@@ -40,7 +40,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related radio button to log
      * @param elementName the name of the related radio button to log
      * @param locator to locate one specific radio button in the SUT
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void selectRadiobutton(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
@@ -50,7 +50,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related checkbox to log
      * @param elementName the name of the related checkbox to log
      * @param locator to locate one specific checkbox in the application under test
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void changeCheckbox(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
@@ -59,7 +59,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related checkbox to log
      * @param elementName the name of the related checkbox to log
      * @param locator to locate one specific checkbox in the application under test
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void selectCheckbox(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
@@ -68,7 +68,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related checkbox to log
      * @param elementName the name of the related checkbox to log
      * @param locator to locate one specific checkbox in the application under test
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void deselectCheckbox(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
@@ -79,7 +79,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementName the name of the related dropdownbox to log
      * @param locator to locate one specific dropdownbox in the application under test
      * @param optionLocator defines which entry of the located dropdownbox shall be selected
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void selectDropDownEntry(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             OptionLocator optionLocator,
@@ -92,7 +92,7 @@ public interface GUIInteraction extends Interaction {
      * @param locator to locate one specific inputfield in the application under test. An inputfield is any GUI element which
      *            accepts user inputs.
      * @param text which shall be typed in without conversion/manipulation
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void type(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
             String text,
             @TechnicalArgument int taskCompletionTimeout);
@@ -110,7 +110,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator to locate buttons, links or any other elements which react on mouse clicks.
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void click(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
@@ -118,7 +118,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator which identifies the element which shall be double clicked
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void doubleClick(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
@@ -128,7 +128,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator which identifies the element which shall be "hovered" with the mouse
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void hover(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
@@ -167,7 +167,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator points to one element, visible: to check visibility of the element
-     * @param checkVisible
+     * @param checkVisible tells to check if the element is visible
      * @return the unmodified text of an element */
     String getText(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
             boolean checkVisible);

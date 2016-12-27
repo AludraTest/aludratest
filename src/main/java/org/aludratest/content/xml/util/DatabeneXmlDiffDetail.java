@@ -26,12 +26,12 @@ import org.databene.formats.compare.DiffDetailType;
 public class DatabeneXmlDiffDetail extends DiffDetail implements XmlDiffDetail {
 
     /** Full constructor.
-     * @param expected
-     * @param actual
-     * @param objectClassifier
-     * @param type
-     * @param locatorOfExpected
-     * @param locatorOfActual */
+     * @param expected the expected object
+     * @param actual the actual object
+     * @param objectClassifier the object classifier
+     * @param type the diff detail type
+     * @param locatorOfExpected the locator of the expected object
+     * @param locatorOfActual the locator of the actual object */
     public DatabeneXmlDiffDetail(Object expected, Object actual, String objectClassifier, DiffDetailType type, String locatorOfExpected,
             String locatorOfActual) {
         super(expected, actual, objectClassifier, type, locatorOfExpected, locatorOfActual, new XMLNode2StringConverter());

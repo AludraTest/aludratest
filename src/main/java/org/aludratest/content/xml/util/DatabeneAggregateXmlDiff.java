@@ -28,9 +28,9 @@ import org.databene.formats.compare.ComparisonSettings;
 public class DatabeneAggregateXmlDiff extends AggregateDiff implements AggregateXmlDiff {
 
     /** Full constructor.
-     * @param expected
-     * @param actual
-     * @param comparisonSettings */
+     * @param expected the expected object
+     * @param actual the actual object
+     * @param comparisonSettings the settings to apply in comparison */
     public DatabeneAggregateXmlDiff(Object expected, Object actual, XmlComparisonSettings comparisonSettings) {
         super(expected, actual, (ComparisonSettings) comparisonSettings);
     }

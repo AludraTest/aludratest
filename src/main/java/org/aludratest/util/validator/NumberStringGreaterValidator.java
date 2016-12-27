@@ -22,8 +22,8 @@ package org.aludratest.util.validator;
 public class NumberStringGreaterValidator extends AbstractNumberStringValidator {
 
     /** Constructor.
-     *  @param validationTerm
-     *  @param tolerance */
+     * @param validationTerm the value against which to compare
+     * @param tolerance comparison tolerance */
     public NumberStringGreaterValidator(String validationTerm, double tolerance) {
         super(validationTerm, tolerance);
     }

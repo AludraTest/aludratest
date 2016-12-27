@@ -113,8 +113,8 @@ public class ProcessWrapper {
     // operational interface ---------------------------------------------------
 
     /** Starts the process.
-     * @throws IOException */
-    public void start() throws IOException {
+     * @throws AutomationException if the process cannot be started */
+    public void start() {
         try {
             assertState(ProcessState.CREATED);
             this.process = builder.start();
@@ -176,7 +176,7 @@ public class ProcessWrapper {
     }
 
     /** Waits until the process has finished or the provided timeout is exceeded.
-     * @throws PerformanceException if the timeout is exceeded before the process has finished
+     * @throws PerformanceFailure if the timeout is exceeded before the process has finished
      * @return the process' exit value */
     public int waitUntilFinished() {
         PollService poller = new PollService(processTimeout, DEFAULT_PROCESS_TERMINATION_POLLING_INTERVAL);

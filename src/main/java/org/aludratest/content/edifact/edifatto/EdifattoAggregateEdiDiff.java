@@ -25,15 +25,15 @@ import org.databene.formats.compare.AggregateDiff;
 import org.databene.formats.compare.ComparisonSettings;
 import org.databene.formats.compare.DiffDetail;
 
-/** TODO javadoc
+/** Aggregate diff of two Edifact interchanges.
  * @author Volker Bergmann */
 public class EdifattoAggregateEdiDiff extends AggregateDiff implements AggregateEdiDiff {
 
-    /** TODO javadoc
-     * @param expected
-     * @param actual
-     * @param comparisonSettings
-     * @param genericDiff */
+    /** Constructor
+     * @param expected the expected interchange structure
+     * @param actual the actual interchange structure
+     * @param comparisonSettings the comparison settings
+     * @param genericDiff the underlying specific aggregate diff to map to this abstract aggregate diff */
     public EdifattoAggregateEdiDiff(Object expected, Object actual, ComparisonSettings comparisonSettings,
             AggregateDiff genericDiff) {
         super(expected, actual, comparisonSettings);

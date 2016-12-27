@@ -22,7 +22,7 @@ package org.aludratest.util.validator;
 public class ContainsValidator extends AbstractNullStringValidator {
 
     /** Constructor.
-     *  @param expectedSubString */
+     * @param expectedSubString the expected sub string */
     public ContainsValidator(String expectedSubString) {
         super(expectedSubString);
     }

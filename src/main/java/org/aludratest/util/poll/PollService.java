@@ -42,8 +42,8 @@ public class PollService {
     private int interval;
 
     /** Constructor initializing all attributes.
-     *  @param timeout
-     *  @param interval */
+     * @param timeout the maximum number of milliseconds to spend with polling
+     * @param interval the number of milliseconds to wait between poll operations */
     public PollService(int timeout, int interval) {
         Assert.notNegative(timeout, "timeout");
         Assert.notNegative(interval, "interval");
@@ -62,9 +62,9 @@ public class PollService {
     }
 
     /** Executes the {@link PolledTask} repeatedly until it is successful or a timeout is exceeded.
-     * @param task
-     * @return a not-null result of type R returned by the task
-     * @throws T if the timeout is exceeded before a task invocation returned a not-null result value */
+     * @param <T> the return type of the {@link PolledTask} to execute
+     * @param task the {@link PolledTask} to execute
+     * @return a not-null result of type R returned by the task */
     public <T> T poll(PolledTask<T> task) {
         long startMillis = System.currentTimeMillis();
         boolean errorOccurred = false;

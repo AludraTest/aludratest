@@ -34,7 +34,7 @@ public interface CommandLineInteraction extends Interaction {
      * @param processName the process name
      * @param processTimeout the maximum time to wait for process termination
      * @param responseTimeout the maximum time to wait for process response
-     * @param command
+     * @param command the command line tokens to use for creating the process
      * @return the processId */
     int create(@ElementType String processType, @ElementName String processName, @TechnicalArgument int processTimeout,
             @TechnicalArgument int responseTimeout, String... command);
@@ -51,8 +51,8 @@ public interface CommandLineInteraction extends Interaction {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param key
-     * @param value */
+     * @param key the key of the environment variable to set
+     * @param value the value to set for the environment variable */
     void setEnvironmentVariable(@ElementType String processType, @ElementName String processName,
             @TechnicalLocator int processId, String key, String value);
 
@@ -60,7 +60,7 @@ public interface CommandLineInteraction extends Interaction {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param out */
+     * @param out the {@link OutputStream} to use for receiving stdout output */
     void redirectStdOutTo(@ElementType String processType, @ElementName String processName, @TechnicalLocator int processId,
             OutputStream out);
 
@@ -68,7 +68,7 @@ public interface CommandLineInteraction extends Interaction {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param out */
+     * @param out the {@link OutputStream} to use for receiving stderr output */
     void redirectErrOutTo(@ElementType String processType, @ElementName String processName, @TechnicalLocator int processId,
             OutputStream out);
 
@@ -76,7 +76,7 @@ public interface CommandLineInteraction extends Interaction {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param in */
+     * @param in the {@link InputStream} to use as data source for feeding the process */
     void redirectStdInFrom(@ElementType String processType, @ElementName String processName, @TechnicalLocator int processId,
             InputStream in);
 
@@ -90,14 +90,14 @@ public interface CommandLineInteraction extends Interaction {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @return */
+     * @return the line read from stdout */
     String readLineOfStdOut(@ElementType String processType, @ElementName String processName, @TechnicalLocator int processId);
 
     /** Skips the references process' standard output lines until a line matches the validator or the no more output is available.
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param validator */
+     * @param validator the validator to use */
     void skipStdOutUntilLineMatches(@ElementType String processType, @ElementName String processName,
             @TechnicalLocator int processId, Validator<String> validator);
 
@@ -105,14 +105,14 @@ public interface CommandLineInteraction extends Interaction {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @return */
+     * @return the read stderr output */
     String readLineOfErrOut(@ElementType String processType, @ElementName String processName, @TechnicalLocator int processId);
 
     /** Skips lines of the refernced process' error output until a line matches the Validator.
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param validator */
+     * @param validator the validator to use */
     void skipErrOutUntilLineMatches(@ElementType String processType, @ElementName String processName,
             @TechnicalLocator int processId, Validator<String> validator);
 
@@ -120,14 +120,14 @@ public interface CommandLineInteraction extends Interaction {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param text */
+     * @param text the text to enter */
     void enter(@ElementType String processType, @ElementName String processName, @TechnicalLocator int processId, String text);
 
     /** Waits until the references process has finished.
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @return */
+     * @return the process' exit value */
     int waitUntilFinished(@ElementType String processType, @ElementName String processName, @TechnicalLocator int processId);
 
     /** Destroys the referenced process.

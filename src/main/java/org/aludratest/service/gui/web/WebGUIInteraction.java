@@ -89,7 +89,7 @@ public interface WebGUIInteraction extends GUIInteraction {
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator to locate buttons, links or any other elements which react on mouse clicks.
-     * @param taskCompletionTimeout
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task
      * @return The binary contents of the file, as a Base64 encoded string; prefixed by the file name and a colon (e.g.
      *         <code>myExcelFile.xls:AP8uMKg...</code>). */
     @AttachResult("Downloaded File")

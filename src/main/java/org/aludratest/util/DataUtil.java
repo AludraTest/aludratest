@@ -94,8 +94,8 @@ public class DataUtil {
     }
 
     /** Verifies that each expected string is found in the array of actual strings.
-     * @param expectedStrings
-     * @param actualStrings
+     * @param expectedStrings the expected string
+     * @param actualStrings the actual strings
      * @return a String listing all strings which were NOT found in the array of actual strings. */
     public static String containsStrings(String[] expectedStrings, String[] actualStrings) {
         Set<String> mismatches = new HashSet<String>(Arrays.asList(expectedStrings));
@@ -104,8 +104,8 @@ public class DataUtil {
     }
 
     /** Verifies that the expected string is found in the array of actual strings.
-     * @param expectedString
-     * @param actualStrings
+     * @param expectedString the expected string
+     * @param actualStrings the actual strings
      * @return The expected String, if not found in the array, or an empty string, if found. */
     public static String containsString(String expectedString, String[] actualStrings) {
         // elements were converted to uppercase before, but it is nowhere stated that this would be expected,

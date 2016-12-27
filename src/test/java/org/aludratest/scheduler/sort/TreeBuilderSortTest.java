@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 
+@SuppressWarnings("javadoc")
 public class TreeBuilderSortTest extends AbstractAludraIntegrationTest {
 
     private RunnerTree parseTestFilter(File classDir, String filter, List<String> categories, ClassLoader cl)

@@ -25,8 +25,7 @@ import org.databene.formats.xml.compare.XMLComparisonModel;
 public class DatabeneEdiComparisonSettings extends DatabeneXmlComparisonSettings implements EdiComparisonSettings {
 
     /** Constructor.
-     * @param model
-     * @param xmlSettings the */
+     * @param model the {@link XMLComparisonModel} to apply */
     public DatabeneEdiComparisonSettings(XMLComparisonModel model) {
         super(model);
     }

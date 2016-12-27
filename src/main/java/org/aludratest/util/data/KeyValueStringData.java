@@ -24,9 +24,7 @@ public class KeyValueStringData extends Data {
     private String key;
     private String value;
 
-    /** Default constructor.
-     * @param key the key to set
-     * @param value the value to set */
+    /** Default constructor. */
     public KeyValueStringData() {
         this(null, null);
     }

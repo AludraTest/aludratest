@@ -25,25 +25,20 @@ package org.aludratest.service;
  */
 public interface AludraServiceContext extends AludraContext {
 
-    /**
-     * Returns the name of the current service instance, if any.
-     * 
-     * @return The name of the current service instance, if any. May be <code>null</code> if no instance name is set.
-     */
+    /** Returns the name of the current service instance, if any.
+     * @return The name of the current service instance, if any. May be <code>null</code> if no instance name is set. */
     public String getInstanceName();
 
     /** Gets the service for the given service interface. The service is ensured to be configured and initialized. Calls to the
      * service will be logged in the test case log.
-     * 
+     * @param <T> the type of the service to get
      * @param serviceInterface Class of the service interface to retrieve (e.g. <code>FileService.class</code>).
-     * 
      * @return A ready-to-use service instance. */
     public <T extends AludraService> T getService(Class<T> serviceInterface);
 
     /** Gets the service for the given service interface. The service is ensured to be configured and initialized.
-     * 
+     * @param <T> the type of the service to get
      * @param serviceInterface Class of the service interface to retrieve (e.g. <code>FileService.class</code>).
-     * 
      * @return A ready-to-use service instance. */
     public <T extends AludraService> T getNonLoggingService(Class<T> serviceInterface);
 

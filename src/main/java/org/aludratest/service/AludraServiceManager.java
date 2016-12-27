@@ -22,7 +22,7 @@ import org.aludratest.config.Configurable;
 public interface AludraServiceManager {
 
     /** Creates and configures a service instance.
-     * 
+     * @param <T> the type of the instance to create and configure
      * @param serviceId A characterization of the requested service.
      * @param context Current AludraTest context.
      * @param wrap If <code>true</code>, the service will be wrapped with registered wrappers, otherwise, you will retrieve the
@@ -33,7 +33,7 @@ public interface AludraServiceManager {
 
     /** Selects the default implementor class configured for the requested interface and returns a new instance of it. If the
      * implementor class implements the {@link Configurable} interface, the object is configured before returning it.
-     * 
+     * @param <T> the type of the instance to create
      * @param iface the interface for which to create an implementor instance
      * @return a new instance of the class configured as standard implementor of the interface */
     public <T> T newImplementorInstance(Class<T> iface);

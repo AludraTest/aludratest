@@ -28,7 +28,7 @@ public interface TestInvoker {
     void setContext(AludraTestContext context);
 
     /** Performs the test.
-     * @throws Throwable */
+     * @throws Throwable if the invoked test raised a throwable */
     void invoke() throws Throwable; //NOSONAR
 
     /** Returns the class which contains the test for execution, if any. <b>This is for documentational purposes only</b>, and

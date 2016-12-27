@@ -26,7 +26,7 @@ public abstract class Locator {
     protected final String locator;
 
     /** Constructor.
-     *  @param locator */
+     * @param locator String representation of the locator's core data */
     protected Locator(String locator) {
         if (locator == null) {
             throw new TechnicalException("Locator string is NULL");

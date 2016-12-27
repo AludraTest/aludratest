@@ -34,9 +34,9 @@ public final class RunnerLeaf extends RunnerNode {
 
     /** Constructor requiring the tree path and the runnable to execute.
      * @param id The ID of the test case, assigned by the tree builder.
-     * @param path
-     * @param parent
-     * @param testInvoker */
+     * @param path the path
+     * @param parent the parent node
+     * @param testInvoker the {@link TestInvoker} to call */
     public RunnerLeaf(int id, String path, RunnerGroup parent, TestInvoker testInvoker) {
         super(path, parent);
         this.id = id;

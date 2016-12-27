@@ -25,7 +25,7 @@ import org.databene.commons.Validator;
 
 /** The interface {@link Verification} provides several methods to verify values in the active screen of the application under
  * test. Every class which implements this interface must assure that a call of one of these methods verifies the expected value
- * with the current in the application under test.<br/>
+ * with the current in the application under test.<br>
  * Methods with locators accept two types of locators.
  * <ol>
  * <li>The first type is a by the caller typed locator.</li>

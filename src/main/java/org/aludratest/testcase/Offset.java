@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Offset {
 
-    /** The number of data sets to skip */
+    /** @return the number of data sets to skip */
     int value();
 
 }

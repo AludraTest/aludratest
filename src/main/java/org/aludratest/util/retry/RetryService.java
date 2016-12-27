@@ -31,11 +31,14 @@ import org.databene.commons.Assert;
 public class RetryService {
 
     /** Performs the invocation an exception handling as described in the class doc.
-     * @param target
-     * @param toleratedThrowable
-     * @param maxRetries
-     * @return
-     * @throws Throwable */
+     * @param <T> the return type of the {@link Callable} to call
+     * @param target the {@link Callable} to execute
+     * @param toleratedThrowable specifies if
+     * @param maxRetries the maximum number of times to try target execution
+     * @return the result of the call
+     * @throws Throwable if a single target invocation raised an exception and this is not tolerated it is forwarded to the
+     *             caller, or if each of the <code>#maxRetries</code> calls to the target produces an exception, the last one is
+     *             re-thrown */
     public static <T> T call(Callable<T> target, Class<? extends Throwable> toleratedThrowable, int maxRetries)
             throws Throwable { // NOSONAR
         // check preconditions

@@ -100,8 +100,8 @@ public class EdifattoContent implements EdifactContent {
 
     /** Finds out the differences between two EDIFACT or X12 interchanges, ignoring elements that are tolerated by the
      * {@link XmlComparisonSettings}.
-     * @param expected
-     * @param actual
+     * @param expected the expected interchange
+     * @param actual the actual interchange
      * @return an {@link AggregateDiff} between the documents */
     @Override
     public AggregateEdiDiff compare(Interchange expected, Interchange actual, EdiComparisonSettings settings) {

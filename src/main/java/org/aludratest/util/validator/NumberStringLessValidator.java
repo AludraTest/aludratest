@@ -22,8 +22,8 @@ package org.aludratest.util.validator;
 public class NumberStringLessValidator extends AbstractNumberStringValidator {
 
     /** Constructor.
-     *  @param validationTerm
-     *  @param tolerance */
+     * @param validationTerm the term against which to compare
+     * @param tolerance the comparison tolerance */
     public NumberStringLessValidator(String validationTerm, double tolerance) {
         super(validationTerm, tolerance);
     }

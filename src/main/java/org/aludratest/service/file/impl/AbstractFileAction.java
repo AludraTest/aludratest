@@ -56,7 +56,7 @@ public abstract class AbstractFileAction {
     protected FileServiceConfiguration configuration;
 
     /** Constructor taking the configuration.
-     *  @param configuration */
+     * @param configuration the configuration to apply */
     public AbstractFileAction(FileServiceConfiguration configuration) {
         this.configuration = configuration;
         getChildren(getRootFolder());
@@ -294,7 +294,10 @@ public abstract class AbstractFileAction {
         }
     }
 
-    /** Lists FileInfos for all child elements of the given folder which match the filter. */
+    /** Lists FileInfos for all child elements of the given folder which match the filter.
+     * @param dirPath the file path of the directory
+     * @param filter the file filter to apply
+     * @return a list of the directory's child items that match the filter */
     protected List<FileInfo> getChildInfos(String dirPath, FileFilter filter) {
         File.verifyFilePath(dirPath);
         try {

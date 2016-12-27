@@ -41,7 +41,7 @@ package org.aludratest.config;
  * </p>
  * 
  * <p>
- * <b>This interface is not intended to be implemented outside AludraTest framework.
+ * <b>This interface is not intended to be implemented outside AludraTest framework.</b>
  * </p>
  * 
  * @author falbrech */

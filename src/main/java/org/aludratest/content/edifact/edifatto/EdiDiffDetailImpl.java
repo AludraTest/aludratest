@@ -26,7 +26,7 @@ public class EdiDiffDetailImpl extends DiffDetail implements EdiDiffDetail {
     private EdiDiffDetailType ediType;
 
     /** Constructor.
-     * @param detail */
+     * @param detail a prototype */
     public EdiDiffDetailImpl(DiffDetail detail) {
         super(detail.getExpected(), detail.getActual(), detail.getObjectClassifier(), detail.getType(), detail
                 .getLocatorOfExpected(), detail.getLocatorOfActual(), detail.getFormatter());

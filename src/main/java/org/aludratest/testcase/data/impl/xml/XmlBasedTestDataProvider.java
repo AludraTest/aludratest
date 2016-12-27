@@ -492,7 +492,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
     }
 
     /** Evaluates the given data script, applying the given format pattern and locale, if specified.
-     *
+     * 
      * @param script Script to evaluate, e.g. <code>addDaysToNow(5)</code>
      * @param formatPattern Format pattern to apply. Can be a format accepted by <code>SimpleDateFormat</code> or
      *            <code>DecimalFormat</code>, depending on type of expression. If not specified, a type-specific default format is
@@ -501,7 +501,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
      *            platform default, to ensure platform-independent operation).
      * @param contextVariables Map with objects which should be offered in the script context as variables. Can be
      *            <code>null</code>.
-     * @return */
+     * @return the result of the script */
     public String evaluate(String script, String formatPattern, Locale locale, Map<String, Object> contextVariables) {
         Context context = Context.enter();
 

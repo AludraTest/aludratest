@@ -18,6 +18,7 @@ package org.aludratest.service.file;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,12 +46,12 @@ public class SftpFileServiceTest extends AbstractLocalFileServiceTest {
     private SshServer sshd;
 
     @Override
-    public void prepareFiles() throws Exception {
+    public void prepareFiles() throws IOException {
         super.prepareFiles();
         setupSftpServer();
     }
 
-    public void setupSftpServer() throws Exception {
+    public void setupSftpServer() throws IOException {
         sshd = SshServer.setUpDefaultServer();
         sshd.setHost("127.0.0.1");
         sshd.setPort(4922);

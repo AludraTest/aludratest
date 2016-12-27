@@ -23,7 +23,7 @@ public class CheckboxImpl extends AbstractElement<Checkbox> implements Checkbox 
 
     /** Selects or deselects a Checkbox due to overgiven String If the text is null or marked as null the operation is not
      * executed.
-     * @param selectString */
+     * @param selectString 'true' or 'false' */
     @Override
     public void select(String selectString) {
         if (!DataMarkerCheck.isNull(selectString)) {
