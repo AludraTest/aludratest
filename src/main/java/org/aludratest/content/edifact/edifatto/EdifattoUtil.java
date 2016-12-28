@@ -44,9 +44,9 @@ public final class EdifattoUtil {
     }
 
     /** Converts a generic {@link AggregateDiff} to an {@link AggregateEdiDiff}.
-     * @param expected
-     * @param actual
-     * @param settings
+     * @param expected the expected Edifact interchange
+     * @param actual the actual Edifact interchange
+     * @param settings the comparison settings
      * @param genericDiff the {@link AggregateDiff} to convert
      * @return a corresponding {@link AggregateEdiDiff} */
     public static AggregateEdiDiff generic2ediDiff(Object expected, Object actual, ComparisonSettings settings,

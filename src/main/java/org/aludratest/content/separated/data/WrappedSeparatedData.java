@@ -17,11 +17,9 @@ package org.aludratest.content.separated.data;
 
 import org.aludratest.dict.Data;
 
-/**
- * Wraps a {@link SeparatedFileBeanData} object for separated file parsing.
+/** Wraps a {@link SeparatedFileBeanData} object for separated file parsing.
  * @author Volker Bergmann
- * @param <E> 
- */
+ * @param <E> Generic parameter to be set by a final child class to the child class itself */
 public class WrappedSeparatedData<E extends SeparatedFileBeanData> extends Data {
 
     private E value;
@@ -31,8 +29,8 @@ public class WrappedSeparatedData<E extends SeparatedFileBeanData> extends Data 
         this(null);
     }
 
-    /** Constructor that initializes the {@link #value} with the provided argument. 
-     *  @param value the initialization value for the {@link #value} property */
+    /** Constructor that initializes the {@link #value} with the provided argument.
+     * @param value the initialization value for the {@link #value} property */
     public WrappedSeparatedData(E value) {
         this.value = value;
     }

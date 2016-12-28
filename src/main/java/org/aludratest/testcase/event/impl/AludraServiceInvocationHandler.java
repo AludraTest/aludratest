@@ -51,7 +51,7 @@ public class AludraServiceInvocationHandler implements InvocationHandler {
 
     /** Constructor
      * @param realObject the service object to wrap
-     * @param serviceId
+     * @param serviceId the {@link ComponentId} of the wrapped service
      * @param context The AludraTest context to use to e.g. retrieve configuration. */
     public AludraServiceInvocationHandler(Object realObject, ComponentId<? extends AludraService> serviceId,
             AludraTestContext context) {

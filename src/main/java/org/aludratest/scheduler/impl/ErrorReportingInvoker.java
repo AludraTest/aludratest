@@ -35,8 +35,8 @@ public class ErrorReportingInvoker implements TestInvoker {
     private Throwable error;
 
     /** Constructor receiving values for all attributes of same name.
-     *  @param method
-     *  @param error */
+     * @param method the invoked method
+     * @param error the error that occurred on method invocation */
     public ErrorReportingInvoker(Method method, Throwable error) {
         // check preconditions
         Assert.notNull(method, "method");

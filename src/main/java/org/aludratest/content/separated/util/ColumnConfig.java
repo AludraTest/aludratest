@@ -29,12 +29,10 @@ public class ColumnConfig {
     private final int index;
     private final String format;
 
-    /**
-     * Constructor.
-     * @param attribute
-     * @param index
-     * @param format
-     */
+    /** Constructor.
+     * @param attribute the Java {@link Field} to which to map the column
+     * @param index the index of the column to map
+     * @param format the format specification */
     public ColumnConfig(Field attribute, int index, String format) {
         this.attribute = attribute;
         this.index = index;

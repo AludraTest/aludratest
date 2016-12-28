@@ -21,8 +21,8 @@ import org.aludratest.content.flat.FlatContent;
 import org.aludratest.content.separated.SeparatedContent;
 import org.aludratest.content.separated.data.SeparatedFileBeanData;
 
-/** 
- * Wraps a reader's character buffer and 'target data' 
+/**
+ * Wraps a reader's character buffer and 'target data'
  * (filePath and a flag whether a pre-existing file may be overwritten).
  * @author Volker Bergmann
  */
@@ -63,16 +63,13 @@ class SeparatedWriterConfig {
         return buffer.toString();
     }
 
-    /**
-     * Uses the {@link FlatContent} to create a flat file writer 
-     * that writes to the internal {@link #buffer}. 
+    /** Uses the {@link FlatContent} to create a flat file writer that writes to the internal {@link #buffer}.
      * @param contentHandler the {@link FlatContent} handler to use
-     * @param beanClass 
-     * @param separator 
-     * @param header 
-     * @return the id of the new writer
-     */
-    public Object createWriter(SeparatedContent contentHandler, 
+     * @param beanClass the type of Java objects to write
+     * @param separator the separator character to use
+     * @param header the file header
+     * @return the id of the new writer */
+    public Object createWriter(SeparatedContent contentHandler,
             Class<? extends SeparatedFileBeanData> beanClass, char separator, String header) {
         return contentHandler.createWriter(this.buffer, beanClass, separator, header);
     }

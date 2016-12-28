@@ -27,8 +27,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface AttachResult {
-    
-    /** The label to use for the attachment in the log file. */
+
+    /** Returns the label to use when logging the result
+     * @return the label to use when logging the result */
     String value();
-    
+
 }

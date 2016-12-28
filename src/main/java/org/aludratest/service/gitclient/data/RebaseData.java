@@ -36,9 +36,9 @@ public class RebaseData {
     }
 
     /** Fully parameterized constructor.
-     * @param newbase
-     * @param upstream
-     * @param branches */
+     * @param newbase the new base
+     * @param upstream the upstream
+     * @param branches the branches to rebase */
     public RebaseData(String newbase, String upstream, String... branches) {
         setNewbase(newbase);
         setUpstream(upstream);

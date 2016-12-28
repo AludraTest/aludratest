@@ -45,13 +45,10 @@ public class RunnerTreeDotExporter {
 
     private RunnerTreeDotExporter() { }
 
-    /**
-     * Main method that interprets the first parameter as class name,
-     * parses its internal test suite structure and exports it to a DOT
-     * file named '&lt;classname&gt;.dot'.
+    /** Main method that interprets the first parameter as class name, parses its internal test suite structure and exports it to a
+     * DOT file named '&lt;classname&gt;.dot'.
      * @param args the command line parameters
-     * @throws IOException
-     */
+     * @throws IOException if the file export fails */
     public static void main(String[] args) throws IOException {
         // check preconditions
         if (args.length != 1) {

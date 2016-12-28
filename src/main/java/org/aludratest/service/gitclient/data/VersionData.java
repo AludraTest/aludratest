@@ -40,7 +40,7 @@ public class VersionData extends AbstractGitData {
     }
 
     /** Sets the version number information.
-     * @param versionNumber */
+     * @param versionNumber the version number to set */
     public final void setVersionNumber(String versionNumber) {
         this.versionNumber = versionNumber;
     }

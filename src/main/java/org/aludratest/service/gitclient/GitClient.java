@@ -58,6 +58,9 @@ import org.slf4j.LoggerFactory;
  * @author Volker Bergmann */
 public class GitClient implements ActionWordLibrary<GitClient> {
 
+    private static final int DEFAULT_PROCESS_TIMEOUT = 10000;
+    private static final int DEFAULT_RESPONSE_TIMEOUT = 3000;
+
     private static final String GIT_COMMAND = "git";
 
     private static final String GIT_PROCESS_TYPE = "git";
@@ -97,14 +100,16 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     private int processTimeout;
     private int responseTimeout;
 
-    /** @param service */
+    /** Constructor with timeout defaults.
+     * @param service the underlying {@link CommandLineService} instance */
     public GitClient(CommandLineService service) {
-        this(service, 10000, 3000);
+        this(service, DEFAULT_PROCESS_TIMEOUT, DEFAULT_RESPONSE_TIMEOUT);
     }
 
-    /** @param service
-     * @param processTimeout
-     * @param responseTimeout */
+    /** Full constructor.
+     * @param service the underlying {@link CommandLineService} instance
+     * @param processTimeout the process timeout to use
+     * @param responseTimeout the response timeout to use */
     public GitClient(CommandLineService service, int processTimeout, int responseTimeout) {
         this.processTimeout = processTimeout;
         this.responseTimeout = responseTimeout;
@@ -164,7 +169,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Provides the status.
-     * @param data
+     * @param data reference to a {@link StatusData} instance for returning state information
      * @return a reference to this */
     public GitClient status(StatusData data) {
 
@@ -224,8 +229,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Provides the git log.
-     * @param data
-     * @return */
+     * @param data the {@link LogData} to
+     * @return a reference to <code>this</code> */
     public GitClient log(LogData data) {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class).add("log");
         if (data.getMaxCount() != null) {
@@ -240,8 +245,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Adds files to the index
-     * @param data
-     * @return a reference to this */
+     * @param data an {@link AddData} instance for configuring which file(s) to add
+     * @return a reference to <code>this</code> */
     public GitClient add(AddData data) {
         invokeGenericallyAndGetStdOut(GIT_ADD_PROCESS_NAME, true, "add", data.getFilePattern());
         return this;
@@ -249,7 +254,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
 
     /** Provides the name of the current branch.
      * @param data a StringData object that receives the operations result
-     * @return a reference to this */
+     * @return a reference to <code>this</code> */
     public GitClient getCurrentBranch(StringData data) {
         BranchListData list = new BranchListData();
         listBranches(list);
@@ -258,8 +263,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Lists branches.
-     * @param data
-     * @return a reference to this */
+     * @param data a BranchListData to receive the result
+     * @return a reference to <code>this</code> */
     public GitClient listBranches(BranchListData data) {
         String output = invokeGenericallyAndGetStdOut(GIT_LIST_BRANCHES_PROCESS_NAME, true, "branch", "--list");
         LineIterator iterator = new LineIterator(new StringReader(output));
@@ -276,24 +281,24 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Creates a branch.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link BranchCreationData} object for specifying the branch
+     * @return a reference to <code>this</code> */
     public GitClient createBranch(BranchCreationData data) {
         invokeGenericallyAndGetStdOut(GIT_CREATE_BRANCH_PROCESS_NAME, true, "branch", data.getBranchName());
         return this;
     }
 
     /** Deletes a branch.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link BranchCreationData} object for specifying the branch
+     * @return a reference to <code>this</code> */
     public GitClient deleteBranch(BranchDeletionData data) {
         invokeGenericallyAndGetStdOut(GIT_DELETE_BRANCH_PROCESS_NAME, true, "branch", "--delete", data.getBranchName());
         return this;
     }
 
     /** Checks out a branch or paths to the working tree.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link CheckoutData} object for specifying what to check out
+     * @return a reference to <code>this</code> */
     public GitClient checkout(CheckoutData data) {
         CommandLineProcess<?> process = invokeGenerically(GIT_CHECKOUT_PROCESS_NAME, false, "checkout", data.getBranchName());
         String expectedErrOut = "Switched to branch '" + data.getBranchName() + "'";
@@ -305,8 +310,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Clones a repository into a new directory.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link CloneRepositoryData} object for configuring the clone command
+     * @return a reference to <code>this</code> */
     public GitClient cloneRepository(CloneRepositoryData data) {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class);
         builder.add("clone");
@@ -319,8 +324,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Records changes to the repository.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link CommitData} object for configuring the commit
+     * @return a reference to <code>this</code> */
     public GitClient commit(CommitData data) {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class);
         builder.add("commit");
@@ -335,8 +340,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Downloads objects and refs from another repository.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link FetchData} object for specifying which data to fetch
+     * @return a reference to <code>this</code> */
     public GitClient fetch(FetchData data) {
         CommandLineProcess<?> process = invokeGenerically(GIT_FETCH_PROCESS_NAME, false, "fetch", data.getRepository());
         String errOut = getErrOut(process, true);
@@ -347,15 +352,15 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Creates an empty git repository or reinitializes an existing one.
-     * @return a reference to this */
+     * @return a reference to <code>this</code> */
     public GitClient init() {
         invokeGenericallyAndGetStdOut(GIT_INIT_PROCESS_NAME, true, "init");
         return this;
     }
 
     /** Join two or more development histories together.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link MergeData} object that specifies the merge
+     * @return a reference to <code>this</code> */
     public GitClient merge(MergeData data) {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class);
         builder.add("merge");
@@ -370,16 +375,16 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Moves or renames a file, directory, or symlink
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link MvData} object that specifies the move
+     * @return a reference to <code>this</code> */
     public GitClient mv(MvData data) {
         invokeGenericallyAndGetStdOut(GIT_MV_PROCESS_NAME, true, "mv", data.getSource(), data.getDestination());
         return this;
     }
 
     /** Fetches from and merges with another repository or a local branch
-     * @param data
-     * @return a reference to this */
+     * @param data a PullData object that specifies the pull
+     * @return a reference to <code>this</code> */
     public GitClient pull(PullData data) {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class);
         builder.add("pull");
@@ -394,8 +399,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Updates remote refs along with associated objects.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link PushData} object that specifies the push
+     * @return a reference to <code>this</code> */
     public GitClient push(PushData data) {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class);
         builder.add("push");
@@ -414,8 +419,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Forward-ports local commits to the updated upstream head.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link RebaseData} object that specifies the rebase
+     * @return a reference to <code>this</code> */
     public GitClient rebase(RebaseData data) {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class);
         builder.add("rebase");
@@ -435,8 +440,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     /** Resets the current HEAD to the specified state. It does not touch the index file nor the working tree at all (but resets
      * the head to the specified commit, just like all modes do). This leaves all your changed files "Changes to be committed", as
      * git status would put it.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link ResetData} object that specifies the reset
+     * @return a reference to <code>this</code> */
     public GitClient resetSoft(ResetData data) {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class).add("reset").add("--soft");
         if (data.getCommit() != null) {
@@ -448,8 +453,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
 
     /** Resets the current HEAD to the specified state. Resets the index but not the working tree (i.e., the changed files are
      * preserved but not marked for commit) and reports what has not been updated. This is the default action.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link ResetData} object that specifies the reset
+     * @return a reference to <code>this</code> */
     public GitClient resetMixed(ResetData data) {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class).add("reset").add("--mixed");
         if (data.getCommit() != null) {
@@ -461,8 +466,8 @@ public class GitClient implements ActionWordLibrary<GitClient> {
 
     /** Resets the current HEAD to the specified state. Resets the index and working tree. Any changes to tracked files in the
      * working tree since the specified commit are discarded.
-     * @param data
-     * @return a reference to this */
+     * @param data a {@link ResetData} object that specifies the reset
+     * @return a reference to <code>this</code> */
     public GitClient resetHard(ResetData data) {
         ArrayBuilder<String> builder = new ArrayBuilder<String>(String.class).add("reset").add("--hard");
         if (data.getCommit() != null) {
@@ -473,22 +478,22 @@ public class GitClient implements ActionWordLibrary<GitClient> {
     }
 
     /** Removes files from the working tree and from the index.
-     * @param data
-     * @return a reference to this */
+     * @param data an {@link RmData} object that specifies the remove
+     * @return a reference to <code>this</code> */
     public GitClient rm(RmData data) {
         invokeGenericallyAndGetStdOut(GIT_RM_PROCESS_NAME, true, "rm", data.getFilePattern());
         return this;
     }
 
     /** Saves the workspace to the stash.
-     * @return a reference to this */
+     * @return a reference to <code>this</code> */
     public GitClient stashSave() {
         invokeGenericallyAndGetStdOut(GIT_STASH_SAVE_PROCESS_NAME, true, "stash", "save");
         return this;
     }
 
     /** Puts back previously stashed contents to the workspace.
-     * @return a reference to this */
+     * @return a reference to <code>this</code> */
     public GitClient stashPop() {
         invokeGenericallyAndGetStdOut(GIT_STASH_POP_PROCESS_NAME, true, "stash", "pop");
         return this;
@@ -496,7 +501,7 @@ public class GitClient implements ActionWordLibrary<GitClient> {
 
     /** Provides individually parameterized git invocations.
      * @param data the invocation data
-     * @return the process' output to stdout */
+     * @return a reference to <code>this</code> */
     public GitClient invokeGenerically(InvocationData data) {
         boolean failOnErrOut = Boolean.parseBoolean(data.getFailOnErrOut());
         String stdOut = invokeGenericallyAndGetStdOut(data.getProcessName(), failOnErrOut, CollectionUtil.toArray(data.getArgs()));

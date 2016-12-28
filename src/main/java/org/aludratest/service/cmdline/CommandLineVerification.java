@@ -29,7 +29,7 @@ public interface CommandLineVerification extends Verification {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param validator */
+     * @param validator the validator to use */
     void assertNextLineOfStdOutMatches(@ElementType String processType, @ElementName String processName,
             @TechnicalLocator int processId, Validator<String> validator);
 
@@ -43,7 +43,7 @@ public interface CommandLineVerification extends Verification {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param validator */
+     * @param validator the validator to use */
     void assertNextLineOfErrOutMatches(@ElementType String processType, @ElementName String processName,
             @TechnicalLocator int processId, Validator<String> validator);
 
@@ -57,7 +57,7 @@ public interface CommandLineVerification extends Verification {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param expectedValue */
+     * @param expectedValue the expected process exit code */
     void assertExitCodeEquals(@ElementType String processType, @ElementName String processName, @TechnicalLocator int processId,
             int expectedValue);
 

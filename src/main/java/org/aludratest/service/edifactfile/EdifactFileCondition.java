@@ -33,30 +33,25 @@ import org.databene.edifatto.model.Interchange;
  */
 public interface EdifactFileCondition extends Condition {
 
-    /**
-     * Tells if a file exists at the given path.
-     * @param elementType
-     * @param elementName
+    /** Tells if a file exists at the given path.
+     * @param elementType the element type to use in logging
+     * @param elementName the element name to use in logging
      * @param filePath the file path to query
-     * @return true if a file with the provided path exists, otherwise false
-     */
+     * @return true if a file with the provided path exists, otherwise false */
     boolean exists(
             @ElementType String elementType,
             @ElementName String elementName,
             @TechnicalLocator String filePath);
 
-    /**
-     * Creates an XML representation of the interchange and performs an XPath query on it.
-     * @param elementType
-     * @param elementName
+    /** Creates an XML representation of the interchange and performs an XPath query on it.
+     * @param elementType the element type to use in logging
+     * @param elementName the element name to use in logging
      * @param interchange the interchange to query
      * @param xpathQuery the XPath query to perform
-     * @param returnType determines the type of the returned object:
-     *   {@link XPathConstants#STRING} for a single {@link java.lang.String},
-     *   {@link XPathConstants#NODE} for a single {@link org.w3c.dom.Element},
-     *   {@link XPathConstants#NODESET} for a {@link org.w3c.dom.NodeList}
-     * @return the query result
-     */
+     * @param returnType determines the type of the returned object: {@link XPathConstants#STRING} for a single
+     *            {@link java.lang.String}, {@link XPathConstants#NODE} for a single {@link org.w3c.dom.Element},
+     *            {@link XPathConstants#NODESET} for a {@link org.w3c.dom.NodeList}
+     * @return the query result */
     Object query(
             @ElementType String elementType,
             @ElementName String elementName,
@@ -65,12 +60,11 @@ public interface EdifactFileCondition extends Condition {
             @TechnicalArgument QName returnType);
 
     /** Finds out the differences between two EDIFACT or X12 interchanges, ignoring elements that match the XPath exclusion paths.
-     * @param elementType
-     * @param elementName
+     * @param elementType the element type to use in logging
+     * @param elementName the element name to use in logging
      * @param expected the expected interchange data
      * @param actual the actual interface data
      * @param settings the {@link EdiComparisonSettings} to apply
-     * @param model
      * @return an AggregateDiff that represent the differences between the interchanges */
     AggregateEdiDiff diff(
             @ElementType String elementType,

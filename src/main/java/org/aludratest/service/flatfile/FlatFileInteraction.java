@@ -26,14 +26,13 @@ import org.aludratest.service.Interaction;
  */
 public interface FlatFileInteraction extends Interaction {
 
-    /** Polls the file system until a file at the given path is found
-     *  or a timeout occurs.
-     *  @param elementType
-     *  @param filePath the full path of the requested file */
+    /** Polls the file system until a file at the given path is found or a timeout occurs.
+     * @param elementType the element type to log
+     * @param filePath the full path of the requested file */
     void waitUntilExists(String elementType, String filePath);
 
     /** Polls the file system until no file is found at the given path.
-     *  @param filePath */
+     * @param filePath the path of the file to check */
     void waitUntilNotExists(String filePath);
 
     /** Deletes a file.

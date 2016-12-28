@@ -29,7 +29,6 @@ public class ClassNameCellRenderer extends DefaultListCellRenderer {
     private static final long serialVersionUID = 1L;
 
     // JList classes are parameterized since Java 7, but we want to be backwards compatible to 6
-    @SuppressWarnings("rawtypes")
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index,
             boolean isSelected, boolean cellHasFocus) {

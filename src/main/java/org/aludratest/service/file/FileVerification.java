@@ -35,16 +35,12 @@ public interface FileVerification extends Verification {
      */
     void assertAbsence(@TechnicalLocator String filePath);
 
-    /**
-     * Asserts that the file object at the given location is not a directory
-     * @param filePath
-     */
+    /** Asserts that the file object at the given location is not a directory
+     * @param filePath the path of the file to check */
     void assertFile(@TechnicalLocator String filePath);
 
-    /**
-     * Asserts that the file object at the given location is a directory
-     * @param filePath
-     */
+    /** Asserts that the file object at the given location is a directory
+     * @param filePath the path of the file to check */
     void assertDirectory(@TechnicalLocator String filePath);
 
     /** Asserts that the contents of a text file at the given location match the given validator.

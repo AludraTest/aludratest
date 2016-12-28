@@ -32,8 +32,8 @@ public class RenamedStatusData extends AbstractGitData {
     }
 
     /** Full constructor.
-     * @param fromPath
-     * @param toPath */
+     * @param fromPath path of the original file
+     * @param toPath path of the final file */
     public RenamedStatusData(String fromPath, String toPath) {
         setFromPath(fromPath);
         setToPath(toPath);

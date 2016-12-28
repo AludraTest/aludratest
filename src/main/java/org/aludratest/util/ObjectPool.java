@@ -31,12 +31,12 @@ public class ObjectPool<E> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectPool.class);
 
     private boolean dupsAllowed;
-    
+
     private BlockingQueue<E> pool;
 
     /** Constructor
      *  @param size the maximum number of objects allowed in the pool
-     *  @param dupsAllowed specifies if several equal objects 
+     *  @param dupsAllowed specifies if several equal objects
      *      (in the sense of the equals() method) may put into the pool */
     public ObjectPool(int size, boolean dupsAllowed) {
         this.dupsAllowed = dupsAllowed;
@@ -58,8 +58,8 @@ public class ObjectPool<E> {
     }
 
     /** Acquires an element from the pool.
-     *  @return the acquired element
-     *  @throws InterruptedException */
+     * @return the acquired element
+     * @throws InterruptedException if the pool thrown an InterruptedException. */
     public synchronized E acquire() throws InterruptedException {
         return pool.take();
     }

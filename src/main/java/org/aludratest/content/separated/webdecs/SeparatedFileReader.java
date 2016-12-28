@@ -29,11 +29,9 @@ import org.databene.formats.csv.CSVToJavaBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Reads data from a separated file.
+/** Reads data from a separated file.
  * @author Volker Bergmann
- * @param <E>
- */
+ * @param <E> Generic parameter to be set by final child classes to the child class itself */
 public class SeparatedFileReader<E extends SeparatedFileBeanData> implements Closeable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SeparatedFileReader.class);
@@ -43,9 +41,9 @@ public class SeparatedFileReader<E extends SeparatedFileBeanData> implements Clo
 
     /** Constructor of the SeparatedFileReader.
      * @param source the reader that provides the separated file's character data.
-     * @param beanType
-     * @param separator
-     * @throws IOException */
+     * @param beanType the type of Java objects to read
+     * @param separator the separator character to use
+     * @throws IOException if opening the file fails */
     public SeparatedFileReader(Reader source, Class<E> beanType, char separator) throws IOException {
         String[] featureNames = SeparatedUtil.featureNames(beanType);
         this.rowIterator = new CSVToJavaBeanMapper<E>(bufferedReader(source), beanType, separator, null, featureNames);
@@ -53,9 +51,8 @@ public class SeparatedFileReader<E extends SeparatedFileBeanData> implements Clo
 
     /** Reads a single text row of the separated file and creates a {@link SeparatedFileBeanData} instance configured by the row
      * data.
-     * @return a {@link SeparatedFileBeanData} object representing the next row of the source document
-     * @throws IOException */
-    public E readRow() throws IOException {
+     * @return a {@link SeparatedFileBeanData} object representing the next row of the source document */
+    public E readRow() {
         if (this.rowIterator == null) {
             throw new TechnicalException("Row iterator has already been closed: " + this);
         }

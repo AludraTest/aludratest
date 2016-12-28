@@ -42,7 +42,7 @@ public abstract class Page implements ActionWordLibrary<Page> {
     }
 
     /** Sets the {@link SystemConnector}
-     *  @param systemConnector */
+     * @param systemConnector the {@link SystemConnector} to set */
     protected void setSystemConnector(SystemConnector systemConnector) {
         this.aludraGUI.setSystemConnector(systemConnector);
     }

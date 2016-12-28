@@ -31,24 +31,18 @@ public class TaskCompletionUtil {
     /** Private constructor for preventing instantiation of utility class. */
     private TaskCompletionUtil() { }
 
-    /**
-     * Waits a limited amount of time for an activity to start and finish
-     * using the {@link SystemConnector#isBusy()} of the connector object.
-     * First a startTimeout period is spent waiting for an activity to occur.
-     * If no activity was noticed, the method returns false immediately.
-     * Otherwise the method waits for the period of the completionTimeout
-     * until no activity is reported any more. If the activity is noticed
-     * to be stopped, the method returns true immediately.
-     * If the system is still busy after the timeout, a {@link PerformanceFailure}
-     * is thrown.
-     * @param connector the {@link SystemConnector} for controlling the system
+    /** Waits a limited amount of time for an activity to start and finish using the {@link SystemBusyIndicator#isBusy()} of the
+     * connector object. First a startTimeout period is spent waiting for an activity to occur. If no activity was noticed, the
+     * method returns false immediately. Otherwise the method waits for the period of the completionTimeout until no activity is
+     * reported any more. If the activity is noticed to be stopped, the method returns true immediately. If the system is still
+     * busy after the timeout, a {@link PerformanceFailure} is thrown.
+     * @param connector the {@link SystemConnector} for accessing a system
      * @param failureMessage the exception message text to use in case of a timeout
      * @param startTimeout the initial period to wait in milliseconds until activity is observed
      * @param completionTimeout the maximum time to wait milliseconds for task completion (including the startTimeout)
      * @param pollingInterval the interval to wait between checking the activity status in milliseconds
      * @return true if an activity was observed, otherwise false
-     * @throws PerformanceFailure if the completionTimeout was exceeded before activity ended
-     */
+     * @throws PerformanceFailure if the completionTimeout was exceeded before activity ended */
     public static boolean waitForActivityAndCompletion(SystemConnector connector, final String failureMessage,
             int startTimeout, int completionTimeout, int pollingInterval) {
         long startTime = System.currentTimeMillis();
@@ -65,7 +59,7 @@ public class TaskCompletionUtil {
     }
 
     /** Repeats a delayed loop until the provided {@link SystemConnector} reports false on invocation of
-     * {@link SystemConnector#isBusy()}.
+     * {@link SystemBusyIndicator#isBusy()}.
      * 
      * @param connector the {@link SystemConnector} to query if the system is busy
      * @param timeout the maximum number of milliseconds to wait

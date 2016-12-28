@@ -35,8 +35,8 @@ public class KeyExpressionData extends Data {
     }
 
     /** Constructor with all property values.
-     *  @param elementName
-     *  @param keyExpression */
+     * @param elementName the element name
+     * @param keyExpression the expression */
     public KeyExpressionData(String elementName, String keyExpression) {
         this.elementName = elementName;
         this.keyExpression = keyExpression;
@@ -48,7 +48,7 @@ public class KeyExpressionData extends Data {
     }
 
     /** Sets the {@link #elementName}.
-     *  @param elementName */
+     * @param elementName the element name */
     public void setElementName(String elementName) {
         this.elementName = elementName;
     }

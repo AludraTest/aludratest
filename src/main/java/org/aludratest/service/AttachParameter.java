@@ -27,8 +27,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface AttachParameter {
-    
-    /** The label to use for the attachment in the log file. */
+
+    /** Returns the label to use when logging the parameter.
+     * @return the label to use when logging the parameter */
     String value();
-    
+
 }

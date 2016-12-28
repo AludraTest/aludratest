@@ -28,7 +28,7 @@ public class ErrOut extends Out {
     }
 
     /** Redirects the process' errout to a stream.
-     * @param out
+     * @param out the {@link OutputStream} that shall receive process output
      * @return this */
     @Override
     public Out redirectTo(OutputStream out) {

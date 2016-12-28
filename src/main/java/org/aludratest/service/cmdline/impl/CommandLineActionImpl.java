@@ -74,12 +74,7 @@ public class CommandLineActionImpl implements CommandLineInteraction, CommandLin
     @Override
     public void start(String processType, String processName, int processId) {
         ProcessWrapper process = getProcess(processId);
-        try {
-            process.start();
-        }
-        catch (IOException e) {
-            throw new AutomationException("Error executing command: " + process, e);
-        }
+        process.start();
     }
 
     @Override

@@ -20,8 +20,8 @@ package org.aludratest.service.file;
  * @author Volker Bergmann
  */
 public interface FileFilter {
-    /** Returns true for each value that is accepted by the filter. 
-     * @param file 
+    /** Returns true for each value that is accepted by the filter.
+     * @param file the file to check
      * @return true if the provided file is accepted */
     boolean accept(FileInfo file);
 }

@@ -28,46 +28,43 @@ import java.lang.annotation.Target;
 @Target({ ElementType.PARAMETER })
 public @interface Source {
 
-    /** May be used to declare the URI of the data source - 
-     *  the preferred tag for this is {@link #uri()}. */
+    /** @return may be used declare the data source's URI - the preferred tag for that is {@link #uri()}. */
     String value() default "";
 
-    /** References the id value of a JavaBean object in the context that 
-     *  serves as data source. */
+    /** @return an ID value as reference to a JavaBean object in the context that serves as data source. */
     String id() default "";
 
-    /** Selector clause specific for the data source, 
-     *  e.g. a SQL query term for data bases. */
+    /** @return a selector clause specific for the data source, e.g. a SQL query term for data bases. */
     String selector() default "";
 
-    /** Declares the URI of the data source */
+    /** @return the data source's URI */
     String uri() default "";
 
-    /** Declares which data segment (e.g. Excel sheet) to use */
+    /** @return a data segment (e.g. Excel sheet) to use */
     String segment() default "";
 
-    /** DatabeneScript filter string to filter row data */
+    /** @return DatabeneScript filter string to filter row data */
     String filter() default "";
 
-    /** Declares the (e.g. CSV) separator character used in the data source */
+    /** @return a separator declares the (e.g. CSV) separator character used in the data source */
     String separator() default "";
 
-    /** May be used to declare a sub set of a collection of given data files. */
+    /** @return may be used to declare a sub set of a collection of given data files. */
     String dataset() default "";
 
-    /** May be used to declare the type of {@link #dataset()} selection. */
+    /** @return optional value to declare the type of {@link #dataset()} selection. */
     String nesting() default "";
 
-    /** Declares the character encoding used in the data file. */
+    /** @return the data source's character encoding */
     String encoding() default "";
 
-    /** Marker text used for declaring empty strings in the data source */
+    /** @return marker text used for declaring empty strings in the data source */
     String emptyMarker() default "";
 
-    /** Marker text used for declaring null values in the data source */
+    /** @return The marker text used for declaring null values in the data source */
     String nullMarker() default "";
 
-    /** If true, the data sets are rows in the data source, otherwise columns. */
+    /** @return 'true' if the data sets are rows, 'false' if they are columns */
     boolean rowBased() default true;
 
 }

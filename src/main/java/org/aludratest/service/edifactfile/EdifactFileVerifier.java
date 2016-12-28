@@ -29,11 +29,9 @@ import org.aludratest.util.data.StringData;
 import org.databene.commons.IOUtil;
 import org.databene.edifatto.model.Interchange;
 
-/**
- * Provides access to EDI files.
- * @param <E>
- * @author Volker Bergmann
- */
+/** Provides access to EDI files.
+ * @param <E> Generic parameter to be set by a final child class to this child class itself
+ * @author Volker Bergmann */
 @SuppressWarnings("unchecked")
 public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements ActionWordLibrary<E> {
 
@@ -43,8 +41,8 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
     private final String elementType;
 
     /** Constructor.
-     *  @param filePath
-     *  @param service */
+     * @param filePath the path of the file to verify
+     * @param service the underlying FileService */
     public EdifactFileVerifier(String filePath, EdifactFileService service) {
         this.filePath = filePath;
         this.service = service;

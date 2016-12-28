@@ -20,29 +20,25 @@ import org.aludratest.content.separated.data.WrappedSeparatedData;
 import org.aludratest.service.file.FileStream;
 import org.aludratest.util.data.StringData;
 
-/** 
- * Parses separated files and provides each line as a Java object.
+/** Parses separated files and provides each line as a Java object.
  * @param <R> the generic type to return as 'this'
- * @param <B> 
- * @author Volker Bergmann
- */
-public abstract class SeparatedFileReader<B extends SeparatedFileBeanData, R extends SeparatedFileReader<B, R>> 
-        extends FileStream<R> {
+ * @param <B> the type of objects to read
+ * @author Volker Bergmann */
+public abstract class SeparatedFileReader<B extends SeparatedFileBeanData, R extends SeparatedFileReader<B, R>>
+extends FileStream<R> {
 
     private SeparatedFileService service;
 
-    /** The internal id of the SeparatedFileReader inside the controlling 
+    /** The internal id of the SeparatedFileReader inside the controlling
      *  {@link SeparatedFileService} instance */
     private Object readerId;
 
-    /**
-     * Constructor.
+    /** Constructor.
      * @param filePath the file path of the resource from which to read the formatted file content
-     * @param service The {@link SeparatedFileService} which will take control of the reader 
-     * @param beanClass 
-     * @param separator
-     */
-    public SeparatedFileReader(String filePath, SeparatedFileService service, 
+     * @param service The {@link SeparatedFileService} which will take control of the reader
+     * @param beanClass the type of Java objects to read
+     * @param separator the separator character used */
+    public SeparatedFileReader(String filePath, SeparatedFileService service,
             Class<? extends SeparatedFileBeanData> beanClass, char separator) {
         super(filePath, service.getFileService());
         this.service = service;
@@ -50,7 +46,7 @@ public abstract class SeparatedFileReader<B extends SeparatedFileBeanData, R ext
         verifyState(); //NOSONAR
     }
 
-    /** Reads a single row from the separated file and maps it to a Java object instance. 
+    /** Reads a single row from the separated file and maps it to a Java object instance.
      *  @param data a SeparatedFileBean holding the parsed data of the separated file row
      *  @return a reference to 'this' */
     @SuppressWarnings("unchecked")
@@ -66,7 +62,7 @@ public abstract class SeparatedFileReader<B extends SeparatedFileBeanData, R ext
         return this.verifyState();
     }
 
-    /** Closes the reader 
+    /** Closes the reader
      *  @return a reference to 'this' */
     public R close() {
         this.service.perform().closeReader(this.readerId);

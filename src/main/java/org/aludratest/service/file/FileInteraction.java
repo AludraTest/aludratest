@@ -45,17 +45,15 @@ public interface FileInteraction extends Interaction {
     List<String> getChildren(@TechnicalLocator String filePath);
 
     /** Lists all child elements of the given folder which match the given regular expression.
-     *  @param filePath the path of the file of which to get the children
-     *  @param filterRegex
-     *  @return a {@link List} of the child objects of the given file
-     */
+     * @param filePath the path of the file of which to get the children
+     * @param filterRegex the regular expression to apply as filter
+     * @return a {@link List} of the child objects of the given file */
     List<String> getChildren(@TechnicalLocator String filePath, String filterRegex);
 
     /** Lists all child elements of the given folder which match the filter.
-     *  @param filePath the path of the file of which to get the children
-     *  @param filter
-     *  @return a {@link List} of the child objects of the given file
-     */
+     * @param filePath the path of the file of which to get the children
+     * @param filter the file filter to apply
+     * @return a {@link List} of the child objects of the given file */
     List<String> getChildren(@TechnicalLocator String filePath, FileFilter filter);
 
     /** Creates a directory.
@@ -138,12 +136,11 @@ public interface FileInteraction extends Interaction {
      *  @return an {@link InputStream} for accessing the file */
     InputStream getInputStreamForFile(@TechnicalLocator String filePath);
 
-    /** Polls the file system for a given file until it is found or a timeout is exceeded.
-     *  Timeout and the maximum number of polls are retrieved from the
-     *  {@link org.aludratest.service.file.impl.FileServiceConfiguration}.
-     *  @param elementType
-     *  @param filePath the path of the file for which to wait
-     *  @throws AutomationException if the file was not found within the timeout */
+    /** Polls the file system for a given file until it is found or a timeout is exceeded. Timeout and the maximum number of polls
+     * are retrieved from the {@link org.aludratest.service.file.impl.FileServiceConfiguration}.
+     * @param elementType the element type to log
+     * @param filePath the path of the file for which to wait
+     * @throws AutomationException if the file was not found within the timeout */
     void waitUntilExists(
             @ElementType String elementType,
             @TechnicalLocator String filePath);

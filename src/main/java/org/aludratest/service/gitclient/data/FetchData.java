@@ -30,7 +30,7 @@ public class FetchData {
     }
 
     /** Fully parameterized constructor.
-     * @param repository */
+     * @param repository the repository to fetch */
     public FetchData(String repository) {
         setRepository(repository);
     }

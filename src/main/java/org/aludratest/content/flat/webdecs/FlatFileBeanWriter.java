@@ -39,8 +39,8 @@ public class FlatFileBeanWriter implements Closeable {
     /** Internally used writer */
     private MultiTypeBeanFixedWidthWriter writer;
 
-    /** 
-     * Constructor which instantiates the internal writer and forwards the argument to it. 
+    /**
+     * Constructor which instantiates the internal writer and forwards the argument to it.
      * @param out the writer to send the formatted character data to
      * @param defaultLocale the default locale to use for formatting numbers and dates
      * @param rowFormats the row formats to apply
@@ -50,12 +50,9 @@ public class FlatFileBeanWriter implements Closeable {
         this.defaultLocale = defaultLocale;
     }
 
-    /** 
-     * Chooses the row format by the bean class, formats the bean graph elements accordingly
-     * and writes them to the output stream. 
-     * @param bean 
-     * @throws IOException
-     */
+    /** Chooses the row format by the bean class, formats the bean graph elements accordingly and writes them to the output stream.
+     * @param bean the Java object to export
+     * @throws IOException if file output fails */
     public void writeRow(Object bean) throws IOException {
         String simpleBeanClassName = bean.getClass().getSimpleName();
         if (writer.getRowFormat(simpleBeanClassName) == null) {
@@ -72,8 +69,8 @@ public class FlatFileBeanWriter implements Closeable {
 
     // private helpers -------------------------------------------------------------------------------------------------
 
-    /** Parses a FlatFileBean's attribute annotations into 
-     *  an array of {@link FixedWidthColumnDescriptor}s 
+    /** Parses a FlatFileBean's attribute annotations into
+     *  an array of {@link FixedWidthColumnDescriptor}s
      *  and configures the {@link #writer} accordingly. */
     private void defineRowFormatByAnnotations(Object bean) {
         Class<? extends Object> beanClass = bean.getClass();

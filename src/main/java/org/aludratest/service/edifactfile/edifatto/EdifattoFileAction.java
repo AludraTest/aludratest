@@ -68,8 +68,8 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
     private AggregateDiff recentDiff;
 
     /** Constructor.
-     *  @param contentHandler
-     *  @param fileService */
+     * @param contentHandler the {@link EdifactContent} implementation to use
+     * @param fileService the {@link FileService} implementation to use */
     public EdifattoFileAction(EdifactContent contentHandler, FileService fileService) {
         this.contentHandler = contentHandler;
         this.fileService = fileService;
@@ -143,7 +143,7 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
     // EdifactVerification interface implementation ----------------------------
 
     /** Asserts that two EDIFACT or X12 interchanges are equal.
-     *  @throws ValueNotAsExpectedException if they are not equal. */
+     * @throws FunctionalFailure if they are not equal. */
     @Override
     public void assertInterchangesMatch(String elementType, String elementName,
             Interchange expected, Interchange actual,
@@ -186,15 +186,13 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
         return contentHandler.createDefaultComparisonSettings();
     }
 
-    /** Finds out the differences between two EDIFACT or X12 interchanges,
-     *  ignoring elements that match the XPath exclusion paths.
-     *  @param elementType
-     *  @param elementName
-     *  @param expected
-     *  @param actual
-     *  @param settings
-     *  @param model
-     *  @return an {@link AggregateDiff} of the interchanges */
+    /** Finds out the differences between two EDIFACT or X12 interchanges, ignoring elements that match the XPath exclusion paths.
+     * @param elementType the element type to be logged
+     * @param elementName the element type to be logged
+     * @param expected the expected Interchange structure
+     * @param actual the actual Interchange structure
+     * @param settings the comparison settings to apply
+     * @return an {@link AggregateDiff} of the interchanges */
     @Override
     public AggregateEdiDiff diff(String elementType, String elementName, Interchange expected, Interchange actual,
             EdiComparisonSettings settings) {

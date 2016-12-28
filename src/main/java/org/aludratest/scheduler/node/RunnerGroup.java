@@ -46,7 +46,8 @@ public class RunnerGroup extends RunnerNode {
         this.children = new ArrayList<RunnerNode>();
     }
 
-    /** Tells if the child nodes may be executed concurrently. */
+    /** Tells if the child nodes may be executed concurrently.
+     * @return true if the group members may be executed in parallel, otherwise false */
     public boolean isParallel() {
         if (mode == ExecutionMode.PARALLEL) {
             return true;
@@ -71,7 +72,8 @@ public class RunnerGroup extends RunnerNode {
         return Collections.unmodifiableList(children);
     }
 
-    /** Add a child node to the {@link #children}. */
+    /** Add a child node to the {@link #children}.
+     * @param childNode the child node to add */
     public void addChild(RunnerNode childNode) {
         children.add(childNode);
     }

@@ -38,11 +38,10 @@ import org.databene.edifatto.model.Interchange;
  */
 public interface EdifactFileInteraction extends Interaction {
 
-    /** Polls the file system until a file at the given path is found
-     *  or a timeout occurs.
-     *  @param elementType
-     *  @param elementName
-     *  @param filePath */
+    /** Polls the file system until a file at the given path is found or a timeout occurs.
+     * @param elementType the element type to log
+     * @param elementName the element name to log
+     * @param filePath the path of the file to check */
     void waitUntilExists(
             @ElementType String elementType,
             @ElementName String elementName,
@@ -57,29 +56,29 @@ public interface EdifactFileInteraction extends Interaction {
     String waitForFirstMatch(@TechnicalLocator String parentPath, FileFilter filter);
 
     /** Polls the file system until no file is found at the given path.
-     *  @param elementType
-     *  @param elementName
-     *  @param filePath */
+     * @param elementType the element type to log
+     * @param elementName the element name to log
+     * @param filePath the path of the file to check */
     void waitUntilNotExists(
             @ElementType String elementType,
             @ElementName String elementName,
             @TechnicalLocator String filePath);
 
     /** Deletes a file
-     *  @param elementType
-     *  @param elementName
-     *  @param filePath the path of the file to delete */
+     * @param elementType the element type to log
+     * @param elementName the element name to log
+     * @param filePath the path of the file to delete */
     void delete(
             @ElementType String elementType,
             @ElementName String elementName,
             @TechnicalLocator String filePath);
 
     /** Writes an EDIFACT or X12 interchange to an {@link OutputStream}.
-     *  @param elementType
-     *  @param elementName
-     *  @param interchange the interchange to persist
-     *  @param filePath the path of the file to write
-     *  @param overwrite flag that indicates whether a pre-existing file may be overwritten */
+     * @param elementType the element type to log
+     * @param elementName the element name to log
+     * @param interchange the interchange to persist
+     * @param filePath the path of the file to write
+     * @param overwrite flag that indicates whether a pre-existing file may be overwritten */
     void writeInterchange(
             @ElementType String elementType,
             @ElementName String elementName,
@@ -88,12 +87,12 @@ public interface EdifactFileInteraction extends Interaction {
             @TechnicalArgument boolean overwrite);
 
     /** Creates an {@link Interchange} based on a template file and a variable tree
-     *  @param elementType
-     *  @param elementName
-     *  @param templateUri the path of the template file
-     *  @param symbols the symbols to use
-     *  @param variables the variable tree
-     *  @return a new Interchange containing the information from the variable tree */
+     * @param elementType the element type to log
+     * @param elementName the element name to log
+     * @param templateUri the path of the template file
+     * @param symbols the symbols to use
+     * @param variables the variable tree
+     * @return a new Interchange containing the information from the variable tree */
     @AttachResult("Created Interchange")
     Interchange createInterchange(
             @ElementType String elementType,
@@ -103,8 +102,8 @@ public interface EdifactFileInteraction extends Interaction {
             @TechnicalArgument Map<String, Object> variables);
 
     /** Reads an {@link Interchange} from a file system.
-     * @param elementType
-     * @param elementName
+     * @param elementType the element type to log
+     * @param elementName the element name to log
      * @param filePath the full path of the file to read
      * @return an {@link Interchange} data structure that contains the EDI data mapped to a tree structure */
     @AttachResult("Read Interchange")
@@ -114,8 +113,8 @@ public interface EdifactFileInteraction extends Interaction {
             @TechnicalLocator String filePath);
 
     /** Reads an {@link Interchange} from a {@link Reader}.
-     * @param elementType
-     * @param elementName
+     * @param elementType the element type to log
+     * @param elementName the element name to log
      * @param in an {@link InputStream} that provides the interchange's textual representation
      * @return an {@link Interchange} data structure that contains the EDI data mapped to a tree structure */
     @AttachResult("Read Interchange")

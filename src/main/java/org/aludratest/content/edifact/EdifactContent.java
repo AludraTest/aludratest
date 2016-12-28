@@ -38,13 +38,13 @@ public interface EdifactContent extends ContentHandler {
     /** Writes an EDIFACT or X12 interchange to an {@link OutputStream}.
      * @param interchange the EDI {@link Interchange} to write
      * @param out the {@link OutputStream} to write to
-     * @param linefeed */
+     * @param linefeed flag to indicate whether to insert a linefeed at the end of each segment */
     void writeInterchange(Interchange interchange, OutputStream out, boolean linefeed);
 
     /** Uses a FreeMarker template to create an EDI message based on the content of a variables map.
-     * @param templateUri
-     * @param symbols
-     * @param variables
+     * @param templateUri the URI (according to Databene Commons standards) of the file to create
+     * @param symbols the {@link EdiFormatSymbols} to use
+     * @param variables the variables provides to feed the template
      * @return an {@link Interchange} with the data configured in the variables map */
     Interchange createInterchange(String templateUri, EdiFormatSymbols symbols, Map<String, Object> variables);
 
@@ -61,9 +61,9 @@ public interface EdifactContent extends ContentHandler {
     EdiComparisonSettings createDefaultComparisonSettings();
 
     /** Finds out the differences between two EDIFACT or X12 interchanges, ignoring elements that match the XPath exclusion paths.
-     * @param expected
-     * @param actual
-     * @param settings
+     * @param expected the expected interchange structure
+     * @param actual the actual interchange structure
+     * @param settings the comparison settings
      * @return an aggregated diff of the documents */
     AggregateEdiDiff compare(Interchange expected, Interchange actual, EdiComparisonSettings settings);
 

@@ -37,15 +37,12 @@ public final class ComponentId<T> {
 
     private final Class<T> interfaceClass;
 
-    /**
-     * Creates a new ComponentId for a given interface class only. This method should only be used for component types where no
+    /** Creates a new ComponentId for a given interface class only. This method should only be used for component types where no
      * different configuration between instances is required. For services, consider using {@link #create(Class, String)}.
-     *
-     * @param componentInterfaceClass
-     *            Interface class of the component.
-     *
-     * @return An identifier for the given component type, which can be used to create instances of this component.
-     */
+     * @param <T> the type of the component to create
+     * @param componentInterfaceClass Interface class of the component.
+     * 
+     * @return An identifier for the given component type, which can be used to create instances of this component. */
     public static final <T> ComponentId<T> create(Class<T> componentInterfaceClass) {
         if (componentInterfaceClass == null) {
             throw new IllegalArgumentException("No interface class specified");
@@ -54,19 +51,15 @@ public final class ComponentId<T> {
         return new ComponentId<T>(componentInterfaceClass);
     }
 
-    /**
-     * Creates a new ComponentId for a given interface class and a given instance name. This allows for instance specific
+    /** Creates a new ComponentId for a given interface class and a given instance name. This allows for instance specific
      * configuration. Always consider using instance names to allow users and integrators to specify more fine-grained
      * configuration, if needed.
-     *
-     * @param componentInterfaceClass
-     *            Interface class of the component.
-     * @param instanceName
-     *            Instance name for the component instance.
-     *
+     * @param <T> the type of the component to create
+     * @param componentInterfaceClass Interface class of the component.
+     * @param instanceName Instance name for the component instance.
+     * 
      * @return An identifier for the given component type and instance name, which can be used to create instances of this
-     *         component.
-     */
+     *         component. */
     public static final <T> ComponentId<T> create(Class<T> componentInterfaceClass, String instanceName) {
         if (componentInterfaceClass == null) {
             throw new IllegalArgumentException("No interface class specified");

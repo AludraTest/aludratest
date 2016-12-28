@@ -50,16 +50,14 @@ public class WebdecsSeparatedContent implements SeparatedContent {
         this.writers = new HashMap<Object, SeparatedFileWriter>();
     }
 
-    /**
-     * Creates a writer for persisting SeparatedFileBeans or JavaBean data structures. 
-     * @param out the writer to use for persisting the separated file content 
-     * @param separator 
-     * @param beanClass 
-     * @param header 
-     * @return the id of the new writer
-     */
+    /** Creates a writer for persisting SeparatedFileBeans or JavaBean data structures.
+     * @param out the writer to use for persisting the separated file content
+     * @param separator the separator character
+     * @param beanClass the Java type of the objects to write
+     * @param header the header to use
+     * @return the id of the new writer */
     @Override
-    public Object createWriter(Writer out, Class<? extends SeparatedFileBeanData> beanClass, 
+    public Object createWriter(Writer out, Class<? extends SeparatedFileBeanData> beanClass,
             char separator, String header) {
         SeparatedFileWriter writer = new SeparatedFileWriter(out, beanClass, separator, header);
         Object id = "writer#" + streamIdProvider.incrementAndGet();
@@ -67,8 +65,8 @@ public class WebdecsSeparatedContent implements SeparatedContent {
         return id;
     }
 
-    /** Appends a row to the separated file writer denoted by the writerId. 
-     *  @param rowBean the SeparatedFileBean holding the data 
+    /** Appends a row to the separated file writer denoted by the writerId.
+     *  @param rowBean the SeparatedFileBean holding the data
      *  @param writerId the id of the writer with which to store the formatted text */
     @Override
     public void writeRow(SeparatedFileBeanData rowBean, Object writerId) {
@@ -79,7 +77,7 @@ public class WebdecsSeparatedContent implements SeparatedContent {
         }
     }
 
-    /** Closes the writer and returns its content as string. 
+    /** Closes the writer and returns its content as string.
      *  @param writerId the id of the writer to close */
     @Override
     public void closeWriter(Object writerId) {
@@ -87,7 +85,7 @@ public class WebdecsSeparatedContent implements SeparatedContent {
         IOUtil.close(writer);
     }
 
-    /** Creates a reader object for reading JavaBeans. 
+    /** Creates a reader object for reading JavaBeans.
      *  @param source the source reader that provides the separated file's character data
      *  @return the id of the writer */
     @Override
@@ -108,19 +106,15 @@ public class WebdecsSeparatedContent implements SeparatedContent {
         return cells[0];
     }
 
-    /** Reads a separated file row and provides it as Java object. 
-     *  @param readerId the id of the reader 
+    /** Reads a separated file row and provides it as Java object.
+     *  @param readerId the id of the reader
      *  @return the id of the new reader */
     @Override
     public SeparatedFileBeanData readRow(Object readerId) {
-        try {
-            return getReader(readerId, true).readRow();
-        } catch (IOException e) {
-            throw new TechnicalException("Error reading bean from reader #" + readerId, e);
-        }
+        return getReader(readerId, true).readRow();
     }
 
-    /** Closes a reader. 
+    /** Closes a reader.
      *  @param readerId the id of the reader to close */
     @Override
     public void closeReader(Object readerId) {
@@ -130,7 +124,7 @@ public class WebdecsSeparatedContent implements SeparatedContent {
     // private helper methods --------------------------------------------------
 
     /** @return the writer with the provided writerId
-     *  @throws AutomationException if required is <code>true</code>, 
+     *  @throws AutomationException if required is <code>true</code>,
      *  but no writer with the provided writerId was found */
     private SeparatedFileWriter getWriter(Object writerId, boolean required) {
         SeparatedFileWriter writer = writers.get(writerId);
@@ -141,7 +135,7 @@ public class WebdecsSeparatedContent implements SeparatedContent {
     }
 
     /** @return the writer with the provided readerId
-     *  @throws AutomationException if required is <code>true</code>, 
+     *  @throws AutomationException if required is <code>true</code>,
      *  but no reader with the provided readerId was found */
     private SeparatedFileReader<?> getReader(Object readerId, boolean required) {
         SeparatedFileReader<?> reader = readers.get(readerId);

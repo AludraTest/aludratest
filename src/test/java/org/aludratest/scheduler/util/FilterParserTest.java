@@ -23,15 +23,12 @@ import static org.junit.Assert.fail;
 import java.text.ParseException;
 
 import org.aludratest.scheduler.TestClassFilter;
-import org.aludratest.scheduler.util.AndTestClassFilter;
-import org.aludratest.scheduler.util.AttributeBasedTestClassFilter;
-import org.aludratest.scheduler.util.FilterParser;
-import org.aludratest.scheduler.util.OrTestClassFilter;
 import org.junit.Test;
 
 /** Tests FilterParser class.
  * 
  * @author falbrech */
+@SuppressWarnings("javadoc")
 public class FilterParserTest {
 
     /** Tests the parser with a valid filter.

@@ -26,9 +26,9 @@ public class AludraLocalFileSystem extends LocalFileSystem {
 
     private final String rootFile;
 
-    /** @param rootName
-     * @param rootFile
-     * @param fileSystemOptions */
+    /** @param rootName the name of the root element
+     * @param rootFile the file path of the root element
+     * @param fileSystemOptions the file system options to apply */
     public AludraLocalFileSystem(LocalFileName rootName, String rootFile, FileSystemOptions fileSystemOptions) {
         super(rootName, rootFile, fileSystemOptions);
         this.rootFile = rootFile;

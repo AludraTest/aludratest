@@ -65,7 +65,8 @@ public class AludraTestJUnitSuite extends Runner implements RunnerListener {
     private Map<RunnerLeaf, Throwable> leafErrors = new HashMap<RunnerLeaf, Throwable>();
 
     /** Standard JUnit {@link Runner} constructor which takes the JUnit test class as argument.
-     * @param testClass JUnit test class. */
+     * @param testClass JUnit test class.
+     * @throws InitializationError if the test suite is empty */
     public AludraTestJUnitSuite(Class<?> testClass) throws InitializationError {
         aludraTest = AludraTest.startFramework();
         this.testClass = testClass;

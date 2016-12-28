@@ -21,17 +21,17 @@ import java.util.List;
 
 import org.aludratest.scheduler.node.RunnerNode;
 
-/** 
- * Multi-Step {@link RunnerNode} {@link Comparator} which 
- * uses a list of RunnerNode Comparators. 
- * This allows a fallback-style for ordering test for execution: 
- * Any two tests are first compared by the first comparator 
- * in the list. If the comparator signals 'greater' (positive 
- * value) or less (negative value), that result is used for 
- * ordering. For any zero results, the next comparator in the 
- * list is used until one returns a non-zero value or the 
- * last comparator has been queried. The default setting uses 
- * the {@link NoComparator} which is just a place holder for 
+/**
+ * Multi-Step {@link RunnerNode} {@link Comparator} which
+ * uses a list of RunnerNode Comparators.
+ * This allows a fallback-style for ordering test for execution:
+ * Any two tests are first compared by the first comparator
+ * in the list. If the comparator signals 'greater' (positive
+ * value) or less (negative value), that result is used for
+ * ordering. For any zero results, the next comparator in the
+ * list is used until one returns a non-zero value or the
+ * last comparator has been queried. The default setting uses
+ * the {@link NoComparator} which is just a place holder for
  * signaling that no deterministic ordering shall be applied.
  * @author Volker Bergmann
  */
@@ -42,13 +42,13 @@ public class FallbackComparator implements Comparator<RunnerNode>, Serializable 
     /** The list of fallback-comparators. */
     private List<Comparator<RunnerNode>> steps;
 
-    /** Constructor requiring the list of fallback-comparators to use. 
-     *  @param steps */
+    /** Constructor requiring the list of fallback-comparators to use.
+     * @param steps the comparison steps to apply */
     public FallbackComparator(List<Comparator<RunnerNode>> steps) {
         this.steps = steps;
     }
 
-    /** Returns the list of fallback-comparators. 
+    /** Returns the list of fallback-comparators.
      *  @return the {@link #steps} */
     public List<Comparator<RunnerNode>> getSteps() {
         return steps;

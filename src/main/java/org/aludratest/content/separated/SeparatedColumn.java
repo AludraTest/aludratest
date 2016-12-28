@@ -24,17 +24,17 @@ import org.aludratest.content.flat.FlatFileColumn;
 import org.aludratest.content.separated.data.SeparatedFileBeanData;
 
 /**
- * Assigns a separated-file coöumn index to an attribute of a {@link SeparatedFileBeanData} class. 
+ * Assigns a separated-file coöumn index to an attribute of a {@link SeparatedFileBeanData} class.
  * @author Volker Bergmann
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD })
 public @interface SeparatedColumn {
 
-    /** The 1-based  column index of the flat file column */
+    /** @return The 1-based column index of the flat file column */
     int columnIndex();
 
-    /** The format description of the column, as described in the class Javadoc: {@link FlatFileColumn} */
+    /** @return The format description of the column, as described in the class Javadoc: {@link FlatFileColumn} */
     String format() default "";
 
 }

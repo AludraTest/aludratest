@@ -37,8 +37,8 @@ public class InvocationData extends AbstractGitData {
     }
 
     /** Constructor with full definition of process name and arguments.
-     * @param processName
-     * @param args */
+     * @param processName the name of the process
+     * @param args the process arguments */
     public InvocationData(String processName, String... args) {
         setProcessName(processName);
         setArgs(CollectionUtil.toList(args));

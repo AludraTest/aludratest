@@ -34,7 +34,7 @@ public class MemoryTestLog implements TestLogWriter {
 
     private TestSuiteLog rootSuite;
 
-    /** @deprecated */
+    /** @deprecated Don't use the singleton instance any longer */
     @Deprecated
     public static MemoryTestLog instance;
 

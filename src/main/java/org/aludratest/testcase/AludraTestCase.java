@@ -39,8 +39,9 @@ public class AludraTestCase {
     }
 
     /** Provides a service with the given serviceId.
-     *  @param serviceId the {@link ComponentId} of the requested service
-     *  @return the service configured for the given serviceId */
+     * @param <T> the type of the service to get
+     * @param serviceId the {@link ComponentId} of the requested service
+     * @return the service configured for the given serviceId */
     public <T extends AludraService> T getService(ComponentId<T> serviceId) {
         return context.getService(serviceId);
     }

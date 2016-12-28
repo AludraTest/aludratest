@@ -23,7 +23,7 @@ public interface Checkbox extends Element<Checkbox> {
 
     /** Selects or deselects a Checkbox due to overgiven String If the text is null or marked as null the operation is not
      * executed.
-     * @param selectString */
+     * @param selectString 'true' or 'false' */
     public void select(String selectString);
 
     /** Selects the checkbox. */
