@@ -66,7 +66,7 @@ public class AludraLocalFile extends AbstractFileObject implements FileObject {
             // LocalFileName localFileName = (LocalFileName) getName();
             String fileName = rootFile + getName().getPathDecoded();
             // fileName = UriParser.decode(fileName);
-            file = new File(fileName);
+            file = new File(fileName); // NOSONAR
         }
     }
 
@@ -169,7 +169,7 @@ public class AludraLocalFile extends AbstractFileObject implements FileObject {
     /** Creates an output stream to write the file content to. */
     @Override
     protected OutputStream doGetOutputStream(boolean bAppend) throws Exception {
-        return new FileOutputStream(file.getPath(), bAppend);
+        return new FileOutputStream(file.getPath(), bAppend); // NOSONAR
     }
 
     /** Returns the size of the file content (in bytes). */

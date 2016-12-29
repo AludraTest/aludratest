@@ -115,7 +115,7 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
     public void writeInterchange(String elementType, String elementName, Interchange interchange, String filePath, boolean overwrite) {
         memorizeInterchanges(null, null, null);
         String content = toString(interchange, false);
-        fileService.perform().writeBinaryFile(filePath, content.getBytes(), overwrite); // ENHANCE which encoding to use?
+        fileService.perform().writeBinaryFile(filePath, content.getBytes(), overwrite); // TODO which encoding to use?
     }
 
     @Override

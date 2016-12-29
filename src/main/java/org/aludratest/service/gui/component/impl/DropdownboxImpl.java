@@ -88,12 +88,14 @@ public class DropdownboxImpl extends AbstractElement<Dropdownbox> implements Dro
         verify().assertDropDownEntrySelectionMatches(elementType, elementName, getLocator(), validator);
     }
 
+    /** @deprecated Use {@link #assertHasValues(boolean, String...)} */
     @Override
     @Deprecated
     public void assertHasValues(String... values) {
         assertHasValues(true, values);
     }
 
+    /** @deprecated Use {@link #assertHasLabels(boolean, String...)} */
     @Override
     @Deprecated
     public void assertHasLabels(String... labels) {
@@ -133,6 +135,7 @@ public class DropdownboxImpl extends AbstractElement<Dropdownbox> implements Dro
         return check().containsLabels(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(labels));
     }
 
+    /** @deprecated Use {@link #checkHasLabels(boolean, String...)} */
     @Override
     @Deprecated
     public boolean checkEqualsLabels(String... labels) {

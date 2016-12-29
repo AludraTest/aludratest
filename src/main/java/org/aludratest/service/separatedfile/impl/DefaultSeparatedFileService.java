@@ -39,6 +39,7 @@ public class DefaultSeparatedFileService extends AbstractAludraService implement
 
     /** Public default constructor. */
     public DefaultSeparatedFileService() {
+        // empty, since members will be initialized in the initService() method
     }
 
     @Override
