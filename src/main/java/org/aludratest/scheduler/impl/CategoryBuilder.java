@@ -103,7 +103,7 @@ public class CategoryBuilder {
                 }
             }
             if (!found) {
-                // TODO here would be the place to select execution mode based on whatever information
+                // TODO FAL here would be the place to select execution mode based on whatever information
                 group = tree.createGroup(seg, ExecutionMode.PARALLEL, group);
             }
         }

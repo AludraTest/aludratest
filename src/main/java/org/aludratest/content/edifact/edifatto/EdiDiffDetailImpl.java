@@ -19,7 +19,7 @@ import org.aludratest.content.edifact.EdiDiffDetail;
 import org.aludratest.content.edifact.EdiDiffDetailType;
 import org.databene.formats.compare.DiffDetail;
 
-/** TODO javadoc
+/** Default implementation of the {@link EdiDiffDetail} interface.
  * @author Volker Bergmann */
 public class EdiDiffDetailImpl extends DiffDetail implements EdiDiffDetail {
 
