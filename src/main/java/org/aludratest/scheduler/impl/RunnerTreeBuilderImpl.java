@@ -210,6 +210,9 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             Matcher m = classPattern.matcher(je.getName());
             if (m.matches()) {
                 String pkgName = m.group(1).replace('/', '.');
+				if (pkgName.endsWith(".") {
+					pkgName = pkgName.substring(0, pkgName.length() - 1);
+				}
                 String className = m.group(2);
                 if (!"".equals(pkgName)) {
                     className = pkgName + "." + className;
