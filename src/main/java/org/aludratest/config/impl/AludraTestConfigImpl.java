@@ -50,6 +50,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
 
     private boolean stopTestCaseOnVerificationException;
 
+    private boolean aludratestLoggingDisabled;
+
     /** property for testing */
     private boolean stopTestCaseOnOtherException;
 
@@ -121,6 +123,11 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
     }
 
     @Override
+    public boolean isAludratestLoggingDisabled() {
+        return aludratestLoggingDisabled;
+    }
+
+    @Override
     public boolean isDebugAttachmentsOnFrameworkException() {
         return debugAttachmentsOnFrameworkException;
     }
@@ -186,6 +193,7 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         this.stopTestCaseOnInteractionException = config.getBooleanValue(STOP_ON_INTERACTION_PROP, true);
         this.stopTestCaseOnVerificationException = config.getBooleanValue(STOP_ON_VERIFICATION_PROP, true);
         this.stopTestCaseOnOtherException = config.getBooleanValue("stop.testcase.on.other.exception.TEST", false);
+        this.aludratestLoggingDisabled = config.getBooleanValue(LOGGING_DISABLED_PROP, false);
 
         // xls root path
         this.xlsRootPath = config.getStringValue(XLS_ROOT_PROP);

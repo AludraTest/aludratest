@@ -84,8 +84,14 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
     public void startingTestProcess(RunnerTree runnerTree) {
         if (engine == null) {
             framework = new Log4TestingAludraTestFramework();
-            engine = logConfiguration != null ? Log4TestingEngine.newEngine(logConfiguration) : Log4TestingEngine.newEngine();
-            engine.applyTo(framework);
+            engine = logConfiguration != null
+                    ? (configuration.isAludratestLoggingDisabled()
+                            ? Log4TestingEngine.newEngine(new XmlBasedEmptyLog4TestingConfiguration())
+                            : Log4TestingEngine.newEngine(logConfiguration))
+                    : (configuration.isAludratestLoggingDisabled()
+                            ? Log4TestingEngine.newEngine(new XmlBasedEmptyLog4TestingConfiguration())
+                            : Log4TestingEngine.newEngine());
+                    engine.applyTo(framework);
         }
 
         rootSuite = new TestSuiteLogImpl(runnerTree.getRoot().getName());
@@ -306,7 +312,7 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
     }
 
     private static TestStatus convertStatus(org.aludratest.testcase.TestStatus status) { // NOSONAR number of returns is
-                                                                                         // appropriate
+        // appropriate
         switch (status) {
             case FAILED:
                 return TestStatus.FAILED;
