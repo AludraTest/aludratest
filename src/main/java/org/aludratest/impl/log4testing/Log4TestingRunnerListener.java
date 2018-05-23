@@ -82,12 +82,13 @@ public class Log4TestingRunnerListener extends AbstractRunnerListener {
 
     @Override
     public void startingTestProcess(RunnerTree runnerTree) {
+        Log4TestingConfiguration logConfig = logConfiguration;
         if (engine == null) {
             framework = new Log4TestingAludraTestFramework();
             if (configuration.isLoggingDisabled()) {
-                logConfiguration = new XmlBasedEmptyLog4TestingConfiguration();
+                logConfig = new XmlBasedEmptyLog4TestingConfiguration();
             }
-            engine = logConfiguration != null ? Log4TestingEngine.newEngine(logConfiguration) : Log4TestingEngine.newEngine();
+            engine = logConfig != null ? Log4TestingEngine.newEngine(logConfig) : Log4TestingEngine.newEngine();
             engine.applyTo(framework);
         }
 
