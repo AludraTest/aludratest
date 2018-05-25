@@ -26,16 +26,11 @@ import org.junit.Test;
 /** @author vdorai */
 public class LoggingDisabledTest extends AbstractAludraIntegrationTest {
 
-    @Override
-    public void prepareTestCase() throws Exception {
-        System.setProperty("ALUDRATEST_CONFIG/aludratest/logging.disabled", Boolean.TRUE.toString());
-        super.prepareTestCase();
-    }
 
     /** logging disabled test */
     @Test
     public void testLoggingDisabled() {
-
+        config.setLoggingDisabled(Boolean.TRUE);
         aludra.run(SimpleTest.class);
 
         // no log should have been written to memory at all
