@@ -17,7 +17,6 @@ package org.aludratest.config;
 
 import static org.junit.Assert.assertNull;
 
-import org.aludratest.config.impl.AludraTestingTestConfigImpl;
 import org.aludratest.service.AbstractAludraIntegrationTest;
 import org.aludratest.service.ComponentId;
 import org.aludratest.service.file.FileService;
@@ -30,10 +29,11 @@ public class LoggingDisabledTest extends AbstractAludraIntegrationTest {
     @Override
     public void prepareTestCase() throws Exception {
         super.prepareTestCase();
-        AludraTestingTestConfigImpl.getTestInstance().setLoggingDisabled(Boolean.TRUE);
+        //set property dynamically.
+        config.setLoggingDisabled(Boolean.TRUE);
     }
 
-    /** set property dynamically. */
+    /** logging disabled test */
     @Test
     public void testLoggingDisabled() {
 
