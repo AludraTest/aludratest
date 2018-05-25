@@ -27,10 +27,15 @@ import org.junit.Test;
 /** @author vdorai */
 public class LoggingDisabledTest extends AbstractAludraIntegrationTest {
 
+    @Override
+    public void prepareTestCase() throws Exception {
+        super.prepareTestCase();
+        AludraTestingTestConfigImpl.getTestInstance().setLoggingDisabled(Boolean.TRUE);
+    }
+
     /** set property dynamically. */
     @Test
     public void testLoggingDisabled() {
-        AludraTestingTestConfigImpl.getTestInstance().setLoggingDisabled(Boolean.TRUE);
 
         aludra.run(SimpleTest.class);
 
