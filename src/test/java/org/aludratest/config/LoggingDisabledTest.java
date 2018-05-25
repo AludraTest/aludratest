@@ -28,9 +28,8 @@ public class LoggingDisabledTest extends AbstractAludraIntegrationTest {
 
     @Override
     public void prepareTestCase() throws Exception {
+        System.setProperty("ALUDRATEST_CONFIG/aludratest/logging.disabled", Boolean.TRUE.toString());
         super.prepareTestCase();
-        //set property dynamically.
-        config.setLoggingDisabled(Boolean.TRUE);
     }
 
     /** logging disabled test */
