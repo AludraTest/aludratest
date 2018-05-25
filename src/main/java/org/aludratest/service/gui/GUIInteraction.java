@@ -178,10 +178,13 @@ public interface GUIInteraction extends Interaction {
      * @param locator of the element which shall get the focus */
     void focus(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator);
 
-    /** Presses a key on the keyboard. Available key codes can be found in {@link java.awt.event.KeyEvent}.
-     * @param keycode is the key which shall be pressed.
-     * @see java.awt.event.KeyEvent */
+    /** Presses a key on the keyboard. Available key codes depend on service implementation.
+     * @param keycode is the key which shall be pressed. */
     void keyPress(int keycode);
+
+    /** Presses keys on the keyboard. Available key codes depend on service implementation.
+     * @param keysToPress is the key which shall be pressed. */
+    void keysPress(CharSequence... keysToPress);
 
     /** Closes all windows identified by their name. That means, that if there are several windows with same name all will be
      * closed. This method is not waiting for a window to open.
