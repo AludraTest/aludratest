@@ -17,7 +17,6 @@ package org.aludratest.config;
 
 import static org.junit.Assert.assertNull;
 
-import org.aludratest.config.impl.AludraTestingTestConfigImpl;
 import org.aludratest.service.AbstractAludraIntegrationTest;
 import org.aludratest.service.ComponentId;
 import org.aludratest.service.file.FileService;
@@ -27,11 +26,11 @@ import org.junit.Test;
 /** @author vdorai */
 public class LoggingDisabledTest extends AbstractAludraIntegrationTest {
 
-    /** set property dynamically. */
+
+    /** logging disabled test */
     @Test
     public void testLoggingDisabled() {
-        AludraTestingTestConfigImpl.getTestInstance().setLoggingDisabled(Boolean.TRUE);
-
+        config.setLoggingDisabled(Boolean.TRUE);
         aludra.run(SimpleTest.class);
 
         // no log should have been written to memory at all
