@@ -50,6 +50,7 @@ public abstract class AbstractAludraIntegrationTest {
 
     protected AludraTestingTestConfigImpl config;
 
+    @SuppressWarnings("deprecation")
     @Before
     public void prepareTestCase() throws Exception {
         System.setProperty("ALUDRATEST_CONFIG/aludraservice/" + AludraTestConfig.class.getName(),
@@ -79,6 +80,7 @@ public abstract class AbstractAludraIntegrationTest {
         registry.addRunnerListener(listener);
 
         this.config = (AludraTestingTestConfigImpl) config;
+        MemoryTestLog.instance = null;
     }
 
     @After
