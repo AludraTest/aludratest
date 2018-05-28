@@ -26,6 +26,7 @@ package org.aludratest.config;
     @ConfigProperty(name = AludraTestConfig.NUMBER_OF_THREADS_PROP, type = int.class, description = "The number of threads to use for parallel test case execution", defaultValue = "1"),
     @ConfigProperty(name = AludraTestConfig.STOP_ON_VERIFICATION_PROP, type = boolean.class, description = "If set to true, test execution stops if an exception is thrown on verfication actions.", defaultValue = "true"),
     @ConfigProperty(name = AludraTestConfig.STOP_ON_INTERACTION_PROP, type = boolean.class, description = "If set to true, test execution stops if an exception is thrown on interaction actions.", defaultValue = "true"),
+        @ConfigProperty(name = AludraTestConfig.LOGGING_DISABLED_PROP, type = boolean.class, description = "If set to true, test logging is disabled.", defaultValue = "false"),
     @ConfigProperty(name = AludraTestConfig.XLS_ROOT_PROP, type = String.class, description = "The root directory containing Excel files with test data", defaultValue = "./src/main/resources/testdata"),
     @ConfigProperty(name = AludraTestConfig.DEFAULT_LOCALE_PROP, type = String.class, description = "The locale to use as default locale. If not specified, the system default locale is used."),
     @ConfigProperty(name = AludraTestConfig.CONFIG_TAB_REQUIRED_PROP, type = boolean.class, description = "If set to true, a configuration tab is required in Excel files, and its absence will cause an exception.", defaultValue = "false"),
@@ -46,6 +47,9 @@ public interface AludraTestConfig extends Configurable {
 
     /** Configuration property name. */
     public static final String STOP_ON_INTERACTION_PROP = "stop.testcase.on.interaction.exception";
+
+    /** Configuration property name. */
+    public static final String LOGGING_DISABLED_PROP = "logging.disabled";
 
     /** Configuration property name. */
     public static final String XLS_ROOT_PROP = "javatest.xls.root";
@@ -87,6 +91,9 @@ public interface AludraTestConfig extends Configurable {
 
     /** @return whether to stop test step execution on exceptions in a {@link org.aludratest.service.Verification} */
     public boolean isStopTestCaseOnVerificationException();
+
+    /** @return whether to stop test logging */
+    public boolean isLoggingDisabled();
 
     /** @return whether to stop test step execution on exceptions in a location other than {@link org.aludratest.service.Interaction}
      *         or {@link org.aludratest.service.Verification} */
