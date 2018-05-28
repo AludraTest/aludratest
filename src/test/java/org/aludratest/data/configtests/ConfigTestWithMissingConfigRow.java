@@ -19,11 +19,9 @@ import org.aludratest.data.PersonBean;
 import org.aludratest.testcase.Test;
 import org.aludratest.testcase.data.Source;
 
-/**
- * Tests the {@link TestConfigInfoHelper} with a test case 
- * that uses an Excel sheet with a missing config row.
- * @author Volker Bergmann
- */
+/** Tests the {@link org.aludratest.testcase.data.impl.TestConfigInfoHelper} with a test case that uses an Excel sheet with a
+ * missing config row.
+ * @author Volker Bergmann */
 @SuppressWarnings("javadoc")
 public class ConfigTestWithMissingConfigRow extends AbstractConfigTest {
 

@@ -40,8 +40,9 @@ public abstract class AbstractSchedulerTest extends LocalTestCase {
         Log.reset();
     }
 
-    /** Parses the given test class and
-     *  executes its tests with the given pool size. */
+    /** Parses the given test class and executes its tests with the given pool size.
+     * @param suiteClass testSuiteClass
+     * @param poolSize executes the tests with given pool size. */
     protected void executeTests(Class<?> suiteClass, int poolSize) {
         System.setProperty("ALUDRATEST_CONFIG/aludratest/number.of.threads", "" + poolSize);
         AludraTest aludraTest = AludraTest.startFramework();
@@ -59,20 +60,17 @@ public abstract class AbstractSchedulerTest extends LocalTestCase {
         }
     }
 
-    /** Asserts the given test invocation count.
-     *  This assumes that each test invocation
-     *  causes exactly one {@link Log} entry */
+    /** Asserts the given test invocation count. This assumes that each test invocation causes exactly one {@link Log} entry.
+     * @param count invocation count */
     protected void assertInvocationCount(int count) {
         List<Log.Entry> entries = Log.getEntries();
         System.out.println(entries);
         assertEquals(count, entries.size());
     }
 
-    /** Asserts sequential execution of the given tests.
-     *  As a precondition, each test must exhibit an
-     *  execution time of 500 milliseconds.
-     *  The assertion then asserts that the time between
-     *  each test invocation is at least 470 milliseconds. */
+    /** Asserts sequential execution of the given tests. As a precondition, each test must exhibit an execution time of 500
+     * milliseconds. The assertion then asserts that the time between each test invocation is at least 470 milliseconds.
+     * @param actions String array */
     protected void assertSequentialExecution(String... actions) {
         Log.Entry[] invocations = logEntries(actions);
         long latestInvocation = invocations[0].millis;
@@ -90,11 +88,9 @@ public abstract class AbstractSchedulerTest extends LocalTestCase {
         }
     }
 
-    /** Asserts parallel execution of the given tests.
-     *  As a precondition, each test must exhibit an
-     *  execution time of 500 milliseconds.
-     *  The assertion then asserts that the time between
-     *  each test invocation is at most 300 milliseconds. */
+    /** Asserts parallel execution of the given tests. As a precondition, each test must exhibit an execution time of 500
+     * milliseconds. The assertion then asserts that the time between each test invocation is at most 300 milliseconds.
+     * @param actions String array */
     protected void assertParallelExecution(String... actions) {
         Log.Entry[] invocations = logEntries(actions);
         long latestInvocation = invocations[0].millis;
@@ -107,7 +103,9 @@ public abstract class AbstractSchedulerTest extends LocalTestCase {
         }
     }
 
-    /** Retrieves the {@link Log} entries for all given actions. */
+    /** Retrieves the {@link Log} entries for all given actions.
+     * @param actions String array
+     * @return Wrapper on log message with TimeStamp */
     protected Log.Entry[] logEntries(String... actions) {
         Log.Entry[] invocations = new Log.Entry[actions.length];
         for (int i = 0; i < actions.length; i++)

@@ -44,12 +44,9 @@ public class NowriteTest extends AbstractAludraServiceTest {
 
     private FileService service;
 
-    /**
-     * Invoked before each test method invocation, 
-     * copies the directory template from src/test/resources to target/ 
-     * and initializes the {@link #service} attribute.
-     * @throws Exception
-     */
+    /** Invoked before each test method invocation, copies the directory template from src/test/resources to target/ and
+     * initializes the {@link #service} attribute.
+     * @throws Exception File related exception. */
     @Before
     public void prepareFilesAndService() throws Exception {
         FileUtil.deleteDirectoryIfExists(ROOT);

@@ -17,7 +17,6 @@ package org.aludratest.service.flatfile;
 
 import org.aludratest.content.flat.FlatFileColumn;
 import org.aludratest.content.flat.data.FlatFileBeanData;
-import org.aludratest.service.flatfile.FlatFileService;
 
 /**
  * FlatFileBean for testing the {@link FlatFileService}
@@ -49,7 +48,10 @@ public class FFAddress extends FlatFileBeanData {
         this(null, null, 0);
     }
 
-    /** Constructor initializing each attribute. */
+    /** Constructor initializing each attribute.
+     * @param street String
+     * @param city String
+     * @param num double */
     public FFAddress(String street, String city, double num) {
         this.rowType = 'A';
         this.street = street;

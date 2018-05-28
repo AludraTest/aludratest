@@ -18,7 +18,6 @@ package org.aludratest.service.flatfile;
 import java.util.Date;
 
 import org.aludratest.content.flat.data.FlatFileBeanData;
-import org.aludratest.service.flatfile.FlatFileService;
 
 /**
  * Data class for testing the {@link FlatFileService}
@@ -44,7 +43,11 @@ public class FFPerson extends FlatFileBeanData {
         this(null, 0, null, null);
     }
 
-    /** Constructor with complete attribute initialization. */
+    /** Constructor with complete attribute initialization.
+     * @param name String
+     * @param age integer
+     * @param birthDate date
+     * @param pet FFPet */
     public FFPerson(String name, int age, Date birthDate, FFPet pet) {
         this.name = name;
         this.age = age;

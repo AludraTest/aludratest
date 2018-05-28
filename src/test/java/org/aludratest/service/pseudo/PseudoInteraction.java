@@ -29,18 +29,29 @@ import org.databene.commons.ObjectNotFoundException;
 @SuppressWarnings("javadoc")
 public interface PseudoInteraction extends Interaction {
 
-    /** A service that is expected to succeed. */
+    /** A service that is expected to succeed.
+     * @param elementType String
+     * @param elementName String
+     * @param locator String
+     * @return String */
     String succeed(
             @ElementType String elementType,
             @ElementName String elementName,
             @TechnicalLocator String locator);
 
-    /** A service that is expected to succeed and of which the result shall be logged in an attachment. */
+    /** A service that is expected to succeed and of which the result shall be logged in an attachment.
+     * @param elementType String
+     * @param elementName String
+     * @param locator String
+     * @return String */
     @AttachResult("Result")
     String succeedWithAttachments(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator String locator);
 
-    /** A service which is expected to raise an {@link ObjectNotFoundException}. */
+    /** A service which is expected to raise an {@link ObjectNotFoundException}.
+     * @param elementType String
+     * @param elementName String
+     * @param locator String */
     void fail(
             @ElementType String elementType,
             @ElementName String elementName,
