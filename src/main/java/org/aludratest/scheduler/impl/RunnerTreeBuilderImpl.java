@@ -127,7 +127,7 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
             }
             catch (IOException e) {
                 throw new PreconditionFailedException("Could not search JAR file " + searchRoot.getAbsolutePath()
-                        + " for test classes", e);
+                + " for test classes", e);
             }
         }
         else {
@@ -221,9 +221,9 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                 Matcher m = classPattern.matcher(je.getName());
                 if (m.matches()) {
                     String pkgName = m.group(1).replace('/', '.');
-					if (pkgName.endsWith(".")) {
-						pkgName = pkgName.substring(0, pkgName.length() - 1);
-					}
+                    if (pkgName.endsWith(".")) {
+                        pkgName = pkgName.substring(0, pkgName.length() - 1);
+                    }
                     String className = m.group(2);
                     if (!pkgName.isEmpty()) {
                         className = pkgName + "." + className; // NOSONAR
@@ -433,12 +433,13 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
                         createTestRunnerForMethodInvocation(method, data, methodGroup, tree);
                     }
                     else {
-                        createTestRunnerForErrorReporting(method, data.getException(), methodGroup, tree);
+                        createTestRunnerForErrorReporting(method, data.getException(), methodGroup, tree,
+                                data.getExternalTestId());
                     }
                 }
             }
             catch (Exception e) {
-                createTestRunnerForErrorReporting(method, e, methodGroup, tree);
+                createTestRunnerForErrorReporting(method, e, methodGroup, tree, null);
             }
         }
     }
@@ -452,25 +453,28 @@ public class RunnerTreeBuilderImpl implements RunnerTreeBuilder {
         AludraTestCase testObject = BeanUtil.newInstance((Class<? extends AludraTestCase>) method.getDeclaringClass());
         TestInvoker invoker = new AludraTestMethodInvoker(testObject, method, data, aludraConfig.isDeferredScriptEvaluation());
         createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, data.isIgnored(), data.getIgnoredReason(),
-                false);
+                false, data.getExternalTestId());
     }
 
     /** Creates a test runner for error reporting.
      * @param e The exception that occurred. */
-    private void createTestRunnerForErrorReporting(Method method, Throwable e, RunnerGroup methodGroup, RunnerTree tree) {
+    private void createTestRunnerForErrorReporting(Method method, Throwable e, RunnerGroup methodGroup, RunnerTree tree,
+            String externalTestId) {
         LOGGER.error("createTestRunnerForErrorReporting('{}', {}, {}, ...)", new Object[] { method, e, methodGroup });
         // create log4testing TestCase name
         String invocationTestCaseName = createMethodTestSuiteName(method.getDeclaringClass(), method) + "_error_"
                 + errorCount.incrementAndGet();
         // Create test object
         TestInvoker invoker = new ErrorReportingInvoker(method, e);
-        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, false, null, true);
+        createRunnerForTestInvoker(invoker, methodGroup, tree, invocationTestCaseName, false, null, true, externalTestId);
     }
 
     private void createRunnerForTestInvoker(TestInvoker invoker, RunnerGroup parentGroup, RunnerTree tree, String testCaseName,
-            boolean ignore, String ignoredReason, boolean error) {
+            boolean ignore, String ignoredReason, boolean error, String externalTestId) {
         RunnerLeaf leaf = tree.addLeaf(nextLeafId.incrementAndGet(), invoker, testCaseName, parentGroup);
-
+        if (null != externalTestId) {
+            leaf.setAttribute(CommonRunnerLeafAttributes.EXTERNAL_TEST_ID, externalTestId);
+        }
         if (ignore) {
             leaf.setAttribute(CommonRunnerLeafAttributes.IGNORE, Boolean.valueOf(ignore));
             if (ignoredReason != null) {

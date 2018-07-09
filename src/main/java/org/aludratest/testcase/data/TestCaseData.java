@@ -35,6 +35,8 @@ public final class TestCaseData {
 
     private String ignoredReason;
 
+    private String externalTestId;
+
     private Throwable exception;
 
     private TestDataSource dataSource;
@@ -94,11 +96,14 @@ public final class TestCaseData {
      *            parameters. Otherwise, it must have as many entries as the method has parameters.
      * @param ignored If <code>true</code>, marks this data set as ignored, i.e. this test case shall not be invoked (this
      *            behaviour can be disabled by Framework settings).
-     * @param ignoredReason A text describing why this data set has been marked as ignored. */
-    public TestCaseData(String id, String description, TestDataSource dataSource, boolean ignored, String ignoredReason) {
+     * @param ignoredReason A text describing why this data set has been marked as ignored.
+     * @param externalTestId testrail concrete testcase id */
+    public TestCaseData(String id, String description, TestDataSource dataSource, boolean ignored, String ignoredReason,
+            String externalTestId) {
         this(id, description, null, ignored);
         this.ignoredReason = ignoredReason;
         this.dataSource = dataSource;
+        this.externalTestId = externalTestId;
     }
 
     /** Constructs a new TestCaseData object, for a dataset which could not be loaded for a given reason.
@@ -159,6 +164,12 @@ public final class TestCaseData {
      * @return <code>null</code>, or an exception that describes why this dataset could not be loaded. */
     public Throwable getException() {
         return exception;
+    }
+
+    /** Returns testrail concrete testcase id
+     * @return A unique ID for this test case dataset. */
+    public String getExternalTestId() {
+        return externalTestId;
     }
 
     @Override
