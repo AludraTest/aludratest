@@ -15,6 +15,8 @@
  */
 package org.aludratest.service.gui.web;
 
+import java.util.Date;
+
 import org.aludratest.service.AttachResult;
 import org.aludratest.service.ElementName;
 import org.aludratest.service.ElementType;
@@ -61,7 +63,7 @@ public interface WebGUIInteraction extends GUIInteraction {
     void addCustomHttpHeaderCommand(String key, @ParamConverter(HttpHeaderFormat.class) String value);
 
     /** Switches to the given iframe element of the current web page in the current window, or switches back to default content.
-     * 
+     *
      * @param iframeLocator Locator which uniquely identifies the inner frame to switch to. Use <code>null</code> to switch back
      *            to default content. */
     void switchToIFrame(@TechnicalLocator GUIElementLocator iframeLocator);
@@ -78,14 +80,14 @@ public interface WebGUIInteraction extends GUIInteraction {
 
     /** Evaluates arbitrary XPath and outputs its result as String.
      * @param xpath XPath expression to be executed
-     * 
+     *
      * @return String containing XPath evaluation result */
     String evalXPathAsString(@TechnicalLocator String xpath);
 
     /** Clicks on an element and expects a download to start (e.g. a Download button or link). Downloads the file and returns it
      * binary contents, in an encoded form. <br>
      * If no download starts within the given task completion timeout, a <code>FunctionalFailure</code> is thrown. <br>
-     * 
+     *
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator to locate buttons, links or any other elements which react on mouse clicks.
@@ -101,10 +103,22 @@ public interface WebGUIInteraction extends GUIInteraction {
      * The framework may or may not be supported by the web GUI implementation. If it is not supported, an AutomationException is
      * thrown. <br>
      * If the maximum waiting time is reached without the Ajax operation being finished, a PerformanceException is thrown.
-     * 
+     *
      * @param frameworkName Name of the JavaScript framework to check, e.g. "jquery". Implementations should convert this
      *            parameter to lowercase before checking it, so case does not matter for the caller.
      * @param maxWaitTime Maximum time, in milliseconds, to wait for the AJAX operation to be finished. */
     void waitForAjaxOperationEnd(@TechnicalArgument String frameworkName, @TechnicalArgument int maxWaitTime);
 
+    /** Adds or creates a cookie.
+     * @param name cookie name
+     * @param value cookie value
+     * @param domain string
+     * @param path string
+     * @param expiry date */
+    void addCookie(@TechnicalLocator String name, @TechnicalArgument String value, @TechnicalArgument String domain,
+            @TechnicalArgument String path, @TechnicalArgument Date expiry);
+
+    /** Deletes a specific cookie.
+     * @param name cookie name */
+    void deleteCookieNamed(@TechnicalLocator String name);
 }
