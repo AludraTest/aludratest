@@ -15,8 +15,6 @@
  */
 package org.aludratest.service.gui.web;
 
-import java.util.Date;
-
 import org.aludratest.service.AttachResult;
 import org.aludratest.service.ElementName;
 import org.aludratest.service.ElementType;
@@ -112,11 +110,11 @@ public interface WebGUIInteraction extends GUIInteraction {
     /** Adds or creates a cookie.
      * @param name cookie name
      * @param value cookie value
-     * @param domain string
-     * @param path string
-     * @param expiry date */
+     * @param domain The domain the cookie is visible to.
+     * @param path The path the cookie is visible to. If left blank or set to null, will be set to "/".
+     * @param expiry maximum age of the cookie in seconds. */
     void addCookie(@TechnicalLocator String name, @TechnicalArgument String value, @TechnicalArgument String domain,
-            @TechnicalArgument String path, @TechnicalArgument Date expiry);
+            @TechnicalArgument String path, @TechnicalArgument int expiry);
 
     /** Deletes a specific cookie.
      * @param name cookie name */
