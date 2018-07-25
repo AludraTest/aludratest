@@ -29,6 +29,6 @@ public interface CommonRunnerLeafAttributes {
      * to data errors. */
     public static final String BUILDER_ERROR = "BUILDER_ERROR";
 
-    /** TestRail Id */
+    /** The Id in an External Test Management system referring to this test case. */
     public static final String EXTERNAL_TEST_ID = "EXTERNAL_TEST_ID";
 }

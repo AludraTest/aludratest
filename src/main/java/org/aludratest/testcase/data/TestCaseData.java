@@ -97,7 +97,7 @@ public final class TestCaseData {
      * @param ignored If <code>true</code>, marks this data set as ignored, i.e. this test case shall not be invoked (this
      *            behaviour can be disabled by Framework settings).
      * @param ignoredReason A text describing why this data set has been marked as ignored.
-     * @param externalTestId testrail concrete testcase id */
+     * @param externalTestId External Test Management test case id */
     public TestCaseData(String id, String description, TestDataSource dataSource, boolean ignored, String ignoredReason,
             String externalTestId) {
         this(id, description, null, ignored);
@@ -166,7 +166,7 @@ public final class TestCaseData {
         return exception;
     }
 
-    /** Returns testrail concrete testcase id
+    /** Returns External Test Management test case id.
      * @return A unique ID for this test case dataset. */
     public String getExternalTestId() {
         return externalTestId;
