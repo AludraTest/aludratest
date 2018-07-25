@@ -165,11 +165,11 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                     }
                 };
                 if (ignored) {
-                    result.add(new TestCaseData(config.getName(), null, source, true, ignoredReason));
+                    result.add(new TestCaseData(config.getName(), null, source, true, ignoredReason, config.getExternalTestId()));
                 }
                 else {
                     result.add(new TestCaseData(config.getName(), null, source, config.isIgnored(),
-                            config.isIgnored() ? config.getIgnoredReason() : null));
+                            config.isIgnored() ? config.getIgnoredReason() : null, config.getExternalTestId()));
                 }
             }
         }
@@ -492,7 +492,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
     }
 
     /** Evaluates the given data script, applying the given format pattern and locale, if specified.
-     * 
+     *
      * @param script Script to evaluate, e.g. <code>addDaysToNow(5)</code>
      * @param formatPattern Format pattern to apply. Can be a format accepted by <code>SimpleDateFormat</code> or
      *            <code>DecimalFormat</code>, depending on type of expression. If not specified, a type-specific default format is

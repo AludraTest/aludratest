@@ -35,6 +35,9 @@ public class TestDataConfiguration {
     @XmlAttribute(name = "ignoredReason")
     private String ignoredReason;
 
+    @XmlAttribute(name = "externalTestId")
+    private String externalTestId;
+
     @XmlElementWrapper(namespace = "http://aludratest.org/testdata", name = "segments")
     @XmlElement(namespace = "http://aludratest.org/testdata", name = "segment", type = TestDataConfigurationSegment.class)
     private List<TestDataConfigurationSegment> segments;
@@ -53,6 +56,10 @@ public class TestDataConfiguration {
 
     public String getIgnoredReason() {
         return ignoredReason;
+    }
+
+    public String getExternalTestId() {
+        return externalTestId;
     }
 
 }
