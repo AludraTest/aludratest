@@ -30,20 +30,20 @@ public class FetchData {
     }
 
     /** Fully parameterized constructor.
-     * @param repository */
+     * @param repository the repository to fetch */
     public FetchData(String repository) {
         setRepository(repository);
     }
 
     /** Returns the repository.
      * @return the repository */
-    public String getRepository() {
+    public final String getRepository() {
         return repository;
     }
 
     /** Sets the repository.
      * @param repository the repository to set */
-    public void setRepository(String repository) {
+    public final void setRepository(String repository) {
         this.repository = repository;
     }
 

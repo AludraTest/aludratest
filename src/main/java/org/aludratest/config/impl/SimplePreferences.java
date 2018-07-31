@@ -29,10 +29,15 @@ import org.aludratest.config.Preferences;
  */
 public class SimplePreferences extends AbstractPreferences implements MutablePreferences {
 
-    private Map<String, String> values = new HashMap<String, String>();
+    private Map<String, String> values;
 
     // lazy initialization as most modules will not have children
     private Map<String, SimplePreferences> children;
+
+    /** Default constructor. */
+    public SimplePreferences() {
+        this.values = new HashMap<String, String>();
+    }
 
     @Override
     public String internalGetStringValue(String key) {
@@ -76,27 +81,27 @@ public class SimplePreferences extends AbstractPreferences implements MutablePre
 
     @Override
     public void setValue(String key, boolean value) {
-        setValue(key, "" + value);
+        setValue(key, String.valueOf(value));
     }
 
     @Override
     public void setValue(String key, int value) {
-        setValue(key, "" + value);
+        setValue(key, String.valueOf(value));
     }
 
     @Override
     public void setValue(String key, double value) {
-        setValue(key, "" + value);
+        setValue(key, String.valueOf(value));
     }
 
     @Override
     public void setValue(String key, float value) {
-        setValue(key, "" + value);
+        setValue(key, String.valueOf(value));
     }
 
     @Override
     public void setValue(String key, char value) {
-        setValue(key, "" + value);
+        setValue(key, String.valueOf(value));
     }
 
     @Override

@@ -24,7 +24,7 @@ import org.aludratest.service.locator.Locator;
 public abstract class WindowLocator extends Locator {
 
     /** Constructor.
-     *  @param locator */
+     * @param locator the name of the window */
     public WindowLocator(String locator) {
         super(locator);
     }

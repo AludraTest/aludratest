@@ -35,13 +35,13 @@ public class VersionData extends AbstractGitData {
     // properties --------------------------------------------------------------
 
     /** @return the version number returned by git. */
-    public String getVersionNumber() {
+    public final String getVersionNumber() {
         return versionNumber;
     }
 
     /** Sets the version number information.
-     * @param versionNumber */
-    public void setVersionNumber(String versionNumber) {
+     * @param versionNumber the version number to set */
+    public final void setVersionNumber(String versionNumber) {
         this.versionNumber = versionNumber;
     }
 
@@ -54,10 +54,12 @@ public class VersionData extends AbstractGitData {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null || getClass() != obj.getClass())
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
+        }
         VersionData that = (VersionData) obj;
         return NullSafeComparator.equals(this.versionNumber, that.versionNumber);
     }

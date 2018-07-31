@@ -16,9 +16,10 @@
 package org.aludratest.service.file;
 
 import org.aludratest.dict.ActionWordLibrary;
+import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.TechnicalException;
+import org.aludratest.service.file.data.FileData;
 import org.aludratest.service.file.data.TargetFileData;
-import org.aludratest.service.file.util.FileUtil;
 import org.aludratest.util.DataUtil;
 import org.aludratest.util.data.StringData;
 import org.databene.commons.StringUtil;
@@ -43,7 +44,7 @@ public class File implements ActionWordLibrary<File> {
      * @param service the {@link FileService} that is responsible for handling the file
      */
     public File(String filePath, FileService service) {
-        FileUtil.verifyFilePath(filePath);
+        verifyFilePath(filePath);
         this.filePath = filePath;
         this.service = service;
         this.elementName = "File";
@@ -70,10 +71,10 @@ public class File implements ActionWordLibrary<File> {
         return child;
     }
 
-    /** 
+    /**
      * Moves the file to a new location and/or renames it.
      *  @param targetData the target data
-     *  @return a File object that represents the new File location 
+     *  @return a File object that represents the new File location
      */
     public File moveTo(TargetFileData targetData) {
         String targetPath = targetData.getFilePath();
@@ -87,7 +88,7 @@ public class File implements ActionWordLibrary<File> {
     /**
      * Copies the file to a new location.
      * @param targetData the target data
-     * @return a File object that represents the new File location 
+     * @return a File object that represents the new File location
      */
     public File copyTo(TargetFileData targetData) {
         String targetPath = targetData.getFilePath();
@@ -130,8 +131,8 @@ public class File implements ActionWordLibrary<File> {
     	result.setValue(content);
     	return this;
     }
-    
-    ** Tells if the file exists 
+
+     ** Tells if the file exists
      *  @param result a mutable boolean that receives the operation result
      *  @return a reference to the File object itself
      *
@@ -139,9 +140,9 @@ public class File implements ActionWordLibrary<File> {
     	result.setValue(service.check().exists(filePath));
     	return this;
     }
-    */
+     */
 
-    /** Deletes the file. 
+    /** Deletes the file.
      *  @return a reference to the File object itself
      */
     public File delete() {
@@ -149,7 +150,7 @@ public class File implements ActionWordLibrary<File> {
         return this;
     }
 
-    /** Waits until the file exists or a timeout occurs. 
+    /** Waits until the file exists or a timeout occurs.
      *  @return a reference to the File object itself
      */
     public File waitUntilExists() {
@@ -157,21 +158,34 @@ public class File implements ActionWordLibrary<File> {
         return this;
     }
 
-    /** Waits until the file does not exist or a timeout occurs. 
+    /** Waits until a child file exists or a timeout occurs.
+     * @param chooser the {@link FileChooser} that chooses the file from the directory
+     * @param resultFile returns a reference to the chosen file
+     * @return a reference to the File object itself */
+    public File waitUntilChildExists(FileChooser chooser, FileData resultFile) {
+        if (resultFile == null) {
+            throw new AutomationException("No resultFile data object provided");
+        }
+        String chosenPath = service.perform().waitUntilChildExists(filePath, chooser);
+        resultFile.setFile(new File(chosenPath, service));
+        return this;
+    }
+
+    /** Waits until the file does not exist or a timeout occurs.
      *  @return a reference to the File object itself */
     public File waitUntilNotExists() {
         service.perform().waitUntilNotExists(filePath);
         return this;
     }
 
-    /** Expects the file to be absent. 
+    /** Expects the file to be absent.
      *  @return a reference to the File object itself */
     public File assertAbsence() {
         service.verify().assertAbsence(filePath);
         return this;
     }
 
-    /** Expects the file to be present. 
+    /** Expects the file to be present.
      *  @return a reference to the File object itself */
     public File assertPresence() {
         service.verify().assertPresence(filePath);
@@ -190,6 +204,14 @@ public class File implements ActionWordLibrary<File> {
     public File assertDirectory() {
         service.verify().assertDirectory(this.filePath);
         return this;
+    }
+
+    /** Verifies a file path.
+     * @param filePath the file path to verify */
+    public static void verifyFilePath(String filePath) {
+        if (filePath == null || filePath.length() == 0) {
+            throw new AutomationException("File path is empty or null");
+        }
     }
 
 }

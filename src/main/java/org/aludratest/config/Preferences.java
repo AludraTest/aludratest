@@ -15,8 +15,7 @@
  */
 package org.aludratest.config;
 
-/**
- * The basic interface for configuration data. Instances of implementing classes are passed to {@link Configurable} objects for
+/** The basic interface for configuration data. Instances of implementing classes are passed to {@link Configurable} objects for
  * configuration purposes.<br>
  * The Configurable can invoke any methods declared in this interface to retrieve its required configuration, without having to
  * deal with its storage location, overwrite issues etc. <br>
@@ -30,20 +29,22 @@ package org.aludratest.config;
  * myfont/color=#ff0000
  * </pre>
  * 
+ * <p>
  * Then you could access e.g. the <code>myfont/size</code> property using
  * <code>prefs.<b>getChildNode("myfont")</b>.getFloatValue("size");</code> <br>
- * You could even pass the <code>prefs.getChildNode("myfont")</code> node to e.g. an internal configuration method. <br>
- * <br>
+ * You could even pass the <code>prefs.getChildNode("myfont")</code> node to e.g. an internal configuration method.
+ * </p>
  * 
+ * <p>
  * One Preferences instance is <b>always</b> only used for one Configurable type, so you will not be able to retrieve the
- * configuration of other Configurable classes via this interface. <br>
- * <br>
+ * configuration of other Configurable classes via this interface.
+ * </p>
  * 
+ * <p>
  * <b>This interface is not intended to be implemented outside AludraTest framework.</b>
+ * </p>
  * 
- * @author falbrech
- * 
- */
+ * @author falbrech */
 public interface Preferences {
 
     /**

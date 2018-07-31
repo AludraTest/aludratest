@@ -19,13 +19,13 @@ import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.databene.commons.Validator;
 
 /**
- * Parent class for AludraTest text validations: 
- * If the validation term is null, empty or equal to 
+ * Parent class for AludraTest text validations:
+ * If the validation term is null, empty or equal to
  * DataConfiguration.NULL_MARKER, it accepts any string.
- * Otherwise it examines the text to validate and, 
- * if null then returns false, otherwise forwards to 
- * the {@link #validImpl(String)} method to be implemented 
- * by child classes. 
+ * Otherwise it examines the text to validate and,
+ * if null then returns false, otherwise forwards to
+ * the {@link #validImpl(String)} method to be implemented
+ * by child classes.
  * @author Volker Bergmann
  */
 public abstract class AbstractNullStringValidator implements Validator<String> {
@@ -44,6 +44,7 @@ public abstract class AbstractNullStringValidator implements Validator<String> {
     }
 
     /** Implements the {@link Validator} interface. */
+    @Override
     public final boolean valid(String text) {
         if (this.validationTerm == null) {
             return true;
@@ -54,7 +55,9 @@ public abstract class AbstractNullStringValidator implements Validator<String> {
         }
     }
 
-    /** Delegate for string validation to be implemented by child classes. */
+    /** Delegate for string validation to be implemented by child classes.
+     * @param text the text to validate
+     * @return <code>true</code> if the text is valid, otherwise <code>false</code> */
     protected abstract boolean validImpl(String text);
 
     /** Creates a String representation of the validator. */

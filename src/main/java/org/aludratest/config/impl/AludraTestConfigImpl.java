@@ -29,10 +29,10 @@ import org.databene.commons.version.VersionInfo;
 
 /** Default implementation of the AludraTestConfig interface. Provides an accessor to the instance, if any, but this should only be
  * used by AludraTest internal components.
- * 
+ *
  * @author Volker Bergmann
  * @author falbrech */
-@Implementation({ AludraTestConfig.class })
+@Implementation(AludraTestConfig.class)
 public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
 
     private static final String DEFAULT_XLS_ROOT = "xls/javatest";
@@ -49,6 +49,8 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
     private boolean stopTestCaseOnInteractionException;
 
     private boolean stopTestCaseOnVerificationException;
+
+    private boolean loggingDisabled;
 
     /** property for testing */
     private boolean stopTestCaseOnOtherException;
@@ -68,6 +70,12 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
     private boolean debugAttachmentsOnFrameworkException;
 
     private String sorterName;
+
+    private boolean attachmentsFileBuffer;
+
+    private int scriptSecondsOffset;
+
+    private boolean deferredScriptEvaluation;
 
 
     // constructor -------------------------------------------------------------
@@ -91,6 +99,7 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
 
     @Override
     public void fillDefaults(MutablePreferences preferences) {
+        // no-op by default
     }
 
     @Override
@@ -111,6 +120,11 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
     @Override
     public boolean isStopTestCaseOnOtherException() {
         return stopTestCaseOnOtherException;
+    }
+
+    @Override
+    public boolean isLoggingDisabled() {
+        return loggingDisabled;
     }
 
     @Override
@@ -153,6 +167,21 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         return sorterName;
     }
 
+    @Override
+    public boolean isAttachmentsFileBuffer() {
+        return attachmentsFileBuffer;
+    }
+
+    @Override
+    public int getScriptSecondsOffset() {
+        return scriptSecondsOffset;
+    }
+
+    @Override
+    public boolean isDeferredScriptEvaluation() {
+        return deferredScriptEvaluation;
+    }
+
     // private helper methods --------------------------------------------------
 
     private void readAludraTestVersion() {
@@ -164,6 +193,7 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         this.stopTestCaseOnInteractionException = config.getBooleanValue(STOP_ON_INTERACTION_PROP, true);
         this.stopTestCaseOnVerificationException = config.getBooleanValue(STOP_ON_VERIFICATION_PROP, true);
         this.stopTestCaseOnOtherException = config.getBooleanValue("stop.testcase.on.other.exception.TEST", false);
+        this.loggingDisabled = config.getBooleanValue(LOGGING_DISABLED_PROP, false);
 
         // xls root path
         this.xlsRootPath = config.getStringValue(XLS_ROOT_PROP);
@@ -197,6 +227,12 @@ public class AludraTestConfigImpl implements AludraTestConfig, Configurable {
         this.debugAttachmentsOnFrameworkException = config.getBooleanValue(DEBUG_ON_FRAMEWORK_EXCEPTION_PROP, false);
 
         this.sorterName = config.getStringValue(RUNNER_TREE_SORTER_PROP, Alphabetic.class.getSimpleName());
+
+        this.attachmentsFileBuffer = config.getBooleanValue(ATTACHMENTS_AS_FILE_PROP, false);
+
+        this.scriptSecondsOffset = config.getIntValue(SECONDS_OFFSET_PROP, 0);
+
+        this.deferredScriptEvaluation = config.getBooleanValue(DEFERRED_EVALUATION_PROP, false);
     }
 
 }

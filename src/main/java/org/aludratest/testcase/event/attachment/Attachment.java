@@ -38,23 +38,23 @@ public abstract class Attachment {
 
     /** Sets the {@link #fileName}.
      *  @param fileName the file name to set */
-    public void setFileName(String fileName) {
+    public final void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
     /** @return the {@link #fileName} */
-    public String getFileName() {
+    public final String getFileName() {
         return fileName;
     }
 
     /** Sets the {@link #label}
      *  @param label the label to set */
-    public void setLabel(String label) {
+    public final void setLabel(String label) {
         this.label = label;
     }
 
     /** @return the label */
-    public String getLabel() {
+    public final String getLabel() {
         return label;
     }
 

@@ -26,6 +26,7 @@ public interface AludraCloseable extends Closeable {
     /**
      * Closes a service
      */
+    @Override
     public void close();
 
 }

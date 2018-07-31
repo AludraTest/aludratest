@@ -28,16 +28,23 @@ import java.util.List;
 
 import org.aludratest.config.AludraTestConfig;
 import org.aludratest.config.impl.DefaultConfigurator;
-import org.aludratest.impl.log4testing.data.TestLogger;
-import org.aludratest.impl.log4testing.data.TestSuiteLog;
 import org.aludratest.impl.plexus.AludraTestClosePhase;
 import org.aludratest.impl.plexus.AludraTestComponentDiscoverer;
 import org.aludratest.impl.plexus.AludraTestConfigurationPhase;
+import org.aludratest.scheduler.AbstractRunnerListener;
 import org.aludratest.scheduler.AludraTestRunner;
 import org.aludratest.scheduler.AnnotationBasedExecution;
+import org.aludratest.scheduler.RunnerListenerRegistry;
 import org.aludratest.scheduler.RunnerTree;
 import org.aludratest.scheduler.RunnerTreeBuilder;
+import org.aludratest.scheduler.node.RunnerGroup;
+import org.aludratest.scheduler.node.RunnerLeaf;
+import org.aludratest.scheduler.node.RunnerNode;
+import org.aludratest.scheduler.util.CommonRunnerLeafAttributes;
 import org.aludratest.service.AludraServiceManager;
+import org.aludratest.testcase.TestStatus;
+import org.aludratest.testcase.event.TestStepInfo;
+import org.aludratest.util.EnvUtil;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
@@ -45,14 +52,13 @@ import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.lifecycle.UndefinedLifecycleHandlerException;
-import org.databene.commons.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * AludraTest framework class. This is the main entry point to AludraTest. Clients can either invoke the class via its main method
  * directly, or construct an instance of this class and call one of its <code>run</code> methods.
- * 
+ *
  * @author Volker Bergmann
  * @author falbrech
  */
@@ -61,7 +67,10 @@ public final class AludraTest {
     /**
      * The name of the System Property which is checked for the environment name to use.
      */
-    public static final String ENVIRONMENT_NAME_PROPERTY = "aludraTest.environment";
+    public static final String ENVIRONMENT_NAME_PROPERTY = EnvUtil.ENVIRONMENT_NAME_PROPERTY;
+
+    /** The name of the System Property which is checked for the dry run indicator. */
+    private static final String DRY_RUN_PROPERTY = "aludraTest.dryRun";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AludraTest.class);
 
@@ -70,6 +79,8 @@ public final class AludraTest {
 
     /** The IoC container for AludraTest. */
     private final PlexusContainer iocContainer;
+
+    private SuccessRunnerListener runnerListener;
 
     private static AludraTest instance;
 
@@ -80,13 +91,16 @@ public final class AludraTest {
             serviceManager = iocContainer.lookup(AludraServiceManager.class);
         }
         catch (ComponentLookupException e) {
-            throw new RuntimeException("Could not create AludraServiceManager instance", e);
+            throw new GenericExecutionException("Could not create AludraServiceManager instance", e);
         }
+        this.runnerListener = new SuccessRunnerListener();
+        RunnerListenerRegistry registry = serviceManager.newImplementorInstance(RunnerListenerRegistry.class);
+        registry.addRunnerListener(this.runnerListener);
     }
 
     /** Starts the AludraTest framework
      * @return the freshly created instance */
-    public static AludraTest startFramework() {
+    public static synchronized AludraTest startFramework() {
         AludraTest framework = new AludraTest();
 
         // get environment
@@ -100,17 +114,21 @@ public final class AludraTest {
         return framework;
     }
 
+    private static synchronized void internalStopFramework() {
+        instance = null;
+    }
+
     /** Stops the AludraTest framework */
     public void stopFramework() {
         iocContainer.dispose();
-        instance = null;
+        internalStopFramework();
     }
 
     /** Returns the current AludraTest instance. This method will only return a non-null value between calls to
      * {@link #startFramework()} and {@link #stopFramework()}.
-     * 
+     *
      * @return The current AludraTest instance, or <code>null</code>.
-     * 
+     *
      * @deprecated This method should not be used for software design reasons. Better keep your AludraTest instance which is
      *             returned by startFramework, or use IoC patterns to retrieve components you need. */
     @Deprecated
@@ -144,31 +162,32 @@ public final class AludraTest {
     /**
      * Returns the name of the current environment. This is a central parameter of AludraTest and used to distinguish
      * configuration for different environments. Pass it e.g. via command line System Property:
-     * 
+     *
      * <pre>
      * -DaludraTest.environment=MYHOST
      * </pre>
-     * 
+     *
      * @return The name of the current environment. Defaults to <code>LOCAL</code> if none has been set.
      */
     public static String getEnvironmentName() {
-        String propValue = System.getProperty(ENVIRONMENT_NAME_PROPERTY);
-        if (!StringUtil.isEmpty(propValue)) {
-            return propValue;
-        }
-        return "LOCAL";
+        return EnvUtil.getEnvironmentName();
+    }
+
+    private static boolean isDryRun() {
+        String propValue = System.getProperty(DRY_RUN_PROPERTY);
+        return "true".equals(propValue);
     }
 
     /** Returns the service manager of AludraTest. This can be used for service and component lookups. If you have a context
      * available (an AludraTestContext or an AludraServiceContext), you should prefer to call its methods for these lookups.
-     * 
+     *
      * @return The service manager of AludraTest, never <code>null</code>. */
     public AludraServiceManager getServiceManager() {
         return serviceManager;
     }
 
     /** Executes tests based on their <code>TestAttribute</code> annotations. Waits until all tests are finished.
-     * 
+     *
      * @param jarOrClassRoot A JAR file or a folder containing all class files to search.
      * @param filterString A filter for test classes to include in the execution. See <a
      *            href="http://aludratest.github.io/aludratest/test-filter-syntax.html">AludraTest Documentation</a> for syntax.
@@ -194,29 +213,36 @@ public final class AludraTest {
 
         RunnerTree runnerTree = builder.buildRunnerTree(exec);
 
-        AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
-        runner.runAludraTests(runnerTree);
+        if (!isDryRun()) {
+            AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
+            runner.runAludraTests(runnerTree);
+        }
+        else {
+            checkForBuilderErrors(runnerTree.getRoot());
+        }
 
-        int failures = TestLogger.getTestSuite(runnerTree.getRoot().getName()).getNumberOfFailedTestCases();
-        int exitCode = (failures > 0 ? EXIT_EXECUTION_FAILURE : EXIT_NORMAL);
-        return exitCode;
+        return exitCode();
     }
 
     /** Parses the test class/suite, executes it and waits until all tests are finished.
      * @param testClass The AludraTest class or test suite to run
      * @return the resulting exit code */
     public int run(Class<?> testClass) {
-
         RunnerTreeBuilder builder = serviceManager.newImplementorInstance(RunnerTreeBuilder.class);
         RunnerTree runnerTree = builder.buildRunnerTree(testClass);
 
         // This would SORT the tree
         // RunnerTreeSorter.sortTree(runnerTree, new Alphabetic());
 
-        AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
-        runner.runAludraTests(runnerTree);
+        if (!isDryRun()) {
+            AludraTestRunner runner = serviceManager.newImplementorInstance(AludraTestRunner.class);
+            runner.runAludraTests(runnerTree);
+        }
+        else {
+            checkForBuilderErrors(runnerTree.getRoot());
+        }
 
-        return exitCode(testClass);
+        return exitCode();
     }
 
     /** implements the functionality of the class' main method without calling {@link System#exit(int)}, but providing the
@@ -255,11 +281,42 @@ public final class AludraTest {
         return serviceManager.newImplementorInstance(AludraTestConfig.class);
     }
 
-    private static int exitCode(Class<?> testClass) {
-        TestSuiteLog suite = TestLogger.getTestSuite(testClass);
-        int failures = suite.getNumberOfFailedTestCases();
-        int exitCode = (failures > 0 ? EXIT_EXECUTION_FAILURE : EXIT_NORMAL);
-        return exitCode;
+    private int exitCode() {
+        return (runnerListener.wasSuccessful() ? EXIT_NORMAL : EXIT_EXECUTION_FAILURE);
+    }
+
+    private void checkForBuilderErrors(RunnerGroup group) throws InvalidTestException {
+        for (RunnerNode node : group.getChildren()) {
+            if (node instanceof RunnerGroup) {
+                checkForBuilderErrors((RunnerGroup) node);
+            }
+            else if (Boolean.TRUE.equals(node.getAttribute(CommonRunnerLeafAttributes.BUILDER_ERROR))) {
+                // fire the error
+                try {
+                    ((RunnerLeaf) node).getTestInvoker().invoke();
+                }
+                catch (Throwable e) {
+                    throw new InvalidTestException(e);
+                }
+            }
+        }
+    }
+
+    static class SuccessRunnerListener extends AbstractRunnerListener {
+
+        private boolean success = true;
+
+        @Override
+        public void newTestStep(RunnerLeaf runnerLeaf, TestStepInfo testStepInfo) {
+            TestStatus status = testStepInfo.getTestStatus();
+            if (status != TestStatus.IGNORED && status != TestStatus.PASSED) {
+                this.success = false;
+            }
+        }
+
+        boolean wasSuccessful() {
+            return success;
+        }
     }
 
     // main method -------------------------------------------------------------

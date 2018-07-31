@@ -17,7 +17,6 @@ package org.aludratest.service.edifactfile;
 
 import org.aludratest.service.AludraService;
 import org.aludratest.service.ServiceInterface;
-import org.aludratest.service.file.FileService;
 
 /**
  * Interface for a service for processing EDIFACT and X12 documents.
@@ -38,9 +37,5 @@ public interface EdifactFileService extends AludraService {
      *  and analyze their differences. */
     @Override
     EdifactFileCondition check();
-
-    /** Provides the internally used {@link FileService} instance
-     *  @return the internally used {@link FileService} instance */
-    FileService getFileService();
 
 }

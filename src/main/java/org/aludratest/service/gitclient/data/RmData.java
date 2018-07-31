@@ -30,7 +30,7 @@ public class RmData extends AbstractGitData {
     }
 
     /** Fully parameterized constructor.
-     * @param filePattern */
+     * @param filePattern the pattern for the files to remove */
     public RmData(String filePattern) {
         this.filePattern = filePattern;
     }

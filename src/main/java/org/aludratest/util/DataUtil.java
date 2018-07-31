@@ -15,21 +15,14 @@
  */
 package org.aludratest.util;
 
-import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.aludratest.exception.AutomationException;
-import org.aludratest.service.locator.element.XPathLocator;
 import org.databene.commons.ParseUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.tidy.Tidy;
+import org.databene.commons.StringUtil;
 
 /**
  * Provides data related utility methods.
@@ -44,9 +37,9 @@ public class DataUtil {
     private DataUtil() {
     }
 
-    /** Parses a boolean value in a string ("tru" or "false").
-     *  @param text the text to parse
-     *  @return <code>true</code> or <code>false</code> */
+    /** Parses a boolean value in a string ("true" or "false").
+     * @param text the text to parse
+     * @return <code>true</code> or <code>false</code> */
     public static boolean parseBoolean(String text) {
         return ParseUtil.parseBoolean(text);
     }
@@ -57,7 +50,7 @@ public class DataUtil {
      * @param actualStrings an array of the actual strings
      * @return a message of the differences or an empty string if the arrays are equal
      */
-    public static String expectEqualArrays(Object[] expectedStrings, Object[] actualStrings) {
+    public static String expectEqualArrays(String[] expectedStrings, String[] actualStrings) {
         // ENHANCE apply ArrayComparator to recognize missing or added elements
         if (actualStrings == null || expectedStrings == null) {
             return "No Values found for comparison. ";
@@ -69,85 +62,55 @@ public class DataUtil {
         return "";
     }
 
-    /**
-     * Verifies that each expected string is found in the array of actual strings.
-     * @param expectedStrings
-     * @param actualStrings
-     * @return a String with a diff message, or an empty string if all strings were contained.
-     */
+    /** Compares two string arrays, ignoring the order of elements.
+     * @param expectedStrings an array of the expected strings
+     * @param actualStrings an array of the actual strings
+     * @return a message of the differences or an empty string if the arrays are equal */
+    public static String expectEqualArraysIgnoreOrder(String[] expectedStrings, String[] actualStrings) {
+        if (actualStrings == null || expectedStrings == null) {
+            return "No Values found for comparison. ";
+        }
+
+        List<String> lsExpected = Arrays.asList(expectedStrings);
+        List<String> lsActual = Arrays.asList(actualStrings);
+
+        Set<String> missing = new HashSet<String>(lsExpected);
+        missing.removeAll(lsActual);
+        Set<String> sflous = new HashSet<String>(lsActual);
+        sflous.removeAll(lsExpected);
+
+        StringBuilder sb = new StringBuilder();
+        if (!missing.isEmpty()) {
+            sb.append("Following items were missing: " + missing);
+        }
+        if (!sflous.isEmpty()) {
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append("Following items were found, but not expected: " + sflous);
+        }
+
+        return sb.toString();
+    }
+
+    /** Verifies that each expected string is found in the array of actual strings.
+     * @param expectedStrings the expected string
+     * @param actualStrings the actual strings
+     * @return a String listing all strings which were NOT found in the array of actual strings. */
     public static String containsStrings(String[] expectedStrings, String[] actualStrings) {
-        StringBuilder mismatches = new StringBuilder();
-        StringBuilder actualString = new StringBuilder();
-        String combinedActualString = null;
-        for (int i = 0; i < actualStrings.length; i++) {
-            actualString.append(actualStrings[i]).append(",");
-        }
-        combinedActualString = actualString.toString();
-        for (int i = 0; i < expectedStrings.length; i++) {
-            if (!(combinedActualString.contains(expectedStrings[i]))) {
-                mismatches.append(expectedStrings[i]).append(" ");
-            }
-        }
-        return mismatches.toString();
+        Set<String> mismatches = new HashSet<String>(Arrays.asList(expectedStrings));
+        mismatches.removeAll(Arrays.asList(actualStrings));
+        return StringUtil.concat(' ', mismatches.toArray(new String[0]));
     }
 
+    /** Verifies that the expected string is found in the array of actual strings.
+     * @param expectedString the expected string
+     * @param actualStrings the actual strings
+     * @return The expected String, if not found in the array, or an empty string, if found. */
     public static String containsString(String expectedString, String[] actualStrings) {
-        boolean found = false;
-        String actualStringUpperCase = null;
-        String expectedStringUpperCase = expectedString.toUpperCase();
-        for (int i = 0; i < actualStrings.length; i++) {
-            actualStringUpperCase = actualStrings[i].toUpperCase();
-            if (actualStringUpperCase.equals(expectedStringUpperCase)) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            return expectedString;
-        }
-        return "";
-    }
-
-    private static final MostRecentUseCache.Factory<String, Document> docFactory = new MostRecentUseCache.Factory<String, Document>() {
-        @Override
-        public Document create(String html) {
-            Tidy tidy = new Tidy();
-            tidy.setQuiet(true);
-            tidy.setShowWarnings(false);
-            tidy.setShowErrors(0);
-            tidy.setXmlOut(false);
-            Document document = tidy.parseDOM(new StringReader(html), null);
-            return document;
-        }
-    };
-
-    /* Use an MRU cache for HTML -> DOM mappings. If executing several XPaths on same HTML, this increases performance
-     * significantly. */
-    private static final MostRecentUseCache<String, Document> docCache = new MostRecentUseCache<String, Document>(docFactory, 50);
-
-    public static NodeList evalXPathInHTML(XPathLocator locator, String html) {
-        return evalXPathInHTML(locator.toString(), html);
-    }
-
-    public static NodeList evalXPathInHTML(String xpath, String html) {
-        try {
-            Document document = docCache.get(html);
-            XPathExpression expression = XPathFactory.newInstance().newXPath().compile(xpath);
-            return (NodeList) expression.evaluate(document, XPathConstants.NODESET);
-        } catch (XPathExpressionException e) {
-            throw new AutomationException("Illegal XPath: " + xpath, e);
-        }
-    }
-
-    public static String evalXPathInHTMLAsString(String xpath, String html) {
-        try {
-            Document document = docCache.get(html);
-            XPathExpression expression = XPathFactory.newInstance().newXPath().compile(xpath);
-            return (String) expression.evaluate(document, XPathConstants.STRING);
-        }
-        catch (XPathExpressionException e) {
-            throw new AutomationException("Illegal XPath: " + xpath, e);
-        }
+        // elements were converted to uppercase before, but it is nowhere stated that this would be expected,
+        // and containsStrings() also did not convert to uppercase.
+        return Arrays.asList(actualStrings).contains(expectedString) ? "" : expectedString;
     }
 
 }

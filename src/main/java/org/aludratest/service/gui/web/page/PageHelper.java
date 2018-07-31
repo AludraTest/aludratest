@@ -28,6 +28,6 @@ package org.aludratest.service.gui.web.page;
  * @author falbrech
  * 
  */
-public abstract class PageHelper {
+public abstract class PageHelper { // NOSONAR
 
 }

@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import org.aludratest.impl.log4testing.data.TestLogger;
 import org.aludratest.suite.PlainTestClass;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
@@ -35,7 +34,6 @@ public class AludraTestJUnitSuiteTest {
     /** Tests the successful execution of a plain AludraTest test class triggered by a JUnit suite. */
     @Test
     public void testSuccessfulClass() {
-        TestLogger.clear();
         System.setProperty(AludraTestJUnitSuite.SUITE_SYSPROP, PlainTestClass.class.getName());
         Result result = JUnitCore.runClasses(TriggerSuite.class);
         assertEquals(3, result.getRunCount());

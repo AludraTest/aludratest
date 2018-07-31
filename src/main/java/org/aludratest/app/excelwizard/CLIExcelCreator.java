@@ -58,7 +58,7 @@ public class CLIExcelCreator {
                 LOGGER.info("Generating Excel documents for test class {}", testClass.getName());
                 for (Method testMethod : testMethodsWithExcelSource) {
                     File testDataRootFolder = new File(SystemInfo.getCurrentDir(), config.getXlsRootPath()).getCanonicalFile();
-                    JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod, null, testDataRootFolder);
+                    JavaBeanExcelDocumentMapper.createOrMergeDocuments(testMethod, testDataRootFolder);
                 }
             }
             else {

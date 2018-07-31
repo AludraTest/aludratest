@@ -16,6 +16,7 @@
 package org.aludratest.service.edifactfile.edifatto;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,27 +25,28 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
+import org.aludratest.content.edifact.AggregateEdiDiff;
+import org.aludratest.content.edifact.EdiComparisonSettings;
+import org.aludratest.content.edifact.EdiDiffDetail;
 import org.aludratest.content.edifact.EdifactContent;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.TechnicalException;
 import org.aludratest.service.SystemConnector;
+import org.aludratest.service.TechnicalLocator;
 import org.aludratest.service.edifactfile.EdifactFileCondition;
 import org.aludratest.service.edifactfile.EdifactFileInteraction;
 import org.aludratest.service.edifactfile.EdifactFileVerification;
+import org.aludratest.service.file.FileFilter;
 import org.aludratest.service.file.FileService;
 import org.aludratest.testcase.event.attachment.Attachment;
 import org.aludratest.testcase.event.attachment.StringAttachment;
 import org.databene.commons.SystemInfo;
-import org.databene.edifatto.ComparisonSettings;
 import org.databene.edifatto.EdiFormatSymbols;
-import org.databene.edifatto.compare.AggregateDiff;
-import org.databene.edifatto.compare.ComparisonModel;
-import org.databene.edifatto.compare.Diff;
 import org.databene.edifatto.compare.HTMLDiffFormatter;
 import org.databene.edifatto.format.StandardInterchangeFormatter;
 import org.databene.edifatto.format.TextTreeInterchangeFormatter;
 import org.databene.edifatto.model.Interchange;
-import org.w3c.dom.Element;
+import org.databene.formats.compare.AggregateDiff;
 
 /**
  * Action class for {@link EdifattoFileService}, implementing all Edifact action interfaces.
@@ -66,8 +68,8 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
     private AggregateDiff recentDiff;
 
     /** Constructor.
-     *  @param contentHandler
-     *  @param fileService */
+     * @param contentHandler the {@link EdifactContent} implementation to use
+     * @param fileService the {@link FileService} implementation to use */
     public EdifattoFileAction(EdifactContent contentHandler, FileService fileService) {
         this.contentHandler = contentHandler;
         this.fileService = fileService;
@@ -97,6 +99,11 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
     }
 
     @Override
+    public String waitForFirstMatch(@TechnicalLocator String parentPath, FileFilter filter) {
+        return fileService.perform().waitForFirstMatch(parentPath, filter);
+    }
+
+    @Override
     public void waitUntilNotExists(String elementType, String elementName, String filePath) {
         fileService.perform().waitUntilNotExists(filePath);
     }
@@ -108,13 +115,19 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
     public void writeInterchange(String elementType, String elementName, Interchange interchange, String filePath, boolean overwrite) {
         memorizeInterchanges(null, null, null);
         String content = toString(interchange, false);
-        fileService.perform().writeBinaryFile(filePath, content.getBytes(), overwrite); // ENHANCE which encoding to use?
+        fileService.perform().writeBinaryFile(filePath, content.getBytes(), overwrite); // TODO which encoding to use?
     }
 
     @Override
     public Interchange readInterchange(String elementType, String elementName, String filePath) {
-        String content = fileService.perform().readTextFile(filePath);
-        ByteArrayInputStream in = new ByteArrayInputStream(content.getBytes()); // ENHANCE which encoding to use?
+        byte[] bytes = fileService.perform().readBinaryFile(filePath);
+        Interchange interchange = contentHandler.readInterchange(new ByteArrayInputStream(bytes));
+        memorizeInterchanges(null, interchange, null);
+        return interchange;
+    }
+
+    @Override
+    public Interchange readInterchange(String elementType, String elementName, InputStream in) {
         Interchange interchange = contentHandler.readInterchange(in);
         memorizeInterchanges(null, interchange, null);
         return interchange;
@@ -130,20 +143,21 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
     // EdifactVerification interface implementation ----------------------------
 
     /** Asserts that two EDIFACT or X12 interchanges are equal.
-     *  @throws ValueNotAsExpectedException if they are not equal. */
+     * @throws FunctionalFailure if they are not equal. */
     @Override
     public void assertInterchangesMatch(String elementType, String elementName,
             Interchange expected, Interchange actual,
-            ComparisonSettings settings, ComparisonModel<Element> model) {
-        AggregateDiff diffs = contentHandler.diff(expected, actual, settings, model);
+            EdiComparisonSettings settings) {
+        AggregateEdiDiff diffs = contentHandler.compare(expected, actual, settings);
         memorizeInterchanges(expected, actual, diffs);
-        if (diffs.getDetailCount() > 0) {
+        int detailCount = diffs.getEdiDetails().size();
+        if (detailCount > 0) {
             String lf = SystemInfo.getLineSeparator();
-            StringBuilder message = new StringBuilder("Interchanges do not match. Found " + diffs.getDetailCount() + " difference");
-            if (diffs.getDetailCount() > 1) {
+            StringBuilder message = new StringBuilder("Interchanges do not match. Found " + detailCount + " difference");
+            if (detailCount > 1) {
                 message.append("s");
             }
-            for (Diff<?> diff : diffs.getDetails()) {
+            for (EdiDiffDetail diff : diffs.getEdiDetails()) {
                 message.append(lf).append(diff);
             }
             throw new FunctionalFailure(message.toString());
@@ -162,26 +176,29 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
      *   {@link XPathConstants#NODESET} for a {@link org.w3c.dom.NodeList}
      */
     @Override
-    public Object queryXML(String elementType, String elementName, Interchange interchange, String expression, QName returnType) {
+    public Object query(String elementType, String elementName, Interchange interchange, String expression, QName returnType) {
         memorizeInterchanges(null, interchange, null);
-        return contentHandler.queryXML(interchange, expression, returnType);
+        return contentHandler.query(interchange, expression, returnType);
     }
 
-    /** Finds out the differences between two EDIFACT or X12 interchanges,
-     *  ignoring elements that match the XPath exclusion paths.
-     *  @param elementType
-     *  @param elementName
-     *  @param expected
-     *  @param actual
-     *  @param settings
-     *  @param model
-     *  @return an {@link AggregateDiff} of the interchanges */
     @Override
-    public AggregateDiff diff(String elementType, String elementName, Interchange expected, Interchange actual,
-            ComparisonSettings settings, ComparisonModel<Element> model) {
+    public EdiComparisonSettings createDefaultComparisonSettings() {
+        return contentHandler.createDefaultComparisonSettings();
+    }
+
+    /** Finds out the differences between two EDIFACT or X12 interchanges, ignoring elements that match the XPath exclusion paths.
+     * @param elementType the element type to be logged
+     * @param elementName the element type to be logged
+     * @param expected the expected Interchange structure
+     * @param actual the actual Interchange structure
+     * @param settings the comparison settings to apply
+     * @return an {@link AggregateDiff} of the interchanges */
+    @Override
+    public AggregateEdiDiff diff(String elementType, String elementName, Interchange expected, Interchange actual,
+            EdiComparisonSettings settings) {
         try {
             memorizeInterchanges(expected, actual, null);
-            return contentHandler.diff(expected, actual, settings, model);
+            return contentHandler.compare(expected, actual, settings);
         } catch (Exception e) {
             throw new TechnicalException("Error comparing Edifact interchanges", e);
         }
@@ -223,10 +240,10 @@ public class EdifattoFileAction implements EdifactFileInteraction, EdifactFileVe
 
     /** saves the most recently used interchange(s)
      * in order to provide them as attachment on request. */
-    private void memorizeInterchanges(Interchange expected, Interchange actual, AggregateDiff diff) {
+    private void memorizeInterchanges(Interchange expected, Interchange actual, AggregateEdiDiff diff) {
         this.recentExpectedInterchange = expected;
         this.recentActualInterchange = actual;
-        this.recentDiff = diff;
+        this.recentDiff = (AggregateDiff) diff;
     }
 
     /** Creates an attachment that contains the provides EDIFACT or X12 interchange. */

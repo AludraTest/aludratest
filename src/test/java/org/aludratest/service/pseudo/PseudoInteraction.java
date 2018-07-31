@@ -15,10 +15,12 @@
  */
 package org.aludratest.service.pseudo;
 
-import org.aludratest.impl.log4testing.ElementName;
-import org.aludratest.impl.log4testing.ElementType;
-import org.aludratest.impl.log4testing.TechnicalLocator;
+import org.aludratest.service.AttachResult;
+import org.aludratest.service.ElementName;
+import org.aludratest.service.ElementType;
 import org.aludratest.service.Interaction;
+import org.aludratest.service.TechnicalLocator;
+import org.databene.commons.ObjectNotFoundException;
 
 /**
  * Pseudo interaction interface for testing.
@@ -28,15 +30,20 @@ import org.aludratest.service.Interaction;
 public interface PseudoInteraction extends Interaction {
 
     /** A service that is expected to succeed. */
-    void succeed(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
+    String succeed(
+            @ElementType String elementType,
+            @ElementName String elementName,
+            @TechnicalLocator String locator);
+
+    /** A service that is expected to succeed and of which the result shall be logged in an attachment. */
+    @AttachResult("Result")
+    String succeedWithAttachments(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator String locator);
 
     /** A service which is expected to raise an {@link ObjectNotFoundException}. */
     void fail(
-            @ElementType String elementType, 
-            @ElementName String elementName, 
+            @ElementType String elementType,
+            @ElementName String elementName,
             @TechnicalLocator String locator);
 
     void throwException(RuntimeException exception);

@@ -37,17 +37,17 @@ public abstract class Out {
     // operational interface ---------------------------------------------------
 
     /** Redirects the process' output to a stream.
-     * @param textOutput
+     * @param textOutput a buffer to receive process text output
      * @return this */
     public Out redirectTo(StringData textOutput) {
         ByteArrayData buffer = new ByteArrayData();
         redirectTo(buffer);
-        textOutput.setValue(new String(buffer.getValue()));
+        textOutput.setValue(new String(buffer.getValue())); // NOSONAR the default system charset has to be used here
         return this;
     }
 
     /** Redirects the process' stdout to a stream.
-     * @param byteOutput
+     * @param byteOutput a byte buffer to receive process data output
      * @return this */
     public Out redirectTo(ByteArrayData byteOutput) {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();

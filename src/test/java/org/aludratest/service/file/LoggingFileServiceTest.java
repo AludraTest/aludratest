@@ -15,16 +15,17 @@
  */
 package org.aludratest.service.file;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.aludratest.service.file.FileService;
+import org.aludratest.testcase.event.attachment.Attachment;
 import org.databene.commons.IOUtil;
 import org.junit.Test;
 
 /**
- * Instantiates a {@link FileService} instance which performs logging 
+ * Instantiates a {@link FileService} instance which performs logging
  * and executes some operations on it.
  * @author Volker Bergmann
  */
@@ -44,6 +45,21 @@ public class LoggingFileServiceTest extends AbstractLocalFileServiceTest {
         } finally {
             IOUtil.close(service);
         }
+    }
+
+    @Test
+    public void testAttachments() throws Exception {
+        FileService service = null;
+        try {
+            service = getLoggingService(FileService.class, "localtest");
+            service.perform().writeTextFile("testout.txt", "Some test content", true);
+            Attachment att = getLastTestStep().getAttachments().iterator().next();
+            assertEquals("Some test content", new String(att.getFileData(), "UTF-8"));
+        }
+        finally {
+            IOUtil.close(service);
+        }
+
     }
 
 }

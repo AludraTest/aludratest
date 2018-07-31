@@ -15,11 +15,12 @@
  */
 package org.aludratest.service.gui;
 
-import org.aludratest.impl.log4testing.ElementName;
-import org.aludratest.impl.log4testing.ElementType;
-import org.aludratest.impl.log4testing.TechnicalArgument;
-import org.aludratest.impl.log4testing.TechnicalLocator;
+import org.aludratest.service.AttachResult;
+import org.aludratest.service.ElementName;
+import org.aludratest.service.ElementType;
 import org.aludratest.service.Interaction;
+import org.aludratest.service.TechnicalArgument;
+import org.aludratest.service.TechnicalLocator;
 import org.aludratest.service.Verification;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.option.OptionLocator;
@@ -28,7 +29,7 @@ import org.aludratest.service.locator.window.WindowLocator;
 
 /** The interface {@link Interaction} provides several methods to interact with the active screen of the application under test.
  * This means that the application under test can be controlled with the help of these methods. Every class which implements this
- * interface must assure that a call of one of these methods results in a interaction with the application under test.<br/>
+ * interface must assure that a call of one of these methods results in a interaction with the application under test.<br>
  * For verifications of the application under test see {@link Verification}.
  * @author Marcel Malitz
  * @author Volker Bergmann */
@@ -39,7 +40,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related radio button to log
      * @param elementName the name of the related radio button to log
      * @param locator to locate one specific radio button in the SUT
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void selectRadiobutton(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
@@ -49,7 +50,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related checkbox to log
      * @param elementName the name of the related checkbox to log
      * @param locator to locate one specific checkbox in the application under test
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void changeCheckbox(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
@@ -58,7 +59,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related checkbox to log
      * @param elementName the name of the related checkbox to log
      * @param locator to locate one specific checkbox in the application under test
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void selectCheckbox(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
@@ -67,7 +68,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related checkbox to log
      * @param elementName the name of the related checkbox to log
      * @param locator to locate one specific checkbox in the application under test
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void deselectCheckbox(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
@@ -78,7 +79,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementName the name of the related dropdownbox to log
      * @param locator to locate one specific dropdownbox in the application under test
      * @param optionLocator defines which entry of the located dropdownbox shall be selected
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void selectDropDownEntry(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             OptionLocator optionLocator,
@@ -91,7 +92,7 @@ public interface GUIInteraction extends Interaction {
      * @param locator to locate one specific inputfield in the application under test. An inputfield is any GUI element which
      *            accepts user inputs.
      * @param text which shall be typed in without conversion/manipulation
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void type(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
             String text,
             @TechnicalArgument int taskCompletionTimeout);
@@ -109,7 +110,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator to locate buttons, links or any other elements which react on mouse clicks.
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void click(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
@@ -117,7 +118,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator which identifies the element which shall be double clicked
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void doubleClick(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
@@ -127,7 +128,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator which identifies the element which shall be "hovered" with the mouse
-     * @param taskCompletionTimeout */
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task */
     void hover(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
             @TechnicalArgument int taskCompletionTimeout);
 
@@ -166,7 +167,7 @@ public interface GUIInteraction extends Interaction {
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator points to one element, visible: to check visibility of the element
-     * @param checkVisible
+     * @param checkVisible tells to check if the element is visible
      * @return the unmodified text of an element */
     String getText(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator,
             boolean checkVisible);
@@ -177,10 +178,13 @@ public interface GUIInteraction extends Interaction {
      * @param locator of the element which shall get the focus */
     void focus(@ElementType String elementType, @ElementName String elementName, @TechnicalLocator GUIElementLocator locator);
 
-    /** Presses a key on the keyboard. Available key codes can be found in {@link java.awt.event.KeyEvent}.
-     * @param keycode is the key which shall be pressed.
-     * @see java.awt.event.KeyEvent */
+    /** Presses a key on the keyboard. Available key codes depend on service implementation.
+     * @param keycode is the key which shall be pressed. */
     void keyPress(int keycode);
+
+    /** Presses keys on the keyboard. Available key codes depend on service implementation.
+     * @param keysToPress is the key which shall be pressed. */
+    void keysPress(CharSequence... keysToPress);
 
     /** Closes all windows identified by their name. That means, that if there are several windows with same name all will be
      * closed. This method is not waiting for a window to open.
@@ -199,7 +203,7 @@ public interface GUIInteraction extends Interaction {
 
     /** Waits until the given window is closed, or the given timeout is reached. This is especially useful if a window is closed
      * asynchronously some time after some event (e.g. a button click).
-     * 
+     *
      * @param elementType the type of the target windows to log
      * @param elementName the name of the target windows to log
      * @param locator is a window locator or just a String which will be automatically converted to one of the default locators
@@ -209,8 +213,23 @@ public interface GUIInteraction extends Interaction {
     void waitForWindowToBeClosed(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator TitleLocator locator, int taskCompletionTimeout);
 
+    /** Performs a screenshot of the currently active window.
+     *
+     * @return A BASE64-encoded image with the contents of the currently active window. The image format is up to the UI service
+     *         implementation, although PNG is recommended. */
+    @AttachResult("Active Window Screenshot")
+    String captureActiveWindow();
+
+    /** Issues a "wrong page flow" error on this service. This should only be called from <code>checkCorrectPage()</code> methods
+     * of <code>Page</code> subclasses.
+     *
+     * @param message Message to log together with the error. */
     void wrongPageFlow(String message);
 
+    /** Signals a functional error of the underlying SUT. This should only used in cases where simple assertion calls of UI
+     * components are not sufficient, e.g. where complex checks are required to determine the error state of the SUT.
+     *
+     * @param message Message to log together with the error. */
     void functionalError(String message);
 
 }

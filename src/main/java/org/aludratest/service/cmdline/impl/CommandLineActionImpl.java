@@ -64,7 +64,8 @@ public class CommandLineActionImpl implements CommandLineInteraction, CommandLin
 
     @Override
     public int create(String processType, String processName, int processTimeout, int responseTimeout, String... command) {
-        int processId = ++lastProcessId;
+        lastProcessId++;
+        int processId = lastProcessId;
         ProcessWrapper process = new ProcessWrapper(processId, processTimeout, responseTimeout, command);
         processes.put(processId, process);
         return processId;
@@ -73,12 +74,7 @@ public class CommandLineActionImpl implements CommandLineInteraction, CommandLin
     @Override
     public void start(String processType, String processName, int processId) {
         ProcessWrapper process = getProcess(processId);
-        try {
-            process.start();
-        }
-        catch (IOException e) {
-            throw new AutomationException("Error executing command: " + process, e);
-        }
+        process.start();
     }
 
     @Override
@@ -134,7 +130,7 @@ public class CommandLineActionImpl implements CommandLineInteraction, CommandLin
     @Override
     public void setRelativeWorkingDirectory(String processType, String processName, int processId, String relativeWorkingDirectory) {
         try {
-            File workingDirectory = new File(configuration.getBaseDirectory(), relativeWorkingDirectory);
+            File workingDirectory = new File(configuration.getBaseDirectory(), relativeWorkingDirectory); // NOSONAR
             workingDirectory = workingDirectory.getCanonicalFile();
             getProcess(processId).setWorkingDirectory(workingDirectory);
         }
@@ -209,13 +205,13 @@ public class CommandLineActionImpl implements CommandLineInteraction, CommandLin
     @Override
     public List<Attachment> createDebugAttachments() {
         // no attachments supported
-        return null;
+        return null; // NOSONAR null is compliant to the interface contract
     }
 
     @Override
     public List<Attachment> createAttachments(Object object, String title) {
         // no attachments supported
-        return null;
+        return null; // NOSONAR null is compliant to the interface contract
     }
 
     // private helpers ---------------------------------------------------------

@@ -15,7 +15,6 @@
  */
 package org.aludratest.app.excelwizard;
 
-import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -43,19 +42,18 @@ public class JavaBeanExcelDocumentMapper {
 
     /** Creates or updates Excel documents that match the annotations and data structure of a test method.
      * @param testMethod the the method for which to create the document(s)
-     * @param parentComponent
      * @param testDataRootFolder Root folder for XLS documents
      * @return a {@link List} of {@link WorkbookTracker}s for the created documents
      * @throws IOException if document creation failed
      * @throws InvalidFormatException if a pre-existing Excel document has invalid file content */
-    public static Collection<WorkbookTracker> createOrMergeDocuments(Method testMethod, Component parentComponent,
-            File testDataRootFolder) throws IOException, InvalidFormatException {
+    public static Collection<WorkbookTracker> createOrMergeDocuments(Method testMethod, File testDataRootFolder)
+            throws IOException, InvalidFormatException {
         LOGGER.info("Creating/updating Excel document(s) for test method {}", testMethod);
         Map<File, WorkbookTracker> workbooks = new HashMap<File, WorkbookTracker>();
         createOrMergeWorkbooks(testMethod, testDataRootFolder, workbooks);
         validateWorkbooks(workbooks.values());
         printWarnings(workbooks.values());
-        persistNewAndModifiedWorkbooks(workbooks, parentComponent);
+        persistNewAndModifiedWorkbooks(workbooks);
         return workbooks.values();
     }
 
@@ -63,7 +61,7 @@ public class JavaBeanExcelDocumentMapper {
     // private helper methods --------------------------------------------------
 
     static File resolveExcelFile(File testDataRootFolder, Class<?> testClass, String uri) {
-        File targetFolder = new File(testDataRootFolder, testClass.getName().replace('.', '/'));
+        File targetFolder = new File(testDataRootFolder, testClass.getName().replace('.', '/')); // NOSONAR
         return new File(targetFolder, uri);
     }
 
@@ -114,7 +112,7 @@ public class JavaBeanExcelDocumentMapper {
         }
     }
 
-    private static void persistNewAndModifiedWorkbooks(Map<File, WorkbookTracker> workbooks, Component parentComponent) throws IOException {
+    private static void persistNewAndModifiedWorkbooks(Map<File, WorkbookTracker> workbooks) throws IOException {
         for (WorkbookTracker tracker : workbooks.values()) {
             if (tracker.needsPersisting()) {
                 LOGGER.info("Persisting file {}", tracker.getFile());

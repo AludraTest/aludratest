@@ -20,10 +20,7 @@ import org.aludratest.service.gitclient.GitClient;
 /** Wraps data for the invocation of the {@link GitClient}'s pull method.
  * @see GitClient#pull(PullData)
  * @author Volker Bergmann */
-public class PullData extends AbstractGitData {
-
-    private String repository;
-    private String refspec;
+public class PullData extends AbstractRefspecData {
 
     /** Public default constructor. */
     public PullData() {
@@ -34,32 +31,7 @@ public class PullData extends AbstractGitData {
      * @param repository the repository
      * @param refspec the refspec */
     public PullData(String repository, String refspec) {
-        setRepository(repository);
-        setRefspec(refspec);
-    }
-
-    /** Returns the repository.
-     * @return the repository */
-    public String getRepository() {
-        return repository;
-    }
-
-    /** Sets the repository.
-     * @param repository the repository to set */
-    public void setRepository(String repository) {
-        this.repository = repository;
-    }
-
-    /** Returns the refspec.
-     * @return the refspec */
-    public String getRefspec() {
-        return refspec;
-    }
-
-    /** Sets the refspec.
-     * @param refspec the refspec to set */
-    public void setRefspec(String refspec) {
-        this.refspec = refspec;
+        super(repository, refspec);
     }
 
 }

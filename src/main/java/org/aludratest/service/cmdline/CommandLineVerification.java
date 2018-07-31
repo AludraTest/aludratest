@@ -15,9 +15,9 @@
  */
 package org.aludratest.service.cmdline;
 
-import org.aludratest.impl.log4testing.ElementName;
-import org.aludratest.impl.log4testing.ElementType;
-import org.aludratest.impl.log4testing.TechnicalLocator;
+import org.aludratest.service.ElementName;
+import org.aludratest.service.ElementType;
+import org.aludratest.service.TechnicalLocator;
 import org.aludratest.service.Verification;
 import org.databene.commons.Validator;
 
@@ -29,7 +29,7 @@ public interface CommandLineVerification extends Verification {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param validator */
+     * @param validator the validator to use */
     void assertNextLineOfStdOutMatches(@ElementType String processType, @ElementName String processName,
             @TechnicalLocator int processId, Validator<String> validator);
 
@@ -43,7 +43,7 @@ public interface CommandLineVerification extends Verification {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param validator */
+     * @param validator the validator to use */
     void assertNextLineOfErrOutMatches(@ElementType String processType, @ElementName String processName,
             @TechnicalLocator int processId, Validator<String> validator);
 
@@ -57,7 +57,7 @@ public interface CommandLineVerification extends Verification {
      * @param processType the process type
      * @param processName the process name
      * @param processId the internal id of the process
-     * @param expectedValue */
+     * @param expectedValue the expected process exit code */
     void assertExitCodeEquals(@ElementType String processType, @ElementName String processName, @TechnicalLocator int processId,
             int expectedValue);
 

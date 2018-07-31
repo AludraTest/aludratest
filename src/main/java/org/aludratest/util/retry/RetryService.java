@@ -17,7 +17,7 @@ package org.aludratest.util.retry;
 
 import java.util.concurrent.Callable;
 
-import org.aludratest.util.AludraTestUtil;
+import org.aludratest.util.ExceptionUtil;
 import org.databene.commons.Assert;
 
 /** Invokes a method on an object with the provided arguments. If an exception of a tolerated exception type occurs, the the
@@ -31,11 +31,14 @@ import org.databene.commons.Assert;
 public class RetryService {
 
     /** Performs the invocation an exception handling as described in the class doc.
-     * @param target
-     * @param toleratedThrowable
-     * @param maxRetries
-     * @return
-     * @throws Throwable */
+     * @param <T> the return type of the {@link Callable} to call
+     * @param target the {@link Callable} to execute
+     * @param toleratedThrowable specifies if
+     * @param maxRetries the maximum number of times to try target execution
+     * @return the result of the call
+     * @throws Throwable if a single target invocation raised an exception and this is not tolerated it is forwarded to the
+     *             caller, or if each of the <code>#maxRetries</code> calls to the target produces an exception, the last one is
+     *             re-thrown */
     public static <T> T call(Callable<T> target, Class<? extends Throwable> toleratedThrowable, int maxRetries)
             throws Throwable { // NOSONAR
         // check preconditions
@@ -52,7 +55,7 @@ public class RetryService {
             }
             catch (Exception e) { // NOSONAR
                 // handle exceptions
-                Throwable t = AludraTestUtil.unwrapInvocationTargetException(e);
+                Throwable t = ExceptionUtil.unwrapInvocationTargetException(e);
                 recentException = t;
                 if (toleratedThrowable != null && toleratedThrowable.isAssignableFrom(e.getClass()) && retryCount < maxRetries) {
                     doRetry = true;

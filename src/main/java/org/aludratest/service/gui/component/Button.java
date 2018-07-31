@@ -15,7 +15,6 @@
  */
 package org.aludratest.service.gui.component;
 
-import org.aludratest.service.gui.component.impl.ValueComponent;
 
 /**
  * Represents a button in a GUI.

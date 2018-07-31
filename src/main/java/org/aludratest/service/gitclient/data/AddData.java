@@ -36,13 +36,13 @@ public class AddData extends AbstractGitData {
     }
 
     /** @return the {@link #filePattern} */
-    public String getFilePattern() {
+    public final String getFilePattern() {
         return filePattern;
     }
 
     /** Sets the {@link #filePattern}.
      * @param filePattern the file name or pattern to apply */
-    public void setFilePattern(String filePattern) {
+    public final void setFilePattern(String filePattern) {
         this.filePattern = filePattern;
     }
 

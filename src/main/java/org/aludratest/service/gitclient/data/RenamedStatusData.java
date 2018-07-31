@@ -32,8 +32,8 @@ public class RenamedStatusData extends AbstractGitData {
     }
 
     /** Full constructor.
-     * @param fromPath
-     * @param toPath */
+     * @param fromPath path of the original file
+     * @param toPath path of the final file */
     public RenamedStatusData(String fromPath, String toPath) {
         setFromPath(fromPath);
         setToPath(toPath);
@@ -41,25 +41,25 @@ public class RenamedStatusData extends AbstractGitData {
 
     /** Returns the {@link #fromPath}
      * @return the {@link #fromPath} */
-    public String getFromPath() {
+    public final String getFromPath() {
         return fromPath;
     }
 
     /** Sets the {@link #fromPath}.
      * @param fromPath sets the {@link #fromPath} */
-    public void setFromPath(String fromPath) {
+    public final void setFromPath(String fromPath) {
         this.fromPath = fromPath;
     }
 
     /** Returns the {@link #toPath}
      * @return the {@link #toPath} */
-    public String getToPath() {
+    public final String getToPath() {
         return toPath;
     }
 
     /** Sets the {@link #toPath}
      * @param toPath the {@link #toPath} to set */
-    public void setToPath(String toPath) {
+    public final void setToPath(String toPath) {
         this.toPath = toPath;
     }
 
@@ -77,10 +77,12 @@ public class RenamedStatusData extends AbstractGitData {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null || getClass() != obj.getClass())
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
+        }
         RenamedStatusData that = (RenamedStatusData) obj;
         return NullSafeComparator.equals(this.fromPath, that.fromPath) && NullSafeComparator.equals(this.toPath, that.toPath);
     }

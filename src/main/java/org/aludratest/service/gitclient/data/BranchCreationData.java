@@ -36,13 +36,13 @@ public class BranchCreationData extends AbstractGitData {
     }
 
     /** @return the name of the branch */
-    public String getBranchName() {
+    public final String getBranchName() {
         return branchName;
     }
 
     /** Sets the name of the branch.
      * @param branchName the name of the branch */
-    public void setBranchName(String branchName) {
+    public final void setBranchName(String branchName) {
         this.branchName = branchName;
     }
 

@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.PerformanceFailure;
+import org.aludratest.exception.TechnicalException;
 import org.aludratest.util.poll.PollService;
 import org.aludratest.util.poll.PolledTask;
 import org.databene.commons.IOUtil;
@@ -61,7 +62,7 @@ public class ProcessWrapper {
         this.processId = processId;
         this.processTimeout = processTimeout;
         this.responseTimeout = responseTimeout;
-        this.builder = new ProcessBuilder(command);
+        this.builder = new ProcessBuilder(command); // NOSONAR
         this.process = null;
         this.stdIn = null;
         this.stdOut = null;
@@ -76,7 +77,7 @@ public class ProcessWrapper {
         return processId;
     }
 
-    /** @return the command tokes used in construction */
+    /** @return the command tokens used in construction */
     public List<String> getCommand() {
         return builder.command();
     }
@@ -103,15 +104,17 @@ public class ProcessWrapper {
      * @param directory the working directory to set. */
     public void setWorkingDirectory(File directory) {
         assertState(ProcessState.CREATED);
-        directory.mkdirs();
+        if (!directory.mkdirs() && !directory.exists()) {
+            throw new TechnicalException("Directory creation failed: " + directory);
+        }
         this.builder.directory(directory);
     }
 
     // operational interface ---------------------------------------------------
 
     /** Starts the process.
-     * @throws IOException */
-    public void start() throws IOException {
+     * @throws AutomationException if the process cannot be started */
+    public void start() {
         try {
             assertState(ProcessState.CREATED);
             this.process = builder.start();
@@ -164,7 +167,7 @@ public class ProcessWrapper {
      * @param text the text to enter */
     public void enter(String text) {
         try {
-            stdIn.write(text.getBytes());
+            stdIn.write(text.getBytes()); // NOSONAR the default charset is needed here
             stdIn.flush();
         }
         catch (IOException e) {
@@ -173,7 +176,7 @@ public class ProcessWrapper {
     }
 
     /** Waits until the process has finished or the provided timeout is exceeded.
-     * @throws PerformanceException if the timeout is exceeded before the process has finished
+     * @throws PerformanceFailure if the timeout is exceeded before the process has finished
      * @return the process' exit value */
     public int waitUntilFinished() {
         PollService poller = new PollService(processTimeout, DEFAULT_PROCESS_TERMINATION_POLLING_INTERVAL);
@@ -206,15 +209,15 @@ public class ProcessWrapper {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder buffer = new StringBuilder();
         List<String> tokens = getCommand();
         for (int i = 0; i < tokens.size(); i++) {
             if (i > 0) {
-                builder.append(' ');
+                buffer.append(' ');
             }
-            builder.append(formatToken(tokens.get(i)));
+            buffer.append(formatToken(tokens.get(i)));
         }
-        return builder.toString();
+        return buffer.toString();
     }
 
     // private helpers ---------------------------------------------------------
@@ -234,7 +237,7 @@ public class ProcessWrapper {
     }
 
     private String formatToken(String token) {
-        return (token.contains(" ") ? '"' + token + '"' : token);
+        return (token.contains(" ") ? ('"' + token + '"') : token);
     }
 
     private enum ProcessState {

@@ -24,17 +24,17 @@ import java.util.Locale;
 import org.aludratest.content.flat.FlatFileColumn;
 import org.aludratest.content.flat.data.FlatFileBeanData;
 import org.aludratest.content.flat.data.RowTypeData;
+import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.TechnicalException;
-import org.aludratest.impl.log4testing.configuration.ConfigurationError;
 import org.databene.commons.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Iterates flat files and maps each row to a Java Object.
- * It is configured using {@link RowTypeData} objects that recognize 
+ * It is configured using {@link RowTypeData} objects that recognize
  * row types and provide the related Java class for them
- * and uses the {@link FlatFileColumn} annotations on the 
+ * and uses the {@link FlatFileColumn} annotations on the
  * related Java classes' attributes to fetch parsing information.
  * @author Volker Bergmann
  */
@@ -45,7 +45,7 @@ public class FlatFileBeanReader implements Closeable {
     /** the reader that provides the flat file's character data. */
     private BufferedReader reader;
 
-    /** A {@link RowParser} to which the operations of determining row types, parsing column data 
+    /** A {@link RowParser} to which the operations of determining row types, parsing column data
      *  and FlatFileBean creation is delegated. */
     private RowParser rowParser;
 
@@ -58,17 +58,16 @@ public class FlatFileBeanReader implements Closeable {
         this.rowParser = new RowParser(defaultLocale);
     }
 
-    /** Adds a {@link RowTypeData} definition to the reader. 
-     * @param rowType */
+    /** Adds a {@link RowTypeData} definition to the reader.
+     * @param rowType the row type to add */
     public void addRowType(RowTypeData rowType) {
         this.rowParser.addRowType(rowType);
     }
 
-    /** Reads a single text row of the flat file, determines its FlatFileBean type 
-     *  using the configured {@link RowTypeData}s and creates a FlatFileBean instance 
-     *  configured by the row data. 
-     *  @return the next row mapped to a JavaBean
-     *  @throws IOException */
+    /** Reads a single text row of the flat file, determines its FlatFileBean type using the configured {@link RowTypeData}s and
+     * creates a FlatFileBean instance configured by the row data.
+     * @return the next row mapped to a JavaBean
+     * @throws IOException if row reading fails */
     public FlatFileBeanData readRow() throws IOException {
         if (this.reader == null) {
             throw new TechnicalException("Reader has already been closed: " + this);
@@ -80,7 +79,7 @@ public class FlatFileBeanReader implements Closeable {
         LOGGER.debug("Imported data row: {}", rowData);
         Object bean = rowParser.parseRow(rowData);
         if (!(bean instanceof FlatFileBeanData)) {
-            throw new ConfigurationError("Flat file bean type does not inherit " + FlatFileBeanData.class);
+            throw new AutomationException("Flat file bean type does not inherit " + FlatFileBeanData.class);
         }
         return (FlatFileBeanData) bean;
     }
@@ -94,7 +93,7 @@ public class FlatFileBeanReader implements Closeable {
         }
     }
 
-    /** Wraps a {@link Reader} with a {@link BufferedReader} if it is no instance of BufferedReader. 
+    /** Wraps a {@link Reader} with a {@link BufferedReader} if it is no instance of BufferedReader.
      *  @return a BufferedReader that provides the content of the Reader provided. */
     private static BufferedReader bufferedReader(Reader reader) {
         if (reader instanceof BufferedReader) {

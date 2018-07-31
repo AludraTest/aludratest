@@ -17,6 +17,7 @@ package org.aludratest.testcase.data.xml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -25,7 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.aludratest.config.AludraTestConfig;
 import org.aludratest.config.impl.AludraTestConfigImpl;
+import org.aludratest.config.impl.AludraTestingTestConfigImpl;
 import org.aludratest.config.impl.DefaultConfigurator;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.testcase.Ignored;
@@ -41,18 +44,27 @@ import org.junit.Test;
 
 public class XmlBasedTestDataProviderTest {
 
-    private XmlBasedTestDataProvider createProvider() throws Exception {
+    private XmlBasedTestDataProvider createProvider(AludraTestConfig config) throws Exception {
         XmlBasedTestDataProvider provider = new XmlBasedTestDataProvider();
-        AludraTestConfigImpl config = new AludraTestConfigImpl();
-        DefaultConfigurator configurator = new DefaultConfigurator();
-        configurator.configure(config);
+        if (config == null) {
+            config = new AludraTestConfigImpl();
+            DefaultConfigurator configurator = new DefaultConfigurator();
+            configurator.configure(config);
+        }
 
         Map<String, ScriptLibrary> libs = new HashMap<String, ScriptLibrary>();
-        libs.put("default", new DefaultScriptLibrary());
+
+        DefaultScriptLibrary lib = new DefaultScriptLibrary();
+        ReflectionUtils.setVariableValueInObject(lib, "aludraConfig", config);
+        libs.put("default", lib);
 
         ReflectionUtils.setVariableValueInObject(provider, "aludraConfig", config);
         ReflectionUtils.setVariableValueInObject(provider, "scriptLibraries", libs);
         return provider;
+    }
+
+    private XmlBasedTestDataProvider createProvider() throws Exception {
+        return createProvider(null);
     }
 
     @Test
@@ -153,6 +165,21 @@ public class XmlBasedTestDataProviderTest {
     }
 
     @Test
+    public void testTimetravel() throws Exception {
+        AludraTestingTestConfigImpl config = new AludraTestingTestConfigImpl();
+        DefaultConfigurator configurator = new DefaultConfigurator();
+        configurator.configure(config);
+        config.setScriptSecondsOffset(Integer.valueOf(-86400));
+        XmlBasedTestDataProvider provider = createProvider(config);
+        List<TestCaseData> testData = provider
+                .getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod("testMethodTimetravel", StringData.class,
+                        StringData.class));
+        assertEquals("2015-03-07 23:58", ((StringData) testData.get(0).getData()[0]).getValue());
+        // uses timetravel() JavaScript method
+        assertEquals("Test 2016-08-27", ((StringData) testData.get(0).getData()[1]).getValue());
+    }
+
+    @Test
     public void testFormatting() throws Exception {
         XmlBasedTestDataProvider provider = createProvider();
         List<TestCaseData> testData = provider.getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod(
@@ -162,6 +189,16 @@ public class XmlBasedTestDataProviderTest {
         assertEquals("22. Juli 2015", cd.getName());
         cd = (ComplexData) testData.get(1).getData()[0];
         assertEquals("09. Juli 2015", cd.getName());
+    }
+
+    @Test
+    public void testDeferredExecution() throws Exception {
+        XmlBasedTestDataProvider provider = createProvider();
+        List<TestCaseData> testData = provider
+                .getTestDataSets(XmlBasedTestDataProviderTest.class.getDeclaredMethod("testMethodDeferred", StringData.class));
+        String value1 = ((StringData) testData.get(0).getData()[0]).getValue();
+        String value2 = ((StringData) testData.get(0).getData()[0]).getValue();
+        assertNotEquals(value1, value2);
     }
 
     public void testMethod1(@Source(uri = "complex.testdata.xml", segment = "complexObject") ComplexData object,
@@ -214,4 +251,16 @@ public class XmlBasedTestDataProviderTest {
         }
     }
 
+    public void testMethodTimetravel(@Source(uri = "timetravel.testdata.xml", segment = "stringObject") StringData object,
+            @Source(uri = "timetravel.testdata.xml", segment = "secondObject") StringData secondObject) {
+        if (object == null) {
+            // do nothing
+        }
+    }
+
+    public void testMethodDeferred(@Source(uri = "deferred.testdata.xml", segment = "stringObject") StringData object) {
+        if (object == null) {
+            // do nothing
+        }
+    }
 }

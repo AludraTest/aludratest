@@ -30,11 +30,12 @@ public class TimeoutService {
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
     /** Performs the invocation and throws a {@link TimeoutException} if the invocation time exceeds the specified timeout.
+     * @param <T> the return type of the {@link Callable} to call
      * @param callable the {@link Callable} to call
      * @param timeout the maximum tolerated execution time in milliseconds
      * @return the result of the callable's {@link Callable#call()} method invocation
-     * @throws Exception */
-    public static <T> T call(Callable<T> callable, long timeout) throws Exception {
+     * @throws Exception in case of an internal error of the callable or a timeout */
+    public static <T> T call(Callable<T> callable, long timeout) throws Exception { // NOSONAR
         Future<T> handler = null;
         try {
             handler = EXECUTOR_SERVICE.submit(callable);
@@ -60,6 +61,7 @@ public class TimeoutService {
     /** Creates a Callable that wraps a target object of type Callable, forwarding the invocation of its own
      * {@link Callable#call()} method to the targets call method and applying a timeout. If the timeout is exceeded, a
      * TimeoutException is thrown.
+     * @param <T> the return type of the {@link Callable} to create
      * @param target the target to wrap and forward calls to
      * @param timeout the timeout to apply on target invocation
      * @return the result of the target's {@link Callable#call()} invocation */

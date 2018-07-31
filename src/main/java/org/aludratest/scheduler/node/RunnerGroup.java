@@ -30,9 +30,6 @@ import org.aludratest.scheduler.RunStatus;
  */
 public class RunnerGroup extends RunnerNode {
 
-    /** The parent group. */
-    private final RunnerGroup parent;
-
     /** The child nodes. */
     private final List<RunnerNode> children;
 
@@ -45,18 +42,19 @@ public class RunnerGroup extends RunnerNode {
      * @param parent See {@link #parent}. */
     public RunnerGroup(String path, ExecutionMode mode, RunnerGroup parent) {
         super(path, parent);
-        this.parent = parent;
         this.mode = mode;
         this.children = new ArrayList<RunnerNode>();
     }
 
-    /** Tells if the child nodes may be executed concurrently. */
+    /** Tells if the child nodes may be executed concurrently.
+     * @return true if the group members may be executed in parallel, otherwise false */
     public boolean isParallel() {
         if (mode == ExecutionMode.PARALLEL) {
             return true;
         } else if (mode == ExecutionMode.SEQUENTIAL) {
             return false;
-        } else if (parent == null) {
+        }
+        else if (parent == null) { // NOSONAR
             return true;
         } else {
             return parent.isParallel();
@@ -74,7 +72,8 @@ public class RunnerGroup extends RunnerNode {
         return Collections.unmodifiableList(children);
     }
 
-    /** Add a child node to the {@link #children}. */
+    /** Add a child node to the {@link #children}.
+     * @param childNode the child node to add */
     public void addChild(RunnerNode childNode) {
         children.add(childNode);
     }
@@ -99,14 +98,21 @@ public class RunnerGroup extends RunnerNode {
 
     @Override
     public RunStatus getRunStatus() {
-        Set<RunStatus> allStates = new HashSet<RunStatus>();
-
         List<RunnerNode> checkChildren;
         synchronized (children) {
+            if (children.isEmpty()) {
+                return RunStatus.EMPTY;
+            }
             checkChildren = new ArrayList<RunnerNode>(children);
         }
+        Set<RunStatus> allStates = new HashSet<RunStatus>();
         for (RunnerNode child : checkChildren) {
             allStates.add(child.getRunStatus());
+        }
+
+        // ignore empty ones for status calculation
+        if (allStates.size() > 1) {
+            allStates.remove(RunStatus.EMPTY);
         }
 
         if (allStates.size() == 1) {

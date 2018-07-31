@@ -15,11 +15,11 @@
  */
 package org.aludratest.service.gui.web;
 
-import org.aludratest.impl.log4testing.AttachResult;
-import org.aludratest.impl.log4testing.ElementName;
-import org.aludratest.impl.log4testing.ElementType;
-import org.aludratest.impl.log4testing.TechnicalArgument;
-import org.aludratest.impl.log4testing.TechnicalLocator;
+import org.aludratest.service.AttachResult;
+import org.aludratest.service.ElementName;
+import org.aludratest.service.ElementType;
+import org.aludratest.service.TechnicalArgument;
+import org.aludratest.service.TechnicalLocator;
 import org.aludratest.service.gui.GUIInteraction;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.aludratest.service.locator.element.XPathLocator;
@@ -61,7 +61,7 @@ public interface WebGUIInteraction extends GUIInteraction {
     void addCustomHttpHeaderCommand(String key, @ParamConverter(HttpHeaderFormat.class) String value);
 
     /** Switches to the given iframe element of the current web page in the current window, or switches back to default content.
-     * 
+     *
      * @param iframeLocator Locator which uniquely identifies the inner frame to switch to. Use <code>null</code> to switch back
      *            to default content. */
     void switchToIFrame(@TechnicalLocator GUIElementLocator iframeLocator);
@@ -78,22 +78,45 @@ public interface WebGUIInteraction extends GUIInteraction {
 
     /** Evaluates arbitrary XPath and outputs its result as String.
      * @param xpath XPath expression to be executed
-     * 
+     *
      * @return String containing XPath evaluation result */
     String evalXPathAsString(@TechnicalLocator String xpath);
 
     /** Clicks on an element and expects a download to start (e.g. a Download button or link). Downloads the file and returns it
      * binary contents, in an encoded form. <br>
      * If no download starts within the given task completion timeout, a <code>FunctionalFailure</code> is thrown. <br>
-     * 
+     *
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log
      * @param locator to locate buttons, links or any other elements which react on mouse clicks.
-     * @param taskCompletionTimeout
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of the task
      * @return The binary contents of the file, as a Base64 encoded string; prefixed by the file name and a colon (e.g.
      *         <code>myExcelFile.xls:AP8uMKg...</code>). */
     @AttachResult("Downloaded File")
     String clickForDownload(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator, @TechnicalArgument int taskCompletionTimeout);
 
+    /** Waits for an AJAX operation to be finished. This is usually done with some JavaScript querying a variable of a known
+     * JavaScript framework (e.g. jQuery). <br>
+     * The framework may or may not be supported by the web GUI implementation. If it is not supported, an AutomationException is
+     * thrown. <br>
+     * If the maximum waiting time is reached without the Ajax operation being finished, a PerformanceException is thrown.
+     *
+     * @param frameworkName Name of the JavaScript framework to check, e.g. "jquery". Implementations should convert this
+     *            parameter to lowercase before checking it, so case does not matter for the caller.
+     * @param maxWaitTime Maximum time, in milliseconds, to wait for the AJAX operation to be finished. */
+    void waitForAjaxOperationEnd(@TechnicalArgument String frameworkName, @TechnicalArgument int maxWaitTime);
+
+    /** Adds or creates a cookie.
+     * @param name cookie name
+     * @param value cookie value
+     * @param domain The domain the cookie is visible to.
+     * @param path The path the cookie is visible to. If left blank or set to null, will be set to "/".
+     * @param expiry maximum age of the cookie in seconds. */
+    void addCookie(@TechnicalLocator String name, @TechnicalArgument String value, @TechnicalArgument String domain,
+            @TechnicalArgument String path, @TechnicalArgument int expiry);
+
+    /** Deletes a specific cookie.
+     * @param name cookie name */
+    void deleteCookieNamed(@TechnicalLocator String name);
 }

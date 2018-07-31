@@ -34,13 +34,14 @@ public class RegexFilePathFilter implements FileFilter {
     /** The regex which must be matched. */
     private String regex;
 
-    /** Constructor. 
+    /** Constructor.
      *  @param regex The regular expression to apply for filtering */
     public RegexFilePathFilter(String regex) {
         this.regex = regex;
     }
 
     /** Accepts files that match the {@link #regex} */
+    @Override
     public boolean accept(FileInfo file) {
         boolean result = Pattern.matches(regex, file.getPath());
         if (result) {
@@ -49,6 +50,11 @@ public class RegexFilePathFilter implements FileFilter {
             LOGGER.debug("Regex '{}' does not match {}", regex, file);
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "RegEx File Path Filter with Pattern " + regex;
     }
 
 }

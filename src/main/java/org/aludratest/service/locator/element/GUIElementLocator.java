@@ -24,7 +24,7 @@ import org.aludratest.service.locator.Locator;
 public abstract class GUIElementLocator extends Locator {
 
     /** Constructor.
-     *  @param locator */
+     * @param locator the {@link Locator} of the GUI element */
     protected GUIElementLocator(String locator) {
         super(locator);
     }

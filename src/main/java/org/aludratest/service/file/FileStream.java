@@ -17,11 +17,9 @@ package org.aludratest.service.file;
 
 import org.aludratest.dict.ActionWordLibrary;
 
-/**
- * Parent class for file reader/writer classes that support the action word library approach. 
- * @param <E> 
- * @author Volker Bergmann
- */
+/** Parent class for file reader/writer classes that support the action word library approach.
+ * @param <E> Generic parameter to be set by final child classes pointing to the child class itself
+ * @author Volker Bergmann */
 public abstract class FileStream<E extends FileStream<E>> implements ActionWordLibrary<E> {
 
     protected final String filePath;
@@ -42,8 +40,8 @@ public abstract class FileStream<E extends FileStream<E>> implements ActionWordL
         return (E) this;
     }
 
-    /** Polls the file system until a file at the given path is found 
-     *  or a timeout occurs. 
+    /** Polls the file system until a file at the given path is found
+     *  or a timeout occurs.
      *  @return a reference to the FileStream object itself */
     @SuppressWarnings("unchecked")
     public E waitUntilExists() {

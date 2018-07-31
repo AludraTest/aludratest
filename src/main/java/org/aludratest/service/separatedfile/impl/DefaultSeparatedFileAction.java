@@ -33,7 +33,7 @@ import org.aludratest.service.separatedfile.SeparatedFileVerification;
 import org.aludratest.testcase.event.attachment.Attachment;
 
 /**
- * Default implementation of the interfaces {@link SeparatedFileInteraction}, 
+ * Default implementation of the interfaces {@link SeparatedFileInteraction},
  * {@link SeparatedFileVerification} and {@link SeparatedFileCondition}.
  * @author Volker Bergmann
  */
@@ -47,9 +47,9 @@ public class DefaultSeparatedFileAction implements SeparatedFileInteraction, Sep
     /** Keeps references to the writers, each one wrapped with a WriterConfig. */
     private Map<Object, SeparatedWriterConfig> writers;
 
-    /** Constructor. 
-     *  @param contentHandler 
-     *  @param fileService */
+    /** Constructor.
+     * @param contentHandler the {@link SeparatedContent} implementation to use
+     * @param fileService the {@link FileService} to use */
     public DefaultSeparatedFileAction(SeparatedContent contentHandler, FileService fileService) {
         this.contentHandler = contentHandler;
         this.fileService = fileService;
@@ -60,16 +60,16 @@ public class DefaultSeparatedFileAction implements SeparatedFileInteraction, Sep
     public void setSystemConnector(SystemConnector systemConnector) {
         // empty implementation
     }
-    
+
     @Override
     public List<Attachment> createAttachments(Object object, String label) {
         throw new TechnicalException("Not supported");
     }
-    
+
     /** Empty implementation of the {@link Action} interface returning null. */
     @Override
     public List<Attachment> createDebugAttachments() {
-        return null;
+        return null; // NOSONAR this is compliant with the interface's contract
     }
 
     // general file operations -------------------------------------------------
@@ -97,7 +97,7 @@ public class DefaultSeparatedFileAction implements SeparatedFileInteraction, Sep
     // writer operations -------------------------------------------------------
 
     @Override
-    public Object createWriter(String filePath, boolean overwrite, 
+    public Object createWriter(String filePath, boolean overwrite,
             Class<? extends SeparatedFileBeanData> beanClass, char separator, String header) {
         SeparatedWriterConfig config = new SeparatedWriterConfig(filePath, overwrite);
         Object writerId = config.createWriter(contentHandler, beanClass, separator, header);
@@ -120,7 +120,7 @@ public class DefaultSeparatedFileAction implements SeparatedFileInteraction, Sep
     }
 
     @Override
-    public Object createReader(String filePath, 
+    public Object createReader(String filePath,
             Class<? extends SeparatedFileBeanData> beanClass, char separator) {
         String content = fileService.perform().readTextFile(filePath);
         Object readerId = contentHandler.createReader(new StringReader(content), beanClass, separator);

@@ -105,13 +105,13 @@ public class WizardUtil {
     // private helpers ---------------------------------------------------------
 
     private static boolean isTestMethodWithSource(Method method) {
-        return isPublic(method) &&
+        return internalIsPublic(method) &&
                 !isAbstract(method) &&
                 method.getAnnotation(Test.class) != null &&
                 hasExcelSourceAnnotation(method);
     }
 
-    private static boolean isPublic(Method method) {
+    private static boolean internalIsPublic(Method method) {
         return ((method.getModifiers() & Modifier.PUBLIC) == Modifier.PUBLIC);
     }
 

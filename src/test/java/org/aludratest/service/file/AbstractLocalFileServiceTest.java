@@ -17,14 +17,14 @@ package org.aludratest.service.file;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.aludratest.service.AbstractAludraServiceTest;
-import org.aludratest.service.file.FileService;
 import org.databene.commons.FileUtil;
 import org.junit.Before;
 
 /**
- * Abstract parent class for {@link FileService} tests 
+ * Abstract parent class for {@link FileService} tests
  * that access the local file system.
  * @author Volker Bergmann
  */
@@ -36,13 +36,10 @@ public abstract class AbstractLocalFileServiceTest extends AbstractAludraService
     /** Temporary path of the files and directories on which the tests are executed. */
     protected static final File ROOT = new File("target/fileServiceTest");
 
-    /**
-     * Invoked before each test method invocation, 
-     * copies the directory template from src/test/resources to target/ 
-     * @throws Exception
-     */
+    /** Invoked before each test method invocation, copies the directory template from src/test/resources to target/
+     * @throws IOException if copying files fails */
     @Before
-    public void prepareFiles() throws Exception {
+    public void prepareFiles() throws IOException {
         // expect a "FileNotFoundException" when access is denied because tests
         // are executed too fast
         // sleep a while, and try again

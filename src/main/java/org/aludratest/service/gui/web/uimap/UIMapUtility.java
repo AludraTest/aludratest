@@ -29,6 +29,6 @@ package org.aludratest.service.gui.web.uimap;
  * @author falbrech
  * 
  */
-public abstract class UIMapUtility {
+public abstract class UIMapUtility { // NOSONAR
 
 }

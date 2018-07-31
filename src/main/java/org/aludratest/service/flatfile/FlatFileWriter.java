@@ -18,14 +18,14 @@ package org.aludratest.service.flatfile;
 import org.aludratest.content.flat.data.FlatFileBeanData;
 import org.aludratest.service.file.FileStream;
 
-/** 
- * BeanFlatFileWriter implementation that serves as business delegate for the test developer. 
+/**
+ * BeanFlatFileWriter implementation that serves as business delegate for the test developer.
  * @param <E> the generic type to return as 'this'
  * @param <C> the parent type of the flat file beans to write
  * @author Volker Bergmann
  */
-public abstract class FlatFileWriter<C extends FlatFileBeanData, E extends FlatFileWriter<C, E>> 
-            extends FileStream<FlatFileWriter<C, E>> {
+public abstract class FlatFileWriter<C extends FlatFileBeanData, E extends FlatFileWriter<C, E>>
+extends FileStream<FlatFileWriter<C, E>> {
 
     private FlatFileService service;
 
@@ -34,7 +34,7 @@ public abstract class FlatFileWriter<C extends FlatFileBeanData, E extends FlatF
 
     /** Constructor.
      *  @param filePath the file path of the file to create
-     *  @param service the {@link FlatFileService} to use. 
+     *  @param service the {@link FlatFileService} to use.
      *  @param overwrite Flag for permitting overwriting of existing files */
     public FlatFileWriter(String filePath, FlatFileService service, boolean overwrite) {
         super(filePath, service.getFileService());
@@ -43,13 +43,15 @@ public abstract class FlatFileWriter<C extends FlatFileBeanData, E extends FlatF
         verifyState(); //NOSONAR
     }
 
-    /** Formats a bean object as flat file entry and writes it to the associated flat file. */
+    /** Formats a bean object as flat file entry and writes it to the associated flat file.
+     * @param bean the Java object to write
+     * @return a reference to <code>this</code> */
     protected E writeRow(C bean) {
         this.service.perform().writeRow(bean, this.writerId);
         return this.verifyState();
     }
 
-    /** Closes the writer. 
+    /** Closes the writer.
      *  @return a reference to 'this' */
     public E close() {
         this.service.perform().closeWriter(this.writerId);

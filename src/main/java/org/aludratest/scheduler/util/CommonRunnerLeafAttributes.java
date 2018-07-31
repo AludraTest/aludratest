@@ -21,4 +21,14 @@ public interface CommonRunnerLeafAttributes {
 
     public static final String IGNORE_REASON = "IGNORE_REASON";
 
+    public static final String SEQUENTIAL_GROUP_NAME = "SEQUENTIAL_GROUP_NAME";
+
+    public static final String SEQUENTIAL_GROUP_INDEX = "SEQUENTIAL_GROUP_INDEX";
+
+    /** Attribute which is set to <code>true</code> when the RunnerTreeBuilder could not build the runner leaf's invoker, e.g. due
+     * to data errors. */
+    public static final String BUILDER_ERROR = "BUILDER_ERROR";
+
+    /** The Id in an External Test Management system referring to this test case. */
+    public static final String EXTERNAL_TEST_ID = "EXTERNAL_TEST_ID";
 }

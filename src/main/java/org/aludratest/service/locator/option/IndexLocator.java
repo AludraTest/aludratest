@@ -38,4 +38,14 @@ public class IndexLocator extends OptionLocator {
         return index;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj) || getClass() != obj.getClass())
+            return false;
+        IndexLocator that = (IndexLocator) obj;
+        return (this.index == that.index);
+    }
+
 }

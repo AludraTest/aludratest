@@ -15,7 +15,9 @@
  */
 package org.aludratest.service.flatfile.impl;
 
+import java.io.Serializable;
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ import org.aludratest.service.flatfile.FlatFileInteraction;
 import org.aludratest.service.flatfile.FlatFileService;
 import org.aludratest.service.flatfile.FlatFileVerification;
 import org.aludratest.testcase.event.attachment.Attachment;
+import org.aludratest.testcase.event.attachment.StringAttachment;
 
 /**
  * Implements all {@link FlatFileService} action interfaces.
@@ -48,9 +51,9 @@ public class DefaultFlatFileAction implements FlatFileInteraction, FlatFileVerif
     /** Keeps references to the writers, each one wrapped with a WriterConfig. */
     private Map<Object, WriterConfig> writers;
 
-    /** Constructor. 
-     *  @param contentHandler 
-     *  @param fileService */
+    /** Constructor.
+     * @param contentHandler the {@link FlatContent} implementation to use
+     * @param fileService the {@link FileService} implementation to use */
     public DefaultFlatFileAction(FlatContent contentHandler, FileService fileService) {
         this.contentHandler = contentHandler;
         this.fileService = fileService;
@@ -61,12 +64,23 @@ public class DefaultFlatFileAction implements FlatFileInteraction, FlatFileVerif
     public void setSystemConnector(SystemConnector systemConnector) {
         // empty implementation
     }
-    
+
     @Override
     public List<Attachment> createAttachments(Object object, String label) {
-        throw new TechnicalException("Not supported");
+        if (object instanceof WriterKey) {
+            Object key = unwrapWriterKey(object);
+            WriterConfig wc = writers.get(key);
+            if (wc != null) {
+                // get writer contents and return as text file attachment
+                return Collections.<Attachment> singletonList(new StringAttachment(label, wc.getContent(), "txt"));
+            }
+            return Collections.emptyList();
+        }
+
+        throw new TechnicalException("Unsupported parameter type for attachment: "
+                + (object == null ? "null" : object.getClass().getName()));
     }
-    
+
     /** Empty implementation of the {@link Action} interface returning null. */
     @Override
     public List<Attachment> createDebugAttachments() {
@@ -100,18 +114,19 @@ public class DefaultFlatFileAction implements FlatFileInteraction, FlatFileVerif
     @Override
     public Object createWriter(String filePath, boolean overwrite) {
         WriterConfig config = new WriterConfig(filePath, overwrite);
-        Object writerId = config.createWriter(contentHandler);
+        Serializable writerId = config.createWriter(contentHandler);
         this.writers.put(writerId, config);
-        return writerId;
+        return new WriterKey(writerId);
     }
 
     @Override
     public void writeRow(Object bean, Object writerId) {
-        contentHandler.writeRow(bean, writerId);
+        contentHandler.writeRow(bean, unwrapWriterKey(writerId));
     }
 
     @Override
     public void closeWriter(Object writerId) {
+        writerId = unwrapWriterKey(writerId);
         contentHandler.closeWriter(writerId);
         WriterConfig writerConfig = getWriterConfig(writerId, true);
         String content = writerConfig.getContent();
@@ -149,6 +164,50 @@ public class DefaultFlatFileAction implements FlatFileInteraction, FlatFileVerif
             throw new AutomationException("Writer not found");
         }
         return writer;
+    }
+
+    private Object unwrapWriterKey(Object key) {
+        if (key instanceof WriterKey) {
+            return ((WriterKey) key).internalKey;
+        }
+        return key;
+    }
+
+    private static class WriterKey implements Serializable {
+
+        private static final long serialVersionUID = -6215758848328616178L;
+
+        private Serializable internalKey;
+
+        public WriterKey(Serializable internalKey) {
+            if (internalKey == null) {
+                throw new IllegalArgumentException("Internal writer ID is null");
+            }
+            this.internalKey = internalKey;
+        }
+
+        @Override
+        public String toString() {
+            return internalKey.toString();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            WriterKey that = (WriterKey) obj;
+            return this.internalKey.equals(that.internalKey); // internalKey is never null
+        }
+
+        @Override
+        public int hashCode() {
+            return internalKey.hashCode();
+        }
+
     }
 
 }

@@ -15,17 +15,17 @@
  */
 package org.aludratest.service.gui;
 
-import org.aludratest.impl.log4testing.ElementName;
-import org.aludratest.impl.log4testing.ElementType;
-import org.aludratest.impl.log4testing.TechnicalLocator;
+import org.aludratest.service.ElementName;
+import org.aludratest.service.ElementType;
 import org.aludratest.service.Interaction;
+import org.aludratest.service.TechnicalLocator;
 import org.aludratest.service.Verification;
 import org.aludratest.service.locator.element.GUIElementLocator;
 import org.databene.commons.Validator;
 
 /** The interface {@link Verification} provides several methods to verify values in the active screen of the application under
  * test. Every class which implements this interface must assure that a call of one of these methods verifies the expected value
- * with the current in the application under test.<br/>
+ * with the current in the application under test.<br>
  * Methods with locators accept two types of locators.
  * <ol>
  * <li>The first type is a by the caller typed locator.</li>
@@ -52,6 +52,14 @@ public interface GUIVerification extends Verification {
      * @param elementName Name of the element.
      * @param locator Locator of the element. */
     void assertVisible(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator);
+
+    /** Verifies for an element identified by a locator that it is <b>not</b> visible. Elements being visible will raise an
+     * exception which will be handled by the test framework.
+     * @param elementType Type of the element, depending on the implementation.
+     * @param elementName Name of the element.
+     * @param locator Locator of the element. */
+    void assertNotVisible(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator);
 
     /** Verifies for an element identified by a locator that it is editable. Read-only elements will raise an exception which will
@@ -134,20 +142,20 @@ public interface GUIVerification extends Verification {
      * @param elementType Type of the element, depending on the implementation.
      * @param elementName Name of the element.
      * @param locator Locator of the element.
-     * @param expectedValues Values which are expexted in the element. */
+     * @param expectedValues Values which are expexted in the element.
+     * @param checkOrder If <code>true</code>, order of the values must match, otherwise, order is not important. */
     void assertHasValues(@ElementType String elementType, @ElementName String elementName,
-            @TechnicalLocator GUIElementLocator locator,
-            String[] expectedValues);
+            @TechnicalLocator GUIElementLocator locator, String[] expectedValues, boolean checkOrder);
 
     /** Verifies for an element identified by a locator (usually a dropdownbox) that it has the given labels (and only these).
      * Elements not having the given labels will raise an exception which will be handled by the test framework.
      * @param elementType Type of the element, depending on the implementation.
      * @param elementName Name of the element.
      * @param locator Locator of the element.
-     * @param expectedLabels Labels which are expexted in the element. */
+     * @param expectedLabels Labels which are expexted in the element.
+     * @param checkOrder If <code>true</code>, order of the labels must match, otherwise, order is not important. */
     void assertHasLabels(@ElementType String elementType, @ElementName String elementName,
-            @TechnicalLocator GUIElementLocator locator,
-            String[] expectedLabels);
+            @TechnicalLocator GUIElementLocator locator, String[] expectedLabels, boolean checkOrder);
 
     /** Verifies for an input element identified by a locator (usually an input field, a button, or similar) that its value matches
      * the given Validator. Elements with an unmatched value will raise an exception which will be handled by the test framework.
@@ -168,6 +176,15 @@ public interface GUIVerification extends Verification {
     void assertContainsLabels(@ElementType String elementType, @ElementName String elementName,
             @TechnicalLocator GUIElementLocator locator,
             String[] labels);
+
+    /** Verifies for an element identified by a locator (usually a dropdownbox) that it contains the given values (and possibly
+     * more). Elements not containing the given values will raise an exception which will be handled by the test framework.
+     * @param elementType Type of the element, depending on the implementation.
+     * @param elementName Name of the element.
+     * @param locator Locator of the element.
+     * @param values Values which are expexted to be contained in the element. */
+    void assertContainsValues(@ElementType String elementType, @ElementName String elementName,
+            @TechnicalLocator GUIElementLocator locator, String[] values);
 
     /** Verifies for an element identified by a locator that it is <b>not</b> present in the GUI (not either visible nor
      * invisible). Elements being present (visible or invisible) will raise an exception which will be handled by the test

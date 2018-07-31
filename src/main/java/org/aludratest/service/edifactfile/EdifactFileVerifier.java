@@ -15,43 +15,38 @@
  */
 package org.aludratest.service.edifactfile;
 
-import org.aludratest.dict.ActionWordLibrary;
-import org.aludratest.service.edifactfile.data.KeyExpressionData;
-import org.aludratest.service.edifactfile.data.LocalDiffTypeData;
-import org.aludratest.util.data.StringData;
-import org.databene.edifatto.ComparisonSettings;
-import org.databene.edifatto.compare.DiffType;
-import org.databene.edifatto.model.Interchange;
-import org.databene.edifatto.util.NameBasedXMLComparisonModel;
+import java.io.IOException;
+import java.io.InputStream;
 
-/**
- * Provides access to EDI files.
- * @param <E>
- * @author Volker Bergmann
- */
+import org.aludratest.content.edifact.EdiComparisonSettings;
+import org.aludratest.content.edifact.EdiDiffDetailType;
+import org.aludratest.dict.ActionWordLibrary;
+import org.aludratest.exception.AutomationException;
+import org.aludratest.exception.FunctionalFailure;
+import org.aludratest.service.edifactfile.data.KeyExpressionData;
+import org.aludratest.service.file.FileFilter;
+import org.aludratest.util.data.StringData;
+import org.databene.commons.IOUtil;
+import org.databene.edifatto.model.Interchange;
+
+/** Provides access to EDI files.
+ * @param <E> Generic parameter to be set by a final child class to this child class itself
+ * @author Volker Bergmann */
 @SuppressWarnings("unchecked")
 public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements ActionWordLibrary<E> {
 
-    public static final String ANY = null;
-    public static final String DIFFERENT = DiffType.DIFFERENT.name();
-    public static final String MISSING = DiffType.MISSING.name();
-    public static final String MOVED = DiffType.MOVED.name();
-    public static final String UNEXPECTED = DiffType.UNEXPECTED.name();
-
-    private final String filePath;
+    protected String filePath;
     private final EdifactFileService service;
-    private final NameBasedXMLComparisonModel model;
-    private final ComparisonSettings settings;
+    private final EdiComparisonSettings settings;
     private final String elementType;
 
     /** Constructor.
-     *  @param filePath
-     *  @param service */
+     * @param filePath the path of the file to verify
+     * @param service the underlying FileService */
     public EdifactFileVerifier(String filePath, EdifactFileService service) {
         this.filePath = filePath;
         this.service = service;
-        this.model = new NameBasedXMLComparisonModel();
-        this.settings = new ComparisonSettings();
+        this.settings = service.check().createDefaultComparisonSettings();
         this.elementType = getClass().getSimpleName();
     }
 
@@ -59,16 +54,16 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
      *  @param path an XPath expressions of the EDI elements to ignore in comparison
      *  @return a reference to the invoked EdifactFileVerifier instance */
     public E addExclusionPath(StringData path) {
-        this.settings.addToleratedDiff(null, path.getValue());
+        this.settings.tolerateAnyDiffAt(path.getValue());
         return (E) this;
     }
 
     /** Allows the given diff type in comparisons.
-     * @param toleratedDiffType the diff type to tolerate
+     * @param type the type of difference
+     * @param xPath the path where the difference is tolerated
      * @return a reference to the invoked EdifactFileVerifier instance */
-    public E addToleratedDiff(LocalDiffTypeData toleratedDiffType) {
-        DiffType type = diffType(toleratedDiffType.getType());
-        this.settings.addToleratedDiff(type, toleratedDiffType.getXpath());
+    public E addToleratedDiff(EdiDiffDetailType type, String xPath) {
+        this.settings.tolerateGenericDiff(type, xPath);
         return (E) this;
     }
 
@@ -78,7 +73,7 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
      *  @return a reference to the invoked EdifactFileVerifier instance
      */
     public E addKeyExpression(KeyExpressionData keyExpression) {
-        this.model.addKeyExpression(keyExpression.getElementName(), keyExpression.getKeyExpression());
+        this.settings.addKeyExpression(keyExpression.getElementName(), keyExpression.getKeyExpression());
         return (E) this;
     }
 
@@ -104,27 +99,50 @@ public class EdifactFileVerifier<E extends EdifactFileVerifier<E>> implements Ac
         return (E) this;
     }
 
-    /** Asserts that the interchange stored in this document is equals to the provided
-     *  interchange, ignoring the provided paths.
-     *  @param referenceFileName the name of the reference file to verify against
-     *  @return a reference to the invoked EdifactFileVerifier instance */
-    public E verifyWith(StringData referenceFileName) {
-        Interchange expected = service.perform().readInterchange(
-                elementType, "reference file", referenceFileName.getValue());
+    /** Polls the file system until a file at the given path is found or a timeout occurs. If a file matched, the value of the
+     * {@link #filePath} field is set to the path of that file. If the timeout is exceeded without a matching file, a
+     * {@link FunctionalFailure} is thrown.
+     * 
+     * Usage Example:
+     * 
+     * <pre>
+     *   MyEdifactFileVerifier verifier = new MyEdifactFileVerifier(null, service);
+     *   FileFilter filter = new RegexFilePathFilter(".*IFTDGN_1\\.edi");
+     *   verifier.waitForFirstMatch("/", filter);
+     *   verifier.verifyWith(new StringData("target/test-classes/ediTest/IFTDGN_1.edi"));
+     * </pre>
+     * 
+     * @param parentPath the path of the directory in which to search for the file
+     * @param filter a filter object that decides which file is to be accepted
+     * @exception FunctionalFailure if the timeout is exceeded without a matching file
+     * @return a reference to the FileStream object itself */
+    public E waitForFirstMatch(String parentPath, FileFilter filter) {
+        this.filePath = service.perform().waitForFirstMatch(parentPath, filter);
+        return (E) this;
+    }
+
+    /** Asserts that the interchange stored in this document is equals to the provided interchange, ignoring the provided paths.
+     * @param referenceFileUri the URI of the reference file to verify against
+     * @return a reference to the invoked EdifactFileVerifier instance */
+    public E verifyWith(StringData referenceFileUri) {
+        InputStream referenceFileStream = null;
+        try {
+            referenceFileStream = IOUtil.getInputStreamForURI(referenceFileUri.getValue());
+        }
+        catch (IOException e) {
+            IOUtil.close(referenceFileStream);
+            throw new AutomationException("Failed to read reference file", e);
+        }
+        Interchange expected = service.perform().readInterchange(elementType, "reference file", referenceFileStream);
         Interchange actual = service.perform().readInterchange(
                 elementType, "outbound file", this.filePath);
-        service.verify().assertInterchangesMatch(
-                elementType, null, expected, actual, settings, model);
+        service.verify().assertInterchangesMatch(elementType, null, expected, actual, settings);
         return (E) this;
     }
 
     @Override
     public E verifyState() {
         return (E) this;
-    }
-
-    private DiffType diffType(String name) {
-        return (name != null ? DiffType.valueOf(name) : null);
     }
 
 }

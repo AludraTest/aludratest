@@ -21,8 +21,4 @@ import org.aludratest.testcase.TestAttributes;
 @TestAttributes({ @TestAttribute(name = TestAttributeConstants.AUTHOR, value = "falbrech") })
 public class CategoryTest1 {
 
-    public CategoryTest1() {
-        // TODO Auto-generated constructor stub
-    }
-
 }

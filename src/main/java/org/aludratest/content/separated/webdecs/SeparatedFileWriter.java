@@ -36,13 +36,11 @@ public class SeparatedFileWriter implements Closeable {
     /** Internally used writer */
     private BeanCSVWriter<SeparatedFileBeanData> writer;
 
-    /**
-     * Constructor which instantiates the internal writer and forwards the argument to it. 
+    /** Constructor which instantiates the internal writer and forwards the argument to it.
      * @param out the writer to send the formatted character data to
      * @param separator the separator character to use
      * @param beanType the type of the beans to persist
-     * @param header 
-     */
+     * @param header the header to write */
     public SeparatedFileWriter(Writer out, Class<? extends SeparatedFileBeanData> beanType, char separator, String header) {
         this.writer = new BeanCSVWriter<SeparatedFileBeanData>(out, separator, false, SeparatedUtil.featureNames(beanType));
         if (!StringUtil.isEmpty(header)) {
@@ -50,17 +48,15 @@ public class SeparatedFileWriter implements Closeable {
         }
     }
 
-    /** 
-     * Chooses the row format by the bean class, formats the bean graph elements accordingly
-     * and writes them to the output stream. 
-     * @param bean 
-     * @throws IOException
-     */
+    /** Chooses the row format by the bean class, formats the bean graph elements accordingly and writes them to the output stream.
+     * @param bean the Java object to export
+     * @throws IOException if writing the row fails */
     public void writeRow(SeparatedFileBeanData bean) throws IOException {
         this.writer.writeElement(bean);
     }
 
     /** Closes the internal writer. */
+    @Override
     public void close() throws IOException {
         IOUtil.close(this.writer);
     }

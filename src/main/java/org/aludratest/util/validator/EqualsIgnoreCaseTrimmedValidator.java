@@ -27,10 +27,12 @@ public class EqualsIgnoreCaseTrimmedValidator extends AbstractNullStringValidato
         super(expectedTrimmed);
     }
 
+    @Override
     public boolean validImpl(String text) {
         return text.trim().equalsIgnoreCase(validationTerm.trim());
     }
 
+    @Override
     protected String descriptionImpl() {
         return "expecting '" + validationTerm.trim() + "' after trimming, ignoring case";
     }

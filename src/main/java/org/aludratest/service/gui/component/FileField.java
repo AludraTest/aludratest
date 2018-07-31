@@ -17,7 +17,6 @@ package org.aludratest.service.gui.component;
 
 import java.io.InputStream;
 
-import org.aludratest.service.gui.component.impl.ValueComponent;
 
 /** Represents a file field in a GUI.
  * @author Volker Bergmann */

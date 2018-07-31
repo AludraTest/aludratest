@@ -35,8 +35,8 @@ public class MergeData extends AbstractGitData {
     }
 
     /** Fully parameterized constructor.
-     * @param message
-     * @param branches */
+     * @param message the message text to set
+     * @param branches the branches to merge */
     public MergeData(String message, String... branches) {
         setMessage(message);
         this.branches = new ArrayList<StringData>();
@@ -47,25 +47,25 @@ public class MergeData extends AbstractGitData {
 
     /** Returns the message.
      * @return the message */
-    public String getMessage() {
+    public final String getMessage() {
         return message;
     }
 
     /** Sets the message.
      * @param message the message to set */
-    public void setMessage(String message) {
+    public final void setMessage(String message) {
         this.message = message;
     }
 
     /** Returns a list of the branches.
      * @return the branches */
-    public List<StringData> getBranches() {
+    public final List<StringData> getBranches() {
         return branches;
     }
 
     /** Sets the branches.
      * @param branches the branches to set */
-    public void setBranches(List<StringData> branches) {
+    public final void setBranches(List<StringData> branches) {
         this.branches = branches;
     }
 

@@ -17,13 +17,10 @@ package org.aludratest.exception;
 
 import org.aludratest.testcase.TestStatus;
 
-/**
- * Parent class for all technical exceptions in AludraTest.
- * A technical exception indicates a fault made by the test developer 
- * or technical issues like unavailable connectivity.
+/** Parent class for all technical exceptions in AludraTest. A technical exception indicates a fault made by the test developer or
+ * technical issues.
  * @author Marcel Malitz
- * @author Volker Bergmann
- */
+ * @author Volker Bergmann */
 public final class TechnicalException extends AludraTestException {
 
     private static final long serialVersionUID = 1L;

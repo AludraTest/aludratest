@@ -35,10 +35,10 @@ import org.slf4j.LoggerFactory;
  */
 @Implementation({ FileService.class })
 @ConfigProperties({
-        @ConfigProperty(name = "wait.max.retries", type = int.class, description = "The maximum number of retries when polling files.", defaultValue = ""
-                + FileServiceConfiguration.DEFAULT_WAIT_MAX_RETRIES),
-        @ConfigProperty(name = "wait.timeout", type = int.class, description = "The maximum time to wait when polling, in milliseconds. The retries are distributed over this time", defaultValue = ""
-                + FileServiceConfiguration.DEFAULT_WAIT_TIMEOUT) })
+    @ConfigProperty(name = "wait.max.retries", type = int.class, description = "The maximum number of retries when polling files.", defaultValue = ""
+            + FileServiceConfiguration.DEFAULT_WAIT_MAX_RETRIES),
+            @ConfigProperty(name = "wait.timeout", type = int.class, description = "The maximum time to wait when polling, in milliseconds. The retries are distributed over this time", defaultValue = ""
+                    + FileServiceConfiguration.DEFAULT_WAIT_TIMEOUT) })
 public class FileServiceImpl extends AbstractConfigurableAludraService implements FileService {
 
     /** The logger of the class. */
@@ -46,8 +46,14 @@ public class FileServiceImpl extends AbstractConfigurableAludraService implement
 
     private FileServiceConfiguration configuration;
 
-    /** The implementor of all action interfaces. */
-    private FileActionImpl action;
+    /** The implementor of the FileInteraction interface. */
+    private FileInteractionImpl interaction;
+
+    /** The implementor of the FileVerification interface. */
+    private FileVerificationImpl verification;
+
+    /** The implementor of the FileCondition interface. */
+    private FileConditionImpl condition;
 
     /** Default constructor. */
     public FileServiceImpl() {
@@ -75,7 +81,9 @@ public class FileServiceImpl extends AbstractConfigurableAludraService implement
     // AludraService interface implementation ----------------------------------
     @Override
     public void initService() {
-        this.action = new FileActionImpl(configuration);
+        this.interaction = new FileInteractionImpl(configuration);
+        this.verification = new FileVerificationImpl(configuration);
+        this.condition = new FileConditionImpl(configuration);
     }
 
     /** Closes the configuration (and with it, Commons VFS' StandardFileSystemManager). */
@@ -87,19 +95,19 @@ public class FileServiceImpl extends AbstractConfigurableAludraService implement
     /** Provides the service's interaction operations. */
     @Override
     public FileInteraction perform() {
-        return this.action;
+        return this.interaction;
     }
 
     /** Provides the service's verification operations. */
     @Override
     public FileVerification verify() {
-        return this.action;
+        return this.verification;
     }
 
     /** Provides the service's checking operations. */
     @Override
     public FileCondition check() {
-        return this.action;
+        return this.condition;
     }
 
     @Override

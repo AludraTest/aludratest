@@ -13,6 +13,13 @@
       <implementation>org.aludratest.impl.log4testing.Log4TestingRunnerListener</implementation>
       <description></description>
       <isolated-realm>false</isolated-realm>
+      <requirements>
+        <requirement>
+          <role>org.aludratest.config.AludraTestConfig</role>
+          <role-hint></role-hint>
+          <field-name>configuration</field-name>
+        </requirement>
+      </requirements>
     </component>
     <component>
       <role>org.aludratest.scheduler.AludraTestRunner</role>
@@ -37,6 +44,13 @@
           <field-name>serviceManager</field-name>
         </requirement>
       </requirements>
+    </component>
+    <component>
+      <role>org.aludratest.scheduler.RunnerListener</role>
+      <role-hint>pending-tests</role-hint>
+      <implementation>org.aludratest.scheduler.impl.PendingTestsObserver</implementation>
+      <description></description>
+      <isolated-realm>false</isolated-realm>
     </component>
     <component>
       <role>org.aludratest.scheduler.RunnerListenerRegistry</role>
@@ -111,6 +125,13 @@
       <implementation>org.aludratest.testcase.data.impl.xml.DefaultScriptLibrary</implementation>
       <description></description>
       <isolated-realm>false</isolated-realm>
+      <requirements>
+        <requirement>
+          <role>org.aludratest.config.AludraTestConfig</role>
+          <role-hint></role-hint>
+          <field-name>aludraConfig</field-name>
+        </requirement>
+      </requirements>
     </component>
     <component>
       <role>org.aludratest.service.ServiceWrapper</role>

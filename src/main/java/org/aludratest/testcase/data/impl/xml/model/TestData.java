@@ -65,7 +65,7 @@ public class TestData {
         SchemaOutputResolver resolver = new SchemaOutputResolver() {
             @Override
             public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
-                File file = new File(suggestedFileName);
+                File file = new File(suggestedFileName); // NOSONAR
                 StreamResult result = new StreamResult(file);
                 result.setSystemId(file);
                 return result;

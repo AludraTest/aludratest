@@ -15,7 +15,6 @@
  */
 package org.aludratest.service.gui.component;
 
-import org.aludratest.service.gui.component.impl.ValueComponent;
 
 /**
  * Represents an input field in a GUI.
@@ -38,5 +37,12 @@ public interface InputField extends Element<InputField>, ValueComponent {
     /** Asserts that the element is not editable, i.e. no text can be entered. Disabled controls are also treated as
      * "not editable". */
     public void assertNotEditable();
+
+    /** /** Asserts that the element is editable or is not editable, depending on the passed parameter.
+     * @param expected if <code>"true"</code> (any case), assert that element is editable, otherwise, assert that element is not
+     *            editable.
+     * @see #assertEditable()
+     * @see #assertNotEditable() */
+    public void assertEditable(String expected);
 
 }

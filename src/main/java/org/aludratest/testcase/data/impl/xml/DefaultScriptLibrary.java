@@ -19,16 +19,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.aludratest.config.AludraTestConfig;
+import org.aludratest.exception.TechnicalException;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.component.annotations.Requirement;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
+/** Default JavaScript library shipped with AludraTest.
+ *
+ * @author falbrech */
 @Component(role = ScriptLibrary.class, hint = "default")
 public final class DefaultScriptLibrary implements ScriptLibrary {
 
     private static final String JS_ADD_DAYS_TO_NOW = "function addDaysToNow(days_add) { return new Date(new Date().getTime() + days_add * 24 * 60 * 60 * 1000); }";
     private static final String JS_ADD_HOURS_TO_NOW = "function addHoursToNow(hours_add) { return new Date(new Date().getTime() + hours_add * 60 * 60 * 1000); }";
+
+    @Requirement
+    private AludraTestConfig aludraConfig;
 
     @Override
     public void addFunctionsToContext(Context context, Scriptable scope) {
@@ -38,6 +47,18 @@ public final class DefaultScriptLibrary implements ScriptLibrary {
 
         // complex Date format addition
         loadScript(context, scope, "date-format.js");
+
+        // timetravel() function
+        long timetravelDiff = aludraConfig.getScriptSecondsOffset() * 1000l;
+        if (timetravelDiff == 0) {
+            context.evaluateString(scope, "function timetravel(date) { return date; }", "jsTimetravel", 1, null);
+        }
+        else {
+            context.evaluateString(scope,
+                    "function timetravel(date) { return new Date(date.getTime() + (" + timetravelDiff + ")); }", "jsTimetravel",
+                    1,
+                    null);
+        }
     }
 
     private void loadScript(Context context, Scriptable scope, String jsResourceName) {
@@ -47,7 +68,7 @@ public final class DefaultScriptLibrary implements ScriptLibrary {
             context.evaluateReader(scope, reader, jsResourceName, 1, null);
         }
         catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new TechnicalException("Could not read date-format.js resource", e);
         }
         finally {
             IOUtils.closeQuietly(in);

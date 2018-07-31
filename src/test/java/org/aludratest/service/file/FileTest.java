@@ -24,7 +24,9 @@ import java.io.IOException;
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
 import org.aludratest.exception.TechnicalException;
+import org.aludratest.service.file.data.FileData;
 import org.aludratest.service.file.data.TargetFileData;
+import org.aludratest.service.file.util.RegexNameFileChooser;
 import org.aludratest.util.data.StringData;
 import org.databene.commons.FileUtil;
 import org.databene.commons.IOUtil;
@@ -42,7 +44,7 @@ public class FileTest extends AbstractLocalFileServiceTest {
     protected FileService service;
 
     /**
-     * Invoked before each test method invocation 
+     * Invoked before each test method invocation
      * in order to initialize the {@link #service} attribute.
      * @throws Exception
      */
@@ -121,13 +123,13 @@ public class FileTest extends AbstractLocalFileServiceTest {
     	byte[] bytes = IOUtil.getBinaryContentOfUri(ROOT + "/out.dat");
     	assertArrayEquals("binary".getBytes(), bytes);
     }
-    
+
     @Test(expected = IllegalFilePathException.class)
     public void testWriteBinaryFile_noPath() {
     	File file = new File("", service);
     	file.writeBinaryContent("binary".getBytes());
     }
-    */
+     */
 
     // read tests --------------------------------------------------------------
 
@@ -161,14 +163,14 @@ public class FileTest extends AbstractLocalFileServiceTest {
     	file.readBinaryContent(content);
     	assertArrayEquals("File in sub folder".getBytes(), content.getValue());
     }
-    
+
     @Test(expected = IllegalFilePathException.class)
     public void testReadBinaryFile_noPath() {
     	File file = new File("", service);
     	MutableData<byte[]> content = new MutableData<byte[]>();
     	file.readBinaryContent(content);
     }
-    */
+     */
 
     // directory creation tests ------------------------------------------------
 
@@ -355,6 +357,61 @@ public class FileTest extends AbstractLocalFileServiceTest {
     public void testWaitUntilNotExists_noPath() {
         File file = new File("", service);
         file.waitUntilNotExists();
+    }
+
+    // testing waitUntilChildExists() ------------------------------------------
+
+    @Test
+    public void testWaitUntilChildExists_preexisting() {
+        File dir = new File("testWaitUntilChildExists", service);
+        FileData result = new FileData();
+        dir.waitUntilChildExists(new RegexNameFileChooser("preexisting.txt"), result);
+        File file = result.getFile();
+        file.assertPresence();
+        StringData content = new StringData();
+        file.readTextContent(content);
+        assertEquals("I preexisted", content.getValue());
+    }
+
+    @Test
+    public void testWaitUntilChildExists_delayed() {
+        (new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                    IOUtil.writeTextFile(ROOT + "/testWaitUntilChildExists/delayed-file.txt", "x");
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        File dir = new File("testWaitUntilChildExists", service);
+        FileData result = new FileData();
+        dir.waitUntilChildExists(new RegexNameFileChooser("delayed-file.txt"), result);
+        StringData content = new StringData();
+        result.getFile().readTextContent(content);
+        assertEquals("x", content.getValue());
+    }
+
+    @Test(expected = FunctionalFailure.class)
+    public void testWaitUntilChildExists_failure() {
+        File dir = new File("testWaitUntilChildExists", service);
+        FileData result = new FileData();
+        dir.waitUntilChildExists(new RegexNameFileChooser("no-file"), result);
+    }
+
+    @Test(expected = AutomationException.class)
+    public void testWaitUntilChildExists_noChooser() {
+        File dir = new File("testWaitUntilChildExists", service);
+        dir.waitUntilChildExists(null, new FileData());
+    }
+
+    @Test(expected = AutomationException.class)
+    public void testWaitUntilChildExists_noFileData() {
+        File dir = new File("testWaitUntilChildExists", service);
+        dir.waitUntilChildExists(new RegexNameFileChooser("preexisting.txt"), null);
     }
 
     // existence verification tests --------------------------------------------

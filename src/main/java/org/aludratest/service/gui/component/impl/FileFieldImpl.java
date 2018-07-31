@@ -23,6 +23,7 @@ import java.io.InputStream;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.service.gui.component.FileField;
+import org.aludratest.service.gui.component.ValueComponent;
 import org.aludratest.util.data.helper.DataMarkerCheck;
 import org.databene.commons.IOUtil;
 import org.databene.commons.Validator;
@@ -118,7 +119,7 @@ public class FileFieldImpl extends AbstractElement<FileField> implements ValueCo
     }
 
     private File getTestResourceFile(String fileName) {
-        return new File(getTestResourceFolder(), fileName);
+        return new File(getTestResourceFolder(), fileName); // NOSONAR
     }
 
     private File getTestResourceFolder() {

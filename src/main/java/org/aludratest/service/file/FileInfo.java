@@ -15,73 +15,25 @@
  */
 package org.aludratest.service.file;
 
-import org.aludratest.exception.TechnicalException;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileType;
-
 /**
  * Provides elementary file information which might serve as filter criteria.
  * @author Volker Bergmann
  */
-public class FileInfo {
+public interface FileInfo {
 
-    /** The commons-vfs {@link FileObject} which provides the real data. */
-    // ENHANCE there should not be dependencies to VFS in this package!
-    private FileObject file;
+    /** @return the name of the file */
+    public String getName();
 
-    /** Constructor 
-     *  @param file the underlying {@link FileObject}. */
-    public FileInfo(FileObject file) {
-        this.file = file;
-    }
+    /** @return the path of the file relative to the root folder of the related {@link FileService} */
+    public String getPath();
 
-    /** Provides the file name without path elements. 
-     *  @return the file name */
-    public String getName() {
-        return file.getName().getBaseName();
-    }
+    /** @return true if the file is a directory, otherwise false */
+    public boolean isDirectory();
 
-    /** Provides the path relative from the {@link FileService}'s root directory. 
-     *  @return the file path */
-    public String getPath() {
-        return file.getName().getPath();
-    }
+    /** @return the size of the file */
+    public long getSize();
 
-    /** Tells if the file is a directory. 
-     *  @return true if a directory is referred, otherwise false */
-    public boolean isDirectory() {
-        try {
-            return (file.getType() == FileType.FOLDER);
-        } catch (FileSystemException e) {
-            throw new TechnicalException("Error checking file type", e);
-        }
-    }
-
-    /** Provides the size of the file. 
-     *  @return the size of the file */
-    public long getSize() {
-        try {
-            return file.getContent().getSize();
-        } catch (FileSystemException e) {
-            throw new TechnicalException("Error retrieving file size", e);
-        }
-    }
-
-    /** Provides the time stamp of the last file modification. 
-     *  @return the time stamp of the last file modification */
-    public long getLastModifiedTime() {
-        try {
-            return file.getContent().getLastModifiedTime();
-        } catch (FileSystemException e) {
-            throw new TechnicalException("Error retrieving lastModifiedTime", e);
-        }
-    }
-
-    /** Provides the file name. */
-    @Override
-    public String toString() {
-        return getName();
-    }
+    /** @return the time at which the file was modified the last time */
+    long getLastModifiedTime();
 
 }

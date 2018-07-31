@@ -18,7 +18,7 @@ package org.aludratest.service.gitclient.data;
 import org.aludratest.service.gitclient.GitClient;
 
 /** Wraps data for the invocation of the {@link GitClient}'s version method.
- * @see GitClient#version(ConfigData)
+ * @see GitClient#version(VersionData)
  * @author Volker Bergmann */
 public class ConfigData extends AbstractGitData {
 
@@ -92,7 +92,7 @@ public class ConfigData extends AbstractGitData {
 
     @Override
     public String toString() {
-        return "git config " + key + (value != null ? " " + value : "");
+        return "git config " + key + (value != null ? (" " + value) : "");
     }
 
 }

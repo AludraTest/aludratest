@@ -184,9 +184,8 @@ public class DefaultGUIComponentFactory implements GUIComponentFactory {
 
     /** Returns the implementor class for the given component class. Subclasses can override to specify own implementation classes,
      * but you <b>must</b> also override {@link #getRoleHint()}.
-     * 
+     * @param <T> the type of interface to get the implementor for
      * @param componentClass Class of the component, e.g. <code>Button.class</code>.
-     * 
      * @return The implementing component class, or <code>null</code> if no implementor class is available for the given component
      *         class. Do <b>not</b> throw any exception; the calling method will deal with this. */
     protected <T extends GUIComponent> Class<? extends T> getImplementorClass(Class<T> componentClass) {
@@ -250,10 +249,10 @@ public class DefaultGUIComponentFactory implements GUIComponentFactory {
     }
 
     private <T> void registerComponentDescriptor(Class<T> componentClass, Class<? extends T> implClass)
-            throws CycleDetectedInComponentGraphException {
+            throws CycleDetectedInComponentGraphException, ComponentLookupException {
         if (!componentClass.isAssignableFrom(implClass)) {
-            throw new RuntimeException("Class " + implClass.getName() + " does not implement interface "
-                    + componentClass.getName());
+            throw new ComponentLookupException("Class " + implClass.getName() + " does not implement interface "
+                    + componentClass.getName(), componentClass.getName(), getRoleHint());
         }
 
         ComponentDescriptor<T> desc = new ComponentDescriptor<T>();

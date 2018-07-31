@@ -24,7 +24,7 @@ import org.aludratest.service.locator.Locator;
 public abstract class OptionLocator extends Locator {
 
     /** Constructor.
-     *  @param locator */
+     * @param locator the name of the option */
     protected OptionLocator(String locator) {
         super(locator);
     }

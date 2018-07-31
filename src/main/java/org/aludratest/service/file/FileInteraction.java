@@ -21,9 +21,12 @@ import java.io.Reader;
 import java.util.List;
 
 import org.aludratest.exception.AutomationException;
-import org.aludratest.impl.log4testing.ElementType;
-import org.aludratest.impl.log4testing.TechnicalLocator;
+import org.aludratest.exception.FunctionalFailure;
+import org.aludratest.service.AttachParameter;
+import org.aludratest.service.ElementType;
 import org.aludratest.service.Interaction;
+import org.aludratest.service.TechnicalArgument;
+import org.aludratest.service.TechnicalLocator;
 
 /**
  * {@link Interaction} interface of the {@link FileService}.
@@ -31,132 +34,139 @@ import org.aludratest.service.Interaction;
  */
 public interface FileInteraction extends Interaction {
 
-    /** Provides the root folder of the service instance. 
+    /** Provides the root folder of the service instance.
      *  @return the root folder of the {@link FileService}. */
     String getRootFolder();
 
-    /** Lists all child elements of the given folder. 
-     *  @param filePath the path of the file of which to get children 
+    /** Lists all child elements of the given folder.
+     *  @param filePath the path of the file of which to get children
      *  @return a {@link List} of the child objects of the given file
      */
     List<String> getChildren(@TechnicalLocator String filePath);
 
-    /** Lists all child elements of the given folder which match the given regular expression. 
-     *  @param filePath the path of the file of which to get the children 
-     *  @param filterRegex 
-     *  @return a {@link List} of the child objects of the given file
-     */
+    /** Lists all child elements of the given folder which match the given regular expression.
+     * @param filePath the path of the file of which to get the children
+     * @param filterRegex the regular expression to apply as filter
+     * @return a {@link List} of the child objects of the given file */
     List<String> getChildren(@TechnicalLocator String filePath, String filterRegex);
 
-    /** Lists all child elements of the given folder which match the filter. 
-     *  @param filePath the path of the file of which to get the children
-     *  @param filter 
-     *  @return a {@link List} of the child objects of the given file
-     */
+    /** Lists all child elements of the given folder which match the filter.
+     * @param filePath the path of the file of which to get the children
+     * @param filter the file filter to apply
+     * @return a {@link List} of the child objects of the given file */
     List<String> getChildren(@TechnicalLocator String filePath, FileFilter filter);
 
-    /** Creates a directory. 
-     *  @param directoryPath the path of the directory to create 
+    /** Creates a directory.
+     *  @param directoryPath the path of the directory to create
      */
     void createDirectory(@TechnicalLocator String directoryPath);
 
-    /** Renames or moves a file or folder. 
-     *  @param fromPath the file/folder to rename/move
-     *  @param toPath the new name/location of the file/folder
-     *  @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     *  @return true if a formerly existing file was overwritten. 
-     *  @throws org.aludratest.service.file.exception.FilePresentException if a file was already present and overwriting was disabled. */
-    boolean move(@TechnicalLocator String fromPath, String toPath, boolean overwrite);
+    /** Renames or moves a file or folder.
+     * @param fromPath the file/folder to rename/move
+     * @param toPath the new name/location of the file/folder
+     * @param overwrite flag which indicates if an existing file may be overwritten by the operation
+     * @return true if a formerly existing file was overwritten.
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
+    boolean move(@TechnicalLocator String fromPath, String toPath, @TechnicalArgument boolean overwrite);
 
     /** Copies a file or folder.
-     *  @param fromPath the file/folder to copy
-     *  @param toPath the name/location of the copy
-     *  @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     *  @return true if a formerly existing file was overwritten. 
-     *  @throws org.aludratest.service.file.exception.FilePresentException if a file was already present and overwriting was disabled. */
-    boolean copy(@TechnicalLocator String fromPath, String toPath, boolean overwrite);
+     * @param fromPath the file/folder to copy
+     * @param toPath the name/location of the copy
+     * @param overwrite flag which indicates if an existing file may be overwritten by the operation
+     * @return true if a formerly existing file was overwritten.
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
+    boolean copy(@TechnicalLocator String fromPath, String toPath, @TechnicalArgument boolean overwrite);
 
-    /** Deletes a file or folder. 
+    /** Deletes a file or folder.
      *  @param filePath the path of the file to delete
      */
     void delete(@TechnicalLocator String filePath);
 
     /** Creates a text file with the provided content.
-     *  @param filePath the path of the file to save
-     *  @param text the text to save as file content
-     *  @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     *  @return true if a formerly existing file was overwritten. 
-     *  @throws org.aludratest.service.file.exception.FilePresentException if a file was already present and overwriting was disabled. */
-    boolean writeTextFile(@TechnicalLocator String filePath, String text, boolean overwrite);
+     * @param filePath the path of the file to save
+     * @param text the text to save as file content
+     * @param overwrite flag which indicates if an existing file may be overwritten by the operation
+     * @return true if a formerly existing file was overwritten.
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
+    boolean writeTextFile(@TechnicalLocator String filePath, @AttachParameter("Text file contents") String text,
+            @TechnicalArgument boolean overwrite);
 
     /** Creates a text file and writes to it all content provided by the source Reader.
-     *  @param filePath the path of the file to save
-     *  @param source a {@link Reader} which provides the file content
-     *  @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     *  @return true if a formerly existing file was overwritten. 
-     *  @throws org.aludratest.service.file.exception.FilePresentException if a file was already present and overwriting was disabled. */
-    boolean writeTextFile(@TechnicalLocator String filePath, Reader source, boolean overwrite);
+     * @param filePath the path of the file to save
+     * @param source a {@link Reader} which provides the file content
+     * @param overwrite flag which indicates if an existing file may be overwritten by the operation
+     * @return true if a formerly existing file was overwritten.
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
+    boolean writeTextFile(@TechnicalLocator String filePath, Reader source, @TechnicalArgument boolean overwrite);
 
     /** Creates a binary file with the provided content.
-     *  @param filePath the path of the file to save
-     *  @param bytes the file content to write
-     *  @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     *  @return true if a formerly existing file was overwritten. 
-     *  @throws org.aludratest.service.file.exception.FilePresentException if a file was already present and overwriting was disabled. */
-    boolean writeBinaryFile(@TechnicalLocator String filePath, byte[] bytes, boolean overwrite);
+     * @param filePath the path of the file to save
+     * @param bytes the file content to write
+     * @param overwrite flag which indicates if an existing file may be overwritten by the operation
+     * @return true if a formerly existing file was overwritten.
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
+    boolean writeBinaryFile(@TechnicalLocator String filePath, @AttachParameter("Binary file contents") byte[] bytes,
+            @TechnicalArgument boolean overwrite);
 
     /** Creates a binary file and writes to it all content provided by the source {@link InputStream}.
-     *  @param filePath the path of the file to save
-     *  @param source an {@link InputStream} which provides the content to write to the file
-     *  @param overwrite flag which indicates if an existing file may be overwritten by the operation
-     *  @return true if a formerly existing file was overwritten. 
-     *  @throws org.aludratest.service.file.exception.FilePresentException if a file was already present and overwriting was disabled. */
-    boolean writeBinaryFile(@TechnicalLocator String filePath, InputStream source, boolean overwrite);
+     * @param filePath the path of the file to save
+     * @param source an {@link InputStream} which provides the content to write to the file
+     * @param overwrite flag which indicates if an existing file may be overwritten by the operation
+     * @return true if a formerly existing file was overwritten.
+     * @throws FunctionalFailure if a file was already present and overwriting was disabled. */
+    boolean writeBinaryFile(@TechnicalLocator String filePath, InputStream source, @TechnicalArgument boolean overwrite);
 
-    /** Reads a text file and provides its content as String. 
-     *  @param filePath the path of the file to read 
+    /** Reads a text file and provides its content as String.
+     *  @param filePath the path of the file to read
      *  @return the content of the file */
     String readTextFile(@TechnicalLocator String filePath);
 
-    /** Creates a {@link Reader} for accessing the content of a text file. 
-     *  @param filePath the path of the file to read 
+    /** Creates a {@link Reader} for accessing the content of a text file.
+     *  @param filePath the path of the file to read
      *  @return a reader for the text file */
     BufferedReader getReaderForTextFile(@TechnicalLocator String filePath);
 
-    /** Reads a binary file and provides its content as an array of bytes. 
-     *  @param filePath the path of the file to read 
+    /** Reads a binary file and provides its content as an array of bytes.
+     *  @param filePath the path of the file to read
      *  @return the file content as byte array */
     byte[] readBinaryFile(@TechnicalLocator String filePath);
 
-    /** Creates an {@link InputStream} for accessing the content of a file. 
-     *  @param filePath the path of the file for which to get an input stream 
+    /** Creates an {@link InputStream} for accessing the content of a file.
+     *  @param filePath the path of the file for which to get an input stream
      *  @return an {@link InputStream} for accessing the file */
     InputStream getInputStreamForFile(@TechnicalLocator String filePath);
 
-    /** Polls the file system for a given file until it is found or a timeout is exceeded.
-     *  Timeout and the maximum number of polls are retrieved from the 
-     *  {@link org.aludratest.service.file.impl.FileServiceConfiguration}. 
-     *  @param elementType 
-     *  @param filePath the path of the file for which to wait 
-     *  @throws AutomationException if the file was not found within the timeout */
+    /** Polls the file system for a given file until it is found or a timeout is exceeded. Timeout and the maximum number of polls
+     * are retrieved from the {@link org.aludratest.service.file.impl.FileServiceConfiguration}.
+     * @param elementType the element type to log
+     * @param filePath the path of the file for which to wait
+     * @throws AutomationException if the file was not found within the timeout */
     void waitUntilExists(
-            @ElementType String elementType, 
+            @ElementType String elementType,
             @TechnicalLocator String filePath);
 
     /** Polls the file system for a given file until it has disappeared or a timeout is exceeded.
-     *  Timeout and the maximum number of polls are retrieved from the 
-     *  {@link org.aludratest.service.file.impl.FileServiceConfiguration}. 
-     *  @param filePath the path of the file for which to wait until absence 
+     *  Timeout and the maximum number of polls are retrieved from the
+     *  {@link org.aludratest.service.file.impl.FileServiceConfiguration}.
+     *  @param filePath the path of the file for which to wait until absence
      *  @throws AutomationException if the file was not found within the timeout */
     void waitUntilNotExists(@TechnicalLocator String filePath);
 
     /** Polls the given directory until the filter finds a match or a timeout is exceeded.
-     *  Timeout and the maximum number of polls are retrieved from the 
+     *  Timeout and the maximum number of polls are retrieved from the
      *  {@link org.aludratest.service.file.impl.FileServiceConfiguration}.
-     *  @param parentPath the path of the directory in which to search for the file 
+     *  @param parentPath the path of the directory in which to search for the file
      *  @param filter a filter object that decides which file is to be accepted
      *  @return the file path of the first file that was accepted by the filter
      *  @throws AutomationException if the file was not found within the timeout */
     String waitForFirstMatch(@TechnicalLocator String parentPath, FileFilter filter);
+
+    /** Polls the given directory until the filter finds a match or a timeout is exceeded. Timeout and the maximum number of polls
+     * are retrieved from the {@link org.aludratest.service.file.impl.FileServiceConfiguration}.
+     * @param dirPath the path of the directory in which to search for the file
+     * @param selector a {@link FileChooser} object that decides which file is to be accepted
+     * @return the file path of the file that was accepted by the filter, or null if none was accepted
+     * @throws AutomationException if the file was not found within the timeout */
+    String waitUntilChildExists(String dirPath, FileChooser selector);
 
 }

@@ -24,6 +24,8 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
 
     private Boolean stopTestCaseOnOtherException;
 
+    private Boolean loggingDisabled;
+
     private String xlsRootPath;
 
     private Boolean ignoreEnabled;
@@ -31,6 +33,10 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
     private Boolean configTabRequired;
 
     private String sorterName;
+
+    private Integer scriptSecondsOffset;
+
+    private Boolean deferredScriptEvaluation;
 
     public AludraTestingTestConfigImpl() {
         super();
@@ -49,6 +55,14 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
         this.stopTestCaseOnOtherException = stopTestCaseOnOtherException;
     }
 
+    public void setScriptSecondsOffset(Integer scriptSecondsOffset) {
+        this.scriptSecondsOffset = scriptSecondsOffset;
+    }
+
+    public void setDeferredScriptEvaluation(Boolean deferredScriptEvaluation) {
+        this.deferredScriptEvaluation = deferredScriptEvaluation;
+    }
+
     @Override
     public boolean isStopTestCaseOnInteractionException() {
         if (stopTestCaseOnInteractionException != null) {
@@ -63,6 +77,18 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
             return stopTestCaseOnOtherException.booleanValue();
         }
         return super.isStopTestCaseOnOtherException();
+    }
+
+    @Override
+    public boolean isLoggingDisabled() {
+        if (loggingDisabled != null) {
+            return loggingDisabled.booleanValue();
+        }
+        return super.isLoggingDisabled();
+    }
+
+    public void setLoggingDisabled(Boolean loggingDisabled) {
+        this.loggingDisabled = loggingDisabled;
     }
 
     @Override
@@ -111,6 +137,22 @@ public class AludraTestingTestConfigImpl extends AludraTestConfigImpl {
             return sorterName;
         }
         return super.getRunnerTreeSorterName();
+    }
+
+    @Override
+    public int getScriptSecondsOffset() {
+        if (scriptSecondsOffset != null) {
+            return scriptSecondsOffset.intValue();
+        }
+        return super.getScriptSecondsOffset();
+    }
+
+    @Override
+    public boolean isDeferredScriptEvaluation() {
+        if (deferredScriptEvaluation != null) {
+            return deferredScriptEvaluation.booleanValue();
+        }
+        return super.isDeferredScriptEvaluation();
     }
 
 }

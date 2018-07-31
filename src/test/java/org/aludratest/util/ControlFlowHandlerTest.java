@@ -17,16 +17,13 @@ package org.aludratest.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.aludratest.config.AludraTestConfig;
 import org.aludratest.config.impl.AludraTestingTestConfigImpl;
-import org.aludratest.impl.log4testing.data.TestCaseLog;
-import org.aludratest.impl.log4testing.data.TestLogger;
 import org.aludratest.service.AbstractAludraService;
 import org.aludratest.service.AbstractAludraServiceTest;
 import org.aludratest.service.AludraService;
@@ -35,28 +32,30 @@ import org.aludratest.service.Condition;
 import org.aludratest.service.Interaction;
 import org.aludratest.service.SystemConnector;
 import org.aludratest.service.Verification;
-import org.aludratest.service.file.FileService;
 import org.aludratest.service.util.AbstractSystemConnector;
-import org.aludratest.service.util.DirectLogTestListener;
 import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.event.attachment.Attachment;
-import org.aludratest.testcase.impl.AludraTestContextImpl;
-import org.junit.Before;
+import org.aludratest.testcase.event.impl.AludraTestUtil;
 import org.junit.Test;
 
 @SuppressWarnings("javadoc")
 public class ControlFlowHandlerTest extends AbstractAludraServiceTest {
 
-    @Before
-    public void resetFlowController() {
+    @Override
+    public void prepareTestCase() {
+        // register custom configuration implementation
+        System.setProperty("ALUDRATEST_CONFIG/aludraservice/" + AludraTestConfig.class.getName(),
+                AludraTestingTestConfigImpl.class.getName());
+
+        super.prepareTestCase();
+
         FlowController.getInstance().reset();
     }
 
     @Test
     public void testSuccess() throws Exception {
         // GIVEN an object with ControlFlow proxy
-        TestCaseLog testCase = TestLogger.getTestCase("TestCase1");
-        MyTestInterface proxy = setup(testCase, true);
+        MyTestInterface proxy = setup(true);
 
         // WHEN calling a proxy method which executes normally
         Object result = proxy.copy("Test");
@@ -69,8 +68,7 @@ public class ControlFlowHandlerTest extends AbstractAludraServiceTest {
     @Test
     public void testExceptionWithoutStop() throws Exception {
         // GIVEN an object with ControlFlow proxy configured to continue execution in case of an exception
-        TestCaseLog testCase = TestLogger.getTestCase("TestCase2");
-        MyTestInterface proxy = setup(testCase, false);
+        MyTestInterface proxy = setup(false);
 
         // WHEN calling a proxy method which throws an exception
         proxy.error();
@@ -82,8 +80,7 @@ public class ControlFlowHandlerTest extends AbstractAludraServiceTest {
     @Test
     public void testExceptionWithStop() throws Exception {
         // GIVEN an object with ControlFlow proxy configured to stop execution on exceptions
-        TestCaseLog testCase = TestLogger.getTestCase("TestCase3");
-        MyTestInterface proxy = setup(testCase, true);
+        MyTestInterface proxy = setup(true);
 
         // WHEN calling a proxy method which throws an exception
         proxy.error();
@@ -95,26 +92,12 @@ public class ControlFlowHandlerTest extends AbstractAludraServiceTest {
         proxy.copy("xyz");
         // force test context to be closed (to write logs)
         context.closeServices();
-        assertEquals(TestStatus.IGNORED, testCase.getLastTestStep().getStatus());
-    }
-
-    @Test
-    public void testIgnoreConditionLog() {
-        // use FileService, because works different than other tests
-        FileService fileService = getLoggingService(FileService.class, "logtest");
-        fileService.check().exists("nonexisting");
-        assertNull(testCase.getLastTestStep());
-        fileService.verify().assertDirectory("nonexisting");
-        assertNotNull(testCase.getLastTestStep());
+        assertEquals(TestStatus.IGNORED, getLastTestStep().getTestStatus());
     }
 
     // helper methods ----------------------------------------------------------
 
-    private MyTestInterface setup(TestCaseLog testCase, boolean stopOnException) {
-        testCase.newTestStepGroup("group1");
-        context = new AludraTestContextImpl(new DirectLogTestListener(testCase), aludra.getServiceManager());
-        context.newTestStepGroup("group1");
-
+    private MyTestInterface setup(boolean stopOnException) {
         // override configuration property
         AludraTestingTestConfigImpl.getTestInstance().setStopTestCaseOnOtherException(stopOnException);
 

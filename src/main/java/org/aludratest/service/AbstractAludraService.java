@@ -26,8 +26,7 @@ public abstract class AbstractAludraService implements AludraService {
     protected AludraServiceContext aludraServiceContext;
 
     /** Implements the init() method. Stores the context parameter in the {@link #aludraServiceContext} field which can be accessed
-     * by subclasses. Extracts the test case log object from the context object and stores it in the {@link #testCaseLog} field
-     * which also can be accessed by subclasses. Afterwards, {@link #initService()} is called. */
+     * by subclasses. Stores a reference to the context and calls {@link #initService()}. */
     @Override
     public final void init(AludraServiceContext context) {
         this.aludraServiceContext = context;

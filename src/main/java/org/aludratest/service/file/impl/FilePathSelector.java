@@ -35,11 +35,13 @@ public class FilePathSelector implements FileSelector {
     }
 
     /** Includes only the file with the expected {@link #absolutePath}. */
+    @Override
     public boolean includeFile(FileSelectInfo fileInfo) {
         return absolutePath.equals(fileInfo.getFile().getName().getPath());
     }
 
     /** Refuses recursion. */
+    @Override
     public boolean traverseDescendents(FileSelectInfo fileInfo) {
         return true;
     }

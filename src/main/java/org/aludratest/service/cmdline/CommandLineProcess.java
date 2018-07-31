@@ -15,7 +15,6 @@
  */
 package org.aludratest.service.cmdline;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -50,6 +49,7 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> {
         this.service = service;
         this.commands = commands;
         this.processId = service.perform().create(processType, processName, processTimeout, responseTimeout, commands);
+        setRelativeWorkingDirectory(".");
     }
 
     /** Sets the working directory of the process
@@ -62,8 +62,8 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> {
     }
 
     /** Sets an environment variable for the process.
-     * @param key
-     * @param value
+     * @param key the key of the value to set
+     * @param value the value to set
      * @return this */
     @SuppressWarnings("unchecked")
     public E setEnvironmentVariable(String key, String value) {
@@ -105,7 +105,7 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> {
     }
 
     /** Sends the given text to the process' stdin.
-     * @param text
+     * @param text the text to enter
      * @return this */
     @SuppressWarnings("unchecked")
     public E enter(StringData text) {
@@ -122,8 +122,8 @@ public class CommandLineProcess<E extends CommandLineProcess<E>> {
     }
 
     /** Waits for the process to finish and asserts an exit value.
-     * @param expectedValue
-     * @return */
+     * @param expectedValue the expected value
+     * @return this */
     @SuppressWarnings("unchecked")
     public E assertExitValue(IntData expectedValue) {
         service.verify().assertExitCodeEquals(processType, processName, processId, expectedValue.getValue());

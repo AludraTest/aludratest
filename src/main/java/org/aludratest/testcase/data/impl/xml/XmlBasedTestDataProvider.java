@@ -45,6 +45,7 @@ import org.aludratest.testcase.Offset;
 import org.aludratest.testcase.data.Source;
 import org.aludratest.testcase.data.TestCaseData;
 import org.aludratest.testcase.data.TestDataProvider;
+import org.aludratest.testcase.data.TestDataSource;
 import org.aludratest.testcase.data.impl.xml.model.TestData;
 import org.aludratest.testcase.data.impl.xml.model.TestDataConfiguration;
 import org.aludratest.testcase.data.impl.xml.model.TestDataConfigurationSegment;
@@ -69,13 +70,13 @@ import org.mozilla.javascript.Undefined;
  * <li>Relative to <i>xlsRootPath</i>
  * </ol>
  * xlsRootPath value is configured in aludratest.properties.
- * 
+ *
  * @author falbrech */
 public class XmlBasedTestDataProvider implements TestDataProvider {
 
-    private static final SimpleDateFormat ISO_DATE = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    private final SimpleDateFormat ISO_DATE = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
-    private static final DecimalFormat JAVA_NUMBER = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.US));
+    private final DecimalFormat JAVA_NUMBER = new DecimalFormat("#.#", DecimalFormatSymbols.getInstance(Locale.US));
 
     @Requirement
     private AludraTestConfig aludraConfig;
@@ -110,9 +111,9 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         Map<String, TestData> loadedFileModels = new HashMap<String, TestData>();
 
         // load param by param; transpose into test case data afterwards
-        List<List<Data>> allData = new ArrayList<List<Data>>();
+        List<List<InternalSingleDataSource>> allData = new ArrayList<List<InternalSingleDataSource>>();
         for (int i = 0; i < annots.length; i++) {
-            List<Data> paramData = getDataObjects(method, i, loadedFileModels);
+            List<InternalSingleDataSource> paramData = getDataObjects(method, i, loadedFileModels);
             if (offset > 0) {
                 if (offset < paramData.size()) {
                     paramData = paramData.subList(offset, paramData.size());
@@ -136,9 +137,9 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         for (int i = 0; i < configs.size(); i++) {
             TestDataConfiguration config = configs.get(i);
 
-            List<Data> dataForConfig = new ArrayList<Data>();
+            List<InternalSingleDataSource> dataForConfig = new ArrayList<InternalSingleDataSource>();
             // ensure that all data lists contain enough entries
-            for (List<Data> ls : allData) {
+            for (List<InternalSingleDataSource> ls : allData) {
                 if (ls.size() <= i) {
                     result.add(new TestCaseData(getNextAutoId(result, false), new AutomationException("For method " + method
                             + ", not all referenced XML files contain the same amount of test configurations.")));
@@ -151,12 +152,24 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             }
 
             if (dataForConfig != null) {
+                final List<InternalSingleDataSource> finalData = dataForConfig;
+                TestDataSource source = new TestDataSource() {
+                    @Override
+                    public Data[] getData() {
+                        Data[] dataArray = new Data[finalData.size()];
+                        for (int i = 0; i < finalData.size(); i++) {
+                            dataArray[i] = finalData.get(i).getObject();
+                        }
+
+                        return dataArray;
+                    }
+                };
                 if (ignored) {
-                    result.add(new TestCaseData(config.getName(), null, dataForConfig.toArray(new Data[0]), true, ignoredReason));
+                    result.add(new TestCaseData(config.getName(), null, source, true, ignoredReason, config.getExternalTestId()));
                 }
                 else {
-                    result.add(new TestCaseData(config.getName(), null, dataForConfig.toArray(new Data[0]), config.isIgnored(),
-                            config.isIgnored() ? config.getIgnoredReason() : null));
+                    result.add(new TestCaseData(config.getName(), null, source, config.isIgnored(),
+                            config.isIgnored() ? config.getIgnoredReason() : null, config.getExternalTestId()));
                 }
             }
         }
@@ -164,7 +177,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
         return result;
     }
 
-    private List<Data> getDataObjects(Method method, int paramIndex, Map<String, TestData> loadedFileModels) {
+    private List<InternalSingleDataSource> getDataObjects(Method method, int paramIndex, Map<String, TestData> loadedFileModels) {
         Annotation[][] annots = method.getParameterAnnotations();
         String paramName = method.getName() + " param #" + paramIndex;
         Source src = getRequiredSourceAnnotation(annots[paramIndex], paramName);
@@ -178,7 +191,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             throw new AutomationException("@Source annotation does not specify required segment parameter");
         }
 
-        TestData testData;
+        final TestData testData;
         if (loadedFileModels.containsKey(uri)) {
             testData = loadedFileModels.get(uri);
         }
@@ -203,7 +216,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             }
         }
 
-        List<Data> dataElements = new ArrayList<Data>();
+        List<InternalSingleDataSource> dataElements = new ArrayList<InternalSingleDataSource>();
 
         // get metadata for requested segment
         TestDataSegmentMetadata segmentMeta = null;
@@ -217,10 +230,17 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             throw new AutomationException("Could not find segment " + src.segment() + " in XML file " + uri);
         }
 
+        final TestDataSegmentMetadata finalSegmentMeta = segmentMeta;
+
         // for each configuration entry, find values
-        for (TestDataConfiguration config : testData.getConfigurations()) {
+        for (final TestDataConfiguration config : testData.getConfigurations()) {
             if (containsSegment(config, segmentMeta.getName())) {
-                dataElements.add(buildObject(testData, config, segmentMeta.getName()));
+                dataElements.add(new InternalSingleDataSource() {
+                    @Override
+                    public Data getObject() {
+                        return buildObject(testData, config, finalSegmentMeta.getName());
+                    }
+                });
             }
             else {
                 dataElements.add(null);
@@ -252,7 +272,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                         }
 
                         // perform auto-conversion based on type
-                        if (value instanceof String) {
+                        if (value instanceof String && !"".equals(value)) {
                             switch (fieldMeta.getType()) {
                                 case BOOLEAN:
                                     value = Boolean.parseBoolean(value.toString());
@@ -281,6 +301,9 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
 
                             return format(value, fieldMeta.getFormatterPattern(), toLocale(fieldMeta.getFormatterLocale()))
                                     .toString();
+                        }
+                        else if ("".equals(value)) {
+                            return null;
                         }
                         return value;
                     }
@@ -469,7 +492,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
     }
 
     /** Evaluates the given data script, applying the given format pattern and locale, if specified.
-     * 
+     *
      * @param script Script to evaluate, e.g. <code>addDaysToNow(5)</code>
      * @param formatPattern Format pattern to apply. Can be a format accepted by <code>SimpleDateFormat</code> or
      *            <code>DecimalFormat</code>, depending on type of expression. If not specified, a type-specific default format is
@@ -478,7 +501,7 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
      *            platform default, to ensure platform-independent operation).
      * @param contextVariables Map with objects which should be offered in the script context as variables. Can be
      *            <code>null</code>.
-     * @return */
+     * @return the result of the script */
     public String evaluate(String script, String formatPattern, Locale locale, Map<String, Object> contextVariables) {
         Context context = Context.enter();
 
@@ -503,6 +526,11 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
                     return null;
                 }
                 result = toJavaObject(result);
+
+                // apply time travel
+                if (result instanceof Date && aludraConfig.getScriptSecondsOffset() != 0) {
+                    result = new Date(((Date) result).getTime() + aludraConfig.getScriptSecondsOffset() * 1000l);
+                }
 
                 // apply patterns, if required
                 result = format(result, formatPattern, locale);
@@ -595,6 +623,12 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
             this.formatPattern = formatPattern;
             this.formatLocale = formatLocale;
         }
+
+    }
+
+    private static interface InternalSingleDataSource {
+
+        public Data getObject();
 
     }
 

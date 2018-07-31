@@ -24,22 +24,21 @@ public class KeyValueStringData extends Data {
     private String key;
     private String value;
 
-    /** Default constructor.
-     * @param key the key to set
-     * @param value the value to set */
+    /** Default constructor. */
     public KeyValueStringData() {
         this(null, null);
     }
 
     /** Full constructor.
-     * @param key
-     * @param value */
+     * @param key the key
+     * @param value the value */
     public KeyValueStringData(String key, String value) {
         this.key = key;
         this.value = value;
     }
 
-    /** @return the {@link #key} */
+    /** Returns the key.
+     * @return the {@link #key} */
     public String getKey() {
         return key;
     }
@@ -50,12 +49,14 @@ public class KeyValueStringData extends Data {
         this.key = key;
     }
 
-    /** @return the {@link #value} */
+    /** Returns the value.
+     * @return the {@link #value} */
     public String getValue() {
         return value;
     }
 
-    /** @param value the {@link #value} */
+    /** Sets the value.
+     * @param value the {@link #value} to set */
     public void setValue(String value) {
         this.value = value;
     }

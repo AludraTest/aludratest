@@ -34,6 +34,7 @@ public class DepthFirst implements Comparator<RunnerNode>, Serializable {
      *  judging group nodes as 'less' than leaf ones. 
      *  Comparison of group nodes with each other yields 'equal' 
      *  as well as comparison of leaf nodes with each other does. */
+    @Override
     public int compare(RunnerNode node1, RunnerNode node2) {
         boolean isGroup1 = (node1 instanceof RunnerGroup);
         boolean isGroup2 = (node2 instanceof RunnerGroup);

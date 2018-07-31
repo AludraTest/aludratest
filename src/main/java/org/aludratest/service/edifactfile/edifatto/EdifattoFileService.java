@@ -15,7 +15,7 @@
  */
 package org.aludratest.service.edifactfile.edifatto;
 
-import org.aludratest.content.edifact.edifatto.EdifattoContent;
+import org.aludratest.content.edifact.EdifactContent;
 import org.aludratest.service.AbstractAludraService;
 import org.aludratest.service.edifactfile.EdifactFileCondition;
 import org.aludratest.service.edifactfile.EdifactFileInteraction;
@@ -23,58 +23,54 @@ import org.aludratest.service.edifactfile.EdifactFileService;
 import org.aludratest.service.edifactfile.EdifactFileVerification;
 import org.aludratest.service.file.FileService;
 
-/** 
- * Default implementation of the EdifactService 
+/**
+ * Default implementation of the EdifactService
  * which employs Edifatto for EDIFACR/X12 processing.
  * @author Volker Bergmann
  */
 public class EdifattoFileService extends AbstractAludraService implements EdifactFileService {
-    
+
     private FileService fileService;
-    
+
     /** The action object that implements all EdifactService action interfaces */
     private EdifattoFileAction action;
-    
+
     /** Initializes the service */
     @Override
     public void initService() {
         this.fileService = aludraServiceContext.getNonLoggingService(FileService.class);
-        this.action = new EdifattoFileAction(new EdifattoContent(), fileService);
+        EdifactContent contentHandler = aludraServiceContext.newComponentInstance(EdifactContent.class);
+        this.action = new EdifattoFileAction(contentHandler, fileService);
     }
-    
-    
+
+
     // AludraService interface implementation ----------------------------------
-    
+
     /** Provides a description of the service */
     @Override
     public String getDescription() {
         return getClass().getSimpleName();
     }
-    
+
     /** Provides an object to parses and save EDIFACT and X12 documents from and to streams. */
     @Override
     public EdifactFileInteraction perform() {
         return action;
     }
-    
+
     /** Provides an object to verify EDIFACT or X12 documents. */
     @Override
     public EdifactFileVerification verify() {
         return action;
     }
-    
-    /** Provides an object for performing queries on EDIFACT or X12 interchanges 
+
+    /** Provides an object for performing queries on EDIFACT or X12 interchanges
      *  and analyze their differences. */
     @Override
     public EdifactFileCondition check() {
         return action;
     }
-    
-    @Override
-    public FileService getFileService() {
-        return fileService;
-    }
-    
+
     /** Closes the service */
     @Override
     public void close() {

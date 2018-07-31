@@ -57,7 +57,7 @@ public class StdOut extends Out {
 
     /** Asserts the output to be empty.
      * @return this
-     * @throws a {@link FunctionalFailure} if output is found */
+     * @throws FunctionalFailure if output is found */
     @Override
     public Out assertEmpty() {
         process.assertEmptyStdOut();

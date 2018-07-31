@@ -33,6 +33,22 @@ import org.aludratest.testcase.data.Source;
 public abstract class ManualTest extends AludraTestCase {
 
     @Test
+    public void testSuccess() {
+        PseudoService service = getService(ComponentId.create(PseudoService.class, "test"));
+        sleep();
+        newTestStepGroup("Group 1");
+        service.perform().succeed("1", "2", "3");
+    }
+
+    @Test
+    public void testSuccessWithAttachments() {
+        PseudoService service = getService(ComponentId.create(PseudoService.class, "test"));
+        sleep();
+        newTestStepGroup("Group 1");
+        service.perform().succeedWithAttachments("1", "2", "3");
+    }
+
+    @Test
     public void testFunctionalFailure() {
         PseudoService service = getService(ComponentId.create(PseudoService.class, "test"));
         sleep();
@@ -72,14 +88,6 @@ public abstract class ManualTest extends AludraTestCase {
     }
 
     @Test
-    public void testSuccess() {
-        PseudoService service = getService(ComponentId.create(PseudoService.class, "test"));
-        sleep();
-        newTestStepGroup("Group 1");
-        service.perform().succeed("1", "2", "3");
-    }
-
-    @Test
     public void testEmptySheet(@Source(uri = "emptySheet.xls", segment = "data") String s) {
         PseudoService service = getService(ComponentId.create(PseudoService.class, "test"));
         sleep();
@@ -89,7 +97,7 @@ public abstract class ManualTest extends AludraTestCase {
 
     private void sleep() {
         try {
-            Thread.sleep(5000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

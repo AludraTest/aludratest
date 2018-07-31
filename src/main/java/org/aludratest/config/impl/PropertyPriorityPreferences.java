@@ -24,16 +24,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.aludratest.AludraTest;
 import org.aludratest.config.Preferences;
+import org.aludratest.util.EnvUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Preferences wrapper dealing with the complex AludraText configuration overwrite mechanisms.
- * 
+ *
  * @author falbrech
- * 
+ *
  */
 public class PropertyPriorityPreferences extends AbstractPreferences {
 
@@ -161,7 +161,7 @@ public class PropertyPriorityPreferences extends AbstractPreferences {
         }
 
         for (String pnPattern : PROPFILE_NAMES) {
-            String pfName = MessageFormat.format(pnPattern, AludraTest.getEnvironmentName(), componentName,
+            String pfName = MessageFormat.format(pnPattern, EnvUtil.getEnvironmentName(), componentName,
                     instanceName);
             URL url = cl.getResource(pfName);
             if (url != null) {
@@ -255,7 +255,7 @@ public class PropertyPriorityPreferences extends AbstractPreferences {
         if (child == null) {
             child = new SimplePreferences();
         }
-        String path = relativePath == null ? name : relativePath + "/" + name;
+        String path = (relativePath == null ? name : (relativePath + "/" + name));
         return new PropertyPriorityPreferences(componentName, serviceInstanceName, path, child);
     }
 

@@ -35,7 +35,7 @@ public class LogData extends AbstractGitData {
     }
 
     /** Creates a LogData object with the given maxCount.
-     * @param maxCount
+     * @param maxCount the maxCount to set
      * @return a new LogData object set to the provided maxCount */
     public static LogData createWithMaxCount(int maxCount) {
         LogData result = new LogData();
@@ -45,25 +45,25 @@ public class LogData extends AbstractGitData {
 
     /** Returns the maxCount
      * @return the {@link #maxCount} */
-    public String getMaxCount() {
+    public final String getMaxCount() {
         return maxCount;
     }
 
     /** Sets the {@link #maxCount}.
      * @param maxCount the maxCount */
-    public void setMaxCount(String maxCount) {
+    public final void setMaxCount(String maxCount) {
         this.maxCount = maxCount;
     }
 
     /** Returns the log items returned be the git invocation.
      * @return the log items returned be the git invocation */
-    public List<LogItemData> getItems() {
+    public final List<LogItemData> getItems() {
         return items;
     }
 
     /** Sets the log items returned be the git invocation.
      * @param items the log items returned be the git invocation */
-    public void setItems(List<LogItemData> items) {
+    public final void setItems(List<LogItemData> items) {
         this.items = items;
     }
 

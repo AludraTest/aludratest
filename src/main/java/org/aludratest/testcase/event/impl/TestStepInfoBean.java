@@ -54,6 +54,8 @@ public final class TestStepInfoBean implements TestStepInfo {
 
     private DateTime finishingTime;
 
+    private String result;
+
     private String errorMessage;
 
     private Throwable error;
@@ -77,8 +79,7 @@ public final class TestStepInfoBean implements TestStepInfo {
      * <li>Arguments</li>
      * </ul>
      * 
-     * @param otherTestStep Other test step object (e.g. previous test step) to copy information from.
-     * @param includeAttachments If to include attachments in copy. */
+     * @param otherTestStep Other test step object (e.g. previous test step) to copy information from. */
     public void copyBaseInfoFrom(TestStepInfoBean otherTestStep) {
         this.serviceId = otherTestStep.serviceId;
         this.command = otherTestStep.command;
@@ -131,6 +132,15 @@ public final class TestStepInfoBean implements TestStepInfo {
 
     public void setServiceId(ComponentId<? extends AludraService> serviceId) {
         this.serviceId = serviceId;
+    }
+
+    @Override
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 
     @Override
@@ -216,7 +226,8 @@ public final class TestStepInfoBean implements TestStepInfo {
                 if (isTestArgumentMarkerAnnotation(paramAnno.annotationType())) {
                     List<Object> ls = fillMap.get(paramAnno.annotationType());
                     if (ls == null) {
-                        fillMap.put(paramAnno.annotationType(), ls = new ArrayList<Object>());
+                        ls = new ArrayList<Object>();
+                        fillMap.put(paramAnno.annotationType(), ls);
                     }
                     ls.add(paramFormat == null ? parameters[i] : paramFormat.format(parameters[i]));
                     consumedArg = true;
@@ -225,7 +236,8 @@ public final class TestStepInfoBean implements TestStepInfo {
             if (!consumedArg) {
                 List<Object> ls = fillMap.get(null);
                 if (ls == null) {
-                    fillMap.put(null, ls = new ArrayList<Object>());
+                    ls = new ArrayList<Object>();
+                    fillMap.put(null, ls);
                 }
                 ls.add(paramFormat == null ? parameters[i] : paramFormat.format(parameters[i]));
             }

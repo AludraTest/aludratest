@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<testdata xmlns="http://aludratest.org/testdata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://aludratest.org/testdata http://aludratest.github.io/aludratest/schema/draft/testdata.xsd" 
+	version="1.0">
+    <metadata>
+        <segments>
+        <segment name="stringObject"
+        	dataClassName="org.aludratest.util.data.StringData">
+        <fields>
+        	<field name="value" fieldType="DATE" formatterPattern="yyyy-MM-dd HH:mm"/>
+        </fields>
+        </segment>
+        <segment name="secondObject" dataClassName="org.aludratest.util.data.StringData">
+        	<fields>
+        		<field name="value" />
+        	</fields>
+        </segment>
+        </segments>
+    </metadata>
+
+    <configurations>
+    <configuration name="config1">
+    	<segments>
+    		<segment name="stringObject">
+    			<fieldValues>
+    				<fieldValue name="value" script="true">
+    					<value>new Date(&quot;8 Mar 2015 23:58:00&quot;)</value>
+    				</fieldValue>
+    			</fieldValues>
+    		</segment>
+    		<segment name="secondObject">
+    			<fieldValues>
+    				<fieldValue name="value" script="true">
+    					<value>&quot;Test &quot; + timetravel(new Date(1472342400000)).format(&quot;yyyy-mm-dd&quot;)</value>
+    				</fieldValue>
+    			</fieldValues>
+    		</segment>
+    	</segments>
+    </configuration>
+    </configurations>
+</testdata>

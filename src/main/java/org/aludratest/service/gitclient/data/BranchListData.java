@@ -42,8 +42,8 @@ public class BranchListData extends AbstractGitData {
     }
 
     /** Sets the name of the current branch.
-     * @param currentBranch */
-    public void setCurrentBranch(String currentBranch) {
+     * @param currentBranch the name to set for the current branch */
+    public final void setCurrentBranch(String currentBranch) {
         this.currentBranch = currentBranch;
     }
 
@@ -54,7 +54,7 @@ public class BranchListData extends AbstractGitData {
 
     /** Sets the list with the names of all branches.
      * @param branches the list with the branch names to set */
-    public void setBranches(List<StringData> branches) {
+    public final void setBranches(List<StringData> branches) {
         this.branches = branches;
     }
 

@@ -36,9 +36,9 @@ public class RebaseData {
     }
 
     /** Fully parameterized constructor.
-     * @param newbase
-     * @param upstream
-     * @param branches */
+     * @param newbase the new base
+     * @param upstream the upstream
+     * @param branches the branches to rebase */
     public RebaseData(String newbase, String upstream, String... branches) {
         setNewbase(newbase);
         setUpstream(upstream);
@@ -50,37 +50,37 @@ public class RebaseData {
 
     /** Returns the new base.
      * @return the new base */
-    public String getNewbase() {
+    public final String getNewbase() {
         return newbase;
     }
 
     /** Sets the new base.
      * @param newbase the new base */
-    public void setNewbase(String newbase) {
+    public final void setNewbase(String newbase) {
         this.newbase = newbase;
     }
 
     /** Returns the upstream.
      * @return the upstream */
-    public String getUpstream() {
+    public final String getUpstream() {
         return upstream;
     }
 
     /** Sets the upstream.
      * @param upstream the upstream */
-    public void setUpstream(String upstream) {
+    public final void setUpstream(String upstream) {
         this.upstream = upstream;
     }
 
     /** Returns the list of branches to rebase.
      * @return the list of branches to rebase */
-    public List<StringData> getBranches() {
+    public final List<StringData> getBranches() {
         return branches;
     }
 
     /** Sets the list of branches to rebase.
      * @param branches the list of branches to rebase */
-    public void setBranches(List<StringData> branches) {
+    public final void setBranches(List<StringData> branches) {
         this.branches = branches;
     }
 

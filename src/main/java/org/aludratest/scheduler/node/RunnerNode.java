@@ -21,7 +21,7 @@ import java.util.Map;
 import org.aludratest.scheduler.RunStatus;
 
 /**
- * Abstract parent class for all (leaf and group) nodes of the 
+ * Abstract parent class for all (leaf and group) nodes of the
  * test (runner) tree.
  * @author Volker Bergmann
  */
@@ -36,7 +36,9 @@ public abstract class RunnerNode {
     /** Arbitrary attributes stored on this node which can be used by listeners etc. to add information for later use. */
     protected Map<String, Object> nodeAttributes;
 
-    /** Constructor requiring the tree {@link #name}. */
+    /** Constructor requiring the tree {@link #name}.
+     * @param name the name
+     * @param parent the parent node */
     public RunnerNode(String name, RunnerGroup parent) {
         this.name = name;
         this.parent = parent;
@@ -61,7 +63,8 @@ public abstract class RunnerNode {
         return parent;
     }
 
-    /** Provides the tree {@link #name} of the node. */
+    /** Provides the tree {@link #name} of the node.
+     * @return the name of the node */
     public String getName() {
         return name;
     }

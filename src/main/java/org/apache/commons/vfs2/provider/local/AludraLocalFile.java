@@ -41,14 +41,19 @@ public class AludraLocalFile extends AbstractFileObject implements FileObject {
 
     private File file;
 
-    /** Creates a non-root file. */
+    /** Creates a non-root file.
+     * @param fileSystem The underlying VFS2 {@link LocalFileSystem} instance
+     * @param rootFile the path of the root file
+     * @param name the name of the file system
+     * @throws FileSystemException if initialization fails */
     protected AludraLocalFile(final LocalFileSystem fileSystem, final String rootFile, final AbstractFileName name)
             throws FileSystemException {
         super(name, fileSystem);
         this.rootFile = rootFile;
     }
 
-    /** Returns the local file that this file object represents. */
+    /** Returns the local file that this file object represents.
+     * @return the {@link #file} */
     protected File getLocalFile() {
         return file;
     }
@@ -61,7 +66,7 @@ public class AludraLocalFile extends AbstractFileObject implements FileObject {
             // LocalFileName localFileName = (LocalFileName) getName();
             String fileName = rootFile + getName().getPathDecoded();
             // fileName = UriParser.decode(fileName);
-            file = new File(fileName);
+            file = new File(fileName); // NOSONAR
         }
     }
 
@@ -164,7 +169,7 @@ public class AludraLocalFile extends AbstractFileObject implements FileObject {
     /** Creates an output stream to write the file content to. */
     @Override
     protected OutputStream doGetOutputStream(boolean bAppend) throws Exception {
-        return new FileOutputStream(file.getPath(), bAppend);
+        return new FileOutputStream(file.getPath(), bAppend); // NOSONAR
     }
 
     /** Returns the size of the file content (in bytes). */

@@ -20,30 +20,22 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 
-import org.aludratest.impl.log4testing.data.TestCaseLog;
-import org.aludratest.impl.log4testing.data.TestLogger;
-import org.aludratest.impl.log4testing.data.TestStepLog;
+import org.aludratest.log4testing.TestCaseLog;
+import org.aludratest.log4testing.TestStatus;
+import org.aludratest.log4testing.TestStepLog;
 import org.aludratest.service.SystemConnectorExchangeTest.PlainTest;
 import org.aludratest.service.pseudo.PseudoService;
 import org.aludratest.service.util.AbstractSystemConnector;
 import org.aludratest.testcase.AludraTestCase;
-import org.aludratest.testcase.TestStatus;
 import org.aludratest.testcase.event.ErrorReport;
 import org.aludratest.testcase.event.SystemErrorReporter;
 
-/** Tests the behavior of AludraTest when an exception occurs in a call to {@link SystemConnector#checkForErrors()}.
+/** Tests the behavior of AludraTest when an exception occurs in a call to {@link SystemErrorReporter#checkForError()}.
  * @author Volker Bergmann */
-public class SystemConnectorExceptionTest extends AbstractAludraServiceTest {
+@SuppressWarnings("javadoc")
+public class SystemConnectorExceptionTest extends AbstractAludraIntegrationTest {
 
     private static ComponentId<PseudoService> SERVICE_ID = ComponentId.create(PseudoService.class, "localhost");
-
-    private static TestCaseLog testCase = null;
-
-    /** Clears the {@link TestLogger} before test execution */
-    @org.junit.Before
-    public void prepare() {
-        TestLogger.clear();
-    }
 
     /** Test case which uses the AludraTest framework to execute {@link PlainTest} and verifies execution results. */
     @org.junit.Test
@@ -56,22 +48,21 @@ public class SystemConnectorExceptionTest extends AbstractAludraServiceTest {
         aludra.run(RecurringTest.class);
 
         // THEN require the following report characteristics
+        TestCaseLog testCase = getTestLog().getLastTestCaseLog();
+        TestStepLog lastTestStep = testCase.getLastFailedStep();
         assertEquals(TestStatus.FAILEDAUTOMATION, testCase.getStatus());
-        TestStepLog lastTestStep = testCase.getLastTestStep();
         assertTrue("ErrorConnector recursion not recognized",
                 lastTestStep.getErrorMessage().contains("Cancelled execution to avoid infinite recursion"));
-        Iterator<TestStepLog> stepIterator = testCase.getTestStepGroups().iterator().next().getTestSteps().iterator();
+        Iterator<? extends TestStepLog> stepIterator = testCase.getTestStepGroups().iterator().next().getTestSteps().iterator();
         String rootMessage = "Nothing found";
         assertEquals(rootMessage, stepIterator.next().getErrorMessage());
         assertTrue("ErrorConnector recursion not recognized",
                 stepIterator.next().getErrorMessage().contains("Cancelled execution to avoid infinite recursion"));
     }
 
-    @SuppressWarnings("javadoc")
     public static class RecurringTest extends AludraTestCase {
         @org.aludratest.testcase.Test
         public void test() {
-            testCase = TestLogger.getTestCase(getClass().getName() + ".test-0");
             PseudoService service = getService(SERVICE_ID);
             // succeed and fail with connector1
             RecurringConnector connector = new RecurringConnector(service);

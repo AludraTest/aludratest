@@ -1,0 +1,17 @@
+<component-set>
+  <components>
+    <component>
+      <role>org.aludratest.scheduler.RunnerListenerRegistry</role>
+      <role-hint>default</role-hint>
+      <implementation>org.aludratest.service.util.TestRunnerListenerRegistryImpl</implementation>
+      <description></description>
+      <isolated-realm>false</isolated-realm>
+      <requirements>
+        <requirement>
+          <role>org.aludratest.scheduler.RunnerListener</role>
+          <field-name>listeners</field-name>
+        </requirement>
+      </requirements>
+    </component>
+  </components>
+</component-set>

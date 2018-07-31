@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.aludratest.exception.AutomationException;
 import org.aludratest.exception.FunctionalFailure;
+import org.aludratest.util.validator.EqualsValidator;
 import org.databene.commons.FileUtil;
 import org.databene.commons.IOUtil;
 import org.junit.After;
@@ -42,7 +43,7 @@ public class LocalFileServiceTest extends AbstractLocalFileServiceTest {
     protected FileService service;
 
     /**
-     * Invoked before each test method invocation 
+     * Invoked before each test method invocation
      * in order to initialize the {@link #service} attribute.
      * @throws Exception
      */
@@ -268,6 +269,12 @@ public class LocalFileServiceTest extends AbstractLocalFileServiceTest {
         assertArrayEquals("binary".getBytes(), bytes);
     }
 
+    @Test(expected = FunctionalFailure.class)
+    public void testWriteBinaryFile_preexisting() throws IOException {
+        service.perform().writeBinaryFile("out2.dat", "binary".getBytes(), true);
+        service.perform().writeBinaryFile("out2.dat", "binary".getBytes(), false);
+    }
+
     @Test(expected = AutomationException.class)
     public void testWriteBinaryFile_noPath() {
         service.perform().writeBinaryFile("", "binary".getBytes(), true);
@@ -459,6 +466,22 @@ public class LocalFileServiceTest extends AbstractLocalFileServiceTest {
     @Test(expected = AutomationException.class)
     public void testAssertAbsense_noPath() {
         service.verify().assertAbsence("");
+    }
+
+    // content verification tests ----------------------------------------------
+    @Test
+    public void testAssertContentMatches_success() {
+        service.verify().assertTextContentMatches("file.txt", new EqualsValidator("Simple file"));
+    }
+
+    @Test(expected = FunctionalFailure.class)
+    public void testAssertContentMatches_functionalFailure() {
+        service.verify().assertTextContentMatches("file.txt", new EqualsValidator("Complex file"));
+    }
+
+    @Test(expected = AutomationException.class)
+    public void testAssertContentMatches_automationException() {
+        service.verify().assertTextContentMatches("no-such-file.txt", new EqualsValidator("Simple file"));
     }
 
     // FileCondition tests -----------------------------------------------------

@@ -15,8 +15,8 @@
  */
 package org.aludratest.service.file;
 
-import org.aludratest.impl.log4testing.TechnicalLocator;
 import org.aludratest.service.Condition;
+import org.aludratest.service.TechnicalLocator;
 
 /**
  * {@link Condition} interface of the {@link FileService}.
