@@ -21,7 +21,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -201,6 +203,28 @@ public class XmlBasedTestDataProviderTest {
         assertNotEquals(value1, value2);
     }
 
+    @Test
+    public void testClasspathResource() throws Exception {
+        XmlBasedTestDataProvider provider = createProvider();
+        List<TestCaseData> testData = provider.getTestDataSets(
+                XmlBasedTestDataProviderTest.class.getDeclaredMethod("testMethodClasspathData", ComplexData.class));
+        assertNotNull(testData.get(0).getData()[0]);
+        assertNotNull(((ComplexData) testData.get(0).getData()[0]).getName());
+    }
+
+    @Test
+    public void testClasspathResource_negative() throws Exception {
+        XmlBasedTestDataProvider provider = createProvider();
+        try {
+            List<TestCaseData> testData = provider.getTestDataSets(
+                    XmlBasedTestDataProviderTest.class.getDeclaredMethod("testMethodClasspathData_negative", ComplexData.class));
+            fail("FileNotFoundException expected, but reading not existing classpath resource succeeded");
+        }
+        catch (AutomationException e) {
+            assertTrue(e.getCause() instanceof FileNotFoundException);
+        }
+    }
+
     public void testMethod1(@Source(uri = "complex.testdata.xml", segment = "complexObject") ComplexData object,
             @Source(uri = "complex.testdata.xml", segment = "stringObject") StringData object2) {
         if (object == null) {
@@ -263,4 +287,19 @@ public class XmlBasedTestDataProviderTest {
             // do nothing
         }
     }
+
+    public void testMethodClasspathData(
+            @Source(uri = "classpath:org/aludratest/testcase/data/xml/XmlBasedTestDataProviderTest/complex.testdata.xml", segment = "complexObject") ComplexData object) {
+        if (object == null) {
+            // do nothing
+        }
+    }
+
+    public void testMethodClasspathData_negative(
+            @Source(uri = "classpath:org/no.such.testdata.xml", segment = "complexObject") ComplexData object) {
+        if (object == null) {
+            // do nothing
+        }
+    }
+
 }

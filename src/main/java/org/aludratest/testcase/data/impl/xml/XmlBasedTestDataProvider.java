@@ -17,6 +17,7 @@ package org.aludratest.testcase.data.impl.xml;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -432,6 +433,14 @@ public class XmlBasedTestDataProvider implements TestDataProvider {
     }
 
     private InputStream tryFindXml(String uri, Method testMethod) throws IOException, AutomationException, URISyntaxException {
+        if (uri.startsWith("classpath:")) {
+            InputStream in = testMethod.getDeclaringClass().getClassLoader()
+                    .getResourceAsStream(uri.substring("classpath:".length()));
+            if (in == null) {
+                throw new FileNotFoundException(uri);
+            }
+            return in;
+        }
         if (uri.matches("[a-z]+://.*")) {
             URI realUri = new URI(uri);
             URL url = realUri.toURL();
