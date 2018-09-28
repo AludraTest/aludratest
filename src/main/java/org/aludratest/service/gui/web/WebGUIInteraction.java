@@ -119,4 +119,8 @@ public interface WebGUIInteraction extends GUIInteraction {
     /** Deletes a specific cookie.
      * @param name cookie name */
     void deleteCookieNamed(@TechnicalLocator String name);
+
+    /** Set the zoom percent to page.
+     * @param percent - zoom percent */
+    void zoom(@TechnicalLocator int percent);
 }
