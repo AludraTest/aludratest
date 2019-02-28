@@ -25,22 +25,20 @@ import java.io.File;
 import org.aludratest.content.separated.SepPersonData;
 import org.aludratest.content.separated.data.WrappedSeparatedData;
 import org.aludratest.service.AbstractAludraServiceTest;
-import org.aludratest.service.separatedfile.SeparatedFileReader;
-import org.aludratest.service.separatedfile.SeparatedFileService;
-import org.aludratest.service.separatedfile.SeparatedFileWriter;
 import org.aludratest.util.data.StringData;
 import org.databene.commons.IOUtil;
 import org.databene.commons.ReaderLineIterator;
 import org.junit.Test;
 
 /**
- * Integration test of the {@link SeparatedFileService}. 
+ * Integration test of the {@link SeparatedFileService}.
  * @author Volker Bergmann
  */
 @SuppressWarnings("javadoc")
 public class SeparatedFileServiceTest extends AbstractAludraServiceTest {
-    
-    /** Tests the SeparatedFileWriter with SeparatedFileBeans. */
+
+    /** Tests the SeparatedFileWriter with SeparatedFileBeans.
+     * @throws Exception IOException */
     @Test
     public void testAnnotationBeanWriter() throws Exception {
         // set up the SeparatedFileService
@@ -72,7 +70,7 @@ public class SeparatedFileServiceTest extends AbstractAludraServiceTest {
 
     /** Tests the BeanSeparatedFileReader with SeparatedFileBeans */
     @Test
-    public void testAnnotationBeanReader() throws Exception {
+    public void testAnnotationBeanReader() {
         // set up the SeparatedFileService
         SeparatedFileService service = getLoggingService(SeparatedFileService.class, "annotest");
 
@@ -83,7 +81,7 @@ public class SeparatedFileServiceTest extends AbstractAludraServiceTest {
         StringData header = new StringData();
         reader.readHeader(header);
         assertEquals("VER1234", header.getValue());
-        
+
         WrappedSeparatedData<SepPersonData> row = new WrappedSeparatedData<SepPersonData>();
         reader.readRow(row);
         assertEquals(new SepPersonData("Alice", "23"), row.getValue());
@@ -97,17 +95,17 @@ public class SeparatedFileServiceTest extends AbstractAludraServiceTest {
         IOUtil.close(service);
         assertNotFailed();
     }
-    
+
     public static final class MySeparatedFileWriter extends SeparatedFileWriter<SepPersonData, MySeparatedFileWriter> {
         public MySeparatedFileWriter(String filePath, SeparatedFileService service, boolean overwrite) {
             super(filePath, service, overwrite, SepPersonData.class, '\t', "VER1234");
         }
     }
-    
+
     public static final class MySeparatedFileReader extends SeparatedFileReader<SepPersonData, MySeparatedFileReader> {
         public MySeparatedFileReader(String filePath, SeparatedFileService service) {
             super(filePath, service, SepPersonData.class, '\t');
         }
     }
-    
+
 }

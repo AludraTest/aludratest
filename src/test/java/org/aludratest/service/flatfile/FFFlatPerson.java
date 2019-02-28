@@ -19,7 +19,6 @@ import java.util.Date;
 
 import org.aludratest.content.flat.FlatFileColumn;
 import org.aludratest.content.flat.data.FlatFileBeanData;
-import org.aludratest.service.flatfile.FlatFileService;
 import org.databene.commons.Formatter;
 
 /**
@@ -56,7 +55,11 @@ public class FFFlatPerson extends FlatFileBeanData {
         this(null, 0, null, null);
     }
 
-    /** Constructor which initializes all attributes. */
+    /** Constructor which initializes all attributes.
+     * @param name String
+     * @param age integer
+     * @param birthDate Date
+     * @param petName String */
     public FFFlatPerson(String name, int age, Date birthDate, String petName) {
         this.rowType = 'P';
         this.name = name;
@@ -68,6 +71,7 @@ public class FFFlatPerson extends FlatFileBeanData {
     // java.lang.Object overrides ----------------------------------------------
 
     /** Compares this object with another for equality. */
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;

@@ -41,7 +41,8 @@ import org.junit.Test;
 @SuppressWarnings("javadoc")
 public class FlatFileServiceIntegrationTest extends AbstractAludraServiceTest {
 
-    /** Tests the BeanFlatFileWriter with FlatFileBeans. */
+    /** Tests the BeanFlatFileWriter with FlatFileBeans.
+     * @throws Exception IOException */
     @Test
     public void testAnnotationBeanWriter() throws Exception {
         // set up the FlatFileService
@@ -82,7 +83,7 @@ public class FlatFileServiceIntegrationTest extends AbstractAludraServiceTest {
 
     /** Tests the BeanFlatFileReader with FlatFileBeans */
     @Test
-    public void testAnnotationBeanReader() throws Exception {
+    public void testAnnotationBeanReader() {
         // set up the FlatFileService
         FlatFileService service = getLoggingService(FlatFileService.class, "annotest");
 

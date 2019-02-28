@@ -26,14 +26,14 @@ import org.aludratest.scheduler.TestClassFilter;
 import org.junit.Test;
 
 /** Tests FilterParser class.
- * 
+ *
  * @author falbrech */
 @SuppressWarnings("javadoc")
 public class FilterParserTest {
 
     /** Tests the parser with a valid filter.
-     * 
-     * @throws Exception */
+     *
+     * @throws Exception If a parsing error occurs, i.e. the input filter string is invalid. */
     @Test
     public void testValidFilter() throws Exception {
         FilterParser parser = new FilterParser();
@@ -85,11 +85,9 @@ public class FilterParserTest {
         assertEquals("ForceExecution", attrFilter.getValues().get(0));
     }
 
-    /** Tests the parser with invalid filters.
-     * 
-     * @throws Exception */
+    /** Tests the parser with invalid filters. */
     @Test
-    public void testInvalidFilter() throws Exception {
+    public void testInvalidFilter() {
         try {
             FilterParser parser = new FilterParser();
             parser.parse("author = ( jdoe, mmiller, []); status !!= (Draft,InWork,[]);testgroup=UAT|author=falbrech|status=ForceExecution  ");

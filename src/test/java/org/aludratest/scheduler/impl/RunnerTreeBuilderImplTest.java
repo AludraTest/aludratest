@@ -55,10 +55,8 @@ import org.junit.Test;
 
 import junit.framework.AssertionFailedError;
 
-/**
- * Tests the {@link AludraSuiteParser}.
- * @author Volker Bergmann
- */
+/** Tests the {@link RunnerTreeBuilderImpl}.
+ * @author Volker Bergmann */
 @SuppressWarnings("javadoc")
 public class RunnerTreeBuilderImplTest extends AbstractAludraIntegrationTest {
 

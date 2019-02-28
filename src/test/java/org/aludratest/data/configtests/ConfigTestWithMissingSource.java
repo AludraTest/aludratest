@@ -19,11 +19,8 @@ import org.aludratest.data.PersonBean;
 import org.aludratest.testcase.Test;
 import org.aludratest.testcase.data.Source;
 
-/**
- * Tests the {@link TestConfigInfoHelper} with a test case 
- * that refers a missing Excel file.
- * @author Volker Bergmann
- */
+/** Tests the {@link org.aludratest.testcase.data.impl.TestConfigInfoHelper} with a test case that refers a missing Excel file.
+ * @author Volker Bergmann */
 @SuppressWarnings("javadoc")
 public class ConfigTestWithMissingSource extends AbstractConfigTest {
 

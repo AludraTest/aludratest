@@ -53,7 +53,7 @@ public class TreeBuilderSortTest extends AbstractAludraIntegrationTest {
     }
 
     /** Tests that by default, tree is sorted alphabetically
-     * @throws Exception */
+     * @throws Exception If the filter string has an invalid syntax. */
     @Test
     public void testTreeSortingDefault() throws Exception {
         // calculate location of test class
@@ -75,7 +75,7 @@ public class TreeBuilderSortTest extends AbstractAludraIntegrationTest {
     }
 
     /** Tests tree sorting with Alphabetic Descending order
-     * @throws Exception */
+     * @throws Exception If the filter string has an invalid syntax. */
     @Test
     public void testTreeSortingReverse() throws Exception {
         // override configuration property
@@ -100,7 +100,7 @@ public class TreeBuilderSortTest extends AbstractAludraIntegrationTest {
     }
 
     /** Tests tree sorting with custom sorting class
-     * @throws Exception */
+     * @throws Exception If the filter string has an invalid syntax. */
     @Test
     public void testTreeSortingCustom() throws Exception {
         // override configuration property
@@ -126,8 +126,8 @@ public class TreeBuilderSortTest extends AbstractAludraIntegrationTest {
 
     /** Negative test case with invalid sorter class. Must fail silently (not throw exceptions) - no other assumptions (order is
      * not defined in this case). But the Log4J Log is also checked for appropriate error message.
-     * 
-     * @throws Exception */
+     *
+     * @throws Exception If the filter string has an invalid syntax. */
     @Test
     public void testInvalidSorter() throws Exception {
         SimpleBufferAppender appender = new SimpleBufferAppender();

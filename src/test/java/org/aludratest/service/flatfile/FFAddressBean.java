@@ -16,7 +16,6 @@
 package org.aludratest.service.flatfile;
 
 import org.aludratest.content.flat.FlatFileColumn;
-import org.aludratest.service.flatfile.FlatFileService;
 
 /**
  * FlatFileBean for testing the {@link FlatFileService}
@@ -46,7 +45,10 @@ public class FFAddressBean {
         this(null, null, 0);
     }
 
-    /** Constructor requiring a value for each attribute */
+    /** Constructor requiring a value for each attribute
+     * @param street String
+     * @param city String
+     * @param num double */
     public FFAddressBean(String street, String city, double num) {
         this.rowType = 'A';
         this.street = street;
@@ -54,42 +56,50 @@ public class FFAddressBean {
         this.num = num;
     }
 
-    /** Returns the {@link #rowType} */
+    /** Returns the {@link #rowType}
+     * @return rowType */
     public char getRowType() {
         return rowType;
     }
 
-    /** Sets the {@link #rowType} */
+    /** Sets the {@link #rowType}
+     * @param rowType set char rowType */
     public void setRowType(char rowType) {
         this.rowType = rowType;
     }
 
-    /** Returns the {@link #street} */
+    /** Returns the {@link #street}
+     * @return street */
     public String getStreet() {
         return street;
     }
 
-    /** Sets the {@link #street} */
+    /** Sets the {@link #street}
+     * @param street Set street String */
     public void setStreet(String street) {
         this.street = street;
     }
 
-    /** Returns the {@link #city} */
+    /** Returns the {@link #city}
+     * @return city */
     public String getCity() {
         return city;
     }
 
-    /** Sets the {@link #city} */
+    /** Sets the {@link #city}
+     * @param city set city */
     public void setCity(String city) {
         this.city = city;
     }
 
-    /** Returns the {@link #num} */
+    /** Returns the {@link #num}
+     * @return double number */
     public double getNum() {
         return num;
     }
 
-    /** Sets the {@link #num} */
+    /** Sets the {@link #num}
+     * @param num set double number */
     public void setNum(double num) {
         this.num = num;
     }

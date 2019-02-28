@@ -30,17 +30,20 @@ public class FFPet {
         this(null);
     }
 
-    /** Constructor with complete attribute initialization. */
+    /** Constructor with complete attribute initialization.
+     * @param name String */
     public FFPet(String name) {
         this.name = name;
     }
 
-    /** getter method for the 'name' property. */
+    /** getter method for the 'name' property.
+     * @return String name */
     public String getName() {
         return name;
     }
 
-    /** setter method for the 'name' property. */
+    /** setter method for the 'name' property.
+     * @param name String */
     public void setName(String name) {
         this.name = name;
     }

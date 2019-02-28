@@ -46,10 +46,9 @@ public class FileTest extends AbstractLocalFileServiceTest {
     /**
      * Invoked before each test method invocation
      * in order to initialize the {@link #service} attribute.
-     * @throws Exception
      */
     @Before
-    public void prepareService() throws Exception {
+    public void prepareService() {
         service = getService(FileService.class, "localtest");
     }
 
