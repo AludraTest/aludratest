@@ -50,6 +50,23 @@ public class FileFieldImpl extends AbstractElement<FileField> implements ValueCo
         }
     }
 
+    /** Saves the {@link InputStream}'s content in a new file with the given name via non visible file field.
+     * @param fileName the name by which to save the file
+     * @param in the provider of the file content to save */
+    @Override
+    public void setResourceNameAndContentToElementNotVisible(String fileName, InputStream in) {
+        if (!DataMarkerCheck.isNull(fileName)) {
+            File tempFile = getTestResourceFile(fileName);
+            try {
+                saveStreamContent(in, tempFile);
+                assignFileResourceNonVisibleElement(fileName);
+            }
+            catch (IOException e) {
+                throw new AutomationException("Error ", e);
+            }
+        }
+    }
+
     @Override
     public String getText() {
         return perform().getInputFieldValue(elementType, elementName, getLocator());
@@ -115,6 +132,17 @@ public class FileFieldImpl extends AbstractElement<FileField> implements ValueCo
             String filePath = getTestResourceFile(fileName).getAbsolutePath();
             perform().assignFileResource(elementType, elementName, getLocator(), DataMarkerCheck.convertIfEmpty(filePath),
                     taskCompletionTimeout);
+        }
+    }
+
+    /** Enters text in the Non visible InputField. If the text is null or marked as null the operation will not be executed If the
+     * text is marked as empty it will be replaced with ""
+     * @param fileName the name of the file to assign to the file field */
+    private void assignFileResourceNonVisibleElement(String fileName) {
+        if (!DataMarkerCheck.isNull(fileName)) {
+            String filePath = getTestResourceFile(fileName).getAbsolutePath();
+            perform().assignFileResourceNonVisibleElement(elementType, elementName, getLocator(),
+                    DataMarkerCheck.convertIfEmpty(filePath), taskCompletionTimeout);
         }
     }
 

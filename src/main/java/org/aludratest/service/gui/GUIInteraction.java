@@ -106,6 +106,15 @@ public interface GUIInteraction extends Interaction {
     void assignFileResource(String elementType, String elementName, GUIElementLocator locator, String filePath,
             int taskCompletionTimeout);
 
+    /** Assigns a file resource of the test project file system to the file chooser specified by the locator(nonVisible).
+     * @param elementType the type of the related GUI element to log
+     * @param elementName the name of the related GUI element to log
+     * @param locator to locate the related file selection field in the application under test
+     * @param filePath the absolute path of the file to be assigned to the file chooser
+     * @param taskCompletionTimeout the maximum number of milliseconds to wait for the completion of system activities */
+    void assignFileResourceNonVisibleElement(String elementType, String elementName, GUIElementLocator locator, String filePath,
+            int taskCompletionTimeout);
+
     /** Clicks with a single click on any kind of element which reacts on click events. A common example are buttons and links.
      * @param elementType the type of the related GUI element to log
      * @param elementName the name of the related GUI element to log

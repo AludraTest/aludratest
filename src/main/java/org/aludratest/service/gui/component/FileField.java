@@ -27,4 +27,8 @@ public interface FileField extends Element<FileField>, ValueComponent {
      * @param in the provider of the file content to save */
     public void setResourceNameAndContent(String fileName, InputStream in);
 
+    /** Saves the {@link InputStream}'s content in a new file with the given name via non visible file field.
+     * @param fileName the name by which to save the file
+     * @param in the provider of the file content to save */
+    public void setResourceNameAndContentToElementNotVisible(String fileName, InputStream in);
 }
